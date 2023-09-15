@@ -1,0 +1,4 @@
+Consider not using foreign keys as navigation property.
+Consider claims for regions, charts, etc. Maybe store them in some new tables to avoid joining tables.
+Implement enumeration to string and available options.
+Implement an info action for loading all necessary values.
