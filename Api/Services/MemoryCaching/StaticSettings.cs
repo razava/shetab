@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Api.Configurations;
 using Domain.Models.Relational;
-using Domain.Data;
 using Api.ExtensionMethods;
+using Infrastructure.Persistence;
 
 namespace Api.Services.MemoryCaching;
 

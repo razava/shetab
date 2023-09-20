@@ -57,7 +57,7 @@ public class CreateReportDto
     public int CategoryId { get; set; }
     public string Comments { get; set; } = string.Empty;
     public AddressDto Address { get; set; } = null!;
-    public ICollection<Guid>? Attachments { get; set; }
+    public ICollection<Guid> Attachments { get; set; } = new List<Guid>();
     public bool IsIdentityVisible { get; set; } = true;
 }
 
@@ -75,13 +75,13 @@ public class UpdateReportDto
 public class OperatorCreateReportDto
 {
     public int CategoryId { get; set; }
-    public string Comments { get; set; }
-    public string PhoneNumber { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
+    public string Comments { get; set; } = null!;
+    public string PhoneNumber { get; set; } = null!;
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
     public bool IsIdentityVisible { get; set; }
-    public AddressDto Address { get; set; }
-    public ICollection<IFormFile> Attachments { get; set; }
+    public AddressDto Address { get; set; } = null!;
+    public ICollection<Guid> Attachments { get; set; } = new List<Guid>();
 
     //These are specific for verifying the report by operator
     public Guid? Id { get; set; }

@@ -1,47 +1,39 @@
-﻿using Api.Contracts;
-using Api.Services.Storage;
-using Domain.Data;
+﻿using Api.Abstractions;
+using Api.Contracts;
+using Application.Medias.Commands.AddMedia;
 using Domain.Models.Relational;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class FilesController : ControllerBase
+public class FilesController : ApiController
 {
-    private readonly ApplicationDbContext _context;
-    private readonly IStorageService _storageService;
-
-    public FilesController(ApplicationDbContext context, IStorageService storageService)
+    
+    public FilesController(ISender sender): base(sender)
     {
-        _context = context;
-        _storageService = storageService;
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Media>> GetFile(Guid id)
     {
-        var media = await _context.Media.Where(p => p.Id == id).SingleOrDefaultAsync();
-        if (media == null)
-        {
-            return NotFound();
-        }
+        var command = new GetMediaQuery(id);
+        var media = await Sender.Send(command);
         return Ok(media);
     }
 
     [HttpPost]
     public async Task<IActionResult> PostFile([FromForm] UploadDto upload)
     {
-        var media = await _storageService.WriteFileAsync(upload.File, upload.AttachmentType);
+        var command = new AddMediaCommand(upload.File, upload.AttachmentType);
+        var media = await Sender.Send(command);
         if (media == null)
         {
             return Problem();
         }
-        _context.Media.Add(media);
-        await _context.SaveChangesAsync();
-
+        
         return CreatedAtAction(nameof(GetFile), media.Id, media);
     }
 }

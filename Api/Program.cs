@@ -2,10 +2,8 @@ using Api.Configurations;
 using Api.Hubs;
 using Api.Services.Captcha;
 using Api.Services.MemoryCaching;
-using Api.Services.PushNotification;
 using Api.Services.Tools;
 using Api.Services;
-using Domain.Data;
 using Domain.Models.Relational;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -14,10 +12,18 @@ using Microsoft.OpenApi.Models;
 using Shahrbin.Api.Middlewares;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Application;
+using Infrastructure;
+using Infrastructure.Communications.PushNotification;
+using Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+builder.Services
+    .AddApplication()
+    .AddInfrastructure(connectionString);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -72,10 +78,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
-                            o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
 
 //For Identity
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
@@ -151,7 +153,7 @@ builder.Services.AddSingleton<ICaptchaProvider, CaptchaProvider>();
 
 
 //NotificationHostedService
-builder.Services.AddHostedService<SendNotificationsHostedService>();
+//builder.Services.AddHostedService<SendNotificationsHostedService>();
 
 //Adding static settings
 builder.Services.AddSingleton<IStaticSettings, StaticSettings>();

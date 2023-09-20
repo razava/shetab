@@ -1,4 +1,4 @@
-﻿using static Api.Services.Storage.StorageService;
+﻿using Infrastructure.Storage;
 
 namespace Api.Contracts;
 

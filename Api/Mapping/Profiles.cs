@@ -1,6 +1,4 @@
-﻿using Api.Dtos;
-using Api.Services.Business.ProcessManagement;
-using AutoMapper;
+﻿using AutoMapper;
 
 namespace Api.Mapping;
 

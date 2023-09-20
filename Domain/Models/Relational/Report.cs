@@ -1,12 +1,46 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Messages;
+using Domain.Primitives;
 
 namespace Domain.Models.Relational;
 
-public class Report : BaseModel
+public class Report : Entity
 {
-    public Guid Id { get; private set; }
+    //Constructors
+    private Report(Guid id): base(id) { }
+    private Report(
+        Guid id,
+        string citizenId,
+        string phoneNumber,
+        Category category,
+        string comments,
+        Address address,
+        ICollection<Guid> attachments,
+        Visibility visibility = Visibility.EveryOne,
+        Priority priority = Priority.Normal,
+        bool isIdentityVisible = true) : base(id)
+    {
+        var now = DateTime.UtcNow;
 
+        CitizenId = citizenId;
+        CategoryId = category.Id;
+        Comments = comments;
+        Medias = attachments;
+        IsIdentityVisible = isIdentityVisible;
+        Address = address;
+        Sent = now;
+        //TODO: Update report state to contain more info and use ToString to get description instead of LastStatus been stored in database.
+        ReportState = ReportState.NeedAcceptance;
+        LastStatus = "ثبت درخواست در سامانه";
+        LastStatusDateTime = now;
+        Deadline = now.AddHours(category.Duration);
+        ResponseDeadline = category.ResponseDuration == null ? null : now.AddHours(category.ResponseDuration.Value);
+        Visibility = visibility;
+        TrackingNumber = generateTrackingNumber(phoneNumber);
+        Priority = priority;
+    }
+    public int ShahrbinInstanceId { get; private set; }
+    public ShahrbinInstance ShahrbinInstance { get; private set; } = null!;
     public DateTime Sent { get; private set; }
     public DateTime? Finished { get; private set; }
     public DateTime? Responsed { get; private set; }
@@ -77,39 +111,8 @@ public class Report : BaseModel
     public int? Rating { get; private set; }
 
 
-    //Constructors
-    private Report() { }
-    private Report(
-        string citizenId,
-        string phoneNumber,
-        Category category,
-        string comments,
-        Address address,
-        ICollection<Guid> attachments,
-        Visibility visibility = Visibility.EveryOne,
-        Priority priority = Priority.Normal,
-        bool isIdentityVisible = true)
-    {
-        var now = DateTime.UtcNow;
-
-        CitizenId = citizenId;
-        CategoryId = category.Id;
-        Comments = comments;
-        Medias = attachments;
-        IsIdentityVisible = isIdentityVisible;
-        Address = address;
-        Sent = now;
-        //TODO: Update report state to contain more info and use ToString to get description instead of LastStatus been stored in database.
-        ReportState = ReportState.NeedAcceptance;
-        LastStatus = "ثبت درخواست در سامانه";
-        LastStatusDateTime = now;
-        Deadline = now.AddHours(category.Duration);
-        ResponseDeadline = category.ResponseDuration == null ? null : now.AddHours(category.ResponseDuration.Value);
-        Visibility = visibility;
-        TrackingNumber = generateTrackingNumber(phoneNumber);
-        Priority = priority;
-    }
-
+    
+    //Factory methods
     public static Report NewByCitizen(
         string citizenId,
         string phoneNumber,
@@ -124,6 +127,7 @@ public class Report : BaseModel
         var now = DateTime.UtcNow;
 
         var report = new Report(
+            Guid.NewGuid(),
             citizenId,
             phoneNumber,
             category,
@@ -167,6 +171,7 @@ public class Report : BaseModel
         var now = DateTime.UtcNow;
 
         var report = new Report(
+            Guid.NewGuid(),
             citizenId,
             phoneNumber,
             category,

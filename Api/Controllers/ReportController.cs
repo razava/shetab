@@ -1,7 +1,12 @@
-﻿using Api.Dtos;
+﻿using Api.Abstractions;
+using Api.Dtos;
 using Api.Services.Authentication;
-using Api.Services.Business;
-using Api.Services.Business.ProcessManagement;
+using Application.Reports.Commands.AcceptByOperator;
+using Application.Reports.Commands.CreateReportByCitizen;
+using Application.Reports.Commands.CreateReportByOperator;
+using Application.Reports.Commands.UpdateByOperator;
+using Application.Reports.Common;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -10,13 +15,10 @@ namespace Api.Controllers;
 
 [Route("api/{instanceId}/[controller]")]
 [ApiController]
-public class ReportController : ControllerBase
+public class ReportController : ApiController
 {
-    private readonly ProcessManager _processManager;
-
-    public ReportController(ProcessManager processManager)
+    public ReportController(ISender sender) : base(sender)
     {
-        _processManager = processManager;
     }
 
     [Authorize(Roles = "Citizen")]
@@ -39,9 +41,17 @@ public class ReportController : ControllerBase
                                           model.Address.PostalCode,
                                           model.Address.Latitude!.Value,
                                           model.Address.Longitude!.Value);
-        var reportInfo = new ReportCreateModel(model.CategoryId, model.Comments, addressInfo, new List<Guid>(), model.IsIdentityVisible);
 
-        var report = await _processManager.CreateReportAsync(instanceId, userId, phoneNumber, reportInfo);
+        var command = new CreateReportByCitizenCommand(
+            instanceId,
+            userId,
+            phoneNumber,
+            model.CategoryId,
+            model.Comments,
+            addressInfo,
+            model.Attachments,
+            model.IsIdentityVisible);
+        var report = await Sender.Send(command);
 
         //TODO: Fix this
         return CreatedAtAction(null, null);
@@ -77,15 +87,21 @@ public class ReportController : ControllerBase
                                           model.Address.Latitude!.Value,
                                           model.Address.Longitude!.Value);
 
-        var reportInfo = new ReportCreateModel(model.CategoryId, model.Comments, addressInfo, new List<Guid>(), model.IsIdentityVisible);
-        if (model.Id != null)
-        {
-            var reportAcceptInfo = new ReportAcceptModel(model.CategoryId, model.Comments, addressInfo, new List<Guid>(), model.IsIdentityVisible);
-            await _processManager.AcceptAsync(model.Id.Value, operatorId, reportAcceptInfo);
-            return NoContent();
-        }
+        var command = new CreateReportByOperatorCommand(
+            instanceId,
+            operatorId,
+            model.PhoneNumber,
+            model.FirstName,
+            model.LastName,
+            model.CategoryId,
+            model.Comments,
+            addressInfo,
+            model.Attachments,
+            model.IsIdentityVisible,
+            model.Visibility == Domain.Models.Relational.Visibility.EveryOne);
 
-        var report = await _processManager.CreateReportByOperatorAsync(instanceId, operatorId, model.PhoneNumber, model.FirstName, model.LastName, reportInfo);
+
+        var report = await Sender.Send(command);
 
         return Ok(report.Id);
     }
@@ -124,7 +140,62 @@ public class ReportController : ControllerBase
 
         }
         //TODO: Visibility should be considerd
-        await _processManager.UpdateAsync(model.Id, operatorId, new ReportUpdateModel(model.CategoryId, model.Comments, addressInfo, model.Attachments));
+        var command = new UpdateByOperatorCommand(
+            model.Id,
+            operatorId,
+            model.CategoryId,
+            model.Comments,
+            addressInfo,
+            model.Attachments,
+            model.Visibility == Domain.Models.Relational.Visibility.EveryOne);
+        await Sender.Send(command);
+
+        return NoContent();
+    }
+
+    [Authorize(Roles = "Operator")]
+    [HttpPut("Accept")]
+    public async Task<ActionResult<Guid>> AcceptReportByOperator([FromForm] UpdateReportDto model)
+    {
+        var instanceIdStr = User.FindFirstValue(AppClaimTypes.InstanceId);
+        if (instanceIdStr == null)
+        {
+            return BadRequest();
+        }
+        var instanceId = int.Parse(instanceIdStr);
+        if (instanceId <= 0)
+        {
+            return BadRequest();
+        }
+        var operatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (operatorId == null)
+        {
+            return Unauthorized();
+        }
+
+        AddressInfo? addressInfo = null;
+        if (model.Address != null)
+        {
+            addressInfo = new AddressInfo(model.Address.RegionId!.Value,
+                                              model.Address.Street,
+                                              model.Address.Valley,
+                                              model.Address.Detail,
+                                              model.Address.Number,
+                                              model.Address.PostalCode,
+                                              model.Address.Latitude!.Value,
+                                              model.Address.Longitude!.Value);
+
+        }
+        //TODO: Visibility should be considerd
+        var command = new AcceptByOperatorCommand(
+            model.Id,
+            operatorId,
+            model.CategoryId,
+            model.Comments,
+            addressInfo,
+            model.Attachments,
+            model.Visibility == Domain.Models.Relational.Visibility.EveryOne);
+        await Sender.Send(command);
 
         return NoContent();
     }
