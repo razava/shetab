@@ -1,5 +1,4 @@
 ﻿using Application.Common.Interfaces.Persistence;
-using Application.Reports.Commands.AcceptByOperator;
 using Domain.Models.Relational;
 using Mapster;
 using MediatR;

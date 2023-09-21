@@ -1,4 +1,6 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Communication;
+using Application.Common.Interfaces.Persistence;
+using Domain.Messages;
 using Domain.Models.Relational;
 using Mapster;
 using MediatR;
@@ -46,27 +48,9 @@ internal sealed class CreateReportByOperatorCommandHandler : IRequestHandler<Cre
         _reportRepository.Insert(report);
         await _unitOfWork.SaveAsync();
 
-        /*
-        await CommunicationServices.AddNotification(
-            new Message()
-            {
-                ShahrbinInstanceId = report.ShahrbinInstanceId,
-                Title = "ثبت درخواست" + " - " + report.TrackingNumber,
-                Content = ReportMessages.Created,
-                DateTime = report.Sent,
-                MessageType = MessageType.Report,
-                SubjectId = report.Id,
-                Recepients = new List<MessageRecepient>()
-                {
-                    new MessageRecepient() { Type = RecepientType.Person, ToId = report.CitizenId }
-                }
-            },
-            _context);
-        await _context.SaveChangesAsync();
 
         //TODO: Inform related users not all
-        await _hub.Clients.All.Update();
-        */
+        //await _hub.Clients.All.Update();
         return report;
     }
 }

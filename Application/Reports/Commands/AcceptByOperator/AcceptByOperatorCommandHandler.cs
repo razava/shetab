@@ -9,15 +9,13 @@ internal sealed class AcceptByOperatorCommandHandler : IRequestHandler<AcceptByO
 {
     private readonly IReportRepository _reportRepository;
     private readonly ICategoryRepository _categoryRepository;
-    private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public AcceptByOperatorCommandHandler(IUnitOfWork unitOfWork, IReportRepository reportRepository, ICategoryRepository categoryRepository, IUserRepository userRepository)
+    public AcceptByOperatorCommandHandler(IUnitOfWork unitOfWork, IReportRepository reportRepository, ICategoryRepository categoryRepository)
     {
         _unitOfWork = unitOfWork;
         _reportRepository = reportRepository;
         _categoryRepository = categoryRepository;
-        _userRepository = userRepository;
     }
 
     public async Task<Report> Handle(AcceptByOperatorCommand request, CancellationToken cancellationToken)

@@ -1,4 +1,4 @@
-﻿namespace Api.Services.Tools;
+﻿namespace Application.Reports.Common;
 
 public static class Messaging
 {

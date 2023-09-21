@@ -153,6 +153,22 @@ public class Report : Entity
 
         report.TransitionLogs.Add(log);
 
+        var message =
+            new Message()
+            {
+                ShahrbinInstanceId = report.ShahrbinInstanceId,
+                Title = "ثبت درخواست" + " - " + report.TrackingNumber,
+                Content = ReportMessages.Created,
+                DateTime = report.Sent,
+                MessageType = MessageType.Report,
+                SubjectId = report.Id,
+                Recepients = new List<MessageRecepient>()
+                {
+                    new MessageRecepient() { Type = RecepientType.Person, ToId = report.CitizenId }
+                }
+            };
+        report.Messages.Add(message);
+
         return report;
     }
 
@@ -196,6 +212,22 @@ public class Report : Entity
         };
 
         report.TransitionLogs.Add(log);
+
+        var message =
+            new Message()
+            {
+                ShahrbinInstanceId = report.ShahrbinInstanceId,
+                Title = "ثبت درخواست" + " - " + report.TrackingNumber,
+                Content = ReportMessages.Created,
+                DateTime = report.Sent,
+                MessageType = MessageType.Report,
+                SubjectId = report.Id,
+                Recepients = new List<MessageRecepient>()
+                {
+                    new MessageRecepient() { Type = RecepientType.Person, ToId = report.CitizenId }
+                }
+            };
+        report.Messages.Add(message);
 
         return report;
     }
@@ -291,6 +323,8 @@ public class Report : Entity
                         new MessageRecepient() { Type = RecepientType.Person, ToId = CitizenId }
                 }
         };
+
+        Messages.Add(resultMessage);
 
         return resultMessage;
     }

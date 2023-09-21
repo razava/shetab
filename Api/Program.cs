@@ -1,7 +1,6 @@
 using Api.Configurations;
 using Api.Hubs;
 using Api.Services.Captcha;
-using Api.Services.MemoryCaching;
 using Api.Services.Tools;
 using Api.Services;
 using Domain.Models.Relational;
@@ -156,7 +155,6 @@ builder.Services.AddSingleton<ICaptchaProvider, CaptchaProvider>();
 //builder.Services.AddHostedService<SendNotificationsHostedService>();
 
 //Adding static settings
-builder.Services.AddSingleton<IStaticSettings, StaticSettings>();
 builder.Services.AddMemoryCache();
 
 

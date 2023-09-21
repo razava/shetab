@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\MemoryCaching\**" />
+    <Content Remove="Services\MemoryCaching\**" />
+    <EmbeddedResource Remove="Services\MemoryCaching\**" />
+    <None Remove="Services\MemoryCaching\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="FirebaseAdmin" Version="2.4.0" />
     <PackageReference Include="KavenegarDotNetCore" Version="1.0.7" />
