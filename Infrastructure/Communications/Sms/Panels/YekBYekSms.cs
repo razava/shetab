@@ -1,6 +1,8 @@
-﻿namespace Infrastructure.Communications.Sms.Panels;
+﻿using Application.Common.Interfaces.Communication;
 
-public class YekBYekSms : ISmsMessaging
+namespace Infrastructure.Communications.Sms.Panels;
+
+public class YekBYekSms : ISmsService
 {
     public YekBYekSms()
     {

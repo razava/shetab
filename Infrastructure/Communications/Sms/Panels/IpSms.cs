@@ -1,6 +1,8 @@
-﻿namespace Infrastructure.Communications.Sms.Panels;
+﻿using Application.Common.Interfaces.Communication;
 
-public class IpSms : ISmsMessaging
+namespace Infrastructure.Communications.Sms.Panels;
+
+public class IpSms : ISmsService
 {
     private readonly IpPanelInfo _ipPanelInfo;
 

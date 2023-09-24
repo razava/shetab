@@ -1,6 +1,8 @@
-﻿namespace Infrastructure.Communications.Sms.Panels;
+﻿using Application.Common.Interfaces.Communication;
 
-public class SmsNegarSms : ISmsMessaging
+namespace Infrastructure.Communications.Sms.Panels;
+
+public class SmsNegarSms : ISmsService
 {
     private readonly SmsNegarInfo _smsNegarInfo;
 

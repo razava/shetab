@@ -1,6 +1,5 @@
 using Api.Configurations;
 using Api.Hubs;
-using Api.Services.Captcha;
 using Api.Services.Tools;
 using Api.Services;
 using Domain.Models.Relational;
@@ -15,6 +14,7 @@ using Application;
 using Infrastructure;
 using Infrastructure.Communications.PushNotification;
 using Infrastructure.Persistence;
+using Application.Common.Interfaces.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -131,8 +131,8 @@ builder.Services.Configure<ImageQualityOptions>(builder.Configuration.GetSection
 
 builder.Services.AddSignalR();
 // ReCaptcha
-builder.Services.AddOptions<CaptchaSettings>().BindConfiguration("Captcha");
-builder.Services.AddTransient<CaptchaVerificationService>();
+//builder.Services.AddOptions<CaptchaSettings>().BindConfiguration("Captcha");
+//builder.Services.AddTransient<CaptchaVerificationService>();
 
 //Firebase Cloud Messaging
 var generalSettings = builder.Configuration.GetSection(GeneralSettings.Name).Get<GeneralSettings>();
@@ -148,7 +148,7 @@ else
 }
 
 //Captcha provider
-builder.Services.AddSingleton<ICaptchaProvider, CaptchaProvider>();
+//builder.Services.AddSingleton<ICaptchaProvider, CaptchaProvider>();
 
 
 //NotificationHostedService

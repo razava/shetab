@@ -1,6 +1,8 @@
-﻿namespace Infrastructure.Communications.Sms.Panels;
+﻿using Application.Common.Interfaces.Communication;
 
-public class MeliPayamakSms : ISmsMessaging
+namespace Infrastructure.Communications.Sms.Panels;
+
+public class MeliPayamakSms : ISmsService
 {
     private readonly MeliPayamakInfo _meliPayamakInfo;
 

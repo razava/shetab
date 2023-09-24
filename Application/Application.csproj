@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Folder Include="Abstractions\Messaging\" />
+    <Folder Include="Users\" />
     <Folder Include="Reports\Queries\" />
   </ItemGroup>
 

@@ -1,24 +1,26 @@
-﻿using SixLaborsCaptcha.Core;
+﻿using Application.Common.Interfaces.Security;
+using SixLaborsCaptcha.Core;
 
-namespace Api.Services.Captcha;
+namespace Infrastructure.Captcha;
 
-public class CaptchaProvider : ICaptchaProvider
+public class SixLaborsCaptchaProvider : ICaptchaProvider
 {
     private SixLaborsCaptchaModule captchaRandomImage;
+    //TODO: Use Redis or some thing else
     private HashSet<Tuple<Guid, string, DateTime>> keyValuePairs;
 
-    public CaptchaProvider(IWebHostEnvironment webHostEnvironment)
+    public SixLaborsCaptchaProvider()
     {
         captchaRandomImage = new SixLaborsCaptchaModule(new SixLaborsCaptchaOptions
         {
             DrawLines = 7,
             TextColor = new Color[] { Color.Blue, Color.Black },
-            FontFamilies = new string[] { "Marlboro" }
+            FontFamilies = new string[] { "Marlboro", "Arial", "Verdana", "Times New Roman" }
         });
         keyValuePairs = new HashSet<Tuple<Guid, string, DateTime>>();
     }
 
-    public byte[] GenerateImage(out Guid key, string text = "")
+    public CaptchaResultModel GenerateImage(string text = "")
     {
         Random rnd = new Random();
         if (text == "")
@@ -26,10 +28,10 @@ public class CaptchaProvider : ICaptchaProvider
 
         var result = captchaRandomImage.Generate(text);
 
-        key = Guid.NewGuid();
+        var key = Guid.NewGuid();
         keyValuePairs.Add(new Tuple<Guid, string, DateTime>(key, text.ToUpper(), DateTime.Now.AddMinutes(15)));
 
-        return result;
+        return new CaptchaResultModel(key, result);
     }
 
     public string GetRandomString(int length)
@@ -37,9 +39,9 @@ public class CaptchaProvider : ICaptchaProvider
         return "";
     }
 
-    public bool Validate(Guid key, string value)
+    public bool Validate(CaptchaValidateModel model)
     {
-        var t = keyValuePairs.FirstOrDefault(p => p.Item1 == key);
+        var t = keyValuePairs.FirstOrDefault(p => p.Item1 == model.Key);
         if (t == null)
             return false;
 
@@ -47,7 +49,7 @@ public class CaptchaProvider : ICaptchaProvider
 
         if (t.Item3 < DateTime.Now)
             return false;
-        if (t.Item2 != value.ToUpper())
+        if (t.Item2 != model.Value.ToUpper())
             return false;
 
         return true;

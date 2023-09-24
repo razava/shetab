@@ -1,6 +1,8 @@
-﻿namespace Infrastructure.Communications.Sms.Panels;
+﻿using Application.Common.Interfaces.Communication;
 
-public class MagfaSms : ISmsMessaging
+namespace Infrastructure.Communications.Sms.Panels;
+
+public class MagfaSms : ISmsService
 {
     private readonly _magfaInfo _magfaInfo;
 

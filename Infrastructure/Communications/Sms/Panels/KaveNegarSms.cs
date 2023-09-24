@@ -1,6 +1,8 @@
-﻿namespace Infrastructure.Communications.Sms.Panels;
+﻿using Application.Common.Interfaces.Communication;
 
-public class KaveNegarSms : ISmsMessaging
+namespace Infrastructure.Communications.Sms.Panels;
+
+public class KaveNegarSms : ISmsService
 {
     private readonly KaveNegarInfo _kavehNegarInfo;
 

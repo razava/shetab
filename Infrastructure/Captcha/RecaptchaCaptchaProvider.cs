@@ -1,20 +1,15 @@
-﻿using Api.Configurations;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace Api.Services.Captcha;
+namespace Infrastructure.Captcha;
 
-public class CaptchaVerificationService
+public class RecaptchaCaptchaProvider
 {
-    private CaptchaSettings captchaSettings;
-    private ILogger<CaptchaVerificationService> logger;
+    public string ClientKey => _recaptchaInfo.ClientKey;
 
-    public string ClientKey => captchaSettings.ClientKey;
-
-    public CaptchaVerificationService(IOptions<CaptchaSettings> captchaSettings, ILogger<CaptchaVerificationService> logger)
+    private readonly RecaptchaInfo _recaptchaInfo;
+    public RecaptchaCaptchaProvider(RecaptchaInfo recaptchaInfo)
     {
-        this.captchaSettings = captchaSettings.Value;
-        this.logger = logger;
+        _recaptchaInfo = recaptchaInfo;
     }
 
     public async Task<bool> IsCaptchaValid(string token)
@@ -27,7 +22,7 @@ public class CaptchaVerificationService
         {
             using var client = new HttpClient();
 
-            var response = await client.PostAsync($"{googleVerificationUrl}?secret={captchaSettings.ServerKey}&response={token}", null);
+            var response = await client.PostAsync($"{googleVerificationUrl}?secret={_recaptchaInfo.ServerKey}&response={token}", null);
             var jsonString = await response.Content.ReadAsStringAsync();
             var captchaVerfication = JsonConvert.DeserializeObject<CaptchaVerificationResponse>(jsonString);
 
@@ -36,7 +31,6 @@ public class CaptchaVerificationService
         catch (Exception e)
         {
             // fail gracefully, but log
-            logger.LogError("Failed to process captcha validation", e);
         }
 
         return result ?? false;
@@ -59,3 +53,5 @@ internal class CaptchaVerificationResponse
         }
      */
 }
+
+public record RecaptchaInfo(string ClientKey, string ServerKey);
