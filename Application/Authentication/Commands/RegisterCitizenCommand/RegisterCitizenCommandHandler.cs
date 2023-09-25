@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Communication;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Communication;
 using Application.Common.Interfaces.Security;
 using MediatR;
 
@@ -18,14 +19,16 @@ internal class RegisterCitizenCommandHandler : IRequestHandler<RegisterCitizenCo
     }
     public async Task<bool> Handle(RegisterCitizenCommand request, CancellationToken cancellationToken)
     {
-
-        var isCaptchaValid = _captchaProvider.Validate(request.CaptchaValidateModel);
-        if (!isCaptchaValid)
+        if (request.CaptchaValidateModel is not null)
         {
-            throw new Exception("Invalid captcha");
+            var isCaptchaValid = _captchaProvider.Validate(request.CaptchaValidateModel);
+            if (!isCaptchaValid)
+            {
+                throw new InvalidCaptchaException();
+            }
         }
 
-        bool result = false;
+        bool result;
         try
         {
             result = await _authenticationService.RegisterCitizen(request.Username, request.Password);
@@ -38,7 +41,7 @@ internal class RegisterCitizenCommandHandler : IRequestHandler<RegisterCitizenCo
                 }
                 catch
                 {
-                    throw new Exception("There was a problem in sending sms.");
+                    throw new SendSmsException();
                 }
                 result = true;
             }

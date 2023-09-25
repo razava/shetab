@@ -13,3 +13,4 @@ public class UserNotExistException : Exception { }
 public class ResetPasswordTokenGenerationFailed : Exception { }
 public class InvalidVerificationCode : Exception { }
 public class InvalidLoginException : Exception { }
+public class InvalidCaptchaException : Exception { }

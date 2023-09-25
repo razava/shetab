@@ -2,7 +2,7 @@
 
 public interface IAuthenticationService
 {
-    public Task<LoginResultModel> Login(string username, string password);
+    public Task<LoginResultModel> Login(string username, string password, string? verificationCode = null);
     public Task<bool> RegisterCitizen(string username, string password);
     public Task<bool> ChangePassword(string username, string oldPassword, string newPassword);
     public Task<string> GetVerificationCode(string username);

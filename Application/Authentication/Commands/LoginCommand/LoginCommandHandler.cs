@@ -25,14 +25,14 @@ internal sealed class LoginCommandHandler : IRequestHandler<LoginCommand, LoginR
             var isCaptchaValid = _captchaProvider.Validate(request.CaptchaValidateModel);
             if (!isCaptchaValid)
             {
-                throw new Exception("Invalid captcha");
+                throw new InvalidCaptchaException();
             }
         }
 
         LoginResultModel? result;
         try
         {
-            result = await _authenticationService.Login(request.Username, request.Password);
+            result = await _authenticationService.Login(request.Username, request.Password, request.VerificationCode);
         }
         catch (PhoneNumberNotConfirmedException)
         {
@@ -43,10 +43,11 @@ internal sealed class LoginCommandHandler : IRequestHandler<LoginCommand, LoginR
             }
             catch
             {
-                throw new Exception("There was a problem in sending sms.");
+                throw new SendSmsException();
             }
             result = new LoginResultModel("", true);
         }
         return result;
     }
 }
+
