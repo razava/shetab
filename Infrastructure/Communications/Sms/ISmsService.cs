@@ -1,4 +1,4 @@
-﻿namespace Application.Common.Interfaces.Communication;
+﻿namespace Infrastructure.Communications.Sms;
 
 public interface ISmsService
 {

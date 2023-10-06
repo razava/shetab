@@ -1,6 +1,4 @@
-﻿using Application.Common.Interfaces.Communication;
-
-namespace Infrastructure.Communications.Sms.Panels;
+﻿namespace Infrastructure.Communications.Sms.Panels;
 
 public class IpSms : ISmsService
 {

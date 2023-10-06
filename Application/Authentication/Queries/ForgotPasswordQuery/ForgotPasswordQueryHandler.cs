@@ -8,13 +8,13 @@ internal sealed class ForgotPasswordQueryHandler : IRequestHandler<ForgotPasswor
 {
     private readonly IAuthenticationService _authenticationService;
     private readonly ICaptchaProvider _captchaProvider;
-    private readonly ISmsService _smsService;
+    private readonly ICommunicationService _communicationService;
 
-    public ForgotPasswordQueryHandler(IAuthenticationService authenticationService, ICaptchaProvider captchaProvider, ISmsService smsService)
+    public ForgotPasswordQueryHandler(IAuthenticationService authenticationService, ICaptchaProvider captchaProvider, ICommunicationService communicationService)
     {
         _authenticationService = authenticationService;
         _captchaProvider = captchaProvider;
-        _smsService = smsService;
+        _communicationService = communicationService;
     }
     public async Task<bool> Handle(ForgotPasswordQuery request, CancellationToken cancellationToken)
     {
@@ -29,7 +29,7 @@ internal sealed class ForgotPasswordQueryHandler : IRequestHandler<ForgotPasswor
         var verificationCode = await _authenticationService.GetVerificationCode(request.Username);
         try
         {
-            await _smsService.SendVerificationAsync(request.Username, verificationCode);
+            await _communicationService.SendVerificationAsync(request.Username, verificationCode);
         }
         catch
         {
