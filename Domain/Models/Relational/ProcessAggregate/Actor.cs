@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.Models.Relational.Common;
+using Microsoft.EntityFrameworkCore;
 
-namespace Domain.Models.Relational;
+namespace Domain.Models.Relational.ProcessAggregate;
 
 [Index(nameof(Identifier), IsUnique = true)]
 public class Actor

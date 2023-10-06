@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain.Models.Relational.IdentityAggregate;
 
-namespace Domain.Models.Relational
+namespace Domain.Models.Relational.ReportAggregate
 {
     public class Feedback : BaseModel
     {

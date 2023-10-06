@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.Relational;
+﻿using Domain.Models.Relational.IdentityAggregate;
+
+namespace Domain.Models.Relational;
 
 public class RevisionUnit
 {

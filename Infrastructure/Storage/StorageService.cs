@@ -1,4 +1,4 @@
-﻿using Domain.Models.Relational;
+﻿using Domain.Models.Relational.Common;
 using Microsoft.AspNetCore.Http;
 using SixLabors.ImageSharp.Formats.Jpeg;
 

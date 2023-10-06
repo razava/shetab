@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.Relational;
+﻿namespace Domain.Models.Relational.Common;
 
 public enum MediaType
 {
@@ -45,14 +45,14 @@ public enum ComplaintState
 
 public enum MessageType
 {
-    Report, 
-    Idea, 
+    Report,
+    Idea,
     Announcement
 }
 
 public enum RecepientType
 {
-    Person, 
+    Person,
     Role
 }
 
@@ -66,16 +66,16 @@ public enum OrganizationalUnitType
 
 public enum PollType
 {
-    SingleChoice, 
-    MultipleChoice, 
+    SingleChoice,
+    MultipleChoice,
     Descriptive
 }
 
 public enum PollState
 {
-    Active, 
-    Suspended, 
-    Expired, 
+    Active,
+    Suspended,
+    Expired,
     Deleted
 }
 

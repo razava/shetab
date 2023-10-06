@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.Models.Relational.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Models.Relational;
 

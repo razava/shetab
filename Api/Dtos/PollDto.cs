@@ -1,4 +1,5 @@
-﻿using Domain.Models.Relational;
+﻿using Domain.Models.Relational.Common;
+using Domain.Models.Relational.PollAggregate;
 
 namespace Api.Dtos
 {

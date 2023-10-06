@@ -1,7 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Application.Medias.Commands.AddMedia;
-using Domain.Models.Relational;
+using Domain.Models.Relational.Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,4 +1,7 @@
-﻿namespace Domain.Models.Relational;
+﻿using Domain.Models.Relational.Common;
+using Domain.Models.Relational.IdentityAggregate;
+
+namespace Domain.Models.Relational.PollAggregate;
 
 public class Poll : BaseModel
 {

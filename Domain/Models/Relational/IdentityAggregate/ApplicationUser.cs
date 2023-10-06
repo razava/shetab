@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Domain.Models.Relational.Common;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domain.Models.Relational;
+namespace Domain.Models.Relational.IdentityAggregate;
 public class ApplicationUser : IdentityUser
 {
     public string FirstName { get; set; } = string.Empty;

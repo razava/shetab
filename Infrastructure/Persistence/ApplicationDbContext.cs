@@ -1,5 +1,10 @@
 ﻿using Domain.Models.Gov;
 using Domain.Models.Relational;
+using Domain.Models.Relational.Common;
+using Domain.Models.Relational.IdentityAggregate;
+using Domain.Models.Relational.PollAggregate;
+using Domain.Models.Relational.ProcessAggregate;
+using Domain.Models.Relational.ReportAggregate;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

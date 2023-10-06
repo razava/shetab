@@ -1,4 +1,9 @@
 ﻿using AutoMapper;
+using Domain.Models.Relational.Common;
+using Domain.Models.Relational.IdentityAggregate;
+using Domain.Models.Relational.PollAggregate;
+using Domain.Models.Relational.ProcessAggregate;
+using Domain.Models.Relational.ReportAggregate;
 
 namespace Api.Mapping;
 
@@ -40,26 +45,26 @@ public class Profiles : Profile
         CreateMap<Domain.Models.Relational.Report, Dtos.GetReportDto>();
         CreateMap<Dtos.GetReportDto, Domain.Models.Relational.Report>();
 
-        CreateMap<Domain.Models.Relational.Address, Dtos.AddressDto>();
-        CreateMap<Dtos.AddressDto, Domain.Models.Relational.Address>();
+        CreateMap<Address, Dtos.AddressDto>();
+        CreateMap<Dtos.AddressDto, Address>();
 
-        CreateMap<Domain.Models.Relational.ApplicationUser, Dtos.ApplicationUserDto>();
-        CreateMap<Dtos.ApplicationUserDto, Domain.Models.Relational.ApplicationUser>();
-        CreateMap<Domain.Models.Relational.ApplicationUser, Dtos.ApplicationUserRestrictedDto>();
-        CreateMap<Dtos.ApplicationUserRestrictedDto, Domain.Models.Relational.ApplicationUser>();
+        CreateMap<ApplicationUser, Dtos.ApplicationUserDto>();
+        CreateMap<Dtos.ApplicationUserDto, ApplicationUser>();
+        CreateMap<ApplicationUser, Dtos.ApplicationUserRestrictedDto>();
+        CreateMap<Dtos.ApplicationUserRestrictedDto, ApplicationUser>();
 
-        CreateMap<Domain.Models.Relational.ApplicationUser, Dtos.GetUserDto>();
-        CreateMap<Dtos.GetUserDto, Domain.Models.Relational.ApplicationUser>();
+        CreateMap<ApplicationUser, Dtos.GetUserDto>();
+        CreateMap<Dtos.GetUserDto, ApplicationUser>();
 
-        CreateMap<Domain.Models.Relational.ApplicationUser, Dtos.UpdateUserDto>();
-        CreateMap<Dtos.UpdateUserDto, Domain.Models.Relational.ApplicationUser>()
+        CreateMap<ApplicationUser, Dtos.UpdateUserDto>();
+        CreateMap<Dtos.UpdateUserDto, ApplicationUser>()
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
-        CreateMap<Domain.Models.Relational.Actor, Dtos.ActorDto>();
-        CreateMap<Dtos.ActorDto, Domain.Models.Relational.Actor>();
+        CreateMap<Actor, Dtos.ActorDto>();
+        CreateMap<Dtos.ActorDto, Actor>();
 
-        CreateMap<Domain.Models.Relational.ProcessReason, Dtos.ReasonDto>();
-        CreateMap<Dtos.ReasonDto, Domain.Models.Relational.ProcessReason>();
+        CreateMap<ProcessReason, Dtos.ReasonDto>();
+        CreateMap<Dtos.ReasonDto, ProcessReason>();
 
         CreateMap<Dtos.MakeTransitionModel, Dtos.MakeTransitionDto>();
         CreateMap<Dtos.MakeTransitionDto, Dtos.MakeTransitionModel>();
@@ -80,59 +85,59 @@ public class Profiles : Profile
         CreateMap<DNTPersianUtils.Core.IranCities.City, Domain.Models.Relational.City>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.CityName));
         */
-        CreateMap<Domain.Models.Relational.Province, Dtos.AdministrativeDivisionsDto>();
-        CreateMap<Domain.Models.Relational.County, Dtos.AdministrativeDivisionsDto>();
-        CreateMap<Domain.Models.Relational.District, Dtos.AdministrativeDivisionsDto>();
-        CreateMap<Domain.Models.Relational.City, Dtos.AdministrativeDivisionsDto>();
-        CreateMap<Domain.Models.Relational.Region, Dtos.AdministrativeDivisionsDto>();
+        CreateMap<Province, Dtos.AdministrativeDivisionsDto>();
+        CreateMap<County, Dtos.AdministrativeDivisionsDto>();
+        CreateMap<District, Dtos.AdministrativeDivisionsDto>();
+        CreateMap<City, Dtos.AdministrativeDivisionsDto>();
+        CreateMap<Region, Dtos.AdministrativeDivisionsDto>();
 
         CreateMap<Domain.Models.Relational.TransitionLog, Dtos.TransitionLogDto>();
         CreateMap<Dtos.TransitionLogDto, Domain.Models.Relational.TransitionLog>();
 
-        CreateMap<Domain.Models.Relational.Message, Dtos.GetMessageDto>();
-        CreateMap<Dtos.GetMessageDto, Domain.Models.Relational.Message>();
+        CreateMap<Message, Dtos.GetMessageDto>();
+        CreateMap<Dtos.GetMessageDto, Message>();
 
-        CreateMap<Domain.Models.Relational.Process, Dtos.ProcessDto>();
-        CreateMap<Dtos.ProcessDto, Domain.Models.Relational.Process>();
+        CreateMap<Process, Dtos.ProcessDto>();
+        CreateMap<Dtos.ProcessDto, Process>();
 
-        CreateMap<Domain.Models.Relational.Process, Dtos.ProcessGetDto>();
-        CreateMap<Dtos.ProcessGetDto, Domain.Models.Relational.Process>();
+        CreateMap<Process, Dtos.ProcessGetDto>();
+        CreateMap<Dtos.ProcessGetDto, Process>();
 
-        CreateMap<Domain.Models.Relational.ProcessStage, Dtos.StageDto>();
-        CreateMap<Dtos.StageDto, Domain.Models.Relational.ProcessStage>();
+        CreateMap<ProcessStage, Dtos.StageDto>();
+        CreateMap<Dtos.StageDto, ProcessStage>();
 
-        CreateMap<Domain.Models.Relational.ProcessStage, Dtos.GetStageDto>();
-        CreateMap<Dtos.GetStageDto, Domain.Models.Relational.ProcessStage>();
+        CreateMap<ProcessStage, Dtos.GetStageDto>();
+        CreateMap<Dtos.GetStageDto, ProcessStage>();
 
-        CreateMap<Domain.Models.Relational.ProcessTransition, Dtos.TransitionDto>();
-        CreateMap<Dtos.TransitionDto, Domain.Models.Relational.ProcessTransition>();
+        CreateMap<ProcessTransition, Dtos.TransitionDto>();
+        CreateMap<Dtos.TransitionDto, ProcessTransition>();
 
-        CreateMap<Domain.Models.Relational.Poll, Dtos.CreatePollDto>();
-        CreateMap<Dtos.CreatePollDto, Domain.Models.Relational.Poll>();
+        CreateMap<Poll, Dtos.CreatePollDto>();
+        CreateMap<Dtos.CreatePollDto, Poll>();
 
-        CreateMap<Domain.Models.Relational.Poll, Dtos.GetPollDto>();
-        CreateMap<Dtos.GetPollDto, Domain.Models.Relational.Poll>();
+        CreateMap<Poll, Dtos.GetPollDto>();
+        CreateMap<Dtos.GetPollDto, Poll>();
 
-        CreateMap<Domain.Models.Relational.PollChoice, Dtos.ChoiceDto>();
-        CreateMap<Dtos.ChoiceDto, Domain.Models.Relational.PollChoice>();
+        CreateMap<PollChoice, Dtos.ChoiceDto>();
+        CreateMap<Dtos.ChoiceDto, PollChoice>();
 
-        CreateMap<Domain.Models.Relational.PollAnswer, Dtos.AnswerDto>();
-        CreateMap<Dtos.AnswerDto, Domain.Models.Relational.PollAnswer>();
+        CreateMap<PollAnswer, Dtos.AnswerDto>();
+        CreateMap<Dtos.AnswerDto, PollAnswer>();
 
-        CreateMap<Domain.Models.Relational.Comment, Dtos.GetCommentForCitizenDto>();
-        CreateMap<Dtos.GetCommentForCitizenDto, Domain.Models.Relational.Comment>();
+        CreateMap<Comment, Dtos.GetCommentForCitizenDto>();
+        CreateMap<Dtos.GetCommentForCitizenDto, Comment>();
 
-        CreateMap<Domain.Models.Relational.Comment, Dtos.CreateCommentDto>();
-        CreateMap<Dtos.CreateCommentDto, Domain.Models.Relational.Comment>();
+        CreateMap<Comment, Dtos.CreateCommentDto>();
+        CreateMap<Dtos.CreateCommentDto, Comment>();
 
-        CreateMap<Domain.Models.Relational.Comment, Dtos.GetCommentForOperatorDto>();
-        CreateMap<Dtos.GetCommentForOperatorDto, Domain.Models.Relational.Comment>();
+        CreateMap<Comment, Dtos.GetCommentForOperatorDto>();
+        CreateMap<Dtos.GetCommentForOperatorDto, Comment>();
 
-        CreateMap<Domain.Models.Relational.Region, Dtos.RegionDto>();
-        CreateMap<Dtos.RegionDto, Domain.Models.Relational.Region>();
+        CreateMap<Region, Dtos.RegionDto>();
+        CreateMap<Dtos.RegionDto, Region>();
 
-        CreateMap<Domain.Models.Relational.Region, Dtos.RegionGetDto>();
-        CreateMap<Dtos.RegionGetDto, Domain.Models.Relational.Region>();
+        CreateMap<Region, Dtos.RegionGetDto>();
+        CreateMap<Dtos.RegionGetDto, Region>();
 
         CreateMap<Domain.Models.Relational.OrganizationalUnit, Dtos.OrganizationalUnitDto>();
         CreateMap<Dtos.OrganizationalUnitDto, Domain.Models.Relational.OrganizationalUnit>();
@@ -170,15 +175,15 @@ public class Profiles : Profile
 
         CreateMap<Domain.Models.Relational.ComplaintOrganizationalUnit, Dtos.ComplaintOrganizationalUnitReferToDto>();
 
-        CreateMap<Domain.Models.Relational.Complaint, Dtos.ComplaintGetDto>();
+        CreateMap<Complaint, Dtos.ComplaintGetDto>();
 
         CreateMap<Domain.Models.Relational.ComplaintCategory, Dtos.ComplaintCategoryGetDto>();
 
-        CreateMap<Domain.Models.Relational.ComplaintLog, Dtos.ComplaintLogGetDto>();
+        CreateMap<ComplaintLog, Dtos.ComplaintLogGetDto>();
 
-        CreateMap<Domain.Models.Relational.Complaint, Dtos.ComplaintGetInspectorDto>();
+        CreateMap<Complaint, Dtos.ComplaintGetInspectorDto>();
 
-        CreateMap<Domain.Models.Relational.ShahrbinInstance, Dtos.ShahrbinInstanceGetDto>();
+        CreateMap<ShahrbinInstance, Dtos.ShahrbinInstanceGetDto>();
 
 
     }

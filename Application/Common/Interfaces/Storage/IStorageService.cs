@@ -1,4 +1,4 @@
-﻿using Domain.Models.Relational;
+﻿using Domain.Models.Relational.Common;
 using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.Storage;

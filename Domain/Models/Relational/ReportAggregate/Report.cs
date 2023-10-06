@@ -1,13 +1,90 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Messages;
+using Domain.Models.Relational.Common;
+using Domain.Models.Relational.IdentityAggregate;
+using Domain.Models.Relational.ProcessAggregate;
+using Domain.Models.Relational.ReportAggregate;
 using Domain.Primitives;
 
 namespace Domain.Models.Relational;
 
 public class Report : Entity
 {
-    //Constructors
-    private Report(Guid id): base(id) { }
+    public int ShahrbinInstanceId { get; private set; }
+    public ShahrbinInstance ShahrbinInstance { get; private set; } = null!;
+    public DateTime Sent { get; private set; }
+    public DateTime? Finished { get; private set; }
+    public DateTime? Responsed { get; private set; }
+    public DateTime Deadline { get; private set; }
+    public DateTime? ResponseDeadline { get; private set; }
+    public DateTime LastStatusDateTime { get; private set; }
+    public double? Duration { get; private set; }
+    public double? ResponseDuration { get; private set; }
+
+    public int CategoryId { get; private set; }
+    public Category Category { get; private set; } = null!;
+    public Address Address { get; private set; } = null!;
+    public string TrackingNumber { get; private set; } = null!;
+    public Priority Priority { get; private set; }
+    public Visibility Visibility { get; private set; }
+    public ICollection<Guid> Medias { get; private set; } = new List<Guid>();
+    public string Comments { get; private set; } = string.Empty;
+    public ReportState ReportState { get; private set; }
+    public string LastStatus { get; private set; } = string.Empty;
+
+    //Process infos
+    public int ProcessId { get; private set; }
+    public Process Process { get; private set; } = null!;
+    public int? CurrentStageId { get; private set; }
+    public ProcessStage? CurrentStage { get; private set; }
+    public int? LastTransitionId { get; private set; }
+    public ProcessTransition? LastTransition { get; private set; }
+    public int? LastReasonId { get; private set; }
+    public ProcessReason? LastReason { get; private set; }
+    public string CurrentActorsStr { get; private set; } = string.Empty;
+    public ICollection<Actor> CurrentActors { get; private set; } = new List<Actor>();
+    public ICollection<TransitionLog> TransitionLogs { get; private set; } = new List<TransitionLog>();
+
+
+    //People
+    public string CitizenId { get; private set; } = string.Empty;
+    [ForeignKey("CitizenId")]
+    public ApplicationUser Citizen { get; private set; } = null!;
+    public string? RegistrantId { get; private set; }
+    [ForeignKey("RegistrantId")]
+    public ApplicationUser? Registrant { get; private set; }
+    public string? ExecutiveId { get; private set; }
+    [ForeignKey("ExecutiveId")]
+    public ApplicationUser? Executive { get; private set; }
+    public string? ContractorId { get; private set; }
+    [ForeignKey("ContractorId")]
+    public ApplicationUser? Contractor { get; private set; }
+    public string? InspectorId { get; private set; }
+    [ForeignKey("InspectorId")]
+    public ApplicationUser? Inspector { get; private set; }
+
+    //Social
+    [InverseProperty("ReportsLiked")]
+    public ICollection<ApplicationUser> LikedBy { get; private set; } = new List<ApplicationUser>();
+    public int Likes { get; private set; }
+    public ICollection<Comment> FeedbackComments { get; private set; } = new List<Comment>();
+    public int CommentsCount { get; private set; }
+    public ICollection<Violation> Violations { get; private set; } = new List<Violation>();
+    public ICollection<Message> Messages { get; private set; } = new List<Message>();
+    public Guid? FeedbackId { get; private set; }
+    public Feedback? Feedback { get; private set; }
+    public int? Rating { get; private set; }
+
+
+    //Status
+    public ReportFlags Flags { get; private set; }
+    public bool IsIdentityVisible { get; private set; }
+    public bool IsObjectioned { get; private set; }
+    public bool IsFeedbacked { get; private set; }
+
+
+    #region Constructors
+    private Report(Guid id) : base(id) { }
     private Report(
         Guid id,
         string citizenId,
@@ -39,80 +116,9 @@ public class Report : Entity
         TrackingNumber = generateTrackingNumber(phoneNumber);
         Priority = priority;
     }
-    public int ShahrbinInstanceId { get; private set; }
-    public ShahrbinInstance ShahrbinInstance { get; private set; } = null!;
-    public DateTime Sent { get; private set; }
-    public DateTime? Finished { get; private set; }
-    public DateTime? Responsed { get; private set; }
-    public DateTime Deadline { get; private set; }
-    public DateTime? ResponseDeadline { get; private set; }
-    public DateTime LastStatusDateTime { get; private set; }
-    public double? Duration { get; private set; }
-    public double? ResponseDuration { get; private set; }
+    #endregion
 
-
-    public string CitizenId { get; private set; } = string.Empty;
-    [ForeignKey("CitizenId")]
-    public ApplicationUser Citizen { get; private set; } = null!;
-    public string? RegistrantId { get; private set; }
-    [ForeignKey("RegistrantId")]
-    public ApplicationUser? Registrant { get; private set; }
-
-    public int CategoryId { get; private set; }
-    public Category Category { get; private set; } = null!;
-    public Address Address { get; private set; } = null!;
-    public string TrackingNumber { get; private set; } = null!;
-    //public int? PriorityId { get; private set; }
-    public Priority Priority { get; private set; }
-    //public int VisibilityId { get; private set; }
-    public Visibility Visibility { get; private set; }
-    public ICollection<Guid> Medias { get; private set; } = new List<Guid>();
-    public string Comments { get; private set; } = string.Empty;
-    public ReportState ReportState { get; private set; }
-    public string LastStatus { get; private set; } = string.Empty;
-
-    //Process infos
-    public int ProcessId { get; private set; }
-    public Process Process { get; private set; } = null!;
-    public int? CurrentStageId { get; private set; }
-    public ProcessStage? CurrentStage { get; private set; }
-    public int? LastTransitionId { get; private set; }
-    public ProcessTransition? LastTransition { get; private set; }
-    public int? LastReasonId { get; private set; }
-    public ProcessReason? LastReason { get; private set; }
-    public string CurrentActorsStr { get; private set; } = string.Empty;
-    public ICollection<Actor> CurrentActors { get; private set; } = new List<Actor>();
-    public ICollection<TransitionLog> TransitionLogs { get; private set; } = new List<TransitionLog>();
-
-    public ICollection<Message> Messages { get; private set; } = new List<Message>();
-
-    public string? ExecutiveId { get; private set; }
-    [ForeignKey("ExecutiveId")]
-    public ApplicationUser? Executive { get; private set; }
-    public string? ContractorId { get; private set; }
-    [ForeignKey("ContractorId")]
-    public ApplicationUser? Contractor { get; private set; }
-    public string? InspectorId { get; private set; }
-    [ForeignKey("InspectorId")]
-    public ApplicationUser? Inspector { get; private set; }
-
-    [InverseProperty("ReportsLiked")]
-    public ICollection<ApplicationUser> LikedBy { get; private set; } = new List<ApplicationUser>();
-    public int Likes { get; private set; }
-
-    public ICollection<Comment> FeedbackComments { get; private set; } = new List<Comment>();
-    public int CommentsCount { get; private set; }
-
-    public ICollection<Violation> Violations { get; private set; } = new List<Violation>();
-    public ReportFlags Flags { get; private set; }
-    public bool IsIdentityVisible { get; private set; }
-    public bool IsObjectioned { get; private set; }
-    public bool IsFeedbacked { get; private set; }
-    public int? Rating { get; private set; }
-
-
-    
-    //Factory methods
+    #region Factory methods
     public static Report NewByCitizen(
         string citizenId,
         string phoneNumber,
@@ -231,7 +237,9 @@ public class Report : Entity
 
         return report;
     }
+    #endregion
 
+    #region PublicMethods
     public void InitProcess()
     {
         var now = DateTime.UtcNow;
@@ -329,7 +337,23 @@ public class Report : Entity
         return resultMessage;
     }
 
-    //Private methods
+    public void MakeTransition(
+        int transitionId,
+        int reasonId,
+        List<Guid> attachments,
+        string comment,
+        ActorType actorType,
+        string actorIdentifier,
+        List<int> actorIds,
+        bool isExecutive = false,
+        bool isContractor = false)
+    {
+        makeTransition(transitionId, reasonId, attachments, comment, actorType, actorIdentifier, actorIds, isExecutive, isContractor);
+    }
+    #endregion
+
+
+    #region Private methods
     private void updateReport(
         Category? category,
         string? comments,
@@ -411,10 +435,6 @@ public class Report : Entity
             throw new Exception("Transition cannot be null here.");
 
         var reason = transition.ReasonList.Where(p => p.Id == reasonId).SingleOrDefault();
-        if (reason == null)
-        {
-            throw new Exception("Reason cannot be null here.");
-        }
 
         //report.Priority = transitionInfo.Priority != null ? transitionInfo.Priority.Value : report.Priority;
         //Visibility = transitionInfo.Visibility ?? report.Visibility;
@@ -424,11 +444,7 @@ public class Report : Entity
         LastStatusDateTime = now;
         LastTransitionId = transition.Id;
         LastReasonId = reasonId;
-        //Reasin is needed in autoTransition but should not be updated in database
-        if (reason != null)
-        {
-            LastReason = reason;
-        }
+        LastReason = reason;
 
 
         //Check if the actor is an executive or contractor, if so, set the executor or contractor of the report
@@ -473,8 +489,37 @@ public class Report : Entity
 
         TransitionLogs.Add(log);
 
+        if (ReportState == ReportState.Finished || ReportState == ReportState.Accepted)
+        {
+            Random random = new Random();
+            Duration = (now - Sent).TotalSeconds;
+            LastStatus = "پایان یافته";
+            if (Feedback != null)
+            {
+                Feedback.Creation = now;
+                Feedback.LastSent = null;
+                Feedback.ReportId = Id;
+                Feedback.UserId = CitizenId;
+                Feedback.Token = random.Next(10000, 99999).ToString() + random.Next(10000, 99999).ToString();
+                Feedback.TryCount = 0;
+            }
+            else
+            {
+                Feedback = new Feedback()
+                {
+                    ShahrbinInstanceId = ShahrbinInstanceId,
+                    Creation = now,
+                    LastSent = null,
+                    ReportId = Id,
+                    UserId = CitizenId,
+                    Token = random.Next(10000, 99999).ToString() + random.Next(10000, 99999).ToString()
+                };
+            }
+        }
+
         autoTransition();
     }
+    #endregion
 
 }
 

@@ -1,7 +1,7 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Security;
-using Domain.Models.Relational;
+using Domain.Models.Relational.IdentityAggregate;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

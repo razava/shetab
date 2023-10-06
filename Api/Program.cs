@@ -2,7 +2,6 @@ using Api.Configurations;
 using Api.Hubs;
 using Api.Services.Tools;
 using Api.Services;
-using Domain.Models.Relational;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -14,6 +13,7 @@ using Application;
 using Infrastructure;
 using Infrastructure.Communications.PushNotification;
 using Infrastructure.Persistence;
+using Domain.Models.Relational.IdentityAggregate;
 
 var builder = WebApplication.CreateBuilder(args);
 

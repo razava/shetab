@@ -1,5 +1,5 @@
 ﻿using Application.Common.Interfaces.Communication;
-using Domain.Models.Relational;
+using Domain.Models.Relational.ReportAggregate;
 using Infrastructure.Communications.Sms;
 
 namespace Infrastructure.Communications;

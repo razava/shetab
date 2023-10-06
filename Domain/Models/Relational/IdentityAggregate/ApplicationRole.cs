@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Domain.Models.Relational;
+namespace Domain.Models.Relational.IdentityAggregate;
 
 public class ApplicationRole : IdentityRole
 {

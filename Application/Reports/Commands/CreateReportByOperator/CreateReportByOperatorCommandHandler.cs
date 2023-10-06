@@ -2,6 +2,7 @@
 using Application.Common.Interfaces.Persistence;
 using Domain.Messages;
 using Domain.Models.Relational;
+using Domain.Models.Relational.Common;
 using Mapster;
 using MediatR;
 

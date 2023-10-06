@@ -1,4 +1,6 @@
-﻿using Domain.Models.Relational;
+﻿using Domain.Models.Relational.Common;
+using Domain.Models.Relational.ProcessAggregate;
+using Domain.Models.Relational.ReportAggregate;
 
 namespace Api.Dtos;
 

@@ -1,11 +1,7 @@
 ﻿using Application.Common.Interfaces.Persistence;
-using Application.Feedbacks.Commands.SendFeedback;
-using Domain.Models.Relational;
+using Domain.Models.Relational.Common;
 using Infrastructure.Storage;
-using Mapster;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace Application.Medias.Commands.AddMedia;
 

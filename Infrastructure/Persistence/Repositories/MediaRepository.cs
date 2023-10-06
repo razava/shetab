@@ -1,5 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
-using Domain.Models.Relational;
+using Domain.Models.Relational.Common;
 
 namespace Infrastructure.Persistence.Repositories;
 

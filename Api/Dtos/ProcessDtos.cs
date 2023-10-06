@@ -1,4 +1,4 @@
-﻿using Domain.Models.Relational;
+﻿using Domain.Models.Relational.Common;
 
 namespace Api.Dtos
 {

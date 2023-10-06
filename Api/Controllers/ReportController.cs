@@ -6,6 +6,7 @@ using Application.Reports.Commands.CreateReportByCitizen;
 using Application.Reports.Commands.CreateReportByOperator;
 using Application.Reports.Commands.UpdateByOperator;
 using Application.Reports.Common;
+using Domain.Models.Relational.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -98,7 +99,7 @@ public class ReportController : ApiController
             addressInfo,
             model.Attachments,
             model.IsIdentityVisible,
-            model.Visibility == Domain.Models.Relational.Visibility.EveryOne);
+            model.Visibility == Visibility.EveryOne);
 
 
         var report = await Sender.Send(command);
@@ -147,7 +148,7 @@ public class ReportController : ApiController
             model.Comments,
             addressInfo,
             model.Attachments,
-            model.Visibility == Domain.Models.Relational.Visibility.EveryOne);
+            model.Visibility == Visibility.EveryOne);
         await Sender.Send(command);
 
         return NoContent();
@@ -194,7 +195,7 @@ public class ReportController : ApiController
             model.Comments,
             addressInfo,
             model.Attachments,
-            model.Visibility == Domain.Models.Relational.Visibility.EveryOne);
+            model.Visibility == Visibility.EveryOne);
         await Sender.Send(command);
 
         return NoContent();

@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.Relational;
+﻿namespace Domain.Models.Relational.Common;
 
 public class Media
 {

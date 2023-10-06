@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.Relational;
+﻿using Domain.Models.Relational.Common;
+
+namespace Domain.Models.Relational;
 
 public class ApplicationLink : BaseModel
 {

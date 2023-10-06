@@ -1,4 +1,8 @@
-﻿namespace Domain.Models.Relational;
+﻿using Domain.Models.Relational.Common;
+using Domain.Models.Relational.IdentityAggregate;
+using Domain.Models.Relational.ReportAggregate;
+
+namespace Domain.Models.Relational;
 
 public class Violation : BaseModel
 {

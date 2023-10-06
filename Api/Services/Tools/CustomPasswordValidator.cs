@@ -1,4 +1,4 @@
-﻿using Domain.Models.Relational;
+﻿using Domain.Models.Relational.IdentityAggregate;
 using Microsoft.AspNetCore.Identity;
 using System.Text.RegularExpressions;
 

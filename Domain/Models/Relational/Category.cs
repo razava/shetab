@@ -1,4 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Domain.Models.Relational.Common;
+using Domain.Models.Relational.ProcessAggregate;
+using Domain.Models.Relational.ReportAggregate;
 
 namespace Domain.Models.Relational;
 

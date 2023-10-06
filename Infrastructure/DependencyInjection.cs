@@ -17,11 +17,16 @@ public static class DependencyInjection
     {
         if (connectionString is null)
             throw new Exception("Connection string cannot be null.");
+        var assembly = typeof(DependencyInjection).Assembly;
 
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(
                 connectionString,
-                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+                o =>
+                {
+                    o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    o.MigrationsAssembly("Infrastructure.Persistence.Migrations");
+                }));
         return services;
     }
 }

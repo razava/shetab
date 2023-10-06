@@ -1,4 +1,7 @@
-﻿namespace Domain.Models.Relational;
+﻿using Domain.Models.Relational.Common;
+using Domain.Models.Relational.ProcessAggregate;
+
+namespace Domain.Models.Relational;
 
 public class TransitionLog
 {

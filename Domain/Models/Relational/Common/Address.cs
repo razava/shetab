@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.Relational;
+﻿using Domain.Models.Relational.ProcessAggregate;
+
+namespace Domain.Models.Relational.Common;
 
 public class Address
 {
