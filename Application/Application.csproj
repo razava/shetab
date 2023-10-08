@@ -17,7 +17,6 @@
     <Folder Include="Abstractions\Messaging\" />
     <Folder Include="Feedbacks\Commands\" />
     <Folder Include="Users\" />
-    <Folder Include="Reports\Queries\" />
   </ItemGroup>
 
   <ItemGroup>

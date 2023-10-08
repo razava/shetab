@@ -1,14 +1,19 @@
 ﻿using Application.Common.Interfaces.Persistence;
+using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
+using Domain.Models.Relational.ProcessAggregate;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
 
 public class UserRepository : GenericRepository<ApplicationUser>, IUserRepository
 {
+    private readonly ApplicationDbContext _dbContext;
     private readonly UserManager<ApplicationUser> _userManager;
     public UserRepository(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager) : base(dbContext)
     {
+        _dbContext = dbContext;
         _userManager = userManager;
     }
 
@@ -44,5 +49,57 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
         }
 
         return user;
+    }
+
+    public async Task<List<ApplicationRole>> GetRoleActors()
+    {
+        var roleActorsIdentifier = await _dbContext.Actor
+            .Where(p => p.Type == ActorType.Role)
+            .Select(p => p.Identifier)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var result = await _dbContext.Roles.Where(p => roleActorsIdentifier.Contains(p.Id)).AsNoTracking().ToListAsync();
+        return result;
+    }
+
+    public async Task<List<ApplicationUser>> GetUserActors()
+    {
+        var userActorsIdentifier = await _dbContext.Actor
+            .Where(p => p.Type == ActorType.Person)
+            .Select(p => p.Identifier)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var result = await _dbContext.Users.Where(p => userActorsIdentifier.Contains(p.Id)).AsNoTracking().ToListAsync();
+        return result;
+    }
+
+    public async Task<List<ApplicationRole>> GetRoles()
+    {
+        var result = await _dbContext.Roles.ToListAsync();
+        return result;
+    }
+
+    public async Task<List<ApplicationUser>> GetUsersInRole(string roleName)
+    {
+        var result = await _dbContext.Roles.Where(r => r.Name == roleName)
+            .Join(_dbContext.UserRoles, r => r.Id, ur => ur.RoleId, (r, ur) => new { ur.UserId })
+            .Join(_dbContext.Users, uid => uid.UserId, u => u.Id, (uid, u) => u )
+            .ToListAsync();
+        //var roleId = await _dbContext.Roles.Where(p => p.Name == roleName).Select(p => p.Id).FirstOrDefaultAsync();
+        //var userIds = await _dbContext.UserRoles.Where(p => p.RoleId == roleId).Select(p => p.UserId).ToListAsync();
+        //var result = await _dbContext.Users.Where(p => userIds.Contains(p.Id)).Include(p => p.Contractors).Include(p => p.Executeves).AsNoTracking().ToListAsync();
+        return result;
+    }
+
+    public async Task<List<Actor>> GetActors()
+    {
+        var result = await _dbContext.Actor.Include(p => p.Regions)
+            .Include(p => p.Stages)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return result;
     }
 }

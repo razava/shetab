@@ -1,0 +1,156 @@
+﻿using Application.Common.Interfaces.Persistence;
+using Domain.Models.Relational;
+using Domain.Models.Relational.Common;
+using Domain.Models.Relational.IdentityAggregate;
+using ErrorOr;
+using Mapster;
+using MediatR;
+
+namespace Application.Reports.Queries.GetPossibleTransitions;
+
+internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPossibleTransitionsQuery, List<PossibleTransitionDto>>
+{
+    private readonly IReportRepository _reportRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IProcessRepository _processRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public GetPossibleTransitionsQueryHandler(IUnitOfWork unitOfWork, IReportRepository reportRepository, IUserRepository userRepository, IProcessRepository processRepository)
+    {
+        _unitOfWork = unitOfWork;
+        _reportRepository = reportRepository;
+        _userRepository = userRepository;
+        _processRepository = processRepository;
+    }
+
+    public async Task<List<PossibleTransitionDto>> Handle(GetPossibleTransitionsQuery request, CancellationToken cancellationToken)
+    {
+        var report = await _reportRepository.GetByIDAsync(request.reportId);
+        if (report == null)
+            throw new Exception("Report not found");
+
+        var result = new List<PossibleTransitionDto>();
+        var possibleTransitions = report.GetPossibleTransitions();
+
+        var instanceId = report.ShahrbinInstanceId;
+        var regionId = report.Address.RegionId;
+        var userId = request.userId;
+
+        foreach (var transition in possibleTransitions)
+        {
+            var userActorIdentifiers = transition.To.Actors.Where(p => p.Type == ActorType.Person).Select(p => p.Identifier).ToList();
+            var roleActorIdentifiers = transition.To.Actors.Where(p => p.Type == ActorType.Role).Select(p => p.Identifier).ToList();
+            var userActors = (await _userRepository.GetUserActors()).Where(p => userActorIdentifiers.Contains(p.Id)).ToList();
+            var roleActors = (await _userRepository.GetRoleActors()).Where(p => roleActorIdentifiers.Contains(p.Id)).ToList();
+
+            var t = new PossibleTransitionDto()
+            {
+                StageTitle = transition.To.DisplayName,
+                ReasonList = transition.ReasonList.ToList().Select(reason => new ReasonDto() { Id = reason.Id, Title = reason.Title, Description = reason.Description }),
+                TransitionId = transition.Id,
+                CanSendMessageToCitizen = transition.CanSendMessageToCitizen
+            };
+            var actorList = new List<ActorDto>();
+            foreach (var actor in transition.To.Actors)
+            {
+                //TODO: Is this true that if actor has not assigned any reagion should be included?
+                if (regionId == null || actor.Regions.Count == 0 ||
+                    actor.Regions.Select(p => p.Id).ToList().Contains(regionId.Value))
+                {
+                    actorList.Add(new ActorDto()
+                    {
+                        Id = actor.Id,
+                        Identifier = actor.Identifier,
+                        Type = actor.Type,
+                        FirstName = (actor.Type == ActorType.Role) ? roleActors.Where(p => p.Id == actor.Identifier).Select(p => p.Title).FirstOrDefault() :
+                            userActors.Where(p => p.Id == actor.Identifier).Select(p => p.FirstName).FirstOrDefault(),
+                        LastName = (actor.Type == ActorType.Role) ? "" :
+                            userActors.Where(p => p.Id == actor.Identifier).Select(p => p.LastName).FirstOrDefault(),
+                        Title = (actor.Type == ActorType.Role) ? roleActors.Where(p => p.Id == actor.Identifier).Select(p => p.Title).FirstOrDefault() :
+                            userActors.Where(p => p.Id == actor.Identifier).Select(p => p.Title).FirstOrDefault(),
+                    });
+                }
+            }
+
+            //string contractorIdentifier = null;
+
+            //Add persons in each role actor
+            List<ActorDto> finalActors = new List<ActorDto>();
+            for (var i = 0; i < actorList.Count; i++)
+            {
+                if (actorList[i].Type == ActorType.Role)
+                {
+                    var role = (await _userRepository.GetRoles()).Find(p => p.Id == actorList[i].Identifier);
+                    if (role.Name == "Citizen")
+                    {
+                        finalActors.Add(actorList[i]);
+                        continue;
+                    }
+                    if (role.Name == "Operator")
+                    {
+                        finalActors.Add(actorList[i]);
+                        continue;
+                    }
+
+                    List<ApplicationUser> usersInRole = null;
+                    if (role.Name == "Contractor")
+                    {
+                        ////contractorIdentifier = role.Id;
+                        //usersInRole = await _context.Users.Where(p => p.Executeves.Any(q => q.Id == user.Id)).ToListAsync();
+                        var executive = (await _userRepository.GetUsersInRole("Executive")).Where(p => p.Id == userId).SingleOrDefault();
+                        if (executive != null)
+                        {
+                            usersInRole = executive.Contractors.ToList();
+                        }
+                        else
+                        {
+                            usersInRole = (await _userRepository.GetUsersInRole("Contractor")).ToList();
+                        }
+                    }
+                    else
+                    {
+                        finalActors.Add(actorList[i]);
+                        //usersInRole = (List<ApplicationUser>)await _userManager.GetUsersInRoleAsync(role.Name);
+                        usersInRole = await _userRepository.GetUsersInRole(role.Name);
+                    }
+
+                    var actorsForUsersInRole = (await _userRepository.GetActors())
+                        .Where(p => usersInRole.Select(a => a.Id).ToList().Contains(p.Identifier))
+                        .ToList();
+
+                    //actorList[i].Actors = new List<ActorDto>();
+                    foreach (var actor in actorsForUsersInRole)
+                    {
+                        finalActors.Add(new ActorDto()
+                        {
+                            Id = actor.Id,
+                            Identifier = actor.Identifier,
+                            Type = actor.Type,
+                            FirstName = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.FirstName).FirstOrDefault(),
+                            LastName = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.LastName).FirstOrDefault(),
+                            Organization = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.Organization).FirstOrDefault(),
+                            PhoneNumber = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.PhoneNumber).FirstOrDefault(),
+                        });
+                    }
+                }
+                else
+                {
+                    finalActors.Add(actorList[i]);
+                }
+            }
+
+            ////FIX IT!
+            ////Remove contractor role
+            //if (contractorIdentifier != null)
+            //{
+            //    var con = actorList.Find(p => p.Identifier == contractorIdentifier);
+            //    actorList.Remove(con);
+            //}
+
+            t.Actors = finalActors;
+            result.Add(t);
+        }
+
+        return result;
+    }
+}

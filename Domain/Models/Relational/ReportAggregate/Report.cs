@@ -350,6 +350,16 @@ public class Report : Entity
     {
         makeTransition(transitionId, reasonId, attachments, comment, actorType, actorIdentifier, actorIds, isExecutive, isContractor);
     }
+
+    public List<ProcessTransition> GetPossibleTransitions()
+    {
+        var possibleTransitions = Process.Transitions
+            .Where(p => p.FromId == CurrentStageId)
+            .OrderBy(p => p.Order)
+            .ToList();
+
+        return possibleTransitions;
+    }
     #endregion
 
 
@@ -520,6 +530,131 @@ public class Report : Entity
         autoTransition();
     }
     #endregion
+
+    
+
+    /*
+     *
+     var _instanceId = ShahrbinInstanceId;
+
+        foreach (var transition in possibleTransitions)
+        {
+            var userActorIdentifiers = transition.To.Actors.Where(p => p.Type == ActorType.Person).Select(p => p.Identifier).ToList();
+            var roleActorIdentifiers = transition.To.Actors.Where(p => p.Type == ActorType.Role).Select(p => p.Identifier).ToList();
+            var userActors = _settings.InstanceSettings[_instanceId].UserActors.Data.Where(p => userActorIdentifiers.Contains(p.Id)).ToList();
+            var roleActors = _settings.InstanceSettings[_instanceId].RoleActors.Data.Where(p => roleActorIdentifiers.Contains(p.Id)).ToList();
+
+            var t = new PossibleTransitionDto()
+            {
+                StageTitle = transition.To.DisplayName,
+                ReasonList = transition.ReasonList,
+                TransitionId = transition.Id,
+                CanSendMessageToCitizen = transition.CanSendMessageToCitizen
+            };
+            var actorList = new List<ActorDto>();
+            foreach (var actor in transition.To.Actors)
+            {
+                //TODO: Is this true that if actor has not assigned any reagion should be included?
+                if (Address.RegionId == null || actor.Regions.Count == 0 ||
+                    actor.Regions.Select(p => p.Id).ToList().Contains(Address.RegionId.Value))
+                {
+                    actorList.Add(new ActorDto()
+                    {
+                        Id = actor.Id,
+                        Identifier = actor.Identifier,
+                        Type = actor.Type,
+                        FirstName = (actor.Type == ActorType.Role) ? roleActors.Where(p => p.Id == actor.Identifier).Select(p => p.Title).FirstOrDefault() :
+                            userActors.Where(p => p.Id == actor.Identifier).Select(p => p.FirstName).FirstOrDefault(),
+                        LastName = (actor.Type == ActorType.Role) ? "" :
+                            userActors.Where(p => p.Id == actor.Identifier).Select(p => p.LastName).FirstOrDefault(),
+                        Title = (actor.Type == ActorType.Role) ? roleActors.Where(p => p.Id == actor.Identifier).Select(p => p.Title).FirstOrDefault() :
+                            userActors.Where(p => p.Id == actor.Identifier).Select(p => p.Title).FirstOrDefault(),
+                    });
+                }
+            }
+
+            //string contractorIdentifier = null;
+
+            //Add persons in each role actor
+            List<ActorDto> finalActors = new List<ActorDto>();
+            for (var i = 0; i < actorList.Count; i++)
+            {
+                if (actorList[i].Type == ActorType.Role)
+                {
+                    var role = _settings.Roles.Data.Find(p => p.Id == actorList[i].Identifier);
+                    if (role.Name == "Citizen")
+                    {
+                        finalActors.Add(actorList[i]);
+                        continue;
+                    }
+                    if (role.Name == "Operator")
+                    {
+                        finalActors.Add(actorList[i]);
+                        continue;
+                    }
+
+                    List<ApplicationUser> usersInRole = null;
+                    if (role.Name == "Contractor")
+                    {
+                        ////contractorIdentifier = role.Id;
+                        //usersInRole = await _context.Users.Where(p => p.Executeves.Any(q => q.Id == user.Id)).ToListAsync();
+                        var executive = _settings.UsersInRoles.Data["Executive"].Where(p => p.Id == user.Id).SingleOrDefault();
+                        if (executive != null)
+                        {
+                            usersInRole = executive.Contractors.ToList();
+                        }
+                        else
+                        {
+                            usersInRole = _settings.UsersInRoles.Data["Contractor"].ToList();
+                        }
+                    }
+                    else
+                    {
+                        finalActors.Add(actorList[i]);
+                        //usersInRole = (List<ApplicationUser>)await _userManager.GetUsersInRoleAsync(role.Name);
+                        usersInRole = _settings.UsersInRoles.Data[role.Name];
+                    }
+
+                    var actorsForUsersInRole = _settings.InstanceSettings[_instanceId].Actors.Data
+                        .Where(p => usersInRole.Select(a => a.Id).ToList().Contains(p.Identifier))
+                        .ToList();
+
+                    //actorList[i].Actors = new List<ActorDto>();
+                    foreach (var actor in actorsForUsersInRole)
+                    {
+                        finalActors.Add(new ActorDto()
+                        {
+                            Id = actor.Id,
+                            Identifier = actor.Identifier,
+                            Type = actor.Type,
+                            FirstName = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.FirstName).FirstOrDefault(),
+                            LastName = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.LastName).FirstOrDefault(),
+                            Organization = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.Organization).FirstOrDefault(),
+                            PhoneNumber = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.PhoneNumber).FirstOrDefault(),
+                        });
+                    }
+                }
+                else
+                {
+                    finalActors.Add(actorList[i]);
+                }
+            }
+
+            ////FIX IT!
+            ////Remove contractor role
+            //if (contractorIdentifier != null)
+            //{
+            //    var con = actorList.Find(p => p.Identifier == contractorIdentifier);
+            //    actorList.Remove(con);
+            //}
+
+            t.Actors = finalActors;
+            result.Add(t);
+        }
+
+        return result;
+     *
+     * */
 
 }
 
