@@ -10,6 +10,6 @@ public sealed record UpdateByOperatorCommand(
     int? CategoryId,
     string? Comments,
     AddressInfo? Address,
-    ICollection<Guid>? Attachments,
+    List<Guid>? Attachments,
     bool? IsPublic = true) : IRequest<Report>;
 

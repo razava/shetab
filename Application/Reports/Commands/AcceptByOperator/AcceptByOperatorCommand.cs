@@ -10,6 +10,6 @@ public sealed record AcceptByOperatorCommand(
     int? CategoryId,
     string? Comments,
     AddressInfo? Address,
-    ICollection<Guid>? Attachments,
+    List<Guid>? Attachments,
     bool? IsPublic = true) : IRequest<Report>;
 

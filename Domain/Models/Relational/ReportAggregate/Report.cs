@@ -27,7 +27,7 @@ public class Report : Entity
     public string TrackingNumber { get; private set; } = null!;
     public Priority Priority { get; private set; }
     public Visibility Visibility { get; private set; }
-    public ICollection<Guid> Medias { get; private set; } = new List<Guid>();
+    public ICollection<Media> Medias { get; private set; } = new List<Media>();
     public string Comments { get; private set; } = string.Empty;
     public ReportState ReportState { get; private set; }
     public string LastStatus { get; private set; } = string.Empty;
@@ -92,7 +92,7 @@ public class Report : Entity
         Category category,
         string comments,
         Address address,
-        ICollection<Guid> attachments,
+        List<Guid> attachments,
         Visibility visibility = Visibility.EveryOne,
         Priority priority = Priority.Normal,
         bool isIdentityVisible = true) : base(id)
@@ -102,7 +102,7 @@ public class Report : Entity
         CitizenId = citizenId;
         CategoryId = category.Id;
         Comments = comments;
-        Medias = attachments;
+        attachments.ForEach(p => Medias.Add(new Media() { Id = p }));
         IsIdentityVisible = isIdentityVisible;
         Address = address;
         Sent = now;
@@ -125,7 +125,7 @@ public class Report : Entity
         Category category,
         string comments,
         Address address,
-        ICollection<Guid> attachments,
+        List<Guid> attachments,
         Visibility visibility,
         Priority priority = Priority.Normal,
         bool isIdentityVisible = true)
@@ -150,12 +150,7 @@ public class Report : Entity
             report.InitProcess();
         }
 
-        var log = new TransitionLog
-        {
-            DateTime = now,
-            ReportId = report.Id,
-            Message = ReportMessages.Created
-        };
+        var log = TransitionLog.Create(report.Id, null, null, null, ReportMessages.Created, ActorType.Person, citizenId, null, null, true);
 
         report.TransitionLogs.Add(log);
 
@@ -185,7 +180,7 @@ public class Report : Entity
         Category category,
         string comments,
         Address address,
-        ICollection<Guid> attachments,
+        List<Guid> attachments,
         Visibility visibility,
         Priority priority = Priority.Normal,
         bool isIdentityVisible = true)
@@ -208,15 +203,8 @@ public class Report : Entity
 
         report.InitProcess();
 
-        var log = new TransitionLog
-        {
-            ActorIdentifier = operatorId,
-            ActorType = ActorType.Person,
-            DateTime = now,
-            ReportId = report.Id,
-            Message = ReportMessages.Created
-        };
-
+        var log = TransitionLog.Create(report.Id, null, null, null, ReportMessages.Created, ActorType.Person, operatorId, null, null, true);
+        
         report.TransitionLogs.Add(log);
 
         var message =
@@ -254,7 +242,7 @@ public class Report : Entity
         Category? category,
         string? comments,
         Address? address,
-        ICollection<Guid>? attachments,
+        List<Guid>? attachments,
         Visibility? visibility)
     {
         updateReport(category, comments, address, attachments, visibility);
@@ -264,12 +252,8 @@ public class Report : Entity
         Visibility = Visibility.Operators;
         Priority = Priority.Normal;
         InitProcess();
-        var log = new TransitionLog()
-        {
-            ReportId = Id,
-            ActorIdentifier = operatorId,
-            Message = ""
-        };
+        var log = TransitionLog.Create(Id, null, null, null, ReportMessages.Approved, ActorType.Person, operatorId, null, null, true);
+
         TransitionLogs.Add(log);
     }
 
@@ -278,17 +262,12 @@ public class Report : Entity
         Category? category,
         string? comments,
         Address? address,
-        ICollection<Guid>? attachments,
+        List<Guid>? attachments,
         Visibility? visibility)
     {
         updateReport(category, comments, address, attachments, visibility);
-        var log = new TransitionLog()
-        {
-            ReportId = Id,
-            ActorIdentifier = operatorId,
-            //Message should reflect changes
-            Message = ""
-        };
+        var log = TransitionLog.Create(Id, null, null, null, ReportMessages.Updated, ActorType.Person, operatorId, null, null, true);
+
         TransitionLogs.Add(log);
     }
 
@@ -305,16 +284,8 @@ public class Report : Entity
         Responsed = now;
         ResponseDuration = (now - Sent).TotalSeconds;
 
-        var log = new TransitionLog()
-        {
-            ActorIdentifier = actorIdentifier,
-            ActorType = actorType,
-            Attachments = attachments,
-            Comment = comment,
-            DateTime = now,
-            IsPublic = isPublic,
-            Message = message,
-        };
+        var log = TransitionLog.Create(Id, null, comment, attachments, ReportMessages.Responsed, actorType, actorIdentifier, null, null, isPublic);
+
         TransitionLogs.Add(log);
 
 
@@ -368,7 +339,7 @@ public class Report : Entity
         Category? category,
         string? comments,
         Address? address,
-        ICollection<Guid>? attachments,
+        List<Guid>? attachments,
         Visibility? visibility)
     {
         var now = DateTime.UtcNow;
@@ -383,9 +354,14 @@ public class Report : Entity
         }
 
         Comments = comments ?? Comments;
-        Medias = attachments ?? Medias;
         Address = address ?? Address;
         Visibility = visibility ?? Visibility;
+        if (attachments != null)
+        {
+            Medias.Clear();
+            attachments.ForEach(p => Medias.Add(new Media() { Id = p }));
+        }
+            
 
         return;
     }
@@ -482,20 +458,7 @@ public class Report : Entity
 
         var duration = now - LastStatusDateTime;
 
-        var log = new TransitionLog
-        {
-            Attachments = attachments,
-            Comment = comment,
-            DateTime = now,
-            ReportId = Id,
-            TransitionId = transitionId,
-            Message = transition.Message,
-            ActorType = actorType,
-            ActorIdentifier = actorIdentifier,
-            ReasonId = reasonId,
-            Duration = duration.TotalSeconds,
-            IsPublic = transition.IsTransitionLogPublic
-        };
+        var log = TransitionLog.Create(Id, transitionId, comment, attachments, ReportMessages.Refered, actorType, actorIdentifier, reasonId, duration, transition.IsTransitionLogPublic);
 
         TransitionLogs.Add(log);
 

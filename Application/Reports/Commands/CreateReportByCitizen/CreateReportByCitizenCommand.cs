@@ -11,7 +11,7 @@ public sealed record CreateReportByCitizenCommand(
     int CategoryId,
     string Comments,
     AddressInfo Address,
-    ICollection<Guid> Attachments,
+    List<Guid> Attachments,
     bool IsIdentityVisible = true,
     bool IsPublic = true) : IRequest<Report>;
 

@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Relational;
+using Domain.Models.Relational.ReportAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,6 +9,8 @@ public class ReportConfigurations : IEntityTypeConfiguration<Report>
 {
     public void Configure(EntityTypeBuilder<Report> builder)
     {
-        throw new NotImplementedException();
+        builder.HasOne(report => report.Feedback)
+            .WithOne(feedback => feedback.Report)
+            .HasForeignKey<Feedback>(feedback => feedback.ReportId);
     }
 }
