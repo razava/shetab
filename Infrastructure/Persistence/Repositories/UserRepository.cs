@@ -11,10 +11,13 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly UserManager<ApplicationUser> _userManager;
-    public UserRepository(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager) : base(dbContext)
+    private readonly RoleManager<ApplicationRole> _roleManager;
+
+    public UserRepository(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager) : base(dbContext)
     {
         _dbContext = dbContext;
         _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     public async Task<ApplicationUser> GetOrCreateCitizen(string phoneNumber, string firstName, string lastName)
@@ -100,6 +103,48 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
             .AsNoTracking()
             .ToListAsync();
 
+        return result;
+    }
+
+    public async Task<IdentityResult> CreateAsync(ApplicationUser user, string password)
+    {
+        var result = await _userManager.CreateAsync(user, password);
+        return result;
+    }
+
+    public async Task<IdentityResult> AddToRolesAsync(ApplicationUser user, string[] roles)
+    {
+        var result = await _userManager.AddToRolesAsync(user, roles);
+        return result;
+    }
+
+    public async Task<IdentityResult> AddToRoleAsync(ApplicationUser user, string role)
+    {
+        var result = await _userManager.AddToRoleAsync(user, role);
+        return result;
+    }
+
+    public async Task<ApplicationUser?> FindByNameAsync(string username)
+    {
+        var result = await _userManager.FindByNameAsync(username);
+        return result;
+    }
+
+    public async Task<ApplicationRole?> FindRoleByNameAsync(string roleName)
+    {
+        var result = await _roleManager.FindByNameAsync(roleName);
+        return result;
+    }
+
+    public async Task<IdentityResult> CreateRoleAsync(ApplicationRole applicationRole)
+    {
+        var result = await _roleManager.CreateAsync(applicationRole);
+        return result;
+    }
+
+    public async Task<bool> RoleExistsAsync(string roleName)
+    {
+        var result = await _roleManager.RoleExistsAsync(roleName);
         return result;
     }
 }

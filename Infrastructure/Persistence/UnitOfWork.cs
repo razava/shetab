@@ -5,7 +5,7 @@ namespace Infrastructure.Persistence;
 
 public class UnitOfWork : IUnitOfWork, IDisposable
 {
-    private DbContext context;
+    private ApplicationDbContext context;
     public UnitOfWork(ApplicationDbContext context)
     {
         this.context = context;
