@@ -12,5 +12,17 @@ public class ReportConfigurations : IEntityTypeConfiguration<Report>
         builder.HasOne(report => report.Feedback)
             .WithOne(feedback => feedback.Report)
             .HasForeignKey<Feedback>(feedback => feedback.ReportId);
+
+        builder.HasOne(report => report.Process)
+            .WithMany()
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasOne(c => c.ShahrbinInstance)
+            .WithMany()
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.OwnsOne(r => r.Address);
+        builder.OwnsMany(r => r.Medias);
+
     }
 }

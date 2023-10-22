@@ -97,36 +97,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("ApplicationRoleChart");
                 });
 
-            modelBuilder.Entity("ApplicationUserApplicationUser", b =>
-                {
-                    b.Property<string>("ContractorsId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ExecutevesId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ContractorsId", "ExecutevesId");
-
-                    b.HasIndex("ExecutevesId");
-
-                    b.ToTable("ApplicationUserApplicationUser");
-                });
-
-            modelBuilder.Entity("ApplicationUserReport", b =>
-                {
-                    b.Property<string>("LikedById")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<Guid>("ReportsLikedId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("LikedById", "ReportsLikedId");
-
-                    b.HasIndex("ReportsLikedId");
-
-                    b.ToTable("ApplicationUserReport");
-                });
-
             modelBuilder.Entity("Domain.Models.Gov.GovAddress", b =>
                 {
                     b.Property<Guid>("Id")
@@ -371,9 +341,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("ImageId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -389,8 +356,6 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ImageId");
 
                     b.HasIndex("ShahrbinInstanceId");
 
@@ -493,51 +458,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("Chart");
                 });
 
-            modelBuilder.Entity("Domain.Models.Relational.Common.Address", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Detail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double?>("Elevation")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("Longitude")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("RegionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Street")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Valley")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RegionId");
-
-                    b.ToTable("Address");
-                });
-
             modelBuilder.Entity("Domain.Models.Relational.Common.City", b =>
                 {
                     b.Property<int>("Id")
@@ -608,69 +528,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasIndex("CountyId");
 
                     b.ToTable("District");
-                });
-
-            modelBuilder.Entity("Domain.Models.Relational.Common.Media", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AlternateText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ComplaintId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ComplaintLogId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("MediaType")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PollId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("ReportId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("TransitionLogId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Url2")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Url3")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Url4")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ComplaintId");
-
-                    b.HasIndex("ComplaintLogId");
-
-                    b.HasIndex("PollId");
-
-                    b.HasIndex("ReportId");
-
-                    b.HasIndex("TransitionLogId");
-
-                    b.ToTable("Media");
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.Common.Province", b =>
@@ -759,61 +616,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("ShahrbinInstance");
                 });
 
-            modelBuilder.Entity("Domain.Models.Relational.ComplaintCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentId");
-
-                    b.ToTable("ComplaintCategory");
-                });
-
-            modelBuilder.Entity("Domain.Models.Relational.ComplaintOrganizationalUnit", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ComplaintInspectorId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int?>("InstanceId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ComplaintInspectorId");
-
-                    b.HasIndex("InstanceId");
-
-                    b.HasIndex("ParentId");
-
-                    b.ToTable("ComplaintOrganizationalUnit");
-                });
-
             modelBuilder.Entity("Domain.Models.Relational.IdentityAggregate.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")
@@ -852,12 +654,6 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
-
-                    b.Property<Guid?>("AddressId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("AvatarId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("BirthDate")
                         .HasColumnType("datetime2");
@@ -955,10 +751,6 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddressId");
-
-                    b.HasIndex("AvatarId");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -987,9 +779,6 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("ImageId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -1005,8 +794,6 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ImageId");
 
                     b.HasIndex("ShahrbinInstanceId");
 
@@ -1102,7 +889,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PollId")
+                    b.Property<int?>("PollId")
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
@@ -1374,9 +1161,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("MediaId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
@@ -1391,8 +1175,6 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("MediaId");
-
                     b.HasIndex("ShahrbinInstanceId");
 
                     b.ToTable("QuickAccess");
@@ -1402,9 +1184,6 @@ namespace Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AddressId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("CategoryId")
@@ -1516,8 +1295,6 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddressId");
-
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("CitizenId");
@@ -1586,100 +1363,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Comment");
-                });
-
-            modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.Complaint", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ComplainantId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CurrentDeadline")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CurrentUnitId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Deadline")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("Finished")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("InstanceId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TrackingNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("ComplainantId");
-
-                    b.HasIndex("CurrentUnitId");
-
-                    b.HasIndex("InstanceId");
-
-                    b.ToTable("Complaint");
-                });
-
-            modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.ComplaintLog", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ActorId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<Guid?>("ComplaintId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CurrentDeadline")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActorId");
-
-                    b.HasIndex("ComplaintId");
-
-                    b.ToTable("ComplaintLog");
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.Feedback", b =>
@@ -2004,6 +1687,21 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("ViolationType");
                 });
 
+            modelBuilder.Entity("ExecutiveContractor", b =>
+                {
+                    b.Property<string>("ExecutiveId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ContractorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ExecutiveId", "ContractorId");
+
+                    b.HasIndex("ContractorId");
+
+                    b.ToTable("ExecutiveContractor");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -2155,6 +1853,21 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("ProcessReasonProcessTransition");
                 });
 
+            modelBuilder.Entity("ReportLikes", b =>
+                {
+                    b.Property<string>("LikedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("ReportsLikedId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("LikedById", "ReportsLikedId");
+
+                    b.HasIndex("ReportsLikedId");
+
+                    b.ToTable("ReportLikes");
+                });
+
             modelBuilder.Entity("ActorBotActor", b =>
                 {
                     b.HasOne("Domain.Models.Relational.ProcessAggregate.Actor", null)
@@ -2230,36 +1943,6 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ApplicationUserApplicationUser", b =>
-                {
-                    b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("ContractorsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("ExecutevesId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ApplicationUserReport", b =>
-                {
-                    b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("LikedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Models.Relational.Report", null)
-                        .WithMany()
-                        .HasForeignKey("ReportsLikedId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Domain.Models.Gov.GovFamily", b =>
                 {
                     b.HasOne("Domain.Models.Gov.GovUserInfo", null)
@@ -2288,15 +1971,54 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Models.Relational.ApplicationLink", b =>
                 {
-                    b.HasOne("Domain.Models.Relational.Common.Media", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId");
-
                     b.HasOne("Domain.Models.Relational.Common.ShahrbinInstance", "ShahrbinInstance")
                         .WithMany()
                         .HasForeignKey("ShahrbinInstanceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.OwnsOne("Domain.Models.Relational.Common.Media", "Image", b1 =>
+                        {
+                            b1.Property<int>("ApplicationLinkId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("AlternateText")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<Guid>("Id")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("MediaType")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url2")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url3")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url4")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("ApplicationLinkId");
+
+                            b1.ToTable("ApplicationLink");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ApplicationLinkId");
+                        });
 
                     b.Navigation("Image");
 
@@ -2337,15 +2059,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("ShahrbinInstance");
                 });
 
-            modelBuilder.Entity("Domain.Models.Relational.Common.Address", b =>
-                {
-                    b.HasOne("Domain.Models.Relational.Common.Region", "Region")
-                        .WithMany()
-                        .HasForeignKey("RegionId");
-
-                    b.Navigation("Region");
-                });
-
             modelBuilder.Entity("Domain.Models.Relational.Common.City", b =>
                 {
                     b.HasOne("Domain.Models.Relational.Common.District", "District")
@@ -2379,29 +2092,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("County");
                 });
 
-            modelBuilder.Entity("Domain.Models.Relational.Common.Media", b =>
-                {
-                    b.HasOne("Domain.Models.Relational.ReportAggregate.Complaint", null)
-                        .WithMany("Medias")
-                        .HasForeignKey("ComplaintId");
-
-                    b.HasOne("Domain.Models.Relational.ReportAggregate.ComplaintLog", null)
-                        .WithMany("Medias")
-                        .HasForeignKey("ComplaintLogId");
-
-                    b.HasOne("Domain.Models.Relational.PollAggregate.Poll", null)
-                        .WithMany("PollMedias")
-                        .HasForeignKey("PollId");
-
-                    b.HasOne("Domain.Models.Relational.Report", null)
-                        .WithMany("Medias")
-                        .HasForeignKey("ReportId");
-
-                    b.HasOne("Domain.Models.Relational.TransitionLog", null)
-                        .WithMany("Attachments")
-                        .HasForeignKey("TransitionLogId");
-                });
-
             modelBuilder.Entity("Domain.Models.Relational.Common.Region", b =>
                 {
                     b.HasOne("Domain.Models.Relational.Common.City", "City")
@@ -2424,51 +2114,111 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("City");
                 });
 
-            modelBuilder.Entity("Domain.Models.Relational.ComplaintCategory", b =>
-                {
-                    b.HasOne("Domain.Models.Relational.ComplaintCategory", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId");
-
-                    b.Navigation("Parent");
-                });
-
-            modelBuilder.Entity("Domain.Models.Relational.ComplaintOrganizationalUnit", b =>
-                {
-                    b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", "ComplaintInspector")
-                        .WithMany()
-                        .HasForeignKey("ComplaintInspectorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Models.Relational.Common.ShahrbinInstance", "Instance")
-                        .WithMany()
-                        .HasForeignKey("InstanceId");
-
-                    b.HasOne("Domain.Models.Relational.ComplaintOrganizationalUnit", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId");
-
-                    b.Navigation("ComplaintInspector");
-
-                    b.Navigation("Instance");
-
-                    b.Navigation("Parent");
-                });
-
             modelBuilder.Entity("Domain.Models.Relational.IdentityAggregate.ApplicationUser", b =>
                 {
-                    b.HasOne("Domain.Models.Relational.Common.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId");
-
-                    b.HasOne("Domain.Models.Relational.Common.Media", "Avatar")
-                        .WithMany()
-                        .HasForeignKey("AvatarId");
-
                     b.HasOne("Domain.Models.Relational.Common.ShahrbinInstance", "ShahrbinInstance")
                         .WithMany()
-                        .HasForeignKey("ShahrbinInstanceId");
+                        .HasForeignKey("ShahrbinInstanceId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.OwnsOne("Domain.Models.Relational.Common.Address", "Address", b1 =>
+                        {
+                            b1.Property<string>("ApplicationUserId")
+                                .HasColumnType("nvarchar(450)");
+
+                            b1.Property<string>("Detail")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<double?>("Elevation")
+                                .HasColumnType("float");
+
+                            b1.Property<Guid>("Id")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<double?>("Latitude")
+                                .HasColumnType("float");
+
+                            b1.Property<double?>("Longitude")
+                                .HasColumnType("float");
+
+                            b1.Property<string>("Number")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("PostalCode")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<int?>("RegionId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Valley")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("ApplicationUserId");
+
+                            b1.HasIndex("RegionId");
+
+                            b1.ToTable("AspNetUsers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ApplicationUserId");
+
+                            b1.HasOne("Domain.Models.Relational.Common.Region", "Region")
+                                .WithMany()
+                                .HasForeignKey("RegionId");
+
+                            b1.Navigation("Region");
+                        });
+
+                    b.OwnsOne("Domain.Models.Relational.Common.Media", "Avatar", b1 =>
+                        {
+                            b1.Property<string>("ApplicationUserId")
+                                .HasColumnType("nvarchar(450)");
+
+                            b1.Property<string>("AlternateText")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<Guid>("Id")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("MediaType")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url2")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url3")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url4")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("ApplicationUserId");
+
+                            b1.ToTable("AspNetUsers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ApplicationUserId");
+                        });
 
                     b.Navigation("Address");
 
@@ -2479,15 +2229,54 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Models.Relational.News", b =>
                 {
-                    b.HasOne("Domain.Models.Relational.Common.Media", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId");
-
                     b.HasOne("Domain.Models.Relational.Common.ShahrbinInstance", "ShahrbinInstance")
                         .WithMany()
                         .HasForeignKey("ShahrbinInstanceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.OwnsOne("Domain.Models.Relational.Common.Media", "Image", b1 =>
+                        {
+                            b1.Property<int>("NewsId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("AlternateText")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<Guid>("Id")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("MediaType")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url2")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url3")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url4")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("NewsId");
+
+                            b1.ToTable("News");
+
+                            b1.WithOwner()
+                                .HasForeignKey("NewsId");
+                        });
 
                     b.Navigation("Image");
 
@@ -2533,26 +2322,68 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.OwnsMany("Domain.Models.Relational.Common.Media", "PollMedias", b1 =>
+                        {
+                            b1.Property<int>("PollId")
+                                .HasColumnType("int");
+
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("AlternateText")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<int>("MediaType")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url2")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url3")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url4")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("PollId", "Id");
+
+                            b1.ToTable("Poll_PollMedias");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PollId");
+                        });
+
                     b.Navigation("Author");
+
+                    b.Navigation("PollMedias");
 
                     b.Navigation("ShahrbinInstance");
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.PollAggregate.PollAnswer", b =>
                 {
-                    b.HasOne("Domain.Models.Relational.PollAggregate.Poll", "Poll")
+                    b.HasOne("Domain.Models.Relational.PollAggregate.Poll", null)
                         .WithMany("Answers")
-                        .HasForeignKey("PollId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PollId");
 
                     b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Poll");
 
                     b.Navigation("User");
                 });
@@ -2638,33 +2469,65 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Models.Relational.Common.Media", "Media")
-                        .WithMany()
-                        .HasForeignKey("MediaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domain.Models.Relational.Common.ShahrbinInstance", "ShahrbinInstance")
                         .WithMany()
                         .HasForeignKey("ShahrbinInstanceId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.OwnsOne("Domain.Models.Relational.Common.Media", "Media", b1 =>
+                        {
+                            b1.Property<int>("QuickAccessId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("AlternateText")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<Guid>("Id")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("MediaType")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url2")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url3")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url4")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("QuickAccessId");
+
+                            b1.ToTable("QuickAccess");
+
+                            b1.WithOwner()
+                                .HasForeignKey("QuickAccessId");
+                        });
+
                     b.Navigation("Category");
 
-                    b.Navigation("Media");
+                    b.Navigation("Media")
+                        .IsRequired();
 
                     b.Navigation("ShahrbinInstance");
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.Report", b =>
                 {
-                    b.HasOne("Domain.Models.Relational.Common.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domain.Models.Relational.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
@@ -2674,12 +2537,13 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", "Citizen")
                         .WithMany("Reports")
                         .HasForeignKey("CitizenId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", "Contractor")
                         .WithMany("ContractorReports")
-                        .HasForeignKey("ContractorId");
+                        .HasForeignKey("ContractorId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Domain.Models.Relational.ProcessAggregate.ProcessStage", "CurrentStage")
                         .WithMany()
@@ -2687,11 +2551,13 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", "Executive")
                         .WithMany("ExecutiveReports")
-                        .HasForeignKey("ExecutiveId");
+                        .HasForeignKey("ExecutiveId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", "Inspector")
                         .WithMany("InspectorReports")
-                        .HasForeignKey("InspectorId");
+                        .HasForeignKey("InspectorId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Domain.Models.Relational.ProcessAggregate.ProcessReason", "LastReason")
                         .WithMany()
@@ -2704,12 +2570,13 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasOne("Domain.Models.Relational.ProcessAggregate.Process", "Process")
                         .WithMany()
                         .HasForeignKey("ProcessId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", "Registrant")
                         .WithMany("RegisteredReports")
-                        .HasForeignKey("RegistrantId");
+                        .HasForeignKey("RegistrantId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Domain.Models.Relational.Common.ShahrbinInstance", "ShahrbinInstance")
                         .WithMany()
@@ -2717,7 +2584,108 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Address");
+                    b.OwnsOne("Domain.Models.Relational.Common.Address", "Address", b1 =>
+                        {
+                            b1.Property<Guid>("ReportId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Detail")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<double?>("Elevation")
+                                .HasColumnType("float");
+
+                            b1.Property<Guid>("Id")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<double?>("Latitude")
+                                .HasColumnType("float");
+
+                            b1.Property<double?>("Longitude")
+                                .HasColumnType("float");
+
+                            b1.Property<string>("Number")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("PostalCode")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<int?>("RegionId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Valley")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("ReportId");
+
+                            b1.HasIndex("RegionId");
+
+                            b1.ToTable("Reports");
+
+                            b1.HasOne("Domain.Models.Relational.Common.Region", "Region")
+                                .WithMany()
+                                .HasForeignKey("RegionId");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ReportId");
+
+                            b1.Navigation("Region");
+                        });
+
+                    b.OwnsMany("Domain.Models.Relational.Common.Media", "Medias", b1 =>
+                        {
+                            b1.Property<Guid>("ReportId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("AlternateText")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<int>("MediaType")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url2")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url3")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url4")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("ReportId", "Id");
+
+                            b1.ToTable("Reports_Medias");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ReportId");
+                        });
+
+                    b.Navigation("Address")
+                        .IsRequired();
 
                     b.Navigation("Category");
 
@@ -2734,6 +2702,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("LastReason");
 
                     b.Navigation("LastTransition");
+
+                    b.Navigation("Medias");
 
                     b.Navigation("Process");
 
@@ -2773,54 +2743,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.Complaint", b =>
-                {
-                    b.HasOne("Domain.Models.Relational.ComplaintCategory", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", "Complainant")
-                        .WithMany()
-                        .HasForeignKey("ComplainantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Models.Relational.ComplaintOrganizationalUnit", "CurrentUnit")
-                        .WithMany()
-                        .HasForeignKey("CurrentUnitId");
-
-                    b.HasOne("Domain.Models.Relational.Common.ShahrbinInstance", "Instance")
-                        .WithMany()
-                        .HasForeignKey("InstanceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Complainant");
-
-                    b.Navigation("CurrentUnit");
-
-                    b.Navigation("Instance");
-                });
-
-            modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.ComplaintLog", b =>
-                {
-                    b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", "Actor")
-                        .WithMany()
-                        .HasForeignKey("ActorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Models.Relational.ReportAggregate.Complaint", null)
-                        .WithMany("Logs")
-                        .HasForeignKey("ComplaintId");
-
-                    b.Navigation("Actor");
-                });
-
             modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.Feedback", b =>
                 {
                     b.HasOne("Domain.Models.Relational.Report", "Report")
@@ -2838,7 +2760,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Report");
@@ -2912,6 +2834,52 @@ namespace Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("TransitionId");
 
+                    b.OwnsMany("Domain.Models.Relational.Common.Media", "Attachments", b1 =>
+                        {
+                            b1.Property<Guid>("TransitionLogId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("AlternateText")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<int>("MediaType")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url2")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url3")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Url4")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("TransitionLogId", "Id");
+
+                            b1.ToTable("TransitionLogs_Attachments");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TransitionLogId");
+                        });
+
+                    b.Navigation("Attachments");
+
                     b.Navigation("Reason");
 
                     b.Navigation("Report");
@@ -2956,6 +2924,21 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("User");
 
                     b.Navigation("ViolationType");
+                });
+
+            modelBuilder.Entity("ExecutiveContractor", b =>
+                {
+                    b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("ContractorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("ExecutiveId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -3054,6 +3037,21 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ReportLikes", b =>
+                {
+                    b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("LikedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.Relational.Report", null)
+                        .WithMany()
+                        .HasForeignKey("ReportsLikedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Models.Gov.GovUserInfo", b =>
                 {
                     b.Navigation("Family");
@@ -3086,16 +3084,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Counties");
                 });
 
-            modelBuilder.Entity("Domain.Models.Relational.ComplaintCategory", b =>
-                {
-                    b.Navigation("Children");
-                });
-
-            modelBuilder.Entity("Domain.Models.Relational.ComplaintOrganizationalUnit", b =>
-                {
-                    b.Navigation("Children");
-                });
-
             modelBuilder.Entity("Domain.Models.Relational.IdentityAggregate.ApplicationUser", b =>
                 {
                     b.Navigation("ContractorReports");
@@ -3114,8 +3102,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Answers");
 
                     b.Navigation("Choices");
-
-                    b.Navigation("PollMedias");
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ProcessAggregate.Process", b =>
@@ -3131,8 +3117,6 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.Navigation("FeedbackComments");
 
-                    b.Navigation("Medias");
-
                     b.Navigation("Messages");
 
                     b.Navigation("TransitionLogs");
@@ -3145,26 +3129,9 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Violations");
                 });
 
-            modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.Complaint", b =>
-                {
-                    b.Navigation("Logs");
-
-                    b.Navigation("Medias");
-                });
-
-            modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.ComplaintLog", b =>
-                {
-                    b.Navigation("Medias");
-                });
-
             modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.Message", b =>
                 {
                     b.Navigation("Recepients");
-                });
-
-            modelBuilder.Entity("Domain.Models.Relational.TransitionLog", b =>
-                {
-                    b.Navigation("Attachments");
                 });
 #pragma warning restore 612, 618
         }

@@ -22,31 +22,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         base.OnModelCreating(builder);
-
-        builder.Entity<ProcessTransition>()
-            .HasOne(c => c.From)
-            .WithMany()
-            .OnDelete(DeleteBehavior.NoAction);
-
-        builder.Entity<ProcessTransition>()
-            .HasOne(c => c.To)
-            .WithMany()
-            .OnDelete(DeleteBehavior.NoAction);
-
-        builder.Entity<Feedback>()
-            .HasOne(c => c.ShahrbinInstance)
-            .WithMany()
-            .OnDelete(DeleteBehavior.NoAction);
-
-        builder.Entity<QuickAccess>()
-            .HasOne(c => c.ShahrbinInstance)
-            .WithMany()
-            .OnDelete(DeleteBehavior.NoAction);
-
-        builder.Entity<Report>()
-            .HasOne(c => c.ShahrbinInstance)
-            .WithMany()
-            .OnDelete(DeleteBehavior.NoAction);
     }
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     //    => optionsBuilder.LogTo(Console.WriteLine);
@@ -84,9 +59,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<GovUserInfo> GovUserInfos { get; set; }
     public DbSet<ShahrbinInstance> ShahrbinInstance { get; set; }
 
+    /*
     //Inspection
     public DbSet<Complaint> Complaint { get; set; }
     public DbSet<ComplaintCategory> ComplaintCategory { get; set; }
     public DbSet<ComplaintOrganizationalUnit> ComplaintOrganizationalUnit { get; set; }
     public DbSet<ComplaintLog> ComplaintLog { get; set; }
+    */
 }

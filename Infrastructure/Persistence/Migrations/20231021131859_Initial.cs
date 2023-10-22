@@ -41,25 +41,6 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ComplaintCategory",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ComplaintCategory", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ComplaintCategory_ComplaintCategory_ParentId",
-                        column: x => x.ParentId,
-                        principalTable: "ComplaintCategory",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "GovAddress",
                 columns: table => new
                 {
@@ -363,28 +344,102 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Address",
+                name: "ApplicationLink",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RegionId = table.Column<int>(type: "int", nullable: true),
-                    Street = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Valley = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Detail = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Number = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Latitude = table.Column<double>(type: "float", nullable: true),
-                    Longitude = table.Column<double>(type: "float", nullable: true),
-                    Elevation = table.Column<double>(type: "float", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Image_Id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Image_Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Image_Url2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Image_Url3 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Image_Url4 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Image_AlternateText = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Image_Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Image_MediaType = table.Column<int>(type: "int", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    ShahrbinInstanceId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Address", x => x.Id);
+                    table.PrimaryKey("PK_ApplicationLink", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Address_Region_RegionId",
-                        column: x => x.RegionId,
+                        name: "FK_ApplicationLink_ShahrbinInstance_ShahrbinInstanceId",
+                        column: x => x.ShahrbinInstanceId,
+                        principalTable: "ShahrbinInstance",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Organization = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Avatar_Id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Avatar_Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Avatar_Url2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Avatar_Url3 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Avatar_Url4 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Avatar_AlternateText = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Avatar_Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Avatar_MediaType = table.Column<int>(type: "int", nullable: true),
+                    PhoneNumber2 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NationalId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Gender = table.Column<int>(type: "int", nullable: false),
+                    Education = table.Column<int>(type: "int", nullable: false),
+                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CitizenshipCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address_Id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Address_RegionId = table.Column<int>(type: "int", nullable: true),
+                    Address_Street = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address_Valley = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address_Detail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address_Number = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address_PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address_Latitude = table.Column<double>(type: "float", nullable: true),
+                    Address_Longitude = table.Column<double>(type: "float", nullable: true),
+                    Address_Elevation = table.Column<double>(type: "float", nullable: true),
+                    VerificationSent = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    FcmToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Flags = table.Column<int>(type: "int", nullable: false),
+                    ShahrbinInstanceId = table.Column<int>(type: "int", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Region_Address_RegionId",
+                        column: x => x.Address_RegionId,
                         principalTable: "Region",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_ShahrbinInstance_ShahrbinInstanceId",
+                        column: x => x.ShahrbinInstanceId,
+                        principalTable: "ShahrbinInstance",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -410,144 +465,35 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ApplicationRoleChart",
-                columns: table => new
-                {
-                    ChartsId = table.Column<int>(type: "int", nullable: false),
-                    RolesId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ApplicationRoleChart", x => new { x.ChartsId, x.RolesId });
-                    table.ForeignKey(
-                        name: "FK_ApplicationRoleChart_AspNetRoles_RolesId",
-                        column: x => x.RolesId,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ApplicationRoleChart_Chart_ChartsId",
-                        column: x => x.ChartsId,
-                        principalTable: "Chart",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ActorBotActor",
-                columns: table => new
-                {
-                    ActorsId = table.Column<int>(type: "int", nullable: false),
-                    BotActorsId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ActorBotActor", x => new { x.ActorsId, x.BotActorsId });
-                    table.ForeignKey(
-                        name: "FK_ActorBotActor_Actor_ActorsId",
-                        column: x => x.ActorsId,
-                        principalTable: "Actor",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ActorProcessStage",
-                columns: table => new
-                {
-                    ActorsId = table.Column<int>(type: "int", nullable: false),
-                    StagesId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ActorProcessStage", x => new { x.ActorsId, x.StagesId });
-                    table.ForeignKey(
-                        name: "FK_ActorProcessStage_Actor_ActorsId",
-                        column: x => x.ActorsId,
-                        principalTable: "Actor",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ActorReport",
-                columns: table => new
-                {
-                    CurrentActorsId = table.Column<int>(type: "int", nullable: false),
-                    ReportsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ActorReport", x => new { x.CurrentActorsId, x.ReportsId });
-                    table.ForeignKey(
-                        name: "FK_ActorReport_Actor_CurrentActorsId",
-                        column: x => x.CurrentActorsId,
-                        principalTable: "Actor",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Answer",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PollId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Answer", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ApplicationLink",
+                name: "News",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImageId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Image_Id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Image_Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Image_Url2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Image_Url3 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Image_Url4 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Image_AlternateText = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Image_Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Image_MediaType = table.Column<int>(type: "int", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     ShahrbinInstanceId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ApplicationLink", x => x.Id);
+                    table.PrimaryKey("PK_News", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ApplicationLink_ShahrbinInstance_ShahrbinInstanceId",
+                        name: "FK_News_ShahrbinInstance_ShahrbinInstanceId",
                         column: x => x.ShahrbinInstanceId,
                         principalTable: "ShahrbinInstance",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ApplicationUserApplicationUser",
-                columns: table => new
-                {
-                    ContractorsId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ExecutevesId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ApplicationUserApplicationUser", x => new { x.ContractorsId, x.ExecutevesId });
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ApplicationUserReport",
-                columns: table => new
-                {
-                    LikedById = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ReportsLikedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ApplicationUserReport", x => new { x.LikedById, x.ReportsLikedId });
                 });
 
             migrationBuilder.CreateTable(
@@ -563,6 +509,12 @@ namespace Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -577,6 +529,12 @@ namespace Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -595,57 +553,12 @@ namespace Infrastructure.Persistence.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Organization = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AvatarId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    PhoneNumber2 = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NationalId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Gender = table.Column<int>(type: "int", nullable: false),
-                    Education = table.Column<int>(type: "int", nullable: false),
-                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CitizenshipCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AddressId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    VerificationSent = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    FcmToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Flags = table.Column<int>(type: "int", nullable: false),
-                    ShahrbinInstanceId = table.Column<int>(type: "int", nullable: true),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_Address_AddressId",
-                        column: x => x.AddressId,
-                        principalTable: "Address",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_ShahrbinInstance_ShahrbinInstanceId",
-                        column: x => x.ShahrbinInstanceId,
-                        principalTable: "ShahrbinInstance",
-                        principalColumn: "Id");
+                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -669,34 +582,25 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ComplaintOrganizationalUnit",
+                name: "ExecutiveContractor",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: true),
-                    ComplaintInspectorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    InstanceId = table.Column<int>(type: "int", nullable: true)
+                    ExecutiveId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ContractorId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ComplaintOrganizationalUnit", x => x.Id);
+                    table.PrimaryKey("PK_ExecutiveContractor", x => new { x.ExecutiveId, x.ContractorId });
                     table.ForeignKey(
-                        name: "FK_ComplaintOrganizationalUnit_AspNetUsers_ComplaintInspectorId",
-                        column: x => x.ComplaintInspectorId,
+                        name: "FK_ExecutiveContractor_AspNetUsers_ContractorId",
+                        column: x => x.ContractorId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ComplaintOrganizationalUnit_ComplaintOrganizationalUnit_ParentId",
-                        column: x => x.ParentId,
-                        principalTable: "ComplaintOrganizationalUnit",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ComplaintOrganizationalUnit_ShahrbinInstance_InstanceId",
-                        column: x => x.InstanceId,
-                        principalTable: "ShahrbinInstance",
+                        name: "FK_ExecutiveContractor_AspNetUsers_ExecutiveId",
+                        column: x => x.ExecutiveId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id");
                 });
 
@@ -786,47 +690,25 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Complaint",
+                name: "ApplicationRoleChart",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TrackingNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ComplainantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Finished = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CurrentDeadline = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Deadline = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CurrentUnitId = table.Column<int>(type: "int", nullable: true),
-                    InstanceId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Rating = table.Column<int>(type: "int", nullable: true)
+                    ChartsId = table.Column<int>(type: "int", nullable: false),
+                    RolesId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Complaint", x => x.Id);
+                    table.PrimaryKey("PK_ApplicationRoleChart", x => new { x.ChartsId, x.RolesId });
                     table.ForeignKey(
-                        name: "FK_Complaint_AspNetUsers_ComplainantId",
-                        column: x => x.ComplainantId,
-                        principalTable: "AspNetUsers",
+                        name: "FK_ApplicationRoleChart_AspNetRoles_RolesId",
+                        column: x => x.RolesId,
+                        principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Complaint_ComplaintCategory_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "ComplaintCategory",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Complaint_ComplaintOrganizationalUnit_CurrentUnitId",
-                        column: x => x.CurrentUnitId,
-                        principalTable: "ComplaintOrganizationalUnit",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Complaint_ShahrbinInstance_InstanceId",
-                        column: x => x.InstanceId,
-                        principalTable: "ShahrbinInstance",
+                        name: "FK_ApplicationRoleChart_Chart_ChartsId",
+                        column: x => x.ChartsId,
+                        principalTable: "Chart",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -855,6 +737,32 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Answer",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PollId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Answer", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Answer_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Answer_Poll_PollId",
+                        column: x => x.PollId,
+                        principalTable: "Poll",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Choice",
                 columns: table => new
                 {
@@ -873,6 +781,31 @@ namespace Infrastructure.Persistence.Migrations
                         column: x => x.PollId,
                         principalTable: "Poll",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Poll_PollMedias",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PollId = table.Column<int>(type: "int", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Url2 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Url3 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Url4 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AlternateText = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MediaType = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Poll_PollMedias", x => new { x.PollId, x.Id });
+                    table.ForeignKey(
+                        name: "FK_Poll_PollMedias_Poll_PollId",
+                        column: x => x.PollId,
+                        principalTable: "Poll",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -900,34 +833,6 @@ namespace Infrastructure.Persistence.Migrations
                         principalTable: "ShahrbinInstance",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ComplaintLog",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CurrentDeadline = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ActorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ComplaintId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ComplaintLog", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ComplaintLog_AspNetUsers_ActorId",
-                        column: x => x.ActorId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ComplaintLog_Complaint_ComplaintId",
-                        column: x => x.ComplaintId,
-                        principalTable: "Complaint",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -1057,6 +962,67 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "QuickAccess",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Order = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    Media_Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Media_Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Media_Url2 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Media_Url3 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Media_Url4 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Media_AlternateText = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Media_Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Media_MediaType = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ShahrbinInstanceId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QuickAccess", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_QuickAccess_Category_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Category",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_QuickAccess_ShahrbinInstance_ShahrbinInstanceId",
+                        column: x => x.ShahrbinInstanceId,
+                        principalTable: "ShahrbinInstance",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ActorProcessStage",
+                columns: table => new
+                {
+                    ActorsId = table.Column<int>(type: "int", nullable: false),
+                    StagesId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActorProcessStage", x => new { x.ActorsId, x.StagesId });
+                    table.ForeignKey(
+                        name: "FK_ActorProcessStage_Actor_ActorsId",
+                        column: x => x.ActorsId,
+                        principalTable: "Actor",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ActorProcessStage_Stage_StagesId",
+                        column: x => x.StagesId,
+                        principalTable: "Stage",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Transition",
                 columns: table => new
                 {
@@ -1157,7 +1123,16 @@ namespace Infrastructure.Persistence.Migrations
                     Duration = table.Column<double>(type: "float", nullable: true),
                     ResponseDuration = table.Column<double>(type: "float", nullable: true),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
-                    AddressId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Address_Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Address_RegionId = table.Column<int>(type: "int", nullable: true),
+                    Address_Street = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address_Valley = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address_Detail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address_Number = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address_PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address_Latitude = table.Column<double>(type: "float", nullable: true),
+                    Address_Longitude = table.Column<double>(type: "float", nullable: true),
+                    Address_Elevation = table.Column<double>(type: "float", nullable: true),
                     TrackingNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Priority = table.Column<int>(type: "int", nullable: false),
                     Visibility = table.Column<int>(type: "int", nullable: false),
@@ -1187,17 +1162,10 @@ namespace Infrastructure.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_Reports", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reports_Address_AddressId",
-                        column: x => x.AddressId,
-                        principalTable: "Address",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Reports_AspNetUsers_CitizenId",
                         column: x => x.CitizenId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Reports_AspNetUsers_ContractorId",
                         column: x => x.ContractorId,
@@ -1228,12 +1196,16 @@ namespace Infrastructure.Persistence.Migrations
                         name: "FK_Reports_Process_ProcessId",
                         column: x => x.ProcessId,
                         principalTable: "Process",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Reports_Reason_LastReasonId",
                         column: x => x.LastReasonId,
                         principalTable: "Reason",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Reports_Region_Address_RegionId",
+                        column: x => x.Address_RegionId,
+                        principalTable: "Region",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Reports_ShahrbinInstance_ShahrbinInstanceId",
@@ -1250,6 +1222,54 @@ namespace Infrastructure.Persistence.Migrations
                         column: x => x.LastTransitionId,
                         principalTable: "Transition",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ActorBotActor",
+                columns: table => new
+                {
+                    ActorsId = table.Column<int>(type: "int", nullable: false),
+                    BotActorsId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActorBotActor", x => new { x.ActorsId, x.BotActorsId });
+                    table.ForeignKey(
+                        name: "FK_ActorBotActor_Actor_ActorsId",
+                        column: x => x.ActorsId,
+                        principalTable: "Actor",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ActorBotActor_BotActors_BotActorsId",
+                        column: x => x.BotActorsId,
+                        principalTable: "BotActors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ActorReport",
+                columns: table => new
+                {
+                    CurrentActorsId = table.Column<int>(type: "int", nullable: false),
+                    ReportsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActorReport", x => new { x.CurrentActorsId, x.ReportsId });
+                    table.ForeignKey(
+                        name: "FK_ActorReport_Actor_CurrentActorsId",
+                        column: x => x.CurrentActorsId,
+                        principalTable: "Actor",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ActorReport_Reports_ReportsId",
+                        column: x => x.ReportsId,
+                        principalTable: "Reports",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1315,8 +1335,7 @@ namespace Infrastructure.Persistence.Migrations
                         name: "FK_Feedback_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Feedback_Reports_ReportId",
                         column: x => x.ReportId,
@@ -1363,6 +1382,55 @@ namespace Infrastructure.Persistence.Migrations
                         name: "FK_Message_ShahrbinInstance_ShahrbinInstanceId",
                         column: x => x.ShahrbinInstanceId,
                         principalTable: "ShahrbinInstance",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReportLikes",
+                columns: table => new
+                {
+                    LikedById = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ReportsLikedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReportLikes", x => new { x.LikedById, x.ReportsLikedId });
+                    table.ForeignKey(
+                        name: "FK_ReportLikes_AspNetUsers_LikedById",
+                        column: x => x.LikedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ReportLikes_Reports_ReportsLikedId",
+                        column: x => x.ReportsLikedId,
+                        principalTable: "Reports",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reports_Medias",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReportId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Url2 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Url3 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Url4 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AlternateText = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MediaType = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reports_Medias", x => new { x.ReportId, x.Id });
+                    table.ForeignKey(
+                        name: "FK_Reports_Medias_Reports_ReportId",
+                        column: x => x.ReportId,
+                        principalTable: "Reports",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1473,117 +1541,28 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Media",
+                name: "TransitionLogs_Attachments",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TransitionLogId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Url2 = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Url3 = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Url4 = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AlternateText = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MediaType = table.Column<int>(type: "int", nullable: false),
-                    ComplaintId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ComplaintLogId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    PollId = table.Column<int>(type: "int", nullable: true),
-                    ReportId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    TransitionLogId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    MediaType = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Media", x => x.Id);
+                    table.PrimaryKey("PK_TransitionLogs_Attachments", x => new { x.TransitionLogId, x.Id });
                     table.ForeignKey(
-                        name: "FK_Media_ComplaintLog_ComplaintLogId",
-                        column: x => x.ComplaintLogId,
-                        principalTable: "ComplaintLog",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Media_Complaint_ComplaintId",
-                        column: x => x.ComplaintId,
-                        principalTable: "Complaint",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Media_Poll_PollId",
-                        column: x => x.PollId,
-                        principalTable: "Poll",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Media_Reports_ReportId",
-                        column: x => x.ReportId,
-                        principalTable: "Reports",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Media_TransitionLogs_TransitionLogId",
+                        name: "FK_TransitionLogs_Attachments_TransitionLogs_TransitionLogId",
                         column: x => x.TransitionLogId,
                         principalTable: "TransitionLogs",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "News",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImageId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    ShahrbinInstanceId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_News", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_News_Media_ImageId",
-                        column: x => x.ImageId,
-                        principalTable: "Media",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_News_ShahrbinInstance_ShahrbinInstanceId",
-                        column: x => x.ShahrbinInstanceId,
-                        principalTable: "ShahrbinInstance",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "QuickAccess",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Order = table.Column<int>(type: "int", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    MediaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ShahrbinInstanceId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_QuickAccess", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_QuickAccess_Category_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Category",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_QuickAccess_Media_MediaId",
-                        column: x => x.MediaId,
-                        principalTable: "Media",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_QuickAccess_ShahrbinInstance_ShahrbinInstanceId",
-                        column: x => x.ShahrbinInstanceId,
-                        principalTable: "ShahrbinInstance",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -1613,11 +1592,6 @@ namespace Infrastructure.Persistence.Migrations
                 column: "ReportsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Address_RegionId",
-                table: "Address",
-                column: "RegionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Answer_PollId",
                 table: "Answer",
                 column: "PollId");
@@ -1628,11 +1602,6 @@ namespace Infrastructure.Persistence.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApplicationLink_ImageId",
-                table: "ApplicationLink",
-                column: "ImageId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ApplicationLink_ShahrbinInstanceId",
                 table: "ApplicationLink",
                 column: "ShahrbinInstanceId");
@@ -1641,16 +1610,6 @@ namespace Infrastructure.Persistence.Migrations
                 name: "IX_ApplicationRoleChart_RolesId",
                 table: "ApplicationRoleChart",
                 column: "RolesId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ApplicationUserApplicationUser_ExecutevesId",
-                table: "ApplicationUserApplicationUser",
-                column: "ExecutevesId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ApplicationUserReport_ReportsLikedId",
-                table: "ApplicationUserReport",
-                column: "ReportsLikedId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -1685,14 +1644,9 @@ namespace Infrastructure.Persistence.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_AddressId",
+                name: "IX_AspNetUsers_Address_RegionId",
                 table: "AspNetUsers",
-                column: "AddressId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_AvatarId",
-                table: "AspNetUsers",
-                column: "AvatarId");
+                column: "Address_RegionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_ShahrbinInstanceId",
@@ -1762,56 +1716,6 @@ namespace Infrastructure.Persistence.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Complaint_CategoryId",
-                table: "Complaint",
-                column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Complaint_ComplainantId",
-                table: "Complaint",
-                column: "ComplainantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Complaint_CurrentUnitId",
-                table: "Complaint",
-                column: "CurrentUnitId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Complaint_InstanceId",
-                table: "Complaint",
-                column: "InstanceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ComplaintCategory_ParentId",
-                table: "ComplaintCategory",
-                column: "ParentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ComplaintLog_ActorId",
-                table: "ComplaintLog",
-                column: "ActorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ComplaintLog_ComplaintId",
-                table: "ComplaintLog",
-                column: "ComplaintId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ComplaintOrganizationalUnit_ComplaintInspectorId",
-                table: "ComplaintOrganizationalUnit",
-                column: "ComplaintInspectorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ComplaintOrganizationalUnit_InstanceId",
-                table: "ComplaintOrganizationalUnit",
-                column: "InstanceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ComplaintOrganizationalUnit_ParentId",
-                table: "ComplaintOrganizationalUnit",
-                column: "ParentId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_County_ProvinceId",
                 table: "County",
                 column: "ProvinceId");
@@ -1820,6 +1724,11 @@ namespace Infrastructure.Persistence.Migrations
                 name: "IX_District_CountyId",
                 table: "District",
                 column: "CountyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExecutiveContractor_ContractorId",
+                table: "ExecutiveContractor",
+                column: "ContractorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Feedback_ReportId",
@@ -1858,31 +1767,6 @@ namespace Infrastructure.Persistence.Migrations
                 column: "SubsidyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Media_ComplaintId",
-                table: "Media",
-                column: "ComplaintId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Media_ComplaintLogId",
-                table: "Media",
-                column: "ComplaintLogId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Media_PollId",
-                table: "Media",
-                column: "PollId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Media_ReportId",
-                table: "Media",
-                column: "ReportId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Media_TransitionLogId",
-                table: "Media",
-                column: "TransitionLogId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Message_FromId",
                 table: "Message",
                 column: "FromId");
@@ -1901,11 +1785,6 @@ namespace Infrastructure.Persistence.Migrations
                 name: "IX_MessageRecepient_MessageId",
                 table: "MessageRecepient",
                 column: "MessageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_News_ImageId",
-                table: "News",
-                column: "ImageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_News_ShahrbinInstanceId",
@@ -1968,11 +1847,6 @@ namespace Infrastructure.Persistence.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuickAccess_MediaId",
-                table: "QuickAccess",
-                column: "MediaId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_QuickAccess_ShahrbinInstanceId",
                 table: "QuickAccess",
                 column: "ShahrbinInstanceId");
@@ -1983,9 +1857,14 @@ namespace Infrastructure.Persistence.Migrations
                 column: "CityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reports_AddressId",
+                name: "IX_ReportLikes_ReportsLikedId",
+                table: "ReportLikes",
+                column: "ReportsLikedId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reports_Address_RegionId",
                 table: "Reports",
-                column: "AddressId");
+                column: "Address_RegionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reports_CategoryId",
@@ -2116,164 +1995,11 @@ namespace Infrastructure.Persistence.Migrations
                 name: "IX_Violation_ViolationTypeId",
                 table: "Violation",
                 column: "ViolationTypeId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ActorBotActor_BotActors_BotActorsId",
-                table: "ActorBotActor",
-                column: "BotActorsId",
-                principalTable: "BotActors",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ActorProcessStage_Stage_StagesId",
-                table: "ActorProcessStage",
-                column: "StagesId",
-                principalTable: "Stage",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ActorReport_Reports_ReportsId",
-                table: "ActorReport",
-                column: "ReportsId",
-                principalTable: "Reports",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Answer_AspNetUsers_UserId",
-                table: "Answer",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Answer_Poll_PollId",
-                table: "Answer",
-                column: "PollId",
-                principalTable: "Poll",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ApplicationLink_Media_ImageId",
-                table: "ApplicationLink",
-                column: "ImageId",
-                principalTable: "Media",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ApplicationUserApplicationUser_AspNetUsers_ContractorsId",
-                table: "ApplicationUserApplicationUser",
-                column: "ContractorsId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ApplicationUserApplicationUser_AspNetUsers_ExecutevesId",
-                table: "ApplicationUserApplicationUser",
-                column: "ExecutevesId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ApplicationUserReport_AspNetUsers_LikedById",
-                table: "ApplicationUserReport",
-                column: "LikedById",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ApplicationUserReport_Reports_ReportsLikedId",
-                table: "ApplicationUserReport",
-                column: "ReportsLikedId",
-                principalTable: "Reports",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserClaims_AspNetUsers_UserId",
-                table: "AspNetUserClaims",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserLogins_AspNetUsers_UserId",
-                table: "AspNetUserLogins",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserRoles_AspNetUsers_UserId",
-                table: "AspNetUserRoles",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUsers_Media_AvatarId",
-                table: "AspNetUsers",
-                column: "AvatarId",
-                principalTable: "Media",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Reports_Stage_CurrentStageId",
-                table: "Reports");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Transition_Stage_FromId",
-                table: "Transition");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Transition_Stage_ToId",
-                table: "Transition");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Address_Region_RegionId",
-                table: "Address");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Media_Reports_ReportId",
-                table: "Media");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_TransitionLogs_Reports_ReportId",
-                table: "TransitionLogs");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Complaint_AspNetUsers_ComplainantId",
-                table: "Complaint");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ComplaintLog_AspNetUsers_ActorId",
-                table: "ComplaintLog");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ComplaintOrganizationalUnit_AspNetUsers_ComplaintInspectorId",
-                table: "ComplaintOrganizationalUnit");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Poll_AspNetUsers_AuthorId",
-                table: "Poll");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_RevisionUnit_AspNetUsers_RevisorId",
-                table: "RevisionUnit");
-
             migrationBuilder.DropTable(
                 name: "ActorBotActor");
 
@@ -2293,12 +2019,6 @@ namespace Infrastructure.Persistence.Migrations
                 name: "ApplicationRoleChart");
 
             migrationBuilder.DropTable(
-                name: "ApplicationUserApplicationUser");
-
-            migrationBuilder.DropTable(
-                name: "ApplicationUserReport");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -2312,6 +2032,9 @@ namespace Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "ExecutiveContractor");
 
             migrationBuilder.DropTable(
                 name: "Feedback");
@@ -2332,6 +2055,9 @@ namespace Infrastructure.Persistence.Migrations
                 name: "OrganizationalUnitOrganizationalUnit");
 
             migrationBuilder.DropTable(
+                name: "Poll_PollMedias");
+
+            migrationBuilder.DropTable(
                 name: "PollAnswerPollChoice");
 
             migrationBuilder.DropTable(
@@ -2339,6 +2065,15 @@ namespace Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "QuickAccess");
+
+            migrationBuilder.DropTable(
+                name: "ReportLikes");
+
+            migrationBuilder.DropTable(
+                name: "Reports_Medias");
+
+            migrationBuilder.DropTable(
+                name: "TransitionLogs_Attachments");
 
             migrationBuilder.DropTable(
                 name: "Violation");
@@ -2365,6 +2100,9 @@ namespace Infrastructure.Persistence.Migrations
                 name: "Choice");
 
             migrationBuilder.DropTable(
+                name: "TransitionLogs");
+
+            migrationBuilder.DropTable(
                 name: "Comment");
 
             migrationBuilder.DropTable(
@@ -2380,13 +2118,7 @@ namespace Infrastructure.Persistence.Migrations
                 name: "Actor");
 
             migrationBuilder.DropTable(
-                name: "Stage");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "Region");
+                name: "Poll");
 
             migrationBuilder.DropTable(
                 name: "Reports");
@@ -2395,43 +2127,28 @@ namespace Infrastructure.Persistence.Migrations
                 name: "Category");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "Address");
-
-            migrationBuilder.DropTable(
-                name: "Media");
-
-            migrationBuilder.DropTable(
-                name: "ComplaintLog");
-
-            migrationBuilder.DropTable(
-                name: "Poll");
-
-            migrationBuilder.DropTable(
-                name: "TransitionLogs");
-
-            migrationBuilder.DropTable(
-                name: "Complaint");
-
-            migrationBuilder.DropTable(
                 name: "Reason");
 
             migrationBuilder.DropTable(
                 name: "Transition");
 
             migrationBuilder.DropTable(
-                name: "ComplaintCategory");
+                name: "Stage");
 
             migrationBuilder.DropTable(
-                name: "ComplaintOrganizationalUnit");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Process");
 
             migrationBuilder.DropTable(
                 name: "RevisionUnit");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Region");
 
             migrationBuilder.DropTable(
                 name: "ShahrbinInstance");
