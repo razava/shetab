@@ -22,9 +22,14 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
         _userRepository = userRepository;
         _context = _unitOfWork.DbContext;
     }
-    public Task<bool> Handle(AddInstanceCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(AddInstanceCommand request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        foreach(var file in request.files)
+        {
+            await addInstance(file);
+        }
+
+        return true;
     }
 
     public class InputForExecutive
@@ -96,7 +101,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
         _context.Set<ShahrbinInstance>().Add(instance);
         await _context.SaveChangesAsync();
 
-        InputForCategory inputForCategory = null;
+        InputForCategory? inputForCategory = null;
         ws = workbook.Worksheet(2);
         for (int row = 2; row <= ws.LastRowUsed().RowNumber(); row++)
         {
@@ -118,6 +123,10 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             }
             else
             {
+                if(inputForCategory is null)
+                {
+                    throw new Exception("Parent category cannot be null.");
+                }
                 inputForCategory.SubCategories.Add(new InputForCategory()
                 {
                     Title = ws.Cell(row, 2).Value.ToString().Trim(),
@@ -203,16 +212,18 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
         if (_context.Set<Province>().Count() > 0)
             return;
 
-        var jsonString = System.IO.File.ReadAllText("AdministrativeDivisions", System.Text.Encoding.Unicode);
+        var jsonString = File.ReadAllText("AdministrativeDivisions", System.Text.Encoding.Unicode);
         var provinces = JsonSerializer.Deserialize<List<Province>>(jsonString);
+        if (provinces is null || provinces.Count == 0)
+            return;
         _context.Set<Province>().AddRange(provinces);
         await _context.SaveChangesAsync();
     }
 
     private async Task<bool> initProcessesFromExcel(ShahrbinInstance instance, List<InputForExecutive> inputForExecutives)
     {
-        ApplicationUser user = null;
-        Actor actor = null;
+        ApplicationUser user;
+        Actor actor;
 
 
 
@@ -247,12 +258,12 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
                     await _userRepository.CreateAsync(user, inputForExecutive.Password);
 
                     await _userRepository.AddToRolesAsync(user, new string[] { "Executive" });
-                    actor = new Actor()
+                    actor = new Actor
                     {
                         Identifier = user.Id,
                         Type = ActorType.Person,
+                        Regions = regions
                     };
-                    actor.Regions = regions;
                     actors.Add(actor);
                 }
                 else
@@ -367,7 +378,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             {
                 Identifier = roleId,
                 //Regions = regions,
-                Reports = null,
+                //Reports = null,
                 Type = ActorType.Role
             };
             _context.Set<Actor>().Add(actor);
@@ -379,7 +390,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             {
                 Identifier = userId,
                 Regions = regions,
-                Reports = null,
+                //Reports = null,
                 Type = ActorType.Person
             };
             _context.Set<Actor>().Add(actor);
@@ -437,7 +448,8 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             ShahrbinInstanceId = instance.Id,
             ParentId = null,
             CategoryType = CategoryType.Root,
-            Title = "ریشه"
+            Title = "ریشه",
+            Code = "-1"
         };
         _context.Set<Category>().Add(rootCategory);
         await _context.SaveChangesAsync();
@@ -459,6 +471,9 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             foreach (var childCat in parentCat.SubCategories)
             {
                 var process = processes.Where(p => p.Code == childCat.ProcessTitle).FirstOrDefault();
+                if (process is null)
+                    throw new Exception("Process cannot be null here.");
+
                 category = new Category()
                 {
                     ShahrbinInstanceId = instance.Id,
@@ -490,6 +505,16 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
         var adminRole = await _userRepository.FindRoleByNameAsync("Admin");
         var managerRole = await _userRepository.FindRoleByNameAsync("Manager");
         var mayorRole = await _userRepository.FindRoleByNameAsync("Mayor");
+
+        if (citizenRole is null
+            || operatorRole is null
+            || executiveRole is null
+            || contractorRole is null
+            || inspectorRole is null
+            || adminRole is null
+            || managerRole is null
+            || mayorRole is null)
+            throw new Exception("Roles cannot be null here.");
 
         var chartCodes = await _context.Set<Chart>().Select(p => p.Code).ToListAsync();
         Chart chart;
@@ -718,36 +743,48 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
         List<ProcessReason> ReasonList;
         ProcessTransition transition12, transition21;
         BotActor bot12, bot21;
-        Actor actorCitizenRole;
-        Actor actorOperatorRole;
-        Actor actorExecutiveRole;
-        Actor actorContractorRole;
-        Actor actorInspectorRole;
+        Actor? actorCitizenRole;
+        Actor? actorOperatorRole;
+        Actor? actorExecutiveRole;
+        Actor? actorContractorRole;
+        Actor? actorInspectorRole;
 
-        var roleId = (await _userRepository.FindByNameAsync("Citizen")).Id;
+        var roleId = (await _userRepository.FindRoleByNameAsync("Citizen"))?.Id;
+        if (roleId is null) throw new Exception("Role cannot be null here.");
         actorCitizenRole = await _context.Set<Actor>()
             .Where(p => p.Type == ActorType.Role && p.Identifier == roleId)
             .FirstOrDefaultAsync();
 
-        roleId = (await _userRepository.FindByNameAsync("Operator")).Id;
+        roleId = (await _userRepository.FindRoleByNameAsync("Operator"))?.Id;
+        if (roleId is null) throw new Exception("Role cannot be null here.");
         actorOperatorRole = await _context.Set<Actor>()
             .Where(p => p.Type == ActorType.Role && p.Identifier == roleId)
             .FirstOrDefaultAsync();
 
-        roleId = (await _userRepository.FindByNameAsync("Executive")).Id;
+        roleId = (await _userRepository.FindRoleByNameAsync("Executive"))?.Id;
+        if (roleId is null) throw new Exception("Role cannot be null here.");
         actorExecutiveRole = await _context.Set<Actor>()
             .Where(p => p.Type == ActorType.Role && p.Identifier == roleId)
             .FirstOrDefaultAsync();
 
-        roleId = (await _userRepository.FindByNameAsync("Contractor")).Id;
+        roleId = (await _userRepository.FindRoleByNameAsync("Contractor"))?.Id;
+        if (roleId is null) throw new Exception("Role cannot be null here.");
         actorContractorRole = await _context.Set<Actor>()
             .Where(p => p.Type == ActorType.Role && p.Identifier == roleId)
             .FirstOrDefaultAsync();
 
-        roleId = (await _userRepository.FindByNameAsync("Inspector")).Id;
+        roleId = (await _userRepository.FindRoleByNameAsync("Inspector"))?.Id;
+        if (roleId is null) throw new Exception("Role cannot be null here.");
         actorInspectorRole = await _context.Set<Actor>()
             .Where(p => p.Type == ActorType.Role && p.Identifier == roleId)
             .FirstOrDefaultAsync();
+
+        if (actorCitizenRole is null
+            || actorOperatorRole is null
+            || actorExecutiveRole is null
+            || actorContractorRole is null
+            || actorInspectorRole is null)
+            throw new Exception("");
 
         //Create process related to an executive
         process = new Process()
@@ -1002,7 +1039,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
         {
             Transition = transition12,
             Actors = stageOperator.Actors,
-            MessageToCitizen = null,
+            MessageToCitizen = "",
             Priority = Priority.Normal,
             ReasonId = null,
             Visibility = Visibility.Operators
@@ -1019,7 +1056,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
         {
             Transition = transition21,
             Actors = stageCitizen.Actors,
-            MessageToCitizen = null,
+            MessageToCitizen = "",
             Priority = null,
             ReasonId = null,
             Visibility = null,
@@ -1043,8 +1080,8 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
 
     public async Task UpdateTypicalProcess(int id, TypicalProcessCreateDto typicalProcess)
     {
-        Process process;
-        ProcessStage stageExecutive;
+        Process? process;
+        ProcessStage? stageExecutive;
 
 
         //Create process related to an executive
@@ -1053,7 +1090,8 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             .Include(p => p.Stages)
             .ThenInclude(p => p.Actors)
             .SingleOrDefaultAsync();
-
+        if (process is null)
+            throw new Exception("Process cannot be null here.");
         process.Title = typicalProcess.Title;
         process.Code = typicalProcess.Code;
 
@@ -1063,7 +1101,8 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
         var actors = await _context.Set<Actor>().Where(p => typicalProcess.ActorIds.Contains(p.Id)).ToListAsync();
 
         stageExecutive = process.Stages.Where(p => p.Name == "Executive").FirstOrDefault();
-
+        if (stageExecutive is null)
+            throw new Exception("Stage cannot be null here.");
         stageExecutive.Actors = actors;
 
 
@@ -1075,9 +1114,9 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
 
     public class TypicalProcessCreateDto
     {
-        public string Code { get; set; }
-        public string Title { get; set; }
-        public List<int> ActorIds { get; set; }
-        public ShahrbinInstance ShahrbinInstance { get; set; }
+        public string Code { get; set; } = null!;
+        public string Title { get; set; } = null!;
+        public List<int> ActorIds { get; set; } = new();
+        public ShahrbinInstance ShahrbinInstance { get; set; } = null!;
     }
 }

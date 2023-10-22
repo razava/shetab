@@ -28,9 +28,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(swagger =>
 {
     //This is to generate the Default UI of Swagger Documentation    
-    swagger.SwaggerDoc("v2", new OpenApiInfo
+    swagger.SwaggerDoc("v1", new OpenApiInfo
     {
-        Version = "v2",
+        Version = "v1",
         Title = "ShahrbinMi Web API",
         Description = ""
     });

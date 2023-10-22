@@ -20,5 +20,5 @@ public class ProcessTransition
     public TransitionType TransitionType { get; set; }
     public int Order { get; set; }
     public bool IsTransitionLogPublic { get; set; }
-    public string Status { get; set; } = null!;
+    public string Status { get; set; } = string.Empty;
 }

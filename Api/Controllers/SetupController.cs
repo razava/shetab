@@ -21,7 +21,7 @@ public class SetupController : ApiController
         public List<IFormFile> Files { get; set; } = null!;
     }
 
-    [Authorize(Roles = "PowerUser")]
+    //[Authorize(Roles = "PowerUser")]
     [HttpPost]
     public async Task<ActionResult<CreateReportDto>> AddInstance([FromForm] MultipleFilesUploadModel filesModel)
     {
