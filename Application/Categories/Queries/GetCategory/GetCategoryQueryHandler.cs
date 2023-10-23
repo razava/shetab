@@ -16,7 +16,7 @@ internal sealed class GetCategoryQueryHandler : IRequestHandler<GetCategoryQuery
     public async Task<List<Category>> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
     {
         //TODO: perform required filtering
-        var result = await _categoryRepository.GetAsync();
+        var result = await _categoryRepository.GetAsync(p => p.ShahrbinInstanceId == request.InstanceId);
 
         return result.ToList();
     }
