@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("api/{instanceId:int?=null}/[controller]")]
+[Route("api/{instanceId:int}/[controller]")]
 [ApiController]
 public class CommonController : ApiController
 {
-    protected CommonController(ISender sender) : base(sender)
+    public CommonController(ISender sender) : base(sender)
     {
     }
 

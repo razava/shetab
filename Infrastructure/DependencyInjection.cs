@@ -54,7 +54,13 @@ public static class DependencyInjection
         services.AddScoped<IProcessRepository, ProcessRepository> ();
         services.AddScoped<IReportRepository, ReportRepository> ();
         services.AddScoped<IUnitOfWork, UnitOfWork> ();
-        services.AddScoped<IUserRepository, UserRepository> ();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IProvinceRepository, ProvinceRepository>();
+        services.AddScoped<ICountyRepository, CountyRepository>();
+        services.AddScoped<IDistrictRepository, DistrictRepository>();
+        services.AddScoped<ICityRepository, CityRepository>();
+        services.AddScoped<IRegionRepository, RegionRepository>();
+
 
         return services;
     }
