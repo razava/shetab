@@ -28,7 +28,7 @@ internal sealed class UpdateByOperatorCommandHandler : IRequestHandler<UpdateByO
         Category? category = null;
         if (request.CategoryId is not null)
         {
-            category = await _categoryRepository.GetByIDAsync(request.CategoryId);
+            category = await _categoryRepository.GetByIDAsync(request.CategoryId.Value);
             if (category is null)
             {
                 //TODO: Handle this error
@@ -39,7 +39,7 @@ internal sealed class UpdateByOperatorCommandHandler : IRequestHandler<UpdateByO
         Address? address = null;
         if (request.Address is not null)
         {
-            address = report.Address.Adapt<Address>();
+            address = request.Address.Adapt<Address>();
         }
 
         report.Update(

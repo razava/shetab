@@ -23,7 +23,11 @@ public static class DependencyInjection
     {
         services.AddPersistence(configuration.GetConnectionString("DefaultConnection"));
         services.AddRepositories();
-        services.AddSecurity();
+        services.AddSecurity(new JwtInfo(
+            configuration["JWT:Secret"] ?? throw new Exception(),
+            configuration["JWT:ValidIssuer"] ?? throw new Exception(),
+            configuration["JWT:ValidAudience"] ?? throw new Exception(),
+            new TimeSpan(24, 0, 0)));
         services.AddStorage();
         services.AddCommunication();
         return services;
@@ -65,12 +69,12 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddSecurity(this IServiceCollection services)
+    public static IServiceCollection AddSecurity(this IServiceCollection services, JwtInfo jwtInfo)
     {
         services.AddScoped<IAuthenticationService>(x => new AuthenticationService(
             x.GetRequiredService<UserManager<ApplicationUser>>(),
             x.GetRequiredService<IUnitOfWork>(),
-            new JwtInfo("", "", "", new TimeSpan())));
+            jwtInfo));
         services.AddScoped<ICaptchaProvider, SixLaborsCaptchaProvider>();
 
         return services;

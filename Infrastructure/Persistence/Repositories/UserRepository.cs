@@ -66,6 +66,11 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
         return result;
     }
 
+    public async Task<List<ApplicationRole>> GetRoleActors(List<string> ids)
+    {
+        var result = await _dbContext.Roles.Where(p => ids.Contains(p.Id)).AsNoTracking().ToListAsync();
+        return result;
+    }
     public async Task<List<ApplicationUser>> GetUserActors()
     {
         var userActorsIdentifier = await _dbContext.Actor
@@ -75,6 +80,12 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
             .ToListAsync();
 
         var result = await _dbContext.Users.Where(p => userActorsIdentifier.Contains(p.Id)).AsNoTracking().ToListAsync();
+        return result;
+    }
+
+    public async Task<List<ApplicationUser>> GetUserActors(List<string> ids)
+    {
+        var result = await _dbContext.Users.Where(p => ids.Contains(p.Id)).AsNoTracking().ToListAsync();
         return result;
     }
 

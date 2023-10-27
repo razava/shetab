@@ -12,8 +12,8 @@ public class Message : BaseModel
     public DateTime? LastSent { get; set; }
     public MessageType MessageType { get; set; }
     public Guid SubjectId { get; set; }
-    public string FromId { get; set; } = null!;
-    public ApplicationUser From { get; set; } = null!;
+    public string? FromId { get; set; }
+    public ApplicationUser? From { get; set; }
     public ICollection<MessageRecepient> Recepients { get; set; } = new List<MessageRecepient>();
     public Guid? ReportId { get; set; }
 }

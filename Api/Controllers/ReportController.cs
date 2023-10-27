@@ -6,6 +6,8 @@ using Application.Reports.Commands.CreateReportByCitizen;
 using Application.Reports.Commands.CreateReportByOperator;
 using Application.Reports.Commands.UpdateByOperator;
 using Application.Reports.Common;
+using Application.Reports.Queries.GetPossibleTransitions;
+using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -34,14 +36,15 @@ public class ReportController : ApiController
         }
 
         var phoneNumber = username;
-        var addressInfo = new AddressInfo(model.Address.RegionId!.Value,
-                                          model.Address.Street,
-                                          model.Address.Valley,
-                                          model.Address.Detail,
-                                          model.Address.Number,
-                                          model.Address.PostalCode,
-                                          model.Address.Latitude!.Value,
-                                          model.Address.Longitude!.Value);
+        var addressInfo = new AddressInfo(
+            model.Address.RegionId!.Value,
+            model.Address.Street,
+            model.Address.Valley,
+            model.Address.Detail,
+            model.Address.Number,
+            model.Address.PostalCode,
+            model.Address.Latitude!.Value,
+            model.Address.Longitude!.Value);
 
         var command = new CreateReportByCitizenCommand(
             instanceId,
@@ -79,14 +82,15 @@ public class ReportController : ApiController
             return Unauthorized();
         }
 
-        var addressInfo = new AddressInfo(model.Address.RegionId!.Value,
-                                          model.Address.Street,
-                                          model.Address.Valley,
-                                          model.Address.Detail,
-                                          model.Address.Number,
-                                          model.Address.PostalCode,
-                                          model.Address.Latitude!.Value,
-                                          model.Address.Longitude!.Value);
+        var addressInfo = new AddressInfo(
+            model.Address.RegionId!.Value,
+            model.Address.Street,
+            model.Address.Valley,
+            model.Address.Detail,
+            model.Address.Number,
+            model.Address.PostalCode,
+            model.Address.Latitude!.Value,
+            model.Address.Longitude!.Value);
 
         var command = new CreateReportByOperatorCommand(
             instanceId,
@@ -130,14 +134,15 @@ public class ReportController : ApiController
         AddressInfo? addressInfo = null;
         if (model.Address != null)
         {
-            addressInfo = new AddressInfo(model.Address.RegionId!.Value,
-                                              model.Address.Street,
-                                              model.Address.Valley,
-                                              model.Address.Detail,
-                                              model.Address.Number,
-                                              model.Address.PostalCode,
-                                              model.Address.Latitude!.Value,
-                                              model.Address.Longitude!.Value);
+            addressInfo = new AddressInfo(
+                model.Address.RegionId!.Value,
+                model.Address.Street,
+                model.Address.Valley,
+                model.Address.Detail,
+                model.Address.Number,
+                model.Address.PostalCode,
+                model.Address.Latitude!.Value,
+                model.Address.Longitude!.Value);
 
         }
         //TODO: Visibility should be considerd
@@ -177,14 +182,15 @@ public class ReportController : ApiController
         AddressInfo? addressInfo = null;
         if (model.Address != null)
         {
-            addressInfo = new AddressInfo(model.Address.RegionId!.Value,
-                                              model.Address.Street,
-                                              model.Address.Valley,
-                                              model.Address.Detail,
-                                              model.Address.Number,
-                                              model.Address.PostalCode,
-                                              model.Address.Latitude!.Value,
-                                              model.Address.Longitude!.Value);
+            addressInfo = new AddressInfo(
+                model.Address.RegionId!.Value,
+                model.Address.Street,
+                model.Address.Valley,
+                model.Address.Detail,
+                model.Address.Number,
+                model.Address.PostalCode,
+                model.Address.Latitude!.Value,
+                model.Address.Longitude!.Value);
 
         }
         //TODO: Visibility should be considerd
@@ -201,6 +207,54 @@ public class ReportController : ApiController
         return NoContent();
     }
 
+    [Authorize(Roles = "Operator")]
+    [HttpGet("PossibleTransitions/{id:Guid}")]
+    public async Task<ActionResult<List<Application.Reports.Queries.GetPossibleTransitions.PossibleTransitionDto>>> GetPossibleTransitions(Guid id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+            return Unauthorized();
+
+        //TODO: Get this from token
+        var instanceId = 1;
+
+        var command = new GetPossibleTransitionsQuery(id, userId, instanceId);
+        var result = await Sender.Send(command);
+
+        return result;
+    }
+
+    //TODO: Define access policy
+    [Authorize]
+    [HttpPost("MakeTransitions/{id:Guid}")]
+    public async Task<ActionResult> MakeTransition(Guid id, MakeTransitionDto model)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+            return Unauthorized();
+
+        MakeTransitionCommand command = new(
+            id,
+            model.TransitionId,
+            model.ReasonId,
+            model.Attachments,
+            model.Comment,
+            userId,
+            model.ActorIds,
+            User.IsInRole("Executive"),
+            User.IsInRole("Contractor"));
+        var result = await Sender.Send(command);
+
+        return Ok();
+    }
+
+
+    public record MakeTransitionDto(
+    int TransitionId,
+    int ReasonId,
+    List<Guid>? Attachments,
+    string? Comment,
+    List<int> ActorIds);
     /*
     [Authorize(Roles = "Citizen")]
     [HttpGet("Like")]

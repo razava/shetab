@@ -15,7 +15,7 @@ internal sealed class GetMediaQueryHandler : IRequestHandler<GetMediaQuery, Medi
 
     public async Task<Media> Handle(GetMediaQuery request, CancellationToken cancellationToken)
     {
-        var media = await _mediaRepository.GetByIDAsync(request.id);
+        var media = await _mediaRepository.GetSingleAsync(m => m.Id == request.id);
         if (media == null)
         {
             throw new Exception();

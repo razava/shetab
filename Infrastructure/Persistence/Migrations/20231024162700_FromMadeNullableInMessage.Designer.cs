@@ -4,6 +4,7 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231024162700_FromMadeNullableInMessage")]
+    partial class FromMadeNullableInMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,21 @@ namespace Infrastructure.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ActorBotActor", b =>
+                {
+                    b.Property<int>("ActorsId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BotActorsId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ActorsId", "BotActorsId");
+
+                    b.HasIndex("BotActorsId");
+
+                    b.ToTable("ActorBotActor");
+                });
 
             modelBuilder.Entity("ActorProcessStage", b =>
                 {
@@ -80,21 +98,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasIndex("RolesId");
 
                     b.ToTable("ApplicationRoleChart");
-                });
-
-            modelBuilder.Entity("BotActorDestinationActors", b =>
-                {
-                    b.Property<string>("BotActor1Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("DestinationActorsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("BotActor1Id", "DestinationActorsId");
-
-                    b.HasIndex("DestinationActorsId");
-
-                    b.ToTable("BotActorDestinationActors");
                 });
 
             modelBuilder.Entity("Domain.Models.Gov.GovAddress", b =>
@@ -945,9 +948,6 @@ namespace Infrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BotActorId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Identifier")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -956,10 +956,6 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BotActorId")
-                        .IsUnique()
-                        .HasFilter("[BotActorId] IS NOT NULL");
 
                     b.HasIndex("Identifier")
                         .IsUnique();
@@ -1874,6 +1870,21 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("ReportLikes");
                 });
 
+            modelBuilder.Entity("ActorBotActor", b =>
+                {
+                    b.HasOne("Domain.Models.Relational.ProcessAggregate.Actor", null)
+                        .WithMany()
+                        .HasForeignKey("ActorsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.Relational.ProcessAggregate.BotActor", null)
+                        .WithMany()
+                        .HasForeignKey("BotActorsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ActorProcessStage", b =>
                 {
                     b.HasOne("Domain.Models.Relational.ProcessAggregate.Actor", null)
@@ -1930,21 +1941,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RolesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("BotActorDestinationActors", b =>
-                {
-                    b.HasOne("Domain.Models.Relational.ProcessAggregate.BotActor", null)
-                        .WithMany()
-                        .HasForeignKey("BotActor1Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Models.Relational.ProcessAggregate.Actor", null)
-                        .WithMany()
-                        .HasForeignKey("DestinationActorsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -2399,15 +2395,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasOne("Domain.Models.Relational.PollAggregate.Poll", null)
                         .WithMany("Choices")
                         .HasForeignKey("PollId");
-                });
-
-            modelBuilder.Entity("Domain.Models.Relational.ProcessAggregate.Actor", b =>
-                {
-                    b.HasOne("Domain.Models.Relational.ProcessAggregate.BotActor", "BotActor")
-                        .WithOne("Actor")
-                        .HasForeignKey("Domain.Models.Relational.ProcessAggregate.Actor", "BotActorId");
-
-                    b.Navigation("BotActor");
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ProcessAggregate.BotActor", b =>
@@ -3115,12 +3102,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Answers");
 
                     b.Navigation("Choices");
-                });
-
-            modelBuilder.Entity("Domain.Models.Relational.ProcessAggregate.BotActor", b =>
-                {
-                    b.Navigation("Actor")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ProcessAggregate.Process", b =>

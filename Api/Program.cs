@@ -186,7 +186,7 @@ builder.WebHost.UseUrls("http://0.0.0.0:80", "https://0.0.0.0:443");
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseAccessControlMiddleware();
+//app.UseAccessControlMiddleware();
 app.UseStaticFiles();
 app.MapControllers();
 app.MapHub<NewEventHub>("/eventhub");

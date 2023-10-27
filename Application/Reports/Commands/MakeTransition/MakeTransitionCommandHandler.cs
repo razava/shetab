@@ -11,12 +11,14 @@ namespace Application.Reports.Commands.CreateReportByOperator;
 internal sealed class MakeTransitionCommandHandler : IRequestHandler<MakeTransitionCommand, Report>
 {
     private readonly IReportRepository _reportRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public MakeTransitionCommandHandler(IUnitOfWork unitOfWork, IReportRepository reportRepository)
+    public MakeTransitionCommandHandler(IUnitOfWork unitOfWork, IReportRepository reportRepository, IUserRepository userRepository)
     {
         _unitOfWork = unitOfWork;
         _reportRepository = reportRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<Report> Handle(MakeTransitionCommand request, CancellationToken cancellationToken)
@@ -30,11 +32,16 @@ internal sealed class MakeTransitionCommandHandler : IRequestHandler<MakeTransit
             request.ReasonId,
             request.Attachments,
             request.Comment,
-            request.ActorType,
+            ActorType.Person,
             request.ActorIdentifier,
             request.ActorIds,
             request.IsExecutive,
             request.IsContractor);
+
+        if(report.Feedback is not null && string.IsNullOrEmpty(report.Feedback.PhoneNumber))
+        {
+            report.Feedback.PhoneNumber = (await _userRepository.FindAsync(report.CitizenId))?.PhoneNumber ?? "";
+        }
         _reportRepository.Update(report);
         await _unitOfWork.SaveAsync();
 

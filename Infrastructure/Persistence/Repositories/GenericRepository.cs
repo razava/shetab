@@ -19,21 +19,11 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
 
     public virtual async Task<IEnumerable<TEntity>> GetAsync(
         Expression<Func<TEntity, bool>>? filter = null,
+        bool trackChanges = true,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         string includeProperties = "")
     {
-        IQueryable<TEntity> query = dbSet;
-
-        if (filter != null)
-        {
-            query = query.Where(filter);
-        }
-
-        foreach (var includeProperty in includeProperties.Split
-            (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-        {
-            query = query.Include(includeProperty);
-        }
+        var query = createQuery(filter, trackChanges, includeProperties);
 
         if (orderBy != null)
         {
@@ -45,26 +35,32 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
         }
     }
 
+    public virtual async Task<TEntity?> GetFirstAsync(
+        Expression<Func<TEntity, bool>>? filter = null,
+        bool trackChanges = true,
+        string includeProperties = "")
+    {
+        var query = createQuery(filter, trackChanges, includeProperties);
+        return await query.FirstOrDefaultAsync();
+    }
+
+    public virtual async Task<TEntity?> GetSingleAsync(
+        Expression<Func<TEntity, bool>>? filter = null,
+        bool trackChanges = true,
+        string includeProperties = "")
+    {
+        var query = createQuery(filter, trackChanges, includeProperties);
+        return await query.SingleOrDefaultAsync();
+    }
+
     public virtual async Task<PagedList<TEntity>> GetPagedAsync(
         PagingInfo paging,
         Expression<Func<TEntity, bool>>? filter = null,
+        bool trackChanges = true,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         string includeProperties = "")
     {
-        IQueryable<TEntity> query = dbSet;
-
-        query = query.Where(makeFilter(paging));
-
-        if (filter != null)
-        {
-            query = query.Where(filter);
-        }
-
-        foreach (var includeProperty in includeProperties.Split
-            (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-        {
-            query = query.Include(includeProperty);
-        }
+        var query = createQuery(filter, trackChanges, includeProperties);
 
         if (orderBy != null)
         {
@@ -82,21 +78,11 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
 
     public virtual IEnumerable<TEntity> Get(
         Expression<Func<TEntity, bool>>? filter = null,
+        bool trackChanges = true,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         string includeProperties = "")
     {
-        IQueryable<TEntity> query = dbSet;
-
-        if (filter != null)
-        {
-            query = query.Where(filter);
-        }
-
-        foreach (var includeProperty in includeProperties.Split
-            (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-        {
-            query = query.Include(includeProperty);
-        }
+        var query = createQuery(filter, trackChanges, includeProperties);
 
         if (orderBy != null)
         {
@@ -108,12 +94,12 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
         }
     }
 
-    public virtual TEntity? GetByID(object id)
+    public virtual TEntity? Find(object id)
     {
         return dbSet.Find(id);
     }
 
-    public virtual async Task<TEntity?> GetByIDAsync(object id)
+    public virtual async Task<TEntity?> FindAsync(object id)
     {
         return await dbSet.FindAsync(id);
     }
@@ -241,5 +227,27 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
             Expression.Call(typeof(Queryable), methodName, new Type[] { typeof(TEntity), type }, outerExpression.Body, Expression.Quote(lambda));
         var finalLambda = Expression.Lambda(resultExp, argQueryable);
         return (Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>)finalLambda.Compile();
+    }
+
+    private IQueryable<TEntity> createQuery(Expression<Func<TEntity, bool>>? filter, bool trackChanges, string includeProperties)
+    {
+        IQueryable<TEntity> query = dbSet;
+        if (trackChanges)
+            query = query.AsTracking();
+        else
+            query = query.AsNoTracking();
+
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+
+        foreach (var includeProperty in includeProperties.Split
+            (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            query = query.Include(includeProperty);
+        }
+
+        return query;
     }
 }

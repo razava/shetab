@@ -1038,7 +1038,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
         bot12 = new BotActor()
         {
             Transition = transition12,
-            Actors = stageOperator.Actors,
+            DestinationActors = stageOperator.Actors,
             MessageToCitizen = "",
             Priority = Priority.Normal,
             ReasonId = null,
@@ -1049,13 +1049,14 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
         stageCitizen.Actors.Add(new Actor()
         {
             Identifier = bot12.Id,
+            BotActorId = bot12.Id,
             Type = ActorType.Auto
         });
 
         bot21 = new BotActor()
         {
             Transition = transition21,
-            Actors = stageCitizen.Actors,
+            DestinationActors = stageCitizen.Actors,
             MessageToCitizen = "",
             Priority = null,
             ReasonId = null,
@@ -1067,6 +1068,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
         stageOperator.Actors.Add(new Actor()
         {
             Identifier = bot21.Id,
+            BotActorId = bot21.Id,
             Type = ActorType.Auto
         });
 

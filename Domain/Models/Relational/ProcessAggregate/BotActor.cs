@@ -9,7 +9,8 @@ public class BotActor
     public string Id { get; set; } = null!;
     public int TransitionId { get; set; }
     public ProcessTransition Transition { get; set; } = null!;
-    public ICollection<Actor> Actors { get; set; } = new List<Actor>();
+    public ICollection<Actor> DestinationActors { get; set; } = new List<Actor>();
+    public Actor Actor { get; set; } = null!;
     public string MessageToCitizen { get; set; } = string.Empty;
     public Priority? Priority { get; set; }
     public Visibility? Visibility { get; set; }

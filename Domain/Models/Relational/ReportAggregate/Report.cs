@@ -22,7 +22,7 @@ public class Report : Entity
     public double? ResponseDuration { get; private set; }
 
     public int CategoryId { get; private set; }
-    public Category Category { get; private set; } = null!;
+    public Category Category { get; set; } = null!;
     public Address Address { get; private set; } = null!;
     public string TrackingNumber { get; private set; } = null!;
     public Priority Priority { get; private set; }
@@ -34,7 +34,7 @@ public class Report : Entity
 
     //Process infos
     public int ProcessId { get; private set; }
-    public Process Process { get; private set; } = null!;
+    public Process Process { get; set; } = null!;
     public int? CurrentStageId { get; private set; }
     public ProcessStage? CurrentStage { get; private set; }
     public int? LastTransitionId { get; private set; }
@@ -99,8 +99,11 @@ public class Report : Entity
     {
         var now = DateTime.UtcNow;
 
+        ShahrbinInstanceId = category.ShahrbinInstanceId;
         CitizenId = citizenId;
         CategoryId = category.Id;
+        ProcessId = category.ProcessId ?? throw new Exception("Category should have a process assigned to.");
+        Process = category.Process ?? throw new Exception("Process is not loaded.");
         Comments = comments;
         attachments.ForEach(p => Medias.Add(new Media() { Id = p }));
         IsIdentityVisible = isIdentityVisible;
@@ -130,8 +133,6 @@ public class Report : Entity
         Priority priority = Priority.Normal,
         bool isIdentityVisible = true)
     {
-        var now = DateTime.UtcNow;
-
         var report = new Report(
             Guid.NewGuid(),
             citizenId,
@@ -235,6 +236,7 @@ public class Report : Entity
         CurrentStageId = firstStage.Id;
         LastStatus = firstStage.Status;
         LastStatusDateTime = now;
+        autoTransition();
     }
 
     public void Accept(
@@ -346,7 +348,7 @@ public class Report : Entity
 
         if (category is not null)
         {
-            CategoryId = Category.Id;
+            CategoryId = category.Id;
             Category = category;
             Deadline = now.AddHours(category.Duration);
             ResponseDeadline = category.ResponseDuration == null ? null : now.AddHours(category.ResponseDuration.Value);
@@ -389,15 +391,20 @@ public class Report : Entity
         foreach (var autoActor in autoActors)
         {
             //Revise this
-            var bot = autoActor.BotActors
-                .Where(p => p.Id == autoActor.Identifier)
-                .SingleOrDefault();
+            var bot = autoActor.BotActor;
             if (bot == null)
                 throw new Exception("Bot not found.");
 
             if (bot.ReasonMeaning == null || LastReason != null && LastReason.ReasonMeaning == bot.ReasonMeaning)
             {
-                makeTransition(bot.TransitionId, bot.ReasonId, new List<Guid>(), "", ActorType.Auto, bot.Id, new List<int>());
+                makeTransition(
+                    bot.TransitionId,
+                    bot.ReasonId,
+                    new List<Guid>(),
+                    "",
+                    ActorType.Auto,
+                    bot.Id,
+                    bot.DestinationActors.Select(p => p.Id).ToList());
                 break;
             }
         }
@@ -419,6 +426,11 @@ public class Report : Entity
         var transition = Process.Transitions.SingleOrDefault(p => p.Id == transitionId);
         if (transition == null)
             throw new Exception("Transition cannot be null here.");
+
+        if (CurrentStageId != transition.FromId)
+            throw new InvalidOperationException();
+
+        //TODO: Check user permissions for making transition
 
         var reason = transition.ReasonList.Where(p => p.Id == reasonId).SingleOrDefault();
 

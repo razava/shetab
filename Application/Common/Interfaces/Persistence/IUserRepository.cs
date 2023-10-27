@@ -10,7 +10,9 @@ public interface IUserRepository : IGenericRepository<ApplicationUser>
 {
     public Task<ApplicationUser> GetOrCreateCitizen(string phoneNumber, string firstName, string lastName);
     public Task<List<ApplicationUser>> GetUserActors();
+    public Task<List<ApplicationUser>> GetUserActors(List<string> ids);
     public Task<List<ApplicationRole>> GetRoleActors();
+    public Task<List<ApplicationRole>> GetRoleActors(List<string> ids);
     public Task<List<ApplicationUser>> GetUsersInRole(string roleName);
     public Task<List<ApplicationRole>> GetRoles();
     public Task<List<Actor>> GetActors();

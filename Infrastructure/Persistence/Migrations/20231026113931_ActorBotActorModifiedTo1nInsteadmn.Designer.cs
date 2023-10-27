@@ -4,6 +4,7 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231026113931_ActorBotActorModifiedTo1nInsteadmn")]
+    partial class ActorBotActorModifiedTo1nInsteadmn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,21 +83,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasIndex("RolesId");
 
                     b.ToTable("ApplicationRoleChart");
-                });
-
-            modelBuilder.Entity("BotActorDestinationActors", b =>
-                {
-                    b.Property<string>("BotActor1Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("DestinationActorsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("BotActor1Id", "DestinationActorsId");
-
-                    b.HasIndex("DestinationActorsId");
-
-                    b.ToTable("BotActorDestinationActors");
                 });
 
             modelBuilder.Entity("Domain.Models.Gov.GovAddress", b =>
@@ -957,9 +945,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BotActorId")
-                        .IsUnique()
-                        .HasFilter("[BotActorId] IS NOT NULL");
+                    b.HasIndex("BotActorId");
 
                     b.HasIndex("Identifier")
                         .IsUnique();
@@ -1934,21 +1920,6 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BotActorDestinationActors", b =>
-                {
-                    b.HasOne("Domain.Models.Relational.ProcessAggregate.BotActor", null)
-                        .WithMany()
-                        .HasForeignKey("BotActor1Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Models.Relational.ProcessAggregate.Actor", null)
-                        .WithMany()
-                        .HasForeignKey("DestinationActorsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Domain.Models.Gov.GovFamily", b =>
                 {
                     b.HasOne("Domain.Models.Gov.GovUserInfo", null)
@@ -2404,8 +2375,8 @@ namespace Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Models.Relational.ProcessAggregate.Actor", b =>
                 {
                     b.HasOne("Domain.Models.Relational.ProcessAggregate.BotActor", "BotActor")
-                        .WithOne("Actor")
-                        .HasForeignKey("Domain.Models.Relational.ProcessAggregate.Actor", "BotActorId");
+                        .WithMany("Actors")
+                        .HasForeignKey("BotActorId");
 
                     b.Navigation("BotActor");
                 });
@@ -3119,8 +3090,7 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Models.Relational.ProcessAggregate.BotActor", b =>
                 {
-                    b.Navigation("Actor")
-                        .IsRequired();
+                    b.Navigation("Actors");
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ProcessAggregate.Process", b =>

@@ -28,7 +28,7 @@ internal sealed class AcceptByOperatorCommandHandler : IRequestHandler<AcceptByO
         Category? category = null;
         if (request.CategoryId is not null)
         {
-            category = await _categoryRepository.GetByIDAsync(request.CategoryId);
+            category = await _categoryRepository.GetByIDAsync(request.CategoryId.Value);
             if (category is null)
             {
                 //TODO: Handle this error

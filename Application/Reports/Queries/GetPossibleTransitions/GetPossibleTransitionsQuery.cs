@@ -6,5 +6,6 @@ namespace Application.Reports.Queries.GetPossibleTransitions;
 
 public sealed record GetPossibleTransitionsQuery(
     Guid reportId,
-    string userId) : IRequest<List<PossibleTransitionDto>>;
+    string userId,
+    int instanceId) : IRequest<List<PossibleTransitionDto>>;
 
