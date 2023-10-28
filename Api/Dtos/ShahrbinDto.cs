@@ -96,12 +96,12 @@ public class OperatorCreateReportDto
 public class AddressDto
 {
     public int? RegionId { get; set; }
-    public RegionGetDto Region { get; set; }
-    public string Street { get; set; }
-    public string Valley { get; set; }
-    public string Detail { get; set; }
-    public string Number { get; set; }
-    public string PostalCode { get; set; }
+
+    public string Street { get; set; } = string.Empty;
+    public string Valley { get; set; } = string.Empty;
+    public string Detail { get; set; } = string.Empty;
+    public string Number { get; set; } = string.Empty;
+    public string PostalCode { get; set; } = string.Empty;
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
     public double? Elevation { get; set; }

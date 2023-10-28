@@ -24,4 +24,5 @@ public interface IUserRepository : IGenericRepository<ApplicationUser>
     public Task<ApplicationRole?> FindRoleByNameAsync(string roleName);
     public Task<IdentityResult> CreateRoleAsync(ApplicationRole applicationRole);
     public Task<bool> RoleExistsAsync(string roleName);
+    public Task<List<Actor>> GetActors(string userId);
 }

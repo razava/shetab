@@ -458,15 +458,17 @@ public class Report : Entity
             }
         }
 
+        var actorsSpecified = transition.To.Actors.Any(a => actorIds.Contains(a.Id));
+        CurrentActors = transition.To.Actors.Where(ca => actorIds.Contains(ca.Id) || actorsSpecified).ToList();
 
-        if (actorIds.Count == 0)
-        {
-            actorIds = transition.To.Actors.Select(p => p.Id).ToList();
-        }
+        //if (actorIds.Count == 0)
+        //{
+        //    actorIds = transition.To.Actors.Select(p => p.Id).ToList();
+        //}
 
-        CurrentActorsStr = "";
-        actorIds.ForEach(p => CurrentActorsStr = $"{CurrentActorsStr}|{p}");
-        CurrentActorsStr = CurrentActorsStr + "|";
+        //CurrentActorsStr = "";
+        //actorIds.ForEach(p => CurrentActorsStr = $"{CurrentActorsStr}|{p}");
+        //CurrentActorsStr = CurrentActorsStr + "|";
 
         var duration = now - LastStatusDateTime;
 

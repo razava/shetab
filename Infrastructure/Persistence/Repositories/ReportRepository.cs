@@ -1,6 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
 
@@ -20,7 +19,8 @@ public class ReportRepository: GenericRepository<Report>, IReportRepository
 
     public async Task<Report?> GetByIDAsync(Guid id, bool trackChanges = true)
     {
-        var result = await base.GetSingleAsync(r=>r.Id == id, trackChanges, @"TransitionLogs");
+        //TransitionLogs won't be modified, so there is no need to include them
+        var result = await base.GetSingleAsync(r => r.Id == id, trackChanges, @"CurrentActors");
 
         if (result is null)
             return null;

@@ -7,11 +7,13 @@ using Application.Reports.Commands.CreateReportByOperator;
 using Application.Reports.Commands.UpdateByOperator;
 using Application.Reports.Common;
 using Application.Reports.Queries.GetPossibleTransitions;
+using DocumentFormat.OpenXml.Office2016.Presentation.Command;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mail;
 using System.Security.Claims;
 
 namespace Api.Controllers;
@@ -248,511 +250,526 @@ public class ReportController : ApiController
         return Ok();
     }
 
+    [Authorize]
+    [HttpGet("Reports")]
+    public async Task<ActionResult<List<Report>>> GetReports(int instanceId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+            return Unauthorized();
 
+        var query = new GetReportsQuery(userId, instanceId);
+        var result = await Sender.Send(query);
+        return Ok(result);
+    }
     public record MakeTransitionDto(
     int TransitionId,
     int ReasonId,
-    List<Guid>? Attachments,
-    string? Comment,
-    List<int> ActorIds);
-    /*
-    [Authorize(Roles = "Citizen")]
-    [HttpGet("Like")]
-    public async Task<ActionResult<int>> Like(Guid reportId, bool isLiked)
+    List<Guid> Attachments,
+    string Comment,
+    List<int> ActorIds)
     {
-        var user = await _userManager.GetUserAsync(User);
-        var report = await _context.Reports
-            .Where(p => p.Id == reportId)
-            .Include(p => p.LikedBy)
-            .SingleOrDefaultAsync();
-
-        if (report == null)
-        {
-            return NotFound();
-        }
-
-        if (isLiked)
-        {
-            if (report.LikedBy.Any(p => p.Id == user.Id))
-            {
-                //Already liked!
-            }
-            else
-            {
-                report.LikedBy.Add(user);
-                report.Likes = report.LikedBy.Count;
-            }
-        }
-        else
-        {
-            if (report.LikedBy.Any(p => p.Id == user.Id))
-            {
-                report.LikedBy.Remove(user);
-                report.Likes = report.LikedBy.Count;
-            }
-            else
-            {
-                //Not liked, do nothing
-            }
-        }
-
-        _context.Entry(report).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-
-        return report.Likes;
+        public List<Guid> Attachments { get; init; } = Attachments ?? new List<Guid>();
+        public string Comment { get; init; } = Comment ?? "";
     }
-
-    [Authorize(Roles = "Citizen")]
-    [HttpPost("Comment/{reportId}")]
-    public async Task<IActionResult> PostCommentByCitizen(int instanceId, Guid reportId, CreateCommentDto comment)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        var model = new Comment()
+        /*
+        [Authorize(Roles = "Citizen")]
+        [HttpGet("Like")]
+        public async Task<ActionResult<int>> Like(Guid reportId, bool isLiked)
         {
-            ShahrbinInstanceId = instanceId,
-            DateTime = DateTime.Now,
-            IsSeen = false,
-            IsVerified = true,
-            ReplyId = null,
-            Text = comment.Comment,
-            UserId = userId,
-            ReportId = reportId
-        };
-
-        var report = await _context.Reports
-            .Where(p => p.Id == reportId)
-            .Include(p => p.FeedbackComments)
-            .SingleOrDefaultAsync();
-
-        if (report == null)
-        {
-            return NotFound();
-        }
-
-        report.FeedbackComments
-            .Add(model);
-        //Consider verified and not verified comments. If verification is needed then CommentsCount should be updated in Tasks controller not here.
-        report.CommentsCount = report.FeedbackComments.Count;
-        await _context.SaveChangesAsync();
-
-        return Ok();
-    }
-    */
-    /*
-    
-
-    
-
-
-    /// <summary>
-    /// This microservice returns all the reports that current citizen has made.
-    /// </summary>
-    /// <returns></returns>
-    /// 
-    [Authorize(Roles = "Citizen")]
-    [HttpGet]
-    public async Task<ActionResult<List<CitizenGetReportDto>>> GetCitizensReports([FromQuery] PagingInfo pagingInfo)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-
-        var query = _context.Reports
-            .AsNoTracking()
-            //.Include(p => p.CurrentActors)
-            .Where(p => p.CitizenId == userId)
-            .Include(p => p.Citizen)
-            .ThenInclude(p => p.Avatar)
-            .Include(p => p.Category)
-            .Include(p => p.Address)
-            .Include(p => p.Medias)
-            .Include(p => p.TransitionLogs)
-            .ThenInclude(p => p.Reason)
-            .Include(p => p.LikedBy.Where(q => q.Id == userId))
-            .Include(p => p.Messages)
-            .OrderByDescending(p => p.Sent);
-
-        if (pagingInfo.CategoryType != CategoryType.All)
-        {
-            query = (IOrderedQueryable<Report>)query.Where(p => p.Category.CategoryType == pagingInfo.CategoryType);
-        }
-
-        if (pagingInfo.Query != null && pagingInfo.Query.Length >= 3)
-        {
-            query.Where(p => p.TrackingNumber.Contains(pagingInfo.Query));
-        }
-
-        var reports = await PagedList<Report>.ToPagedList(
-            query,
-            pagingInfo.PageNumber,
-            pagingInfo.PageSize);
-
-        var metadata = new
-        {
-            reports.TotalCount,
-            reports.PageSize,
-            reports.CurrentPage,
-            reports.TotalPages,
-            reports.HasNext,
-            reports.HasPrevious
-        };
-        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-
-        return _mapper.Map<List<CitizenGetReportDto>>(reports);
-    }
-
-    /// <summary>
-    /// This microservice returns all the reports that current citizen has made.
-    /// </summary>
-    /// <returns></returns>
-    /// 
-    [Authorize(Roles = "Citizen")]
-    [HttpGet("All")]
-    public async Task<ActionResult<List<CitizenGetReportDto>>> GetAllReports([FromQuery] PagingInfo pagingInfo)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        var query = _context.Reports
-            .AsNoTracking()
-            .Where(p => p.Visibility == Visibility.EveryOne)
-            .Include(p => p.Citizen)
-            .ThenInclude(p => p.Avatar)
-            .Include(p => p.Registrant)
-            .ThenInclude(p => p.Avatar)
-            //.Include(p => p.CurrentActors)
-            .Include(p => p.Category)
-            .Include(p => p.Address)
-            .Include(p => p.Medias)
-            .Include(p => p.LikedBy.Where(q => q.Id == userId))
-            .Include(p => p.TransitionLogs)
-            .ThenInclude(p => p.Reason)
-            .OrderByDescending(p => p.Sent);
-
-        if (pagingInfo.CategoryType != CategoryType.All)
-        {
-            query = (IOrderedQueryable<Report>)query.Where(p => p.Category.CategoryType == pagingInfo.CategoryType);
-        }
-
-        if (pagingInfo.Query != null && pagingInfo.Query.Length >= 3)
-        {
-            query = (IOrderedQueryable<Report>)query.Where(p => p.TrackingNumber.Contains(pagingInfo.Query));
-        }
-
-        if (pagingInfo.CategoryIds.Count() > 0)
-        {
-            query = (IOrderedQueryable<Report>)query.Where(p => pagingInfo.CategoryIds.Contains(p.CategoryId));
-        }
-
-        if (pagingInfo.SentFromDate != null)
-        {
-            query = (IOrderedQueryable<Report>)query.Where(p => p.Sent >= pagingInfo.SentFromDate);
-        }
-
-        if (pagingInfo.SentToDate != null)
-        {
-            query = (IOrderedQueryable<Report>)query.Where(p => p.Sent < pagingInfo.SentToDate);
-        }
-
-        var reports = await PagedList<Report>.ToPagedList(
-            query,
-            pagingInfo.PageNumber,
-            pagingInfo.PageSize);
-
-        var metadata = new
-        {
-            reports.TotalCount,
-            reports.PageSize,
-            reports.CurrentPage,
-            reports.TotalPages,
-            reports.HasNext,
-            reports.HasPrevious
-        };
-        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-
-        return _mapper.Map<List<CitizenGetReportDto>>(reports);
-    }
-
-    
-
-    [Authorize(Roles = "Citizen")]
-    [HttpGet("Comment/{reportId}")]
-    public async Task<ActionResult<List<GetCommentForCitizenDto>>> GetComments(Guid reportId, [FromQuery] PagingInfo pagingInfo)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        var query = _context.Comment
-            .AsNoTracking()
-            .Where(p => p.ReportId == reportId && p.IsVerified)
-            .Include(p => p.Reply)
-            .Include(p => p.User)
-            .ThenInclude(p => p.Avatar);
-
-        var comments = await PagedList<Comment>.ToPagedList(
-            query,
-            pagingInfo.PageNumber,
-            pagingInfo.PageSize);
-
-        var metadata = new
-        {
-            comments.TotalCount,
-            comments.PageSize,
-            comments.CurrentPage,
-            comments.TotalPages,
-            comments.HasNext,
-            comments.HasPrevious
-        };
-        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-
-        var result = _mapper.Map<List<GetCommentForCitizenDto>>(comments);
-        result.ForEach(p => p.CanDelete = p.User.Id == userId);
-        result.ForEach(p => p.User.Id = "");    //For security
-        return result;
-    }
-
-    [Authorize(Roles = "Citizen")]
-    [HttpDelete("Comment/{commentId}")]
-    public async Task<ActionResult<List<GetCommentForCitizenDto>>> DeleteComment(Guid commentId)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        var comment = await _context.Comment
-            .Where(p => p.Id == commentId)
-            .Include(p => p.Reply)
-            .Include(p => p.Report)
-            .ThenInclude(p => p.FeedbackComments)
-            .SingleOrDefaultAsync();
-
-        if (comment == null)
-        {
-            return NotFound();
-        }
-
-        if (comment.UserId != userId)
-        {
-            return Unauthorized();
-        }
-        comment.Report.CommentsCount = comment.Report.FeedbackComments.Count - 1;
-        _context.Entry(comment.Report).State = EntityState.Modified;
-
-        if (comment.Reply != null)
-        {
-            _context.Entry(comment.Reply).State = EntityState.Deleted;
-        }
-        _context.Entry(comment).State = EntityState.Deleted;
-
-        await _context.SaveChangesAsync();
-
-
-        return Ok();
-    }
-
-    [Authorize(Roles = "Citizen")]
-    [HttpGet("Nearest")]
-    public async Task<ActionResult<List<CitizenGetReportDto>>> GetNearestReports([FromQuery] PagingInfo pagingInfo)
-    {
-        if (pagingInfo.Latitude == null || pagingInfo.Longitude == null)
-        {
-            return BadRequest();
-        }
-
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-
-        var reportLocations = await _context.Reports
-            .AsNoTracking()
-            .Where(p => p.Visibility == Visibility.EveryOne)
-            .Where(p => p.Address.Latitude != null && p.Address.Longitude != null)
-            .Include(p => p.Address)
-            .Select(p => new ReportLocation() { ReportId = p.Id, Latitude = p.Address.Latitude.Value, Longitude = p.Address.Longitude.Value })
-            .ToListAsync();
-
-        reportLocations.ForEach(p => p.Distance =
-            Utilities.Utilities.CalculateDistance(
-                p.Latitude, p.Longitude,
-                pagingInfo.Latitude.Value, pagingInfo.Longitude.Value));
-
-        var query = reportLocations.OrderBy(p => p.Distance).AsQueryable();
-        var result = PagedList<ReportLocation>.ToPagedListSync(
-            query,
-            pagingInfo.PageNumber,
-            pagingInfo.PageSize);
-
-        var metadata = new
-        {
-            result.TotalCount,
-            result.PageSize,
-            result.CurrentPage,
-            result.TotalPages,
-            result.HasNext,
-            result.HasPrevious
-        };
-        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-
-        var reportIds = result.Select(p => p.ReportId).ToList();
-
-        var reports = await _context.Reports
-            .AsNoTracking()
-            .Where(p => reportIds.Contains(p.Id))
-            .Include(p => p.Citizen)
-            .ThenInclude(p => p.Avatar)
-            .Include(p => p.Registrant)
-            .ThenInclude(p => p.Avatar)
-            //.Include(p => p.CurrentActors)
-            .Include(p => p.Category)
-            .Include(p => p.Address)
-            .Include(p => p.Medias)
-            .Include(p => p.LikedBy.Where(q => q.Id == userId))
-            .Include(p => p.TransitionLogs)
-            .ThenInclude(p => p.Reason)
-            .ToListAsync();
-
-        reports = reports.OrderBy(p => reportIds.IndexOf(p.Id)).ToList();
-
-        return _mapper.Map<List<CitizenGetReportDto>>(reports);
-    }
-
-    [Authorize(Roles = "Citizen")]
-    [HttpPost("Objection/{reportId}")]
-    public async Task<IActionResult> PostObjectionByCitizen(int instanceId, Guid reportId, [FromForm] ObjectionDto objectionDto)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        var report = await _context.Reports
-            .Where(p => p.Id == reportId)
-            //.Include(p => p.CurrentActors)
-            .Include(p => p.Address)
-            .Include(p => p.Category)
-            .Include(p => p.Citizen)
-            .Include(p => p.Medias)
-            .SingleOrDefaultAsync();
-
-        if (report == null)
-        {
-            return NotFound();
-        }
-
-        if (report.CitizenId != userId)
-        {
-            return StatusCode(StatusCodes.Status400BadRequest,
-                new { Status = "Error", Message = "امکان ثبت درخواست بررسی مجدد برای این گزارش وجود ندارد." });
-        }
-
-        if (report.ReportState != ReportState.Finished)
-        {
-            return StatusCode(StatusCodes.Status400BadRequest,
-                new { Status = "Error", Message = "امکان ثبت درخواست بررسی مجدد در این مرحله وجود ندارد." });
-        }
-
-        if (report.Category.ObjectionAllowed == false)
-        {
-            return StatusCode(StatusCodes.Status400BadRequest,
-                new { Status = "Error", Message = "امکان درخواست بررسی مجدد وجود ندارد." });
-        }
-
-
-        var processManager = new ProcessManager(instanceId, _settings, _context, report, _mapper, _messaging, _hub, _userManager, _hostEnvironment, _imageQualities);
-
-
-        var model = _mapper.Map<ObjectionModel>(objectionDto);
-
-        if (objectionDto.Attachments != null && objectionDto.Attachments.Count > 0)
-        {
-            model.Medias = await Utilities.Utilities.WriteFile(objectionDto.Attachments, _hostEnvironment.WebRootPath, Utilities.Utilities.AttachmentType.Report, _imageQualities);
-            if (objectionDto.Attachments.Count != model.Medias.Count)
-            {
-                return StatusCode(StatusCodes.Status400BadRequest,
-                    new { Status = "Error", Message = "Attachment failed!" });
-            }
-        }
-
-
-        await processManager.MakeObjection(model);
-        return Ok();
-    }
-
-
-    [Authorize(Roles = "Operator")]
-    [HttpPut("UpdateComments/{id}")]
-    public async Task<ActionResult<Guid>> Update(Guid id, [FromBody] UpdateReportCommentsDto comments)
-    {
-        var instanceId = int.Parse(User.FindFirstValue(AppClaimTypes.InstanceId));
-        if (instanceId <= 0)
-        {
-            return BadRequest();
-        }
-
-        var report = await _context.Reports
-            .Where(p => p.Id == id)
-            .SingleOrDefaultAsync();
-        if (report == null || report.ShahrbinInstanceId != instanceId)
-            return NotFound();
-
-        report.Comments = comments.Comments;
-        _context.Entry(report).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    [Authorize(Roles = "PowerUser")]
-    [HttpGet("DeleteReport/{trackingNumbers}")]
-    public async Task<IActionResult> DeleteReport(string trackingNumbers)
-    {
-        int total = 0, failed = 0;
-        var trs = trackingNumbers.Split(' ');
-        foreach (var trackingNumber in trs)
-        {
-            if (string.IsNullOrEmpty(trackingNumber))
-            {
-                continue;
-            }
-            try
-            {
-                var report = await _context.Reports
-                .Where(p => p.TrackingNumber == trackingNumber)
-                .Include(p => p.Medias)
-                .Include(p => p.TransitionLogs)
-                .ThenInclude(p => p.Attachments)
+            var user = await _userManager.GetUserAsync(User);
+            var report = await _context.Reports
+                .Where(p => p.Id == reportId)
+                .Include(p => p.LikedBy)
                 .SingleOrDefaultAsync();
 
-                foreach (var transitionLog in report.TransitionLogs)
+            if (report == null)
+            {
+                return NotFound();
+            }
+
+            if (isLiked)
+            {
+                if (report.LikedBy.Any(p => p.Id == user.Id))
                 {
-                    foreach (var media in transitionLog.Attachments)
+                    //Already liked!
+                }
+                else
+                {
+                    report.LikedBy.Add(user);
+                    report.Likes = report.LikedBy.Count;
+                }
+            }
+            else
+            {
+                if (report.LikedBy.Any(p => p.Id == user.Id))
+                {
+                    report.LikedBy.Remove(user);
+                    report.Likes = report.LikedBy.Count;
+                }
+                else
+                {
+                    //Not liked, do nothing
+                }
+            }
+
+            _context.Entry(report).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return report.Likes;
+        }
+
+        [Authorize(Roles = "Citizen")]
+        [HttpPost("Comment/{reportId}")]
+        public async Task<IActionResult> PostCommentByCitizen(int instanceId, Guid reportId, CreateCommentDto comment)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var model = new Comment()
+            {
+                ShahrbinInstanceId = instanceId,
+                DateTime = DateTime.Now,
+                IsSeen = false,
+                IsVerified = true,
+                ReplyId = null,
+                Text = comment.Comment,
+                UserId = userId,
+                ReportId = reportId
+            };
+
+            var report = await _context.Reports
+                .Where(p => p.Id == reportId)
+                .Include(p => p.FeedbackComments)
+                .SingleOrDefaultAsync();
+
+            if (report == null)
+            {
+                return NotFound();
+            }
+
+            report.FeedbackComments
+                .Add(model);
+            //Consider verified and not verified comments. If verification is needed then CommentsCount should be updated in Tasks controller not here.
+            report.CommentsCount = report.FeedbackComments.Count;
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+        */
+        /*
+
+
+
+
+
+        /// <summary>
+        /// This microservice returns all the reports that current citizen has made.
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [Authorize(Roles = "Citizen")]
+        [HttpGet]
+        public async Task<ActionResult<List<CitizenGetReportDto>>> GetCitizensReports([FromQuery] PagingInfo pagingInfo)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+
+            var query = _context.Reports
+                .AsNoTracking()
+                //.Include(p => p.CurrentActors)
+                .Where(p => p.CitizenId == userId)
+                .Include(p => p.Citizen)
+                .ThenInclude(p => p.Avatar)
+                .Include(p => p.Category)
+                .Include(p => p.Address)
+                .Include(p => p.Medias)
+                .Include(p => p.TransitionLogs)
+                .ThenInclude(p => p.Reason)
+                .Include(p => p.LikedBy.Where(q => q.Id == userId))
+                .Include(p => p.Messages)
+                .OrderByDescending(p => p.Sent);
+
+            if (pagingInfo.CategoryType != CategoryType.All)
+            {
+                query = (IOrderedQueryable<Report>)query.Where(p => p.Category.CategoryType == pagingInfo.CategoryType);
+            }
+
+            if (pagingInfo.Query != null && pagingInfo.Query.Length >= 3)
+            {
+                query.Where(p => p.TrackingNumber.Contains(pagingInfo.Query));
+            }
+
+            var reports = await PagedList<Report>.ToPagedList(
+                query,
+                pagingInfo.PageNumber,
+                pagingInfo.PageSize);
+
+            var metadata = new
+            {
+                reports.TotalCount,
+                reports.PageSize,
+                reports.CurrentPage,
+                reports.TotalPages,
+                reports.HasNext,
+                reports.HasPrevious
+            };
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+            return _mapper.Map<List<CitizenGetReportDto>>(reports);
+        }
+
+        /// <summary>
+        /// This microservice returns all the reports that current citizen has made.
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [Authorize(Roles = "Citizen")]
+        [HttpGet("All")]
+        public async Task<ActionResult<List<CitizenGetReportDto>>> GetAllReports([FromQuery] PagingInfo pagingInfo)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var query = _context.Reports
+                .AsNoTracking()
+                .Where(p => p.Visibility == Visibility.EveryOne)
+                .Include(p => p.Citizen)
+                .ThenInclude(p => p.Avatar)
+                .Include(p => p.Registrant)
+                .ThenInclude(p => p.Avatar)
+                //.Include(p => p.CurrentActors)
+                .Include(p => p.Category)
+                .Include(p => p.Address)
+                .Include(p => p.Medias)
+                .Include(p => p.LikedBy.Where(q => q.Id == userId))
+                .Include(p => p.TransitionLogs)
+                .ThenInclude(p => p.Reason)
+                .OrderByDescending(p => p.Sent);
+
+            if (pagingInfo.CategoryType != CategoryType.All)
+            {
+                query = (IOrderedQueryable<Report>)query.Where(p => p.Category.CategoryType == pagingInfo.CategoryType);
+            }
+
+            if (pagingInfo.Query != null && pagingInfo.Query.Length >= 3)
+            {
+                query = (IOrderedQueryable<Report>)query.Where(p => p.TrackingNumber.Contains(pagingInfo.Query));
+            }
+
+            if (pagingInfo.CategoryIds.Count() > 0)
+            {
+                query = (IOrderedQueryable<Report>)query.Where(p => pagingInfo.CategoryIds.Contains(p.CategoryId));
+            }
+
+            if (pagingInfo.SentFromDate != null)
+            {
+                query = (IOrderedQueryable<Report>)query.Where(p => p.Sent >= pagingInfo.SentFromDate);
+            }
+
+            if (pagingInfo.SentToDate != null)
+            {
+                query = (IOrderedQueryable<Report>)query.Where(p => p.Sent < pagingInfo.SentToDate);
+            }
+
+            var reports = await PagedList<Report>.ToPagedList(
+                query,
+                pagingInfo.PageNumber,
+                pagingInfo.PageSize);
+
+            var metadata = new
+            {
+                reports.TotalCount,
+                reports.PageSize,
+                reports.CurrentPage,
+                reports.TotalPages,
+                reports.HasNext,
+                reports.HasPrevious
+            };
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+            return _mapper.Map<List<CitizenGetReportDto>>(reports);
+        }
+
+
+
+        [Authorize(Roles = "Citizen")]
+        [HttpGet("Comment/{reportId}")]
+        public async Task<ActionResult<List<GetCommentForCitizenDto>>> GetComments(Guid reportId, [FromQuery] PagingInfo pagingInfo)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var query = _context.Comment
+                .AsNoTracking()
+                .Where(p => p.ReportId == reportId && p.IsVerified)
+                .Include(p => p.Reply)
+                .Include(p => p.User)
+                .ThenInclude(p => p.Avatar);
+
+            var comments = await PagedList<Comment>.ToPagedList(
+                query,
+                pagingInfo.PageNumber,
+                pagingInfo.PageSize);
+
+            var metadata = new
+            {
+                comments.TotalCount,
+                comments.PageSize,
+                comments.CurrentPage,
+                comments.TotalPages,
+                comments.HasNext,
+                comments.HasPrevious
+            };
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+            var result = _mapper.Map<List<GetCommentForCitizenDto>>(comments);
+            result.ForEach(p => p.CanDelete = p.User.Id == userId);
+            result.ForEach(p => p.User.Id = "");    //For security
+            return result;
+        }
+
+        [Authorize(Roles = "Citizen")]
+        [HttpDelete("Comment/{commentId}")]
+        public async Task<ActionResult<List<GetCommentForCitizenDto>>> DeleteComment(Guid commentId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var comment = await _context.Comment
+                .Where(p => p.Id == commentId)
+                .Include(p => p.Reply)
+                .Include(p => p.Report)
+                .ThenInclude(p => p.FeedbackComments)
+                .SingleOrDefaultAsync();
+
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            if (comment.UserId != userId)
+            {
+                return Unauthorized();
+            }
+            comment.Report.CommentsCount = comment.Report.FeedbackComments.Count - 1;
+            _context.Entry(comment.Report).State = EntityState.Modified;
+
+            if (comment.Reply != null)
+            {
+                _context.Entry(comment.Reply).State = EntityState.Deleted;
+            }
+            _context.Entry(comment).State = EntityState.Deleted;
+
+            await _context.SaveChangesAsync();
+
+
+            return Ok();
+        }
+
+        [Authorize(Roles = "Citizen")]
+        [HttpGet("Nearest")]
+        public async Task<ActionResult<List<CitizenGetReportDto>>> GetNearestReports([FromQuery] PagingInfo pagingInfo)
+        {
+            if (pagingInfo.Latitude == null || pagingInfo.Longitude == null)
+            {
+                return BadRequest();
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+
+            var reportLocations = await _context.Reports
+                .AsNoTracking()
+                .Where(p => p.Visibility == Visibility.EveryOne)
+                .Where(p => p.Address.Latitude != null && p.Address.Longitude != null)
+                .Include(p => p.Address)
+                .Select(p => new ReportLocation() { ReportId = p.Id, Latitude = p.Address.Latitude.Value, Longitude = p.Address.Longitude.Value })
+                .ToListAsync();
+
+            reportLocations.ForEach(p => p.Distance =
+                Utilities.Utilities.CalculateDistance(
+                    p.Latitude, p.Longitude,
+                    pagingInfo.Latitude.Value, pagingInfo.Longitude.Value));
+
+            var query = reportLocations.OrderBy(p => p.Distance).AsQueryable();
+            var result = PagedList<ReportLocation>.ToPagedListSync(
+                query,
+                pagingInfo.PageNumber,
+                pagingInfo.PageSize);
+
+            var metadata = new
+            {
+                result.TotalCount,
+                result.PageSize,
+                result.CurrentPage,
+                result.TotalPages,
+                result.HasNext,
+                result.HasPrevious
+            };
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+            var reportIds = result.Select(p => p.ReportId).ToList();
+
+            var reports = await _context.Reports
+                .AsNoTracking()
+                .Where(p => reportIds.Contains(p.Id))
+                .Include(p => p.Citizen)
+                .ThenInclude(p => p.Avatar)
+                .Include(p => p.Registrant)
+                .ThenInclude(p => p.Avatar)
+                //.Include(p => p.CurrentActors)
+                .Include(p => p.Category)
+                .Include(p => p.Address)
+                .Include(p => p.Medias)
+                .Include(p => p.LikedBy.Where(q => q.Id == userId))
+                .Include(p => p.TransitionLogs)
+                .ThenInclude(p => p.Reason)
+                .ToListAsync();
+
+            reports = reports.OrderBy(p => reportIds.IndexOf(p.Id)).ToList();
+
+            return _mapper.Map<List<CitizenGetReportDto>>(reports);
+        }
+
+        [Authorize(Roles = "Citizen")]
+        [HttpPost("Objection/{reportId}")]
+        public async Task<IActionResult> PostObjectionByCitizen(int instanceId, Guid reportId, [FromForm] ObjectionDto objectionDto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var report = await _context.Reports
+                .Where(p => p.Id == reportId)
+                //.Include(p => p.CurrentActors)
+                .Include(p => p.Address)
+                .Include(p => p.Category)
+                .Include(p => p.Citizen)
+                .Include(p => p.Medias)
+                .SingleOrDefaultAsync();
+
+            if (report == null)
+            {
+                return NotFound();
+            }
+
+            if (report.CitizenId != userId)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest,
+                    new { Status = "Error", Message = "امکان ثبت درخواست بررسی مجدد برای این گزارش وجود ندارد." });
+            }
+
+            if (report.ReportState != ReportState.Finished)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest,
+                    new { Status = "Error", Message = "امکان ثبت درخواست بررسی مجدد در این مرحله وجود ندارد." });
+            }
+
+            if (report.Category.ObjectionAllowed == false)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest,
+                    new { Status = "Error", Message = "امکان درخواست بررسی مجدد وجود ندارد." });
+            }
+
+
+            var processManager = new ProcessManager(instanceId, _settings, _context, report, _mapper, _messaging, _hub, _userManager, _hostEnvironment, _imageQualities);
+
+
+            var model = _mapper.Map<ObjectionModel>(objectionDto);
+
+            if (objectionDto.Attachments != null && objectionDto.Attachments.Count > 0)
+            {
+                model.Medias = await Utilities.Utilities.WriteFile(objectionDto.Attachments, _hostEnvironment.WebRootPath, Utilities.Utilities.AttachmentType.Report, _imageQualities);
+                if (objectionDto.Attachments.Count != model.Medias.Count)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest,
+                        new { Status = "Error", Message = "Attachment failed!" });
+                }
+            }
+
+
+            await processManager.MakeObjection(model);
+            return Ok();
+        }
+
+
+        [Authorize(Roles = "Operator")]
+        [HttpPut("UpdateComments/{id}")]
+        public async Task<ActionResult<Guid>> Update(Guid id, [FromBody] UpdateReportCommentsDto comments)
+        {
+            var instanceId = int.Parse(User.FindFirstValue(AppClaimTypes.InstanceId));
+            if (instanceId <= 0)
+            {
+                return BadRequest();
+            }
+
+            var report = await _context.Reports
+                .Where(p => p.Id == id)
+                .SingleOrDefaultAsync();
+            if (report == null || report.ShahrbinInstanceId != instanceId)
+                return NotFound();
+
+            report.Comments = comments.Comments;
+            _context.Entry(report).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [Authorize(Roles = "PowerUser")]
+        [HttpGet("DeleteReport/{trackingNumbers}")]
+        public async Task<IActionResult> DeleteReport(string trackingNumbers)
+        {
+            int total = 0, failed = 0;
+            var trs = trackingNumbers.Split(' ');
+            foreach (var trackingNumber in trs)
+            {
+                if (string.IsNullOrEmpty(trackingNumber))
+                {
+                    continue;
+                }
+                try
+                {
+                    var report = await _context.Reports
+                    .Where(p => p.TrackingNumber == trackingNumber)
+                    .Include(p => p.Medias)
+                    .Include(p => p.TransitionLogs)
+                    .ThenInclude(p => p.Attachments)
+                    .SingleOrDefaultAsync();
+
+                    foreach (var transitionLog in report.TransitionLogs)
+                    {
+                        foreach (var media in transitionLog.Attachments)
+                        {
+                            _context.Entry(media).State = EntityState.Deleted;
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+
+                    foreach (var transitionLog in report.TransitionLogs)
+                    {
+                        _context.Entry(transitionLog).State = EntityState.Deleted;
+                    }
+                    await _context.SaveChangesAsync();
+
+                    foreach (var media in report.Medias)
                     {
                         _context.Entry(media).State = EntityState.Deleted;
                     }
-                }
-                await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
 
-                foreach (var transitionLog in report.TransitionLogs)
+                    var comments = await _context.Comment.Where(p => p.ReportId == report.Id).ToListAsync();
+                    comments.ForEach(p => _context.Entry(p).State = EntityState.Deleted);
+                    await _context.SaveChangesAsync();
+
+                    _context.Entry(report).State = EntityState.Deleted;
+
+                    await _context.SaveChangesAsync();
+                }
+                catch
                 {
-                    _context.Entry(transitionLog).State = EntityState.Deleted;
+                    failed++;
                 }
-                await _context.SaveChangesAsync();
-
-                foreach (var media in report.Medias)
-                {
-                    _context.Entry(media).State = EntityState.Deleted;
-                }
-                await _context.SaveChangesAsync();
-
-                var comments = await _context.Comment.Where(p => p.ReportId == report.Id).ToListAsync();
-                comments.ForEach(p => _context.Entry(p).State = EntityState.Deleted);
-                await _context.SaveChangesAsync();
-
-                _context.Entry(report).State = EntityState.Deleted;
-
-                await _context.SaveChangesAsync();
+                total++;
             }
-            catch
-            {
-                failed++;
-            }
-            total++;
+
+
+            return Ok($"success: {total - failed}, failed:{failed}");
         }
-
-
-        return Ok($"success: {total - failed}, failed:{failed}");
+        */
     }
-    */
-}

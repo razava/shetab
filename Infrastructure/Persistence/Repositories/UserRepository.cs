@@ -158,4 +158,16 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
         var result = await _roleManager.RoleExistsAsync(roleName);
         return result;
     }
+
+    public async Task<List<Actor>> GetActors(string userId)
+    {
+        var identifiers = await _dbContext.UserRoles
+            .Where(ur => ur.UserId == userId)
+            .Select(ur => ur.RoleId)
+            .ToListAsync();
+
+        identifiers.Add(userId);
+        var result = await _dbContext.Actor.Where(a => identifiers.Contains(a.Identifier)).ToListAsync();
+        return result;
+    }
 }
