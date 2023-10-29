@@ -1,6 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.Dtos;
 using Api.Services.Authentication;
+using Application.Common.Interfaces.Persistence;
 using Application.Reports.Commands.AcceptByOperator;
 using Application.Reports.Commands.CreateReportByCitizen;
 using Application.Reports.Commands.CreateReportByOperator;
@@ -13,6 +14,7 @@ using Domain.Models.Relational.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Net.Mail;
 using System.Security.Claims;
 
@@ -252,16 +254,18 @@ public class ReportController : ApiController
 
     [Authorize]
     [HttpGet("Reports")]
-    public async Task<ActionResult<List<Report>>> GetReports(int instanceId)
+    public async Task<ActionResult<List<Report>>> GetReports([FromQuery] PagingInfo pagingInfo, int instanceId)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
 
-        var query = new GetReportsQuery(userId, instanceId);
+        var query = new GetReportsQuery(pagingInfo, userId, instanceId);
         var result = await Sender.Send(query);
-        return Ok(result);
+        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
+        return Ok(result.ToList());
     }
+
     public record MakeTransitionDto(
     int TransitionId,
     int ReasonId,

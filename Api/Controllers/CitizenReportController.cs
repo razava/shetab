@@ -1,8 +1,12 @@
 ﻿using Api.Abstractions;
 using Api.Dtos;
+using Application.Common.Interfaces.Persistence;
+using Application.Reports.Queries.GetPossibleTransitions;
+using Application.Reports.Queries.GetRecentReports;
 using Domain.Models.Relational;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Api.Controllers;
 
@@ -15,9 +19,11 @@ public class CitizenReportController : ApiController
     }
 
     [HttpGet]
-    public async Task<ActionResult<Report>> GetReports()
+    public async Task<ActionResult<Report>> GetReports([FromQuery] PagingInfo pagingInfo, int instanceId)
     {
-        await Task.CompletedTask;
+        var query = new GetRecentReportsQuery(pagingInfo, instanceId);
+        var result = await Sender.Send(query);
+        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
         return Ok();
     }
 
@@ -29,9 +35,11 @@ public class CitizenReportController : ApiController
     }
 
     [HttpGet("Nearest")]
-    public async Task<ActionResult<Report>> GetNearest()
+    public async Task<ActionResult<Report>> GetNearest([FromQuery]PagingInfo pagingInfo, int instanceId)
     {
-        await Task.CompletedTask;
+        var query = new GetRecentReportsQuery(pagingInfo, instanceId);
+        var result = await Sender.Send(query);
+        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
         return Ok();
     }
 
@@ -79,6 +87,13 @@ public class CitizenReportController : ApiController
 
     [HttpPost("Comment/{id:Guid}")]
     public async Task<ActionResult> Comment(Guid id, string comment)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+    [HttpPost("Feedback/{id:Guid}")]
+    public async Task<ActionResult> Feedback(Guid id)
     {
         await Task.CompletedTask;
         return Ok();

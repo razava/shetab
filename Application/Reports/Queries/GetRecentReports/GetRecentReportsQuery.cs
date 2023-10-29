@@ -1,11 +1,11 @@
 ﻿using Application.Common.Interfaces.Persistence;
+using Application.Reports.Common;
 using Domain.Models.Relational;
 using MediatR;
 
-namespace Application.Reports.Queries.GetPossibleTransitions;
+namespace Application.Reports.Queries.GetRecentReports;
 
-public sealed record GetReportsQuery(
+public sealed record GetRecentReportsQuery(
     PagingInfo PagingInfo,
-    string userId,
     int instanceId) : IRequest<PagedList<Report>>;
 
