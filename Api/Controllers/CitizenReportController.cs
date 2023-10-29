@@ -1,7 +1,6 @@
 ﻿using Api.Abstractions;
 using Api.Dtos;
 using Application.Common.Interfaces.Persistence;
-using Application.Reports.Queries.GetPossibleTransitions;
 using Application.Reports.Queries.GetRecentReports;
 using Domain.Models.Relational;
 using MediatR;

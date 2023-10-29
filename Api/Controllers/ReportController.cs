@@ -8,14 +8,13 @@ using Application.Reports.Commands.CreateReportByOperator;
 using Application.Reports.Commands.UpdateByOperator;
 using Application.Reports.Common;
 using Application.Reports.Queries.GetPossibleTransitions;
-using DocumentFormat.OpenXml.Office2016.Presentation.Command;
+using Application.Reports.Queries.GetReports;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Net.Mail;
 using System.Security.Claims;
 
 namespace Api.Controllers;

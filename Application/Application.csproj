@@ -22,7 +22,7 @@
     <Folder Include="Abstractions\Messaging\" />
     <Folder Include="Categories\Commands\DeleteCategory\" />
     <Folder Include="Configurations\" />
-    <Folder Include="Feedbacks\Commands\" />
+    <Folder Include="Feedbacks\Queries\" />
     <Folder Include="Setup\Queries\" />
     <Folder Include="Users\" />
   </ItemGroup>

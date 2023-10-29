@@ -2,7 +2,7 @@
 using Domain.Models.Relational;
 using MediatR;
 
-namespace Application.Reports.Queries.GetPossibleTransitions;
+namespace Application.Reports.Queries.GetReports;
 
 internal sealed class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, PagedList<Report>>
 {
@@ -21,7 +21,9 @@ internal sealed class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, 
         var actorIds = actors.Select(a => a.Id).ToList();
         var reports = await _reportRepository.GetPagedAsync(
             request.PagingInfo,
-            r => r.CurrentActors.Any(ca => actorIds.Contains(ca.Id)));
+            r => r.CurrentActors.Any(ca => actorIds.Contains(ca.Id)),
+            false,
+            a => a.OrderBy(r => r.Sent));
 
         return reports;
     }

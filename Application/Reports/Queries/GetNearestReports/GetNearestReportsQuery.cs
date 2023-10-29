@@ -2,10 +2,9 @@
 using Domain.Models.Relational;
 using MediatR;
 
-namespace Application.Reports.Queries.GetReports;
+namespace Application.Reports.Queries.GetNearestReports;
 
-public sealed record GetReportsQuery(
+public sealed record GetNearestReportsQuery(
     PagingInfo PagingInfo,
-    string userId,
     int instanceId) : IRequest<PagedList<Report>>;
 

@@ -3,18 +3,18 @@ using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using MediatR;
 
-namespace Application.Reports.Queries.GetRecentReports;
+namespace Application.Reports.Queries.GetNearestReports;
 
-internal sealed class GetRecentReportsQueryHandler : IRequestHandler<GetRecentReportsQuery, PagedList<Report>>
+internal sealed class GetNearestReportsQueryHandler : IRequestHandler<GetNearestReportsQuery, PagedList<Report>>
 {
     private readonly IReportRepository _reportRepository;
 
-    public GetRecentReportsQueryHandler(IReportRepository reportRepository)
+    public GetNearestReportsQueryHandler(IReportRepository reportRepository)
     {
         _reportRepository = reportRepository;
     }
 
-    public async Task<PagedList<Report>> Handle(GetRecentReportsQuery request, CancellationToken cancellationToken)
+    public async Task<PagedList<Report>> Handle(GetNearestReportsQuery request, CancellationToken cancellationToken)
     {
         var reports = await _reportRepository.GetPagedAsync(
             request.PagingInfo,
