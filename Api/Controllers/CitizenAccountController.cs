@@ -30,6 +30,13 @@ public class CitizenAccountController : ApiController
         return Ok();
     }
 
+    [HttpPost("Verify")]
+    public async Task<ActionResult> Verify(LoginDto loginDto)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
     [HttpPost("Register")]
     public async Task<ActionResult> Register(RegisterDto registerDto)
     {
