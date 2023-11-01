@@ -1,4 +1,5 @@
 ﻿using Api.Abstractions;
+using Api.Authentication;
 using Domain.Models.Relational.IdentityAggregate;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -30,12 +31,6 @@ public class CitizenAccountController : ApiController
         return Ok();
     }
 
-    [HttpPost("Verify")]
-    public async Task<ActionResult> Verify(LoginDto loginDto)
-    {
-        await Task.CompletedTask;
-        return Ok();
-    }
 
     [HttpPost("Register")]
     public async Task<ActionResult> Register(RegisterDto registerDto)
@@ -46,6 +41,13 @@ public class CitizenAccountController : ApiController
 
     [HttpPost("RegisterApp")]
     public async Task<ActionResult> RegisterApp(RegisterAppDto registerAppDto)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+    [HttpPost("Verify")]
+    public async Task<ActionResult> Verify(LoginDto loginDto)
     {
         await Task.CompletedTask;
         return Ok();
@@ -83,12 +85,55 @@ public class CitizenAccountController : ApiController
         return Ok();
     }
 
-    //todo : forgot password
+    //todo : fix forgot password process
+    [HttpPost("ForgotPasswod")]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+    [HttpPost("ForgotPasswodApp")]
+    public async Task<IActionResult> ForgotPasswordApp(ForgotPasswordAppDto forgotPasswordDto)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+    [HttpPost("RequestToken")]
+    public async Task<ActionResult> RequestToken(LoginDto loginDto)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+    [HttpPost("ResetPassword")]
+    public async Task<ActionResult> ResetPassword(LoginDto loginDto)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+    [HttpGet("Captcha")]
+    public string GetCaptcha()
+    {
+        return "";
+    }
+
+    [HttpPost("LoginGov")]
+    public async Task<IActionResult> LoginGov(GovLoginDto govLoginDto)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
 
     //Dtos
     //todo : move and compelete dtos in another file & write validation
     public record UpdateUserDto();
     public record GetUserProfileDto();
+    public record ForgotPasswordDto();
+    public record ForgotPasswordAppDto();
+    public record GovLoginDto();
     
-
+    
 }

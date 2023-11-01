@@ -87,20 +87,39 @@ public class CitizenReportController : ApiController
     }
 
     [Authorize(Roles = "Citizen")]
-    [HttpPost("Like/{id:Guid}")]
-    public async Task<ActionResult> Like(Guid id)
+    // Post changed to Put and get isLiked param for doing Like & UnLike operation in same endpoint
+    [HttpPut("Like/{id:Guid}")]  
+    public async Task<ActionResult> Like(Guid id, bool isLiked)
     {
         await Task.CompletedTask;
         return Ok();
     }
 
+     
     [Authorize(Roles = "Citizen")]
     [HttpPost("Comment/{id:Guid}")]
-    public async Task<ActionResult> Comment(Guid id, string comment)
+    public async Task<ActionResult> CreateComment(Guid id, string comment)
     {
         await Task.CompletedTask;
         return Ok();
     }
+    
+    [Authorize(Roles = "Citizen")]
+    [HttpGet("Comment/{id:Guid}")]
+    public async Task<ActionResult> GetComments(Guid id)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+    
+    [Authorize(Roles = "Citizen")]
+    [HttpDelete("Comment/{commentId:Guid}")]
+    public async Task<IActionResult> DeleteComment(Guid commentId)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
 
     [Authorize(Roles = "Citizen")]
     [HttpPost("Feedback/{id:Guid}")]
@@ -109,4 +128,9 @@ public class CitizenReportController : ApiController
         await Task.CompletedTask;
         return Ok();
     }
+
+    //todo : post/feedbackFromApp ??
+
+
+
 }
