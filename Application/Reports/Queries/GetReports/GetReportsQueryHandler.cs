@@ -17,7 +17,7 @@ internal sealed class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, 
 
     public async Task<PagedList<Report>> Handle(GetReportsQuery request, CancellationToken cancellationToken)
     {
-        var actors = await _userRepository.GetActors(request.userId);
+        var actors = await _userRepository.GetActorsAsync(request.userId);
         var actorIds = actors.Select(a => a.Id).ToList();
         var reports = await _reportRepository.GetPagedAsync(
             request.PagingInfo,

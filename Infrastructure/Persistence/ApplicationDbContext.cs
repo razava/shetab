@@ -58,6 +58,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
 
     public DbSet<GovUserInfo> GovUserInfos { get; set; }
     public DbSet<ShahrbinInstance> ShahrbinInstance { get; set; }
+    public DbSet<ExecutiveContractor> ExecutiveContractor { get; set; }
 
     /*
     //Inspection

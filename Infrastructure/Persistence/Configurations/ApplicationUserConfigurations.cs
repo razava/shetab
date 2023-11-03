@@ -39,12 +39,18 @@ public class ApplicationUserConfigurations : IEntityTypeConfiguration<Applicatio
         builder.HasMany(u => u.InspectorReports)
             .WithOne(r => r.Inspector)
             .OnDelete(DeleteBehavior.NoAction);
-        builder.HasMany(u => u.Executeves)
+        //builder.HasMany(u => u.Executeves)
+        //    .WithMany(u => u.Contractors)
+        //    .UsingEntity(
+        //        "ExecutiveContractor",
+        //        e => e.HasOne(typeof(ApplicationUser)).WithMany().HasForeignKey("ExecutiveId").HasPrincipalKey(nameof(ApplicationUser.Id)),
+        //        c => c.HasOne(typeof(ApplicationUser)).WithMany().HasForeignKey("ContractorId").HasPrincipalKey(nameof(ApplicationUser.Id)),
+        //        j => j.HasKey("ExecutiveId", "ContractorId"));
+        builder.HasMany(u => u.Executives)
             .WithMany(u => u.Contractors)
-            .UsingEntity(
-                "ExecutiveContractor",
-                e => e.HasOne(typeof(ApplicationUser)).WithMany().HasForeignKey("ExecutiveId").HasPrincipalKey(nameof(ApplicationUser.Id)),
-                c => c.HasOne(typeof(ApplicationUser)).WithMany().HasForeignKey("ContractorId").HasPrincipalKey(nameof(ApplicationUser.Id)),
-                j => j.HasKey("ExecutiveId", "ContractorId"));
+            .UsingEntity<ExecutiveContractor>(
+                ec => ec.HasOne(e => e.Executive).WithMany().HasForeignKey(e => e.ExecutiveId).HasPrincipalKey(u => u.Id),
+                ec => ec.HasOne(c => c.Contractor).WithMany().HasForeignKey(c => c.ContractorId).HasPrincipalKey(u => u.Id),
+                j => j.HasKey(e=> new { e.ExecutiveId, e.ContractorId}));
     }
 }

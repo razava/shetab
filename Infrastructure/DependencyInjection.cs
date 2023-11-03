@@ -64,6 +64,7 @@ public static class DependencyInjection
         services.AddScoped<IDistrictRepository, DistrictRepository>();
         services.AddScoped<ICityRepository, CityRepository>();
         services.AddScoped<IRegionRepository, RegionRepository>();
+        services.AddScoped<IActorRepository, ActorRepository>();
 
 
         return services;

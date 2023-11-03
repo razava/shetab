@@ -159,7 +159,7 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
         return result;
     }
 
-    public async Task<List<Actor>> GetActors(string userId)
+    public async Task<List<Actor>> GetActorsAsync(string userId)
     {
         var identifiers = await _dbContext.UserRoles
             .Where(ur => ur.UserId == userId)
@@ -168,6 +168,66 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
 
         identifiers.Add(userId);
         var result = await _dbContext.Actor.Where(a => identifiers.Contains(a.Identifier)).ToListAsync();
+        return result;
+    }
+
+    public async Task<bool> CreateNewPasswordAsync(string userId, string password)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+            throw new Exception("User not found.");
+        var result = await _userManager.RemovePasswordAsync(user);
+        if (result is null || !result.Succeeded)
+            return false;
+        result = await _userManager.AddPasswordAsync(user, password);
+        if (result is null || !result.Succeeded)
+            return false;
+        return true;
+    }
+
+    public async Task<bool> UpdateRolesAsync(string userId, List<string> roles)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+            throw new Exception("User not found");
+        var currentRoles = await _userManager.GetRolesAsync(user);
+        var inRoles = roles.Where(r => !currentRoles.Contains(r)).ToList();
+        var outRoles = currentRoles.Where(r => !roles.Contains(r)).ToList();
+        var result = await _userManager.RemoveFromRolesAsync(user, outRoles);
+        if (result is null || !result.Succeeded)
+            return false;
+        var result2 = await _userManager.AddToRolesAsync(user, inRoles);
+        if(result2 is null || !result2.Succeeded)
+        {
+            //try to rollback operation
+            //TODO: This won't work in all cases. What if these commands fail?
+            await _userManager.AddToRolesAsync(user, outRoles);
+            return false;
+        }
+            
+        return true;
+    }
+
+    public async Task<List<string>> GetUserRoles(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+            throw new Exception("User not found.");
+        var roles = await _userManager.GetRolesAsync(user);
+        if (roles is null)
+            throw new Exception("Unknown problem!");
+        return roles.ToList();
+    }
+
+    public async Task<bool> IsInRoleAsync(ApplicationUser user, string role)
+    {
+        var result = await _userManager.IsInRoleAsync(user, role);
+        return result;
+    }
+
+    public async Task<IdentityResult> DeleteAsync(ApplicationUser user)
+    {
+        var result = await _userManager.DeleteAsync(user);
         return result;
     }
 }

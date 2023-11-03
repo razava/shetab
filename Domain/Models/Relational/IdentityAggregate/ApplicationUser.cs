@@ -33,7 +33,7 @@ public class ApplicationUser : IdentityUser
     public string FcmToken { get; set; } = string.Empty;
 
     //These properties are added to specify contractors relating to each executive. the relation is m to n
-    public ICollection<ApplicationUser> Executeves { get; set; } = new List<ApplicationUser>();
+    public ICollection<ApplicationUser> Executives { get; set; } = new List<ApplicationUser>();
     public ICollection<ApplicationUser> Contractors { get; set; } = new List<ApplicationUser>();
     public UserFlags Flags { get; set; }
     public int? ShahrbinInstanceId { get; set; }
@@ -41,3 +41,10 @@ public class ApplicationUser : IdentityUser
 }
 
 
+public class ExecutiveContractor
+{
+    public string ExecutiveId { get; set; } = null!;
+    public ApplicationUser Executive { get; set; } = null!;
+    public string ContractorId { get; set; } = null!;
+    public ApplicationUser Contractor { get; set; } = null!;
+}

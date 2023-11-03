@@ -1,4 +1,5 @@
 ﻿using Api.Abstractions;
+using Api.Contracts;
 using Application.Authentication.Commands.LoginCommand;
 using Application.Authentication.Commands.RegisterCitizenCommand;
 using Application.Common.Interfaces.Security;
@@ -30,6 +31,7 @@ namespace Api.Controllers
         [HttpPut("Password/{id}")]
         public async Task<IActionResult> ChangePasswordById(string id, ChangePasswordByIdDto changePasswordByIdDto)
         {
+            //CreateNewPasswordCommand
             await Task.CompletedTask;
             return Ok();
         }
@@ -38,6 +40,7 @@ namespace Api.Controllers
         [HttpGet("Profile")]
         public async Task<ActionResult> GetUserProfile()
         {
+            //GetUserProfileQuery
             await Task.CompletedTask;
             return Ok();
         }
@@ -46,6 +49,16 @@ namespace Api.Controllers
         [HttpPut("Profile")]
         public async Task<ActionResult> UpdateProfile(UpdateUserDto updateUserDto)
         {
+            //UpdateUserProfileCommand
+            await Task.CompletedTask;
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPut("Avatar")]
+        public async Task<ActionResult> UpdateAvatar(UploadDto avatar)
+        {
+            //UpdateUserAvatarCommand
             await Task.CompletedTask;
             return Ok();
         }

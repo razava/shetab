@@ -24,7 +24,6 @@
     <Folder Include="Configurations\" />
     <Folder Include="Feedbacks\Queries\" />
     <Folder Include="Setup\Queries\" />
-    <Folder Include="Users\" />
   </ItemGroup>
 
   <ItemGroup>
