@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using static Api.Controllers.CitizenAccountController;
 
 namespace Api.Controllers
 {
@@ -17,6 +18,51 @@ namespace Api.Controllers
         public AuthenticateController(ISender sender) : base(sender)
         {
         }
+
+        [HttpPost("LoginAdmin")]
+        public async Task<ActionResult> LoginAdmin(LoginAdminDto loginAdminDto)
+        {
+            await Task.CompletedTask;
+            return Ok();
+        }
+
+        [Authorize] //todo : Roles?? Admin, Manager?
+        [HttpPut("Password/{id}")]
+        public async Task<IActionResult> ChangePasswordById(string id, ChangePasswordByIdDto changePasswordByIdDto)
+        {
+            await Task.CompletedTask;
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpGet("Profile")]
+        public async Task<ActionResult> GetUserProfile()
+        {
+            await Task.CompletedTask;
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPut("Profile")]
+        public async Task<ActionResult> UpdateProfile(UpdateUserDto updateUserDto)
+        {
+            await Task.CompletedTask;
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpGet("Regions")] //{instanceId}
+        public async Task<ActionResult> GetRegions()
+        {
+            await Task.CompletedTask;
+            return Ok();
+        }
+
+
+
+
+
+        //.................................
 
         [HttpPost("Login")]
         public async Task<ActionResult> Login(LoginDto loginDto)
@@ -130,3 +176,5 @@ public record RegisterDto(string Username, string Password, CaptchaValidateModel
 public record RegisterAppDto(string Username, string Password);
 public record ChangePasswordDto(string Username, string OldPassword, string NewPassword, CaptchaValidateModel Captcha);
 public record ChangePasswordAppDto(string OldPassword, string NewPassword);
+public record LoginAdminDto();
+public record ChangePasswordByIdDto();
