@@ -1,9 +1,12 @@
 ﻿using Api.Abstractions;
 using Api.Authentication;
+using Api.Contracts;
 using Application.Common.Interfaces.Persistence;
 using Application.Users.Commands.CreateContractor;
 using Application.Users.Commands.CreateNewPassword;
 using Application.Users.Commands.CreateUser;
+using Application.Users.Commands.UpdateRoles;
+using Application.Users.Queries.GetRoles;
 using Application.Users.Queries.GetUserById;
 using Application.Users.Queries.GetUsers;
 using Domain.Models.Relational.IdentityAggregate;
@@ -30,19 +33,23 @@ public class UserManagementController : ApiController
 
     [Authorize(Roles = "Admin, Manager")]
     [HttpPut("Password/{id}")]
-    public async Task<IActionResult> ChangePasswordById(string id)
+    public async Task<IActionResult> ChangePasswordById(string id, NewPasswordDto newPasswordDto)
     {
-        //var command = CreateNewPasswordCommand()
-        await Task.CompletedTask;
+        var command = new CreateNewPasswordCommand(id, newPasswordDto.NewPassword);
+        var result = await Sender.Send(command);
+        if(!result)
+            return StatusCode(StatusCodes.Status500InternalServerError);
         return Ok();
+        //todo : set appropriate responses.
     }
 
     [Authorize(Roles = "Admin, Manager")]
     [HttpPost("Roles/{id}")]
-    public async Task<IActionResult> SetRoles(string id)
+    public async Task<IActionResult> SetRoles(string id, UpdateRolesDto updateRolesDto) 
     {
-        //UpdateRolesCommand
-        await Task.CompletedTask;
+        var commond = new UpdateRolesCommand(id, updateRolesDto.Roles);
+        var result = await Sender.Send(commond);
+        //todo : handle result & set appropriate responses.
         return Ok();
     }
 
@@ -50,9 +57,10 @@ public class UserManagementController : ApiController
     [HttpGet("Roles/{id}")]
     public async Task<IActionResult> GetUserRoles(string id)
     {
-        //GetUserRolesQuery
-        await Task.CompletedTask;
-        return Ok();
+        var query = new GetUserRolesQuery(id);
+        var result = await Sender.Send(query);
+        //todo :  output Dto review
+        return Ok(result);
     }
 
     [Authorize]
@@ -73,20 +81,22 @@ public class UserManagementController : ApiController
 
     [Authorize]
     [HttpGet("All")]
-    public async Task<IActionResult> GetAllUsers()
+    public async Task<IActionResult> GetAllUsers(PagingInfo pagingInfo)
     {
-        //GetUsersQuery
-        await Task.CompletedTask;
-        return Ok();
+        var query = new GetUsersQuery(pagingInfo);
+        var result = await Sender.Send(query);
+        //todo :  output Dto review
+        return Ok(result);
     }
 
     [Authorize]
     [HttpGet("User/{id}")]
     public async Task<IActionResult> GetUserById(string id)
     {
-        //GetUserByIdQuery
-        await Task.CompletedTask;
-        return Ok();
+        var query = new GetUserByIdQuery(id);
+        var result = await Sender.Send(query);
+        //todo :  output Dto review
+        return Ok(result);
     }
 
     //We won't use this, admin should create the user and after successful creation, assign desired roles
@@ -130,14 +140,14 @@ public class UserManagementController : ApiController
     }
 
     [Authorize(Roles = "Executive")]
-    [HttpPost("GetContractors")]
+    [HttpGet("GetContractors")]
     public async Task<IActionResult> GetContractors(PagingInfo pagingInfo)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
-        var command = new GetContractorsQuery(userId, pagingInfo);
-        var result = await Sender.Send(command);
+        var query = new GetContractorsQuery(userId, pagingInfo);
+        var result = await Sender.Send(query);
         return Ok();
     }
 
