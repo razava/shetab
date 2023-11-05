@@ -21,8 +21,8 @@
   <ItemGroup>
     <Folder Include="Abstractions\Messaging\" />
     <Folder Include="Categories\Commands\DeleteCategory\" />
-    <Folder Include="Configurations\" />
     <Folder Include="Feedbacks\Queries\" />
+    <Folder Include="QuickAccesses\Queries\" />
     <Folder Include="Setup\Queries\" />
   </ItemGroup>
 

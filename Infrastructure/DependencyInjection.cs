@@ -52,12 +52,12 @@ public static class DependencyInjection
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
+        services.AddScoped<IUnitOfWork, UnitOfWork> ();
         services.AddScoped<ICategoryRepository, CategoryRepository> ();
         services.AddScoped<IFeedbackRepository, FeedbackRepository> ();
         services.AddScoped<IMediaRepository, MediaRepository> ();
         services.AddScoped<IProcessRepository, ProcessRepository> ();
         services.AddScoped<IReportRepository, ReportRepository> ();
-        services.AddScoped<IUnitOfWork, UnitOfWork> ();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IProvinceRepository, ProvinceRepository>();
         services.AddScoped<ICountyRepository, CountyRepository>();
@@ -65,6 +65,8 @@ public static class DependencyInjection
         services.AddScoped<ICityRepository, CityRepository>();
         services.AddScoped<IRegionRepository, RegionRepository>();
         services.AddScoped<IActorRepository, ActorRepository>();
+        services.AddScoped<IViolationRepository, ViolationRepository>();
+        services.AddScoped<IViolationTypeRepository, ViolationTypeRepository>();
 
 
         return services;
