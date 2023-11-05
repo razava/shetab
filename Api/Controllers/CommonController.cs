@@ -36,7 +36,27 @@ public class CommonController : ApiController
         var result = await Sender.Send(query);
         return result.Adapt<CategoryGetDto>();
     }
+    
+    [HttpGet("RegionsByName")]
+    public async Task<IActionResult> GetRegionsByName()
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
 
+    [HttpGet("Educations")]
+    public async Task<IActionResult> GetEducations()
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+    [HttpGet("TaradodReason")]
+    public async Task<IActionResult> GetTaradodReason()
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
 }
 
 public class CategoryGetDto

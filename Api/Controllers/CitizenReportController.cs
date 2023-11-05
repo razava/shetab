@@ -1,12 +1,15 @@
 ﻿using Api.Abstractions;
 using Api.Dtos;
 using Application.Common.Interfaces.Persistence;
+using Application.Reports.Commands.CreateReportByCitizen;
+using Application.Reports.Common;
 using Application.Reports.Queries.GetRecentReports;
 using Domain.Models.Relational;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Security.Claims;
 
 namespace Api.Controllers;
 
@@ -72,7 +75,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Mine/{id:Guid}")]
-    public async Task<ActionResult<Report>> GetMyReports(Guid id)
+    public async Task<ActionResult<Report>> GetMyReportById(Guid id)
     {
         await Task.CompletedTask;
         return Ok();
@@ -80,11 +83,42 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpPost]
-    public async Task<ActionResult<Report>> CreateReport(CreateReportDto model)
+    public async Task<ActionResult<Report>> CreateReport(int instanceId, [FromForm] CreateReportDto model)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var username = User.FindFirstValue(ClaimTypes.Name);
+        if (userId == null || username == null)
+        {
+            return Unauthorized();
+        }
+
+        var phoneNumber = username;
+        var addressInfo = new AddressInfo(
+            model.Address.RegionId!.Value,
+            model.Address.Street,
+            model.Address.Valley,
+            model.Address.Detail,
+            model.Address.Number,
+            model.Address.PostalCode,
+            model.Address.Latitude!.Value,
+            model.Address.Longitude!.Value);
+
+        var command = new CreateReportByCitizenCommand(
+            instanceId,
+            userId,
+            phoneNumber,
+            model.CategoryId,
+            model.Comments,
+            addressInfo,
+            model.Attachments,
+            model.IsIdentityVisible);
+        var report = await Sender.Send(command);
+
+        //TODO: Fix this ::::> is this okay?
+        return CreatedAtAction(nameof(GetMyReportById), report.Id, report);
     }
+
+
 
     [Authorize(Roles = "Citizen")]
     // Post changed to Put and get isLiked param for doing Like & UnLike operation in same endpoint
@@ -105,7 +139,7 @@ public class CitizenReportController : ApiController
     }
     
     [Authorize(Roles = "Citizen")]
-    [HttpGet("Comment/{id:Guid}")]
+    [HttpGet("Comments/{id:Guid}")]
     public async Task<ActionResult> GetComments(Guid id)
     {
         await Task.CompletedTask;

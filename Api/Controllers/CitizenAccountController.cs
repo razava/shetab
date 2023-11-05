@@ -1,5 +1,6 @@
 ﻿using Api.Abstractions;
 using Api.Authentication;
+using Api.Contracts;
 using Domain.Models.Relational.IdentityAggregate;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -129,7 +130,7 @@ public class CitizenAccountController : ApiController
 
     //Dtos
     //todo : move and compelete dtos in another file & write validation
-    public record UpdateUserDto();
+    //public record UpdateUserDto();
     public record GetUserProfileDto();
     public record ForgotPasswordDto();
     public record ForgotPasswordAppDto();

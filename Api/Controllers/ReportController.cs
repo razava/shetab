@@ -27,42 +27,6 @@ public class ReportController : ApiController
     {
     }
 
-    [Authorize(Roles = "Citizen")]
-    [HttpPost]
-    public async Task<ActionResult<CreateReportDto>> CreateReport(int instanceId, [FromForm] CreateReportDto model)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var username = User.FindFirstValue(ClaimTypes.Name);
-        if(userId==null || username==null)
-        {
-            return Unauthorized();
-        }
-
-        var phoneNumber = username;
-        var addressInfo = new AddressInfo(
-            model.Address.RegionId!.Value,
-            model.Address.Street,
-            model.Address.Valley,
-            model.Address.Detail,
-            model.Address.Number,
-            model.Address.PostalCode,
-            model.Address.Latitude!.Value,
-            model.Address.Longitude!.Value);
-
-        var command = new CreateReportByCitizenCommand(
-            instanceId,
-            userId,
-            phoneNumber,
-            model.CategoryId,
-            model.Comments,
-            addressInfo,
-            model.Attachments,
-            model.IsIdentityVisible);
-        var report = await Sender.Send(command);
-
-        //TODO: Fix this
-        return CreatedAtAction(null, null);
-    }
 
 
     [Authorize(Roles = "Operator")]

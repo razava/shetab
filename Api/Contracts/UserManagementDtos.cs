@@ -17,3 +17,6 @@ public record RoleDto(
     string RoleName,
     bool IsIn
 );
+
+//todo : compelte this :
+public record UpdateUserDto();
