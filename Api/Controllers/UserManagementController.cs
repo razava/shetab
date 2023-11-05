@@ -31,6 +31,16 @@ public class UserManagementController : ApiController
 
     //todo : set input Dtos
 
+    [Authorize(Roles ="Admin")]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateUser(string id, UpdateUserDto updateUserDto)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+
+
     [Authorize(Roles = "Admin, Manager")]
     [HttpPut("Password/{id}")]
     public async Task<IActionResult> ChangePasswordById(string id, NewPasswordDto newPasswordDto)
