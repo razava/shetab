@@ -34,15 +34,15 @@ public class ProcessesController : ApiController
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpGet("{id:int")]
-    public async Task<ActionResult> GetProcesses(int id)
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult> GetProcesse(int id)
     {
         await Task.CompletedTask;
         return Ok();
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpPut("{id:int")]
+    [HttpPut("{id:int}")]
     public async Task<ActionResult> EditProcesses(int id)
     {
         await Task.CompletedTask;
