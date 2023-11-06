@@ -180,8 +180,7 @@ public class ReportController : ApiController
 
     //todo : Define & Set Input Dtos
 
-    //TODO: Define access policy
-    [Authorize]
+    [Authorize(Roles = "Operator")]
     [HttpGet("Comments")]
     public async Task<ActionResult> GetComments()
     {
@@ -191,7 +190,7 @@ public class ReportController : ApiController
 
 
     //TODO: Define access policy
-    [Authorize]
+    [Authorize(Roles = "Operator")]
     [HttpPut("Comment/{id:Guid}")]
     public async Task<ActionResult> PutComment(Guid id)
     {
@@ -201,7 +200,7 @@ public class ReportController : ApiController
 
 
     //TODO: Define access policy
-    [Authorize]
+    [Authorize(Roles = "Operator")]
     [HttpDelete("Comment/{id:Guid}")]
     public async Task<ActionResult> DeleteComment(Guid id)
     {
@@ -212,7 +211,7 @@ public class ReportController : ApiController
 
     //todo: is this used??
     //TODO: Define access policy
-    [Authorize]
+    [Authorize(Roles = "Operator")]
     [HttpPut("Satisfaction/{id:Guid}")]   //id : reportId
     public async Task<ActionResult> PutSatisfaction(Guid id)
     {
