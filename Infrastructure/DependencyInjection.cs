@@ -67,6 +67,7 @@ public static class DependencyInjection
         services.AddScoped<IActorRepository, ActorRepository>();
         services.AddScoped<IViolationRepository, ViolationRepository>();
         services.AddScoped<IViolationTypeRepository, ViolationTypeRepository>();
+        services.AddScoped<IQuickAccessRepository, QuickAccessRepository>();
 
 
         return services;
