@@ -21,7 +21,7 @@ internal sealed class ReportViolationCommandHandler : IRequestHandler<ReportViol
         {
             ReportId = request.ReportId,
             UserId = request.UserId,
-            ViolationTypeId = request.ViolationType,
+            ViolationTypeId = request.ViolationTypeId,
             Description = request.Description,
         };
         _violationRepository.Insert(violation);
