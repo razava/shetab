@@ -78,6 +78,7 @@ public class ReportController : ApiController
         return Ok(report.Id);
     }
 
+    //todo : shoudn't have id for  input and route?
     [Authorize(Roles = "Operator")]
     [HttpPut]
     public async Task<ActionResult<Guid>> UpdateReportByOperator([FromForm] UpdateReportDto model)
@@ -127,7 +128,7 @@ public class ReportController : ApiController
     }
 
 
-
+    //todo : shoudn't have id for  input and route?
     [Authorize(Roles = "Operator")]
     [HttpPut("Accept")]
     public async Task<ActionResult<Guid>> AcceptReportByOperator([FromForm] UpdateReportDto model)
@@ -189,7 +190,6 @@ public class ReportController : ApiController
     }
 
 
-    //TODO: Define access policy
     [Authorize(Roles = "Operator")]
     [HttpPut("Comment/{id:Guid}")]
     public async Task<ActionResult> PutComment(Guid id)
@@ -199,7 +199,6 @@ public class ReportController : ApiController
     }
 
 
-    //TODO: Define access policy
     [Authorize(Roles = "Operator")]
     [HttpDelete("Comment/{id:Guid}")]
     public async Task<ActionResult> DeleteComment(Guid id)
@@ -210,7 +209,6 @@ public class ReportController : ApiController
 
 
     //todo: is this used??
-    //TODO: Define access policy
     [Authorize(Roles = "Operator")]
     [HttpPut("Satisfaction/{id:Guid}")]   //id : reportId
     public async Task<ActionResult> PutSatisfaction(Guid id)
