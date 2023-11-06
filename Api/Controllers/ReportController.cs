@@ -126,6 +126,8 @@ public class ReportController : ApiController
         return NoContent();
     }
 
+
+
     [Authorize(Roles = "Operator")]
     [HttpPut("Accept")]
     public async Task<ActionResult<Guid>> AcceptReportByOperator([FromForm] UpdateReportDto model)
@@ -174,6 +176,56 @@ public class ReportController : ApiController
         return NoContent();
     }
 
+
+
+    //todo : Define & Set Input Dtos
+
+    //TODO: Define access policy
+    [Authorize]
+    [HttpGet("Comments")]
+    public async Task<ActionResult> GetComments()
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+
+    //TODO: Define access policy
+    [Authorize]
+    [HttpPut("Comment/{id:Guid}")]
+    public async Task<ActionResult> PutComment(Guid id)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+
+    //TODO: Define access policy
+    [Authorize]
+    [HttpDelete("Comment/{id:Guid}")]
+    public async Task<ActionResult> DeleteComment(Guid id)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+
+    //todo: is this used??
+    //TODO: Define access policy
+    [Authorize]
+    [HttpPut("Satisfaction/{id:Guid}")]   //id : reportId
+    public async Task<ActionResult> PutSatisfaction(Guid id)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+    
+
+
+
+
+
+    //todo : Remove, cause moved to Task controller
     [Authorize(Roles = "Operator")]
     [HttpGet("PossibleTransitions/{id:Guid}")]
     public async Task<ActionResult<List<Application.Reports.Queries.GetPossibleTransitions.PossibleTransitionDto>>> GetPossibleTransitions(Guid id)
@@ -191,6 +243,7 @@ public class ReportController : ApiController
         return result;
     }
 
+    //todo : Remove, cause moved to Task controller
     //TODO: Define access policy
     [Authorize]
     [HttpPost("MakeTransitions/{id:Guid}")]
@@ -215,6 +268,9 @@ public class ReportController : ApiController
         return Ok();
     }
 
+
+
+    //??
     [Authorize]
     [HttpGet("Reports")]
     public async Task<ActionResult<List<Report>>> GetReports([FromQuery] PagingInfo pagingInfo, int instanceId)

@@ -148,7 +148,7 @@ public class CitizenReportController : ApiController
     
     [Authorize(Roles = "Citizen")]
     [HttpDelete("Comment/{commentId:Guid}")]
-    public async Task<IActionResult> DeleteComment(Guid commentId)
+    public async Task<ActionResult> DeleteComment(Guid commentId)
     {
         await Task.CompletedTask;
         return Ok();
