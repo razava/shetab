@@ -16,6 +16,7 @@ public class QuickAccessController : ApiController
     //todo : Define & Set Dtos
 
     //TODO: Define access policy
+    //todo : this endpoint is shared with Citizen and can move to common Controller
     [Authorize]
     [HttpGet]
     public async Task<ActionResult> GetQuickAccesses()
