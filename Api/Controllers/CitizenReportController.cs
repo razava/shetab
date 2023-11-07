@@ -21,6 +21,9 @@ public class CitizenReportController : ApiController
     {
     }
 
+    //todo : Define & Set Dtos
+
+
     [Authorize(Roles = "Citizen")]
     [HttpGet]
     public async Task<ActionResult<Report>> GetReports([FromQuery] PagingInfo pagingInfo, int instanceId)
@@ -119,6 +122,15 @@ public class CitizenReportController : ApiController
     }
 
 
+    //this could be in Common controller
+    [Authorize(Roles = "Citizen")]
+    [HttpGet("QuickAccesses")]
+    public async Task<ActionResult> GetQuickAccesses()
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+    
 
     [Authorize(Roles = "Citizen")]
     // Post changed to Put and get isLiked param for doing Like & UnLike operation in same endpoint

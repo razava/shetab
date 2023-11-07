@@ -216,8 +216,16 @@ public class ReportController : ApiController
         await Task.CompletedTask;
         return Ok();
     }
-    
 
+
+    //todo : is this used? and is access policy correct?
+    [Authorize(Roles = "Operator")]
+    [HttpPost("Feedback/SendNow")]
+    public async Task<ActionResult> SendNowFeedback()
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
 
 
 
