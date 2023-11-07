@@ -1,4 +1,5 @@
 ﻿using Api.Abstractions;
+using Api.Contracts;
 using Api.Dtos;
 using Api.Services.Authentication;
 using Application.Common.Interfaces.Persistence;
@@ -128,7 +129,7 @@ public class ReportController : ApiController
     }
 
 
-    //todo : shoudn't have id for  input and route?
+    //todo : shoudn't have id for  input param and route?
     [Authorize(Roles = "Operator")]
     [HttpPut("Accept")]
     public async Task<ActionResult<Guid>> AcceptReportByOperator([FromForm] UpdateReportDto model)
@@ -183,7 +184,7 @@ public class ReportController : ApiController
 
     [Authorize(Roles = "Operator")]
     [HttpGet("Comments")]
-    public async Task<ActionResult> GetComments()
+    public async Task<ActionResult> GetComments([FromQuery] PagingInfo pagingInfo)
     {
         await Task.CompletedTask;
         return Ok();
@@ -191,8 +192,8 @@ public class ReportController : ApiController
 
 
     [Authorize(Roles = "Operator")]
-    [HttpPut("Comment/{id:Guid}")]
-    public async Task<ActionResult> PutComment(Guid id)
+    [HttpPut("Comment/{commentId:Guid}")]
+    public async Task<ActionResult> PutComment(Guid commentId, UpdateCommentDto updateCommentDto)
     {
         await Task.CompletedTask;
         return Ok();

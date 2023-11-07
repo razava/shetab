@@ -1,4 +1,5 @@
 ﻿using Api.Abstractions;
+using Api.Contracts;
 using Api.Dtos;
 using Application.Common.Interfaces.Persistence;
 using Application.Reports.Commands.CreateReportByCitizen;
@@ -34,6 +35,7 @@ public class CitizenReportController : ApiController
         return Ok();
     }
 
+    //todo : remove ,cause i think that not used.
     [Authorize(Roles = "Citizen")]
     [HttpGet("{id:Guid}")]
     public async Task<ActionResult<Report>> GetReportById(Guid id)
@@ -54,7 +56,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Locations")]
-    public async Task<ActionResult<Report>> GetLocations()
+    public async Task<ActionResult<Report>> GetLocations(int instanceId/*??*/)
     {
         await Task.CompletedTask;
         return Ok();
@@ -70,7 +72,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Mine")]
-    public async Task<ActionResult<Report>> GetMyReports()
+    public async Task<ActionResult<Report>> GetMyReports([FromQuery] PagingInfo pagingInfo, int instanceId)
     {
         await Task.CompletedTask;
         return Ok();
@@ -133,7 +135,8 @@ public class CitizenReportController : ApiController
     
 
     [Authorize(Roles = "Citizen")]
-    // Post changed to Put and get isLiked param for doing Like & UnLike operation in same endpoint
+    // Post changed to Put and get isLiked param for doing Like & UnLike operation in same endpoint like old version.
+    //in old version returns int for report Likes number. 
     [HttpPut("Like/{id:Guid}")]  
     public async Task<ActionResult> Like(Guid id, bool isLiked)
     {
@@ -144,7 +147,7 @@ public class CitizenReportController : ApiController
      
     [Authorize(Roles = "Citizen")]
     [HttpPost("Comment/{id:Guid}")]
-    public async Task<ActionResult> CreateComment(Guid id, string comment)
+    public async Task<ActionResult> CreateComment(int instanceId, Guid id, string comment)
     {
         await Task.CompletedTask;
         return Ok();
@@ -152,7 +155,7 @@ public class CitizenReportController : ApiController
     
     [Authorize(Roles = "Citizen")]
     [HttpGet("Comments/{id:Guid}")]
-    public async Task<ActionResult> GetComments(Guid id)
+    public async Task<ActionResult> GetComments(Guid id, [FromQuery] PagingInfo pagingInfo)
     {
         await Task.CompletedTask;
         return Ok();
@@ -169,7 +172,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpPost("Feedback/{id:Guid}")]
-    public async Task<ActionResult> Feedback(Guid id)
+    public async Task<ActionResult> Feedback(Guid id, CreateFeedbackDto createFeedbackDto)
     {
         await Task.CompletedTask;
         return Ok();
