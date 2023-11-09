@@ -68,7 +68,7 @@ public class AuthenticateController : ApiController
 
     [Authorize]
     [HttpGet("Profile")]
-    public async Task<ActionResult> GetUserProfile()
+    public async Task<ActionResult<GetStaffProfileDto>> GetUserProfile()
     {
         //GetUserProfileQuery
         await Task.CompletedTask;
@@ -77,7 +77,7 @@ public class AuthenticateController : ApiController
 
     [Authorize]
     [HttpPut("Profile")]
-    public async Task<ActionResult> UpdateProfile(UpdateProfileDto updateProfileDto)
+    public async Task<ActionResult> UpdateProfile(UpdateStaffProfileDto updateProfileDto)
     {
         //UpdateUserProfileCommand
         await Task.CompletedTask;
@@ -95,7 +95,7 @@ public class AuthenticateController : ApiController
 
     [Authorize]
     [HttpGet("Regions")] //{instanceId}
-    public async Task<ActionResult> GetRegions()
+    public async Task<ActionResult<GetUserRegionsDto>> GetRegions()
     {
         await Task.CompletedTask;
         return Ok();

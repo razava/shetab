@@ -21,3 +21,46 @@ public class CategoryGetDto
     public ICollection<FormElement> FormElements { get; set; } = new List<FormElement>();
     public bool HideMap { get; set; }
 }
+
+
+//todo: Review this
+public class MediaDto : Media { }
+
+public class AddressDto
+{
+    public int? RegionId { get; set; }
+
+    public string Street { get; set; } = string.Empty;
+    public string Valley { get; set; } = string.Empty;
+    public string Detail { get; set; } = string.Empty;
+    public string Number { get; set; } = string.Empty;
+    public string PostalCode { get; set; } = string.Empty;
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
+    public double? Elevation { get; set; }
+}
+
+public record GetUserRegionsDto(
+    int Id,
+    int Code,
+    string Name,
+    int CityId);
+
+
+public record CategoryTitleDto(
+    string Title);
+
+public record CategoryDetailDto(
+    string Title,
+    int? ResponseDuration,
+    int Duration);
+
+public record AddresDetailDto(
+    string Detail);
+
+
+public record AddresMoreDetailDto(
+    string Detail,
+    double? Latitude,
+    double? Longitude);
+

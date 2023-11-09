@@ -3,7 +3,12 @@ using Api.Authentication;
 using Api.Contracts;
 using Application.Authentication.Commands.LoginCommand;
 using Application.Authentication.Commands.RegisterCitizenCommand;
+using Application.Authentication.Commands.ResetPasswordCommand;
+using Application.Authentication.Commands.VerifyPhoneNumberCommand;
+using Application.Authentication.Queries.ForgotPasswordQuery;
+using Application.Authentication.Queries.GetResetPasswordTokenQuery;
 using Application.Common.Interfaces.Security;
+using Application.Medias.Commands.AddMedia;
 using Domain.Models.Relational.IdentityAggregate;
 using Mapster;
 using MediatR;
@@ -28,7 +33,7 @@ public class CitizenAccountController : ApiController
     {
         var mappedCaptcha = loginDto.Captcha.Adapt<CaptchaValidateModel>();
 
-        var command = new LoginCommand(loginDto.Username, loginDto.Password, mappedCaptcha, loginDto.VerificationCode);
+        var command = new LoginCommand(loginDto.Username, loginDto.Password);
         var result = await Sender.Send(command);
         if (result.UserNotConfirmed)
         {
@@ -44,7 +49,7 @@ public class CitizenAccountController : ApiController
     [HttpPost("LoginApp")]
     public async Task<ActionResult> LoginApp(LoginAppDto loginAppDto)
     {
-        var command = new LoginCommand(loginAppDto.Username, loginAppDto.Password, null, loginAppDto.VerificationCode);
+        var command = new LoginCommand(loginAppDto.Username, loginAppDto.Password);
         var result = await Sender.Send(command);
         if (result.UserNotConfirmed)
         {
@@ -89,15 +94,32 @@ public class CitizenAccountController : ApiController
     }
 
     [HttpPost("Verify")]
-    public async Task<ActionResult> Verify(LoginDto loginDto)
+    public async Task<ActionResult> Verify(VerificationDto verificationDto)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var command = new VerifyPhoneNumberCommand(verificationDto.Username, verificationDto.VerificationCode);
+        var result = await Sender.Send(command);
+        if (result)
+        {
+            var loginCommand = new LoginCommand(verificationDto.Username, verificationDto.Password);
+            var loginResult = await Sender.Send(loginCommand);
+            if (loginResult.UserNotConfirmed)
+            {
+                return Unauthorized();
+            }
+            else
+            {
+                return Ok(loginResult.JwtToken);
+            }
+        }
+        else
+        {
+            return Unauthorized();
+        }
     }
 
     [Authorize(Roles = "Citizen")]
     [HttpGet]
-    public async Task<ActionResult<GetUserProfileDto>> GetUser()
+    public async Task<ActionResult<GetCitizenProfileDto>> GetUser()
     {
         await Task.CompletedTask;
         return Ok();
@@ -108,9 +130,18 @@ public class CitizenAccountController : ApiController
     public async Task<IActionResult> UpdateUser(UpdateCitizenProfileDto updateCitizenProfileDto)
     {
         await Task.CompletedTask;
+        return Ok();//NoContent
+    }
+
+    [Authorize]
+    [HttpPut("Avatar")]
+    public async Task<ActionResult> UpdateAvatar(UploadDto avatar)
+    {
+        //UpdateUserAvatarCommand
+        await Task.CompletedTask;
         return Ok();
     }
-    
+
     [Authorize(Roles = "Citizen")]
     [HttpPut("Password")]
     public async Task<ActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
@@ -153,39 +184,72 @@ public class CitizenAccountController : ApiController
         }
     }
 
-    //todo : fix forgot password process
     [HttpPost("ForgotPasswod")]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var mappedCaptcha = forgotPasswordDto.Captcha.Adapt<CaptchaValidateModel>();
+        var query = new ForgotPasswordQuery(forgotPasswordDto.PhoneNumber, mappedCaptcha);
+        var result = await Sender.Send(query);
+        if (result)
+        {
+            return StatusCode(StatusCodes.Status428PreconditionRequired, "");
+        }
+        else
+        {
+            return BadRequest();
+        }
     }
 
     [HttpPost("ForgotPasswodApp")]
     public async Task<IActionResult> ForgotPasswordApp(ForgotPasswordAppDto forgotPasswordDto)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var query = new ForgotPasswordQuery(forgotPasswordDto.PhoneNumber);
+        var result = await Sender.Send(query);
+        if (result)
+        {
+            return StatusCode(StatusCodes.Status428PreconditionRequired, "");
+        }
+        else
+        {
+            return BadRequest();
+        }
     }
 
+    //todo : Pending for Decision
     [HttpPost("RequestToken")]
-    public async Task<ActionResult> RequestToken(LoginDto loginDto)
+    public async Task<ActionResult> RequestToken(RequestTokenDto requestTokenDto)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var query = new GetResetPasswordTokenQuery(requestTokenDto.PhoneNumber, requestTokenDto.VerificationCode);
+        var result = await Sender.Send(query);
+        //todo : check not null result
+        return Ok(result);
     }
 
+    //todo : Pending for Decision
     [HttpPost("ResetPassword")]
-    public async Task<ActionResult> ResetPassword(LoginDto loginDto)
+    public async Task<ActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var command = new ResetPasswordCommand(resetPasswordDto.Username, resetPasswordDto.ResetPasswordToken, resetPasswordDto.NewPassword);
+        var result = await Sender.Send(command);
+        if (result)
+        {
+            return Ok();
+        }
+        else
+        {
+            return BadRequest();
+        }
+
     }
 
     [HttpGet("Captcha")]
-    public string GetCaptcha()
+    public async Task<ActionResult<CaptchaResultDto>> GetCaptcha()
     {
-        return "";
+        var query = new CaptchaQuery();
+        var result = await Sender.Send(query);
+        var mappedCaptcha = result.Adapt<CaptchaResultDto>();
+
+        return Ok(mappedCaptcha);
     }
 
     [HttpPost("LoginGov")]
@@ -198,10 +262,10 @@ public class CitizenAccountController : ApiController
     //Dtos
     //todo : move and compelete dtos in another file & write validation
     //public record UpdateUserDto();
-    public record GetUserProfileDto();
+    
     //public record ForgotPasswordDto();
     //public record ForgotPasswordAppDto();
-    public record GovLoginDto();
+    //public record GovLoginDto();
     
     
 }
