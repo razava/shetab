@@ -3,6 +3,7 @@ using Api.Contracts;
 using Application.Authentication.Commands.LoginCommand;
 using Application.Authentication.Commands.RegisterCitizenCommand;
 using Application.Common.Interfaces.Security;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -47,7 +48,7 @@ namespace Api.Controllers
 
         [Authorize]
         [HttpPut("Profile")]
-        public async Task<ActionResult> UpdateProfile(UpdateUserDto updateUserDto)
+        public async Task<ActionResult> UpdateProfile(UpdateProfileDto updateProfileDto)
         {
             //UpdateUserProfileCommand
             await Task.CompletedTask;
@@ -80,7 +81,9 @@ namespace Api.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult> Login(LoginDto loginDto)
         {
-            var command = new LoginCommand(loginDto.Username, loginDto.Password, loginDto.Captcha, loginDto.VerificationCode);
+            var mappedCaptcha = loginDto.Captcha.Adapt<CaptchaValidateModel>();
+
+            var command = new LoginCommand(loginDto.Username, loginDto.Password, mappedCaptcha, loginDto.VerificationCode);
             var result = await Sender.Send(command);
             if (result.UserNotConfirmed)
             {
@@ -183,11 +186,11 @@ namespace Api.Controllers
     }
 }
 
-public record LoginDto(string Username, string Password, CaptchaValidateModel Captcha, string? VerificationCode = null);
-public record LoginAppDto(string Username, string Password, string? VerificationCode = null);
-public record RegisterDto(string Username, string Password, CaptchaValidateModel Captcha);
-public record RegisterAppDto(string Username, string Password);
-public record ChangePasswordDto(string Username, string OldPassword, string NewPassword, CaptchaValidateModel Captcha);
-public record ChangePasswordAppDto(string OldPassword, string NewPassword);
+//public record LoginDto(string Username, string Password, CaptchaValidateModel Captcha, string? VerificationCode = null);
+//public record LoginAppDto(string Username, string Password, string? VerificationCode = null);
+//public record RegisterDto(string Username, string Password, CaptchaValidateModel Captcha);
+//public record RegisterAppDto(string Username, string Password);
+//public record ChangePasswordDto(string Username, string OldPassword, string NewPassword, CaptchaValidateModel Captcha);
+//public record ChangePasswordAppDto(string OldPassword, string NewPassword);
 public record LoginAdminDto();
 public record ChangePasswordByIdDto();

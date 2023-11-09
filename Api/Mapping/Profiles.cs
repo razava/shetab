@@ -66,8 +66,9 @@ public class Profiles : Profile
         CreateMap<ProcessReason, Dtos.ReasonDto>();
         CreateMap<Dtos.ReasonDto, ProcessReason>();
 
-        CreateMap<Dtos.MakeTransitionModel, Dtos.MakeTransitionDto>();
-        CreateMap<Dtos.MakeTransitionDto, Dtos.MakeTransitionModel>();
+        //this dto moved to Contracts.ReportDtos.cs
+        //CreateMap<Dtos.MakeTransitionModel, Dtos.MakeTransitionDto>();
+        //CreateMap<Dtos.MakeTransitionDto, Dtos.MakeTransitionModel>();
 
         CreateMap<Dtos.ObjectionModel, Dtos.ObjectionDto>();
         CreateMap<Dtos.ObjectionDto, Dtos.ObjectionModel>();

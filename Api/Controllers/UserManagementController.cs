@@ -6,10 +6,12 @@ using Application.Users.Commands.CreateContractor;
 using Application.Users.Commands.CreateNewPassword;
 using Application.Users.Commands.CreateUser;
 using Application.Users.Commands.UpdateRoles;
+using Application.Users.Common;
 using Application.Users.Queries.GetRoles;
 using Application.Users.Queries.GetUserById;
 using Application.Users.Queries.GetUsers;
 using Domain.Models.Relational.IdentityAggregate;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -57,7 +59,8 @@ public class UserManagementController : ApiController
     [HttpPost("Roles/{id}")]
     public async Task<IActionResult> SetRoles(string id, UpdateRolesDto updateRolesDto) 
     {
-        var commond = new UpdateRolesCommand(id, updateRolesDto.Roles);
+        var mappedRoles = updateRolesDto.Roles.Adapt<List<IsInRoleModel>>();
+        var commond = new UpdateRolesCommand(id, mappedRoles);
         var result = await Sender.Send(commond);
         //todo : handle result & set appropriate responses.
         return Ok();

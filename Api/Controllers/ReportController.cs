@@ -212,7 +212,7 @@ public class ReportController : ApiController
     //todo: is this used??
     [Authorize(Roles = "Operator")]
     [HttpPut("Satisfaction/{id:Guid}")]   //id : reportId
-    public async Task<ActionResult> PutSatisfaction(Guid id)
+    public async Task<ActionResult> PutSatisfaction(Guid id, PutSatisfactionDto putSatisfactionDto)
     {
         await Task.CompletedTask;
         return Ok();
@@ -291,6 +291,8 @@ public class ReportController : ApiController
         return Ok(result.ToList());
     }
 
+    //Moved to ReportDtos file
+    /*
     public record MakeTransitionDto(
     int TransitionId,
     int ReasonId,
@@ -301,6 +303,14 @@ public class ReportController : ApiController
         public List<Guid> Attachments { get; init; } = Attachments ?? new List<Guid>();
         public string Comment { get; init; } = Comment ?? "";
     }
+    */
+
+
+
+
+
+
+
         /*
         [Authorize(Roles = "Citizen")]
         [HttpGet("Like")]

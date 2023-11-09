@@ -64,7 +64,7 @@ public class CitizenAccountController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpPut]
-    public async Task<IActionResult> UpdateUser(UpdateUserDto userUpdate)
+    public async Task<IActionResult> UpdateUser(UpdateCitizenProfileDto updateCitizenProfileDto)
     {
         await Task.CompletedTask;
         return Ok();
@@ -132,8 +132,8 @@ public class CitizenAccountController : ApiController
     //todo : move and compelete dtos in another file & write validation
     //public record UpdateUserDto();
     public record GetUserProfileDto();
-    public record ForgotPasswordDto();
-    public record ForgotPasswordAppDto();
+    //public record ForgotPasswordDto();
+    //public record ForgotPasswordAppDto();
     public record GovLoginDto();
     
     

@@ -360,6 +360,7 @@ public class MakeTransitionModel
     //public Priority? Priority { get; set; }
 }
 
+/*
 public class MakeTransitionDto
 {
     public int TransitionId { get; set; }
@@ -373,6 +374,7 @@ public class MakeTransitionDto
     public Visibility? Visibility { get; set; }
     //public Priority Priority { get; set; }
 }
+*/
 
 public class MoveToStageModel
 {

@@ -5,18 +5,24 @@ namespace Api.Contracts;
 
 
 public record NewPasswordDto(
-    string NewPassword
-);
+    string NewPassword);
 
 
 public record UpdateRolesDto(
-    List<IsInRoleModel> Roles
-);
+    //List<IsInRoleModel> Roles);
+    List<RolesDto> Roles);
 //todo : no need for roleTitle(or display name) in roles list above
-public record RoleDto(
+public record RolesDto(
     string RoleName,
-    bool IsIn
-);
+    string RoleTitle,
+    bool IsIn);
 
-//todo : compelte this :
-public record UpdateUserDto();
+public record UpdateUserDto(
+    string FirstName,
+    string LastName,
+    string Title);
+
+
+
+
+
