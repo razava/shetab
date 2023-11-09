@@ -7,9 +7,9 @@ namespace Api.Controllers;
 
 [Route("api/{instanceId}/[controller]")]
 [ApiController]
-public class CategoryController : ApiController
+public class AdminCategoryController : ApiController
 {
-    protected CategoryController(ISender sender) : base(sender)
+    protected AdminCategoryController(ISender sender) : base(sender)
     {
     }
 

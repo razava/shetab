@@ -5,6 +5,8 @@ using Domain.Models.Relational.Common;
 namespace Api.Contracts;
 
 
+public record LoginStaffDto();
+
 public record CaptchaValidateDto(
     Guid Key, 
     string Value);

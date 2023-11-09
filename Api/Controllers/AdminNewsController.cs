@@ -7,9 +7,9 @@ namespace Api.Controllers;
 
 [Route("api/{instanceId}/[controller]")]
 [ApiController]
-public class NewsController : ApiController
+public class AdminNewsController : ApiController
 {
-    protected NewsController(ISender sender) : base(sender)
+    protected AdminNewsController(ISender sender) : base(sender)
     {
     }
 

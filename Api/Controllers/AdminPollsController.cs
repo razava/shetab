@@ -7,9 +7,9 @@ namespace Api.Controllers;
 
 [Route("api/{instanceId}/[controller]")]
 [ApiController]
-public class PollsController : ApiController
+public class AdminPollsController : ApiController
 {
-    protected PollsController(ISender sender) : base(sender)
+    protected AdminPollsController(ISender sender) : base(sender)
     {
     }
 

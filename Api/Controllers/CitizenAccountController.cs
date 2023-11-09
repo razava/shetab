@@ -1,10 +1,15 @@
 ﻿using Api.Abstractions;
 using Api.Authentication;
 using Api.Contracts;
+using Application.Authentication.Commands.LoginCommand;
+using Application.Authentication.Commands.RegisterCitizenCommand;
+using Application.Common.Interfaces.Security;
 using Domain.Models.Relational.IdentityAggregate;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Api.Controllers;
 
@@ -21,30 +26,66 @@ public class CitizenAccountController : ApiController
     [HttpPost("Login")]
     public async Task<ActionResult> Login(LoginDto loginDto)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var mappedCaptcha = loginDto.Captcha.Adapt<CaptchaValidateModel>();
+
+        var command = new LoginCommand(loginDto.Username, loginDto.Password, mappedCaptcha, loginDto.VerificationCode);
+        var result = await Sender.Send(command);
+        if (result.UserNotConfirmed)
+        {
+            return StatusCode(StatusCodes.Status428PreconditionRequired, "");
+        }
+        else
+        {
+            //TODO: Consider converting token to base64
+            return Ok(result.JwtToken);
+        }
     }
 
     [HttpPost("LoginApp")]
     public async Task<ActionResult> LoginApp(LoginAppDto loginAppDto)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var command = new LoginCommand(loginAppDto.Username, loginAppDto.Password, null, loginAppDto.VerificationCode);
+        var result = await Sender.Send(command);
+        if (result.UserNotConfirmed)
+        {
+            return StatusCode(StatusCodes.Status428PreconditionRequired, "");
+        }
+        else
+        {
+            //TODO: Consider converting token to base64
+            return Ok(result.JwtToken);
+        }
     }
 
 
     [HttpPost("Register")]
     public async Task<ActionResult> Register(RegisterDto registerDto)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var command = new RegisterCitizenCommand(registerDto.Username, registerDto.Password, registerDto.Captcha);
+        var result = await Sender.Send(command);
+        if (result)
+        {
+            return StatusCode(StatusCodes.Status428PreconditionRequired, "");
+        }
+        else
+        {
+            return BadRequest();
+        }
     }
 
     [HttpPost("RegisterApp")]
     public async Task<ActionResult> RegisterApp(RegisterAppDto registerAppDto)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var command = new RegisterCitizenCommand(registerAppDto.Username, registerAppDto.Password);
+        var result = await Sender.Send(command);
+        if (result)
+        {
+            return StatusCode(StatusCodes.Status428PreconditionRequired, "");
+        }
+        else
+        {
+            return BadRequest();
+        }
     }
 
     [HttpPost("Verify")]
@@ -72,18 +113,44 @@ public class CitizenAccountController : ApiController
     
     [Authorize(Roles = "Citizen")]
     [HttpPut("Password")]
-    public async Task<IActionResult> UpdatePassword(ChangePasswordDto changePassword)
+    public async Task<ActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var userName = User.FindFirstValue(ClaimTypes.Name);
+        if (userName is null)
+        {
+            return Unauthorized();
+        }
+        var command = new ChangePasswordCommand(userName, changePasswordDto.OldPassword, changePasswordDto.NewPassword, changePasswordDto.Captcha);
+        var result = await Sender.Send(command);
+        if (result)
+        {
+            return NoContent();
+        }
+        else
+        {
+            return Problem();
+        }
     }
 
     [Authorize(Roles = "Citizen")]
     [HttpPut("PasswordApp")]
-    public async Task<ActionResult> UpdatePasswordApp(ChangePasswordAppDto changePasswordAppDto)
+    public async Task<ActionResult> ChangePasswordApp(ChangePasswordAppDto changePasswordAppDto)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var userName = User.FindFirstValue(ClaimTypes.Name);
+        if (userName is null)
+        {
+            return Unauthorized();
+        }
+        var command = new ChangePasswordCommand(userName, changePasswordAppDto.OldPassword, changePasswordAppDto.NewPassword);
+        var result = await Sender.Send(command);
+        if (result)
+        {
+            return NoContent();
+        }
+        else
+        {
+            return Problem();
+        }
     }
 
     //todo : fix forgot password process

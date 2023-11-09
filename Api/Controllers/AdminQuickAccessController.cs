@@ -7,18 +7,19 @@ namespace Api.Controllers;
 
 [Route("api/{instanceId}/[controller]")]
 [ApiController]
-public class ProcessesController : ApiController
+public class AdminQuickAccessController : ApiController
 {
-    protected ProcessesController(ISender sender) : base(sender)
+    protected AdminQuickAccessController(ISender sender) : base(sender)
     {
     }
 
     //todo : Define & Set Dtos
 
-
-    [Authorize(Roles = "Admin")]
+    //TODO: Define access policy
+    //todo : this endpoint is shared with Citizen and can move to common Controller
+    [Authorize]
     [HttpGet]
-    public async Task<ActionResult> GetProcesses()
+    public async Task<ActionResult> GetQuickAccesses()
     {
         await Task.CompletedTask;
         return Ok();
@@ -27,15 +28,7 @@ public class ProcessesController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<ActionResult> CreateProcesses()
-    {
-        await Task.CompletedTask;
-        return Ok();
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult> GetProcesse(int id)
+    public async Task<ActionResult> CreateQuickAccess()
     {
         await Task.CompletedTask;
         return Ok();
@@ -43,21 +36,20 @@ public class ProcessesController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> EditProcesses(int id)
+    public async Task<ActionResult> EditQuickAccesses(int id)
     {
         await Task.CompletedTask;
         return Ok();
     }
 
-    //TODO: Define access policies
-    [Authorize]
-    [HttpGet("Executives")]
-    public async Task<ActionResult> GetExecutives()
+
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> DeleteQuickAccesses(int id)
     {
         await Task.CompletedTask;
         return Ok();
     }
     
-
 
 }

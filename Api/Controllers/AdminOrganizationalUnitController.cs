@@ -7,9 +7,9 @@ namespace Api.Controllers;
 
 [Route("api/{instanceId}/[controller]")]
 [ApiController]
-public class OrganizationalUnitController : ApiController
+public class AdminOrganizationalUnitController : ApiController
 {
-    protected OrganizationalUnitController(ISender sender) : base(sender)
+    protected AdminOrganizationalUnitController(ISender sender) : base(sender)
     {
     }
 

@@ -23,9 +23,9 @@ namespace Api.Controllers;
 
 [Route("api/{instanceId}/[controller]")]
 [ApiController]
-public class UserManagementController : ApiController
+public class AdminUserManagementController : ApiController
 {
-    protected UserManagementController(ISender sender) : base(sender)
+    protected AdminUserManagementController(ISender sender) : base(sender)
     {
     }
 

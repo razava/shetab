@@ -181,5 +181,15 @@ public class CitizenReportController : ApiController
     //todo : post/feedbackFromApp ??
 
 
+    //todo : define & set dto
+    [Authorize(Roles = "Citizen")]
+    [HttpPost("Violation")]
+    public async Task<ActionResult> RepotrViolation()
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+
 
 }

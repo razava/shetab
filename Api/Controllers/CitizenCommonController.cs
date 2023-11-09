@@ -1,20 +1,21 @@
 ﻿using Api.Abstractions;
+using Api.Contracts;
 using Application.Categories.Queries.GetCategory;
 using Application.Categories.Queries.GetCategoryById;
-using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ReportAggregate;
 using Mapster;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
 [Route("api/{instanceId:int}/[controller]")]
 [ApiController]
-public class CommonController : ApiController
+public class CitizenCommonController : ApiController
 {
-    public CommonController(ISender sender) : base(sender)
+    protected CitizenCommonController(ISender sender) : base(sender)
     {
     }
 
@@ -36,7 +37,17 @@ public class CommonController : ApiController
         var result = await Sender.Send(query);
         return result.Adapt<CategoryGetDto>();
     }
-    
+
+
+    [Authorize]
+    [HttpGet("ViolationTypes")]
+    public async Task<ActionResult> GetViolationTypes()
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+
     [HttpGet("RegionsByName")]
     public async Task<IActionResult> GetRegionsByName()
     {
@@ -57,23 +68,10 @@ public class CommonController : ApiController
         await Task.CompletedTask;
         return Ok();
     }
+
+
 }
 
-public class CategoryGetDto
-{
-    public int ShahrbinInstanceId { get; set; }
-    public int Id { get; set; }
-    public int Order { get; set; }
-    public string Code { get; set; } = null!;
-    public string Title { get; set; } = null!;
-    public ICollection<CategoryGetDto> Categories { get; set; } = new List<CategoryGetDto>();
-    public int? ProcessId { get; set; }
-    public string Description { get; set; } = string.Empty;
-    public string AttachmentDescription { get; set; } = string.Empty;
-    public int Duration { get; set; }
-    public int? ResponseDuration { get; set; }
-    public CategoryType CategoryType { get; set; }
-    public bool IsDeleted { get; set; }
-    public ICollection<FormElement> FormElements { get; set; } = new List<FormElement>();
-    public bool HideMap { get; set; }
-}
+
+
+
