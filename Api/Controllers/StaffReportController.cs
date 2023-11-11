@@ -49,7 +49,7 @@ public class StaffReportController : ApiController
     //TODO: Define access policy
     [Authorize(Roles = "Operator")]
     [HttpGet("PossibleTransitions/{id:Guid}")]
-    public async Task<ActionResult<List<Application.Reports.Queries.GetPossibleTransitions.PossibleTransitionDto>>> GetPossibleTransitions(Guid id)
+    public async Task<ActionResult<List<Application.Reports.Queries.GetPossibleTransitions.PossibleTransitionResponse>>> GetPossibleTransitions(Guid id)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)

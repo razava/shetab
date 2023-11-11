@@ -24,6 +24,7 @@
     <Folder Include="Feedbacks\Queries\" />
     <Folder Include="QuickAccesses\Queries\" />
     <Folder Include="Setup\Queries\" />
+    <Folder Include="Workspaces\Commands\" />
   </ItemGroup>
 
   <ItemGroup>
