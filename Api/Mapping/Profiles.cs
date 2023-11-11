@@ -9,6 +9,7 @@ namespace Api.Mapping;
 
 public class Profiles : Profile
 {
+    /*
     public Profiles()
     {
         CreateMap<Domain.Models.Relational.Category, Dtos.CategoryDto>();
@@ -45,8 +46,8 @@ public class Profiles : Profile
         CreateMap<Domain.Models.Relational.Report, Dtos.GetReportDto>();
         CreateMap<Dtos.GetReportDto, Domain.Models.Relational.Report>();
 
-        CreateMap<Address, Dtos.AddressDto>();
-        CreateMap<Dtos.AddressDto, Address>();
+        //CreateMap<Address, Dtos.AddressDto>();
+        //CreateMap<Dtos.AddressDto, Address>();
 
         CreateMap<ApplicationUser, Dtos.ApplicationUserDto>();
         CreateMap<Dtos.ApplicationUserDto, ApplicationUser>();
@@ -73,8 +74,9 @@ public class Profiles : Profile
         CreateMap<Dtos.ObjectionModel, Dtos.ObjectionDto>();
         CreateMap<Dtos.ObjectionDto, Dtos.ObjectionModel>();
 
-        CreateMap<Dtos.MoveToStageModel, Dtos.MoveToStageDto>();
-        CreateMap<Dtos.MoveToStageDto, Dtos.MoveToStageModel>();
+        //this dto moved to Contracts.ReportDtos.cs
+        //CreateMap<Dtos.MoveToStageModel, Dtos.MoveToStageDto>();
+        //CreateMap<Dtos.MoveToStageDto, Dtos.MoveToStageModel>();
 
         /*
         CreateMap<DNTPersianUtils.Core.IranCities.Province, Domain.Models.Relational.Province>()
@@ -86,6 +88,9 @@ public class Profiles : Profile
         CreateMap<DNTPersianUtils.Core.IranCities.City, Domain.Models.Relational.City>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.CityName));
         */
+
+
+    /*
         CreateMap<Province, Dtos.AdministrativeDivisionsDto>();
         CreateMap<County, Dtos.AdministrativeDivisionsDto>();
         CreateMap<District, Dtos.AdministrativeDivisionsDto>();
@@ -188,4 +193,5 @@ public class Profiles : Profile
 
 
     }
+*/
 }

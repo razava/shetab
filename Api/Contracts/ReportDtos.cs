@@ -1,4 +1,5 @@
 ﻿using Api.Dtos;
+using Application.Reports.Common;
 using Domain.Models.Relational.Common;
 
 namespace Api.Contracts;
@@ -8,10 +9,12 @@ public record CreateFeedbackDto(
     int rating);
 
 public record UpdateCommentDto(
-    Guid ReportId,   /*??*/
     string Comment,
     bool? IsSeen,
     bool? IsVerified);
+
+public record ReplyCommentDto(
+    string Comment);
 
 public record PutSatisfactionDto(
     int Rating,
@@ -66,7 +69,14 @@ public record CitizenCreateReportDto(
     bool IsIdentityVisible);
 
 
-public record CreateViolationDto(
+public record CreateReportViolationDto(
+    Guid ReportId,
+    int ViolationTypeId,
+    string Description);
+
+
+public record CreateCommentViolationDto(
+    Guid CommentId,
     int ViolationTypeId,
     string Description);
 
@@ -119,6 +129,88 @@ public class ActorDto
     public string PhoneNumber { get; set; }
     public List<ActorDto> Actors { get; set; }
 }
+
+
+
+
+public record MoveToStageDto(
+    bool IsAccepted,
+    int StageId,
+    ICollection<ActorDto> Actors,
+    string Comment,
+    ICollection<Guid> Attachments,
+    ActorType? ActorType,
+    string ActorIdentifier,
+    Visibility? Visibility);
+
+
+
+public record GetPossibleSourceDto(
+    string RoleId,
+    string RoleName,
+    string RoleTitle);
+
+
+public record MessageToCitizenDto(
+    List<Guid> Attachments,
+    string Comment,
+    bool IsPublic,
+    string Message);
+
+
+
+public class OperatorCreateReportDto
+{
+    public int CategoryId { get; set; }
+    public string Comments { get; set; } = null!;
+    public string PhoneNumber { get; set; } = null!;
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public bool IsIdentityVisible { get; set; }
+    public AddressDto Address { get; set; } = null!;
+    public List<Guid> Attachments { get; set; } = new List<Guid>();
+
+    //These are specific for verifying the report by operator
+    public Guid? Id { get; set; }
+
+    public ICollection<MediaDto> Medias { get; set; } = new List<MediaDto>();
+
+    public Visibility Visibility { get; set; } = Visibility.Operators;
+}
+
+
+
+//public record OperatorCreateReportDto(
+//    string PhoneNumber,
+//    string FirstName,
+//    string LastName,
+//    int CategoryId,
+//    string Comments,
+//    AddressInfo Address,
+//    List<Guid> Attachments,
+//    bool IsIdentityVisible = true
+//    //,visibility?
+//    );
+
+public class UpdateReportDto
+{
+    //public Guid Id { get; set; } 
+    public int? CategoryId { get; set; }
+    public string? Comments { get; set; }
+    public bool? IsIdentityVisible { get; set; }
+    public Visibility? Visibility { get; set; }
+    public AddressDto? Address { get; set; }
+    public List<Guid>? Attachments { get; set; }
+}
+
+
+public record ViolationPutDto(
+    Guid Id,
+    ViolationCheckResult? ViolationCheckResult,
+    DateTime? ViolatoinCheckDateTime,
+    string Comments);
+
+
 
 
 

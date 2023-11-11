@@ -29,10 +29,10 @@ public class ViolationGetDto
     public DateTime? ViolatoinCheckDateTime { get; set; }
 }
 
-public class ViolationPutDto
-{
-    public Guid Id { get; set; }
-    public ViolationCheckResult? ViolationCheckResult { get; set; }
-    public DateTime? ViolatoinCheckDateTime { get; set; }
-    public string Comments { get; set; }
-}
+//public class ViolationPutDto
+//{
+//    public Guid Id { get; set; }
+//    public ViolationCheckResult? ViolationCheckResult { get; set; }
+//    public DateTime? ViolatoinCheckDateTime { get; set; }
+//    public string Comments { get; set; }
+//}

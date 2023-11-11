@@ -23,7 +23,7 @@ public class SetupController : ApiController
 
     //[Authorize(Roles = "PowerUser")]
     [HttpPost]
-    public async Task<ActionResult<CreateReportDto>> AddInstance([FromForm] MultipleFilesUploadModel filesModel)
+    public async Task<ActionResult<bool>> AddInstance([FromForm] MultipleFilesUploadModel filesModel)
     {
 
         var command = new AddInstanceCommand(filesModel.Files);

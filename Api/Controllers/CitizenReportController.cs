@@ -186,13 +186,19 @@ public class CitizenReportController : ApiController
 
 
     [Authorize(Roles = "Citizen")]
-    [HttpPost("Violation/{id:Guid}")]
-    public async Task<ActionResult> RepotrViolation(Guid id, CreateViolationDto createViolationDto)
+    [HttpPost("ReportViolation/{id:Guid}")]
+    public async Task<ActionResult> RepotrViolation(Guid id, CreateReportViolationDto createViolationDto)
     {
         await Task.CompletedTask;
         return Ok();
     }
 
-
+    [Authorize(Roles = "Citizen")]
+    [HttpPost("CommentViolation/{id:Guid}")]
+    public async Task<ActionResult> CommentViolation(Guid id, CreateCommentViolationDto createViolationDto)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
 
 }

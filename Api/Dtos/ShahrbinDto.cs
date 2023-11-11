@@ -1,4 +1,5 @@
-﻿using Domain.Models.Relational.Common;
+﻿using Api.Contracts;
+using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ProcessAggregate;
 using Domain.Models.Relational.ReportAggregate;
 
@@ -54,6 +55,7 @@ public class CategoryUpdateDto
     public bool IsDeleted { get; set; }
 }
 
+//this dto moved to Contracts.ReportDtos.cs
 //public class CreateReportDto
 //{
 //    public int CategoryId { get; set; }
@@ -63,35 +65,37 @@ public class CategoryUpdateDto
 //    public bool IsIdentityVisible { get; set; } = true;
 //}
 
-public class UpdateReportDto
-{
-    public Guid Id { get; set; }
-    public int? CategoryId { get; set; }
-    public string? Comments { get; set; }
-    public bool? IsIdentityVisible { get; set; }
-    public Visibility? Visibility { get; set; }
-    public AddressDto? Address { get; set; }
-    public List<Guid>? Attachments { get; set; }
-}
+//this dto moved to Contracts.ReportDtos.cs (with some changes)
+//public class UpdateReportDto
+//{
+//    public Guid Id { get; set; }
+//    public int? CategoryId { get; set; }
+//    public string? Comments { get; set; }
+//    public bool? IsIdentityVisible { get; set; }
+//    public Visibility? Visibility { get; set; }
+//    public AddressDto? Address { get; set; }
+//    public List<Guid>? Attachments { get; set; }
+//}
 
-public class OperatorCreateReportDto
-{
-    public int CategoryId { get; set; }
-    public string Comments { get; set; } = null!;
-    public string PhoneNumber { get; set; } = null!;
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
-    public bool IsIdentityVisible { get; set; }
-    public AddressDto Address { get; set; } = null!;
-    public List<Guid> Attachments { get; set; } = new List<Guid>();
+//this dto moved to Contracts.ReportDtos.cs
+//public class OperatorCreateReportDto
+//{
+//    public int CategoryId { get; set; }
+//    public string Comments { get; set; } = null!;
+//    public string PhoneNumber { get; set; } = null!;
+//    public string FirstName { get; set; } = string.Empty;
+//    public string LastName { get; set; } = string.Empty;
+//    public bool IsIdentityVisible { get; set; }
+//    public AddressDto Address { get; set; } = null!;
+//    public List<Guid> Attachments { get; set; } = new List<Guid>();
 
-    //These are specific for verifying the report by operator
-    public Guid? Id { get; set; }
+//    //These are specific for verifying the report by operator
+//    public Guid? Id { get; set; }
 
-    public ICollection<Media> Medias { get; set; } = new List<Media>();
+//    public ICollection<Media> Medias { get; set; } = new List<Media>();
 
-    public Visibility Visibility { get; set; } = Visibility.Operators;
-}
+//    public Visibility Visibility { get; set; } = Visibility.Operators;
+//}
 
 
 
@@ -377,18 +381,19 @@ public class MoveToStageModel
     //public Priority? Priority { get; set; }
 }
 
-public class MoveToStageDto
-{
-    public bool IsAccepted { get; set; }
-    public int StageId { get; set; }
-    public ICollection<ActorDto> Actors { get; set; }
-    public string Comment { get; set; }
-    public ICollection<IFormFile> Attachments { get; set; }
-    public ActorType? ActorType { get; set; }
-    public string ActorIdentifier { get; set; }
-    public Visibility? Visibility { get; set; }
-    //public Priority Priority { get; set; }
-}
+//this dto moved to Contracts.ReportDtos.cs (with some changes)
+//public class MoveToStageDto
+//{
+//    public bool IsAccepted { get; set; }
+//    public int StageId { get; set; }
+//    public ICollection<ActorDto> Actors { get; set; }
+//    public string Comment { get; set; }
+//    public ICollection<IFormFile> Attachments { get; set; }
+//    public ActorType? ActorType { get; set; }
+//    public string ActorIdentifier { get; set; }
+//    public Visibility? Visibility { get; set; }
+//    //public Priority Priority { get; set; }
+//}
 
 public class ObjectionDto
 {

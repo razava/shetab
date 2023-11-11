@@ -46,6 +46,17 @@ public class StaffReportController : ApiController
         return Ok();
     }
 
+    //...................................
+    [Authorize]
+    [HttpGet("AllReports")]
+    public async Task<ActionResult> GetAllReports(Guid id)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+
+
     //TODO: Define access policy : other staff?
     [Authorize(Roles = "Operator")]
     [HttpGet("PossibleTransitions/{id:Guid}")]
@@ -92,7 +103,7 @@ public class StaffReportController : ApiController
 
     [Authorize(Roles = "Inspector")]
     [HttpPost("Review/{id:Guid}")]
-    public async Task<ActionResult> Review(Guid id)
+    public async Task<ActionResult> Review(Guid id, MoveToStageDto moveToStageDto)
     {
         await Task.CompletedTask;
         return Ok();
@@ -101,8 +112,9 @@ public class StaffReportController : ApiController
     //TODO: Define access policy
     [Authorize]
     [HttpGet("PossibleSources")]
-    public async Task<ActionResult> GetPossibleSources()
+    public async Task<ActionResult<List<GetPossibleSourceDto>>> GetPossibleSources()
     {
+        // query needs userId & user roles
         await Task.CompletedTask;
         return Ok();
     }
@@ -111,9 +123,18 @@ public class StaffReportController : ApiController
     //TODO: Define access policy
     [Authorize]
     [HttpPost("MessageToCitizen/{id:Guid}")]
-    public async Task<ActionResult> MessageToCitizen(Guid id)
+    public async Task<ActionResult> MessageToCitizen(Guid id, MessageToCitizenDto messageToCitizenDto)
     {
         await Task.CompletedTask;
+        /* needs
+        Guid reportId,
+        string ActorIdentifier,
+        ActorType ActorType,
+        List<Guid> Attachments,
+        string Comment,
+        bool IsPublic,
+        string Message
+         */
         return Ok();
     }
 
@@ -168,10 +189,9 @@ public class StaffReportController : ApiController
         return Ok(report.Id);
     }
 
-    //todo : shoudn't have id for  input and route?
     [Authorize(Roles = "Operator")]
-    [HttpPut]
-    public async Task<ActionResult<Guid>> UpdateReportByOperator([FromForm] UpdateReportDto model)
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateReportByOperator(Guid id, [FromForm] UpdateReportDto model)
     {
         var instanceIdStr = User.FindFirstValue(AppClaimTypes.InstanceId);
         if (instanceIdStr == null)
@@ -205,7 +225,7 @@ public class StaffReportController : ApiController
         }
         //TODO: Visibility should be considerd
         var command = new UpdateByOperatorCommand(
-            model.Id,
+            id,
             operatorId,
             model.CategoryId,
             model.Comments,
@@ -220,8 +240,8 @@ public class StaffReportController : ApiController
 
     //todo : shoudn't have id for  input param and route?
     [Authorize(Roles = "Operator")]
-    [HttpPut("Accept")]
-    public async Task<ActionResult<Guid>> AcceptReportByOperator([FromForm] UpdateReportDto model)
+    [HttpPut("Accept/{id:Guid}")]
+    public async Task<ActionResult> AcceptReportByOperator(Guid id, [FromForm] UpdateReportDto model)
     {
         var instanceIdStr = User.FindFirstValue(AppClaimTypes.InstanceId);
         if (instanceIdStr == null)
@@ -255,7 +275,7 @@ public class StaffReportController : ApiController
         }
         //TODO: Visibility should be considerd
         var command = new AcceptByOperatorCommand(
-            model.Id,
+            id,
             operatorId,
             model.CategoryId,
             model.Comments,
@@ -270,7 +290,7 @@ public class StaffReportController : ApiController
 
 
     //todo : Define & Set Input Dtos
-
+    //.............................................
     [Authorize(Roles = "Operator")]
     [HttpGet("Comments")]
     public async Task<ActionResult> GetComments([FromQuery] PagingInfo pagingInfo)
@@ -279,6 +299,14 @@ public class StaffReportController : ApiController
         return Ok();
     }
 
+
+    [Authorize(Roles = "Operator")]
+    [HttpPost("ReplyComment/{commentId:Guid}")]
+    public async Task<ActionResult> ReplyComment(Guid commentId, ReplyCommentDto replyCommentDto)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
 
     [Authorize(Roles = "Operator")]
     [HttpPut("Comment/{commentId:Guid}")]
@@ -307,16 +335,7 @@ public class StaffReportController : ApiController
         return Ok();
     }
 
-
-    //todo : is this used? and is access policy correct?
-    [Authorize(Roles = "Operator")]
-    [HttpPost("Feedback/SendNow")]
-    public async Task<ActionResult> SendNowFeedback()
-    {
-        await Task.CompletedTask;
-        return Ok();
-    }
-
+    //................................................
     [Authorize(Roles = "Operator")]
     [HttpGet("Violations")]
     public async Task<ActionResult> GetViolations()
@@ -328,12 +347,11 @@ public class StaffReportController : ApiController
 
     [Authorize(Roles = "Operator")]
     [HttpPut("Violation/{id:Guid}")]
-    public async Task<ActionResult> GetViolations(Guid id)
+    public async Task<ActionResult> PutViolation(Guid id, ViolationPutDto violationPutDto)
     {
         await Task.CompletedTask;
         return Ok();
     }
-
 
 
 
