@@ -1,6 +1,4 @@
-﻿using Application.Reports.Common;
-using Domain.Models.Relational;
-using MediatR;
+﻿using MediatR;
 
 namespace Application.Reports.Queries.GetPossibleTransitions;
 
