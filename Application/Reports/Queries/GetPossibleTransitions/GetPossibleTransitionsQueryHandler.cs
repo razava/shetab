@@ -2,13 +2,14 @@
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
+using Domain.Models.Relational.ProcessAggregate;
 using ErrorOr;
 using Mapster;
 using MediatR;
 
 namespace Application.Reports.Queries.GetPossibleTransitions;
 
-internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPossibleTransitionsQuery, List<PossibleTransitionDto>>
+internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPossibleTransitionsQuery, List<PossibleTransitionResponse>>
 {
     private readonly IReportRepository _reportRepository;
     private readonly IUserRepository _userRepository;
@@ -23,7 +24,7 @@ internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPo
         _processRepository = processRepository;
     }
 
-    public async Task<List<PossibleTransitionDto>> Handle(GetPossibleTransitionsQuery request, CancellationToken cancellationToken)
+    public async Task<List<PossibleTransitionResponse>> Handle(GetPossibleTransitionsQuery request, CancellationToken cancellationToken)
     {
         var report = await _reportRepository.GetByIDAsync(request.reportId);
         if (report == null)
@@ -33,7 +34,7 @@ internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPo
 
         var possibleTransitions = report.GetPossibleTransitions();
 
-        var result = new List<PossibleTransitionDto>();
+        var result = new List<PossibleTransitionResponse>();
         var regionId = report.Address.RegionId;
         var userId = request.userId;
 
@@ -44,14 +45,14 @@ internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPo
             var userActors = await _userRepository.GetUserActors(userActorIdentifiers);
             var roleActors = await _userRepository.GetRoleActors(roleActorIdentifiers);
 
-            var t = new PossibleTransitionDto()
+            var t = new PossibleTransitionResponse()
             {
                 StageTitle = transition.To.DisplayName,
-                ReasonList = transition.ReasonList.ToList().Select(reason => new ReasonDto() { Id = reason.Id, Title = reason.Title, Description = reason.Description }),
+                ReasonList = transition.ReasonList.ToList(),
                 TransitionId = transition.Id,
                 CanSendMessageToCitizen = transition.CanSendMessageToCitizen
             };
-            var actorList = new List<ActorDto>();
+            var actorList = new List<Actor>();
             foreach (var actor in transition.To.Actors)
             {
                 if (actor.Type == ActorType.Auto)
@@ -60,25 +61,14 @@ internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPo
                 if (regionId == null || actor.Regions.Count == 0 ||
                     actor.Regions.Select(p => p.Id).ToList().Contains(regionId.Value))
                 {
-                    actorList.Add(new ActorDto()
-                    {
-                        Id = actor.Id,
-                        Identifier = actor.Identifier,
-                        Type = actor.Type,
-                        FirstName = (actor.Type == ActorType.Role) ? roleActors.Where(p => p.Id == actor.Identifier).Select(p => p.Title).FirstOrDefault()!:
-                            userActors.Where(p => p.Id == actor.Identifier).Select(p => p.FirstName).FirstOrDefault()!,
-                        LastName = (actor.Type == ActorType.Role) ? "" :
-                            userActors.Where(p => p.Id == actor.Identifier).Select(p => p.LastName).FirstOrDefault()!,
-                        Title = (actor.Type == ActorType.Role) ? roleActors.Where(p => p.Id == actor.Identifier).Select(p => p.Title).FirstOrDefault()! :
-                            userActors.Where(p => p.Id == actor.Identifier).Select(p => p.Title).FirstOrDefault()!,
-                    });
+                    actorList.Add(actor);
                 }
             }
 
             //string contractorIdentifier = null;
 
             //Add persons in each role actor
-            List<ActorDto> finalActors = new List<ActorDto>();
+            List<Actor> finalActors = new List<Actor>();
             for (var i = 0; i < actorList.Count; i++)
             {
                 if (actorList[i].Type == ActorType.Role)
@@ -127,16 +117,7 @@ internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPo
                     //actorList[i].Actors = new List<ActorDto>();
                     foreach (var actor in actorsForUsersInRole)
                     {
-                        finalActors.Add(new ActorDto()
-                        {
-                            Id = actor.Id,
-                            Identifier = actor.Identifier,
-                            Type = actor.Type,
-                            FirstName = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.FirstName).FirstOrDefault()!,
-                            LastName = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.LastName).FirstOrDefault()!,
-                            Organization = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.Organization).FirstOrDefault()!,
-                            PhoneNumber = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.PhoneNumber).FirstOrDefault()!,
-                        });
+                        finalActors.Add(actor);
                     }
                 }
                 else
