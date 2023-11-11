@@ -28,7 +28,7 @@ public class StaffReportController : ApiController
     {
     }
 
-
+    //........................
     [Authorize]
     [HttpGet]
     public async Task<ActionResult> GetTasks()
@@ -37,7 +37,7 @@ public class StaffReportController : ApiController
         return Ok();
     }
 
-
+    //........................
     [Authorize]
     [HttpGet("{id:Guid}")]
     public async Task<ActionResult> GetTaskById(Guid id)
@@ -46,10 +46,10 @@ public class StaffReportController : ApiController
         return Ok();
     }
 
-    //TODO: Define access policy
+    //TODO: Define access policy : other staff?
     [Authorize(Roles = "Operator")]
     [HttpGet("PossibleTransitions/{id:Guid}")]
-    public async Task<ActionResult<List<Application.Reports.Queries.GetPossibleTransitions.PossibleTransitionDto>>> GetPossibleTransitions(Guid id)
+    public async Task<ActionResult<List<GetPossibleTransitionDto>>> GetPossibleTransitions(Guid id)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
@@ -58,10 +58,11 @@ public class StaffReportController : ApiController
         //TODO: Get this from token
         var instanceId = 1;
 
-        var command = new GetPossibleTransitionsQuery(id, userId, instanceId);
-        var result = await Sender.Send(command);
-
-        return result;
+        var query = new GetPossibleTransitionsQuery(id, userId, instanceId);
+        var result = await Sender.Send(query);
+        //todo : fix this :
+        //return result; 
+        return Ok();    
     }
 
     //TODO: Define access policy
@@ -89,7 +90,6 @@ public class StaffReportController : ApiController
     }
 
 
-    //TODO: Define access policy
     [Authorize(Roles = "Inspector")]
     [HttpPost("Review/{id:Guid}")]
     public async Task<ActionResult> Review(Guid id)

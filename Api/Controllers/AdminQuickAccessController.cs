@@ -19,6 +19,7 @@ public class AdminQuickAccessController : ApiController
     //todo : this endpoint is shared with Citizen and can move to common Controller
     [Authorize]
     [HttpGet]
+    //todo : define AdminGetQuickAccess Dto
     public async Task<ActionResult> GetQuickAccesses()
     {
         await Task.CompletedTask;

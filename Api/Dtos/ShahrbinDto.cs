@@ -54,14 +54,14 @@ public class CategoryUpdateDto
     public bool IsDeleted { get; set; }
 }
 
-public class CreateReportDto
-{
-    public int CategoryId { get; set; }
-    public string Comments { get; set; } = string.Empty;
-    public AddressDto Address { get; set; } = null!;
-    public List<Guid> Attachments { get; set; } = new List<Guid>();
-    public bool IsIdentityVisible { get; set; } = true;
-}
+//public class CreateReportDto
+//{
+//    public int CategoryId { get; set; }
+//    public string Comments { get; set; } = string.Empty;
+//    public AddressDto Address { get; set; } = null!;
+//    public List<Guid> Attachments { get; set; } = new List<Guid>();
+//    public bool IsIdentityVisible { get; set; } = true;
+//}
 
 public class UpdateReportDto
 {

@@ -22,12 +22,12 @@ public class CitizenReportController : ApiController
     {
     }
 
-    //todo : Define & Set Dtos
+    //todo : Define & Set Dtos for Location Get Endpoints
 
 
     [Authorize(Roles = "Citizen")]
     [HttpGet]
-    public async Task<ActionResult<List<GetCitizenReportListDto>>> GetReports([FromQuery] PagingInfo pagingInfo, int instanceId)
+    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetReports([FromQuery] PagingInfo pagingInfo, int instanceId)
     {
         var query = new GetRecentReportsQuery(pagingInfo, instanceId);
         var result = await Sender.Send(query);
@@ -44,9 +44,10 @@ public class CitizenReportController : ApiController
         return Ok();
     }
 
+
     [Authorize(Roles = "Citizen")]
     [HttpGet("Nearest")]
-    public async Task<ActionResult<List<GetCitizenReportListDto>>> GetNearest([FromQuery]PagingInfo pagingInfo, int instanceId)
+    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetNearest([FromQuery]PagingInfo pagingInfo, int instanceId)
     {
         var query = new GetRecentReportsQuery(pagingInfo, instanceId);
         var result = await Sender.Send(query);
@@ -72,29 +73,28 @@ public class CitizenReportController : ApiController
         return Ok();
     }
 
+
     [Authorize(Roles = "Citizen")]
     [HttpGet("Mine")]
-    public async Task<ActionResult<List<GetCitizenReportListDto>>> GetMyReports([FromQuery] PagingInfo pagingInfo, int instanceId)
+    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetMyReports([FromQuery] PagingInfo pagingInfo, int instanceId)
     {
         await Task.CompletedTask;
         return Ok();
     }
+
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Mine/{id:Guid}")]
-    public async Task<ActionResult<GetCitizenReportDetailsDto>> GetMyReportById(Guid id)
+    public async Task<ActionResult<CitizenGetReportDetailsDto>> GetMyReportById(Guid id)
     {
         await Task.CompletedTask;
         return Ok();
     }
-
-
-    //...........review dtos........................................................
 
 
     [Authorize(Roles = "Citizen")]
     [HttpPost]
-    public async Task<ActionResult<Report>> CreateReport(int instanceId, [FromForm] CreateReportDto model)
+    public async Task<ActionResult<Report>> CreateReport(int instanceId, [FromForm] CitizenCreateReportDto model)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var username = User.FindFirstValue(ClaimTypes.Name);
@@ -129,11 +129,10 @@ public class CitizenReportController : ApiController
         return CreatedAtAction(nameof(GetMyReportById), report.Id, report);
     }
 
-
-    //this could be in Common controller
+    
     [Authorize(Roles = "Citizen")]
     [HttpGet("QuickAccesses")]
-    public async Task<ActionResult> GetQuickAccesses()
+    public async Task<ActionResult<List<CitizenGetQuickAccess>>> GetQuickAccesses()
     {
         await Task.CompletedTask;
         return Ok();
@@ -141,9 +140,8 @@ public class CitizenReportController : ApiController
     
 
     [Authorize(Roles = "Citizen")]
-    // Post changed to Put and get isLiked param for doing Like & UnLike operation in same endpoint like old version.
+    [HttpPut("Like/{id:Guid}")]
     //in old version returns int for report Likes number. 
-    [HttpPut("Like/{id:Guid}")]  
     public async Task<ActionResult> Like(Guid id, bool isLiked)
     {
         await Task.CompletedTask;
@@ -159,9 +157,10 @@ public class CitizenReportController : ApiController
         return Ok();
     }
     
+    
     [Authorize(Roles = "Citizen")]
     [HttpGet("Comments/{id:Guid}")]
-    public async Task<ActionResult> GetComments(Guid id, [FromQuery] PagingInfo pagingInfo)
+    public async Task<ActionResult<List<CitizenGetComments>>> GetComments(Guid id, [FromQuery] PagingInfo pagingInfo)
     {
         await Task.CompletedTask;
         return Ok();
@@ -180,17 +179,15 @@ public class CitizenReportController : ApiController
     [HttpPost("Feedback/{id:Guid}")]
     public async Task<ActionResult> Feedback(Guid id, CreateFeedbackDto createFeedbackDto)
     {
+        //need userId, RepoetId, token, rating
         await Task.CompletedTask;
         return Ok();
     }
 
-    //todo : post/feedbackFromApp ??
 
-
-    //todo : define & set dto
     [Authorize(Roles = "Citizen")]
-    [HttpPost("Violation")]
-    public async Task<ActionResult> RepotrViolation()
+    [HttpPost("Violation/{id:Guid}")]
+    public async Task<ActionResult> RepotrViolation(Guid id, CreateViolationDto createViolationDto)
     {
         await Task.CompletedTask;
         return Ok();

@@ -39,7 +39,7 @@ public record LoginAppDto(
 public record RegisterDto(
     string Username,
     string Password,
-    CaptchaValidateModel Captcha);
+    CaptchaValidateDto Captcha);
 
 public record RegisterAppDto(
     string Username,

@@ -44,6 +44,9 @@ public class AuthenticateController : ApiController
         {
             return Unauthorized();
         }
+
+        //todo : Is Captcha Required??
+
         var command = new ChangePasswordCommand(userName, changePasswordDto.OldPassword, changePasswordDto.NewPassword, changePasswordDto.Captcha);
         var result = await Sender.Send(command);
         if (result)
@@ -84,6 +87,7 @@ public class AuthenticateController : ApiController
         return Ok();
     }
 
+    //todo : Define Access Policy
     [Authorize]
     [HttpPut("Avatar")]
     public async Task<ActionResult> UpdateAvatar(UploadDto avatar)
