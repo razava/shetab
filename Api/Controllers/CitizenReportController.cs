@@ -27,7 +27,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet]
-    public async Task<ActionResult<Report>> GetReports([FromQuery] PagingInfo pagingInfo, int instanceId)
+    public async Task<ActionResult<List<GetCitizenReportListDto>>> GetReports([FromQuery] PagingInfo pagingInfo, int instanceId)
     {
         var query = new GetRecentReportsQuery(pagingInfo, instanceId);
         var result = await Sender.Send(query);
@@ -46,7 +46,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Nearest")]
-    public async Task<ActionResult<Report>> GetNearest([FromQuery]PagingInfo pagingInfo, int instanceId)
+    public async Task<ActionResult<List<GetCitizenReportListDto>>> GetNearest([FromQuery]PagingInfo pagingInfo, int instanceId)
     {
         var query = new GetRecentReportsQuery(pagingInfo, instanceId);
         var result = await Sender.Send(query);
@@ -54,6 +54,7 @@ public class CitizenReportController : ApiController
         return Ok();
     }
 
+    //todo : define & set dtos
     [Authorize(Roles = "Citizen")]
     [HttpGet("Locations")]
     public async Task<ActionResult<Report>> GetLocations(int instanceId/*??*/)
@@ -62,6 +63,7 @@ public class CitizenReportController : ApiController
         return Ok();
     }
 
+    //todo : define & set dtos
     [Authorize(Roles = "Citizen")]
     [HttpGet("Locations/{id:Guid}")]
     public async Task<ActionResult<Report>> GetLocations(Guid id)
@@ -72,7 +74,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Mine")]
-    public async Task<ActionResult<Report>> GetMyReports([FromQuery] PagingInfo pagingInfo, int instanceId)
+    public async Task<ActionResult<List<GetCitizenReportListDto>>> GetMyReports([FromQuery] PagingInfo pagingInfo, int instanceId)
     {
         await Task.CompletedTask;
         return Ok();
@@ -80,11 +82,15 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Mine/{id:Guid}")]
-    public async Task<ActionResult<Report>> GetMyReportById(Guid id)
+    public async Task<ActionResult<GetCitizenReportDetailsDto>> GetMyReportById(Guid id)
     {
         await Task.CompletedTask;
         return Ok();
     }
+
+
+    //...........review dtos........................................................
+
 
     [Authorize(Roles = "Citizen")]
     [HttpPost]

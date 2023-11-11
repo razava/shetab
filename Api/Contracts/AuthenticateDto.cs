@@ -5,24 +5,35 @@ using Domain.Models.Relational.Common;
 namespace Api.Contracts;
 
 
-public record LoginStaffDto();
+public record LoginStaffDto(
+    string Username,
+    string Password);
+
+public record VerificationDto(
+    string Username,
+    string Password,
+    string VerificationCode);
+
+
 
 public record CaptchaValidateDto(
     Guid Key, 
     string Value);
 
+public record CaptchaResultDto(
+    Guid Key,
+    byte[] Data);
+
 
 public record LoginDto(
     string Username,
     string Password,
-    CaptchaValidateDto Captcha,
-    string? VerificationCode = null); //todo : remove??
+    CaptchaValidateDto Captcha);
 
 
 public record LoginAppDto(
     string Username,
-    string Password,
-    string? VerificationCode = null); //todo : remove??
+    string Password);
 
 
 public record RegisterDto(
@@ -39,14 +50,14 @@ public record UpdateCitizenProfileDto(
     string FirstName,
     string LastName,
     Gender? Gender,
-    int? EducationId,
+    int? Education,
     DateTime BirthDate,
     string PhoneNumber2,
     AddressDto Address,
     string NationalId);
 
-
-public record UpdateProfileDto(
+    
+public record UpdateStaffProfileDto(
     string FirstName,
     string LastName,
     string PhoneNumber2,
@@ -69,17 +80,52 @@ public record ChangePasswordAppDto(
 
 public record ForgotPasswordDto(
     string PhoneNumber,
-    Guid CaptchaKey,
-    string CaptchaValue);
+    CaptchaValidateDto Captcha);
 
 public record ForgotPasswordAppDto(
     string PhoneNumber);
 
 
-public record GovLoginDto();
+public record RequestTokenDto(
+    string PhoneNumber,
+    string VerificationCode);
+
+
+public record ResetPasswordDto(
+    string Username,
+    string ResetPasswordToken,
+    string NewPassword);
+
+
+
+public record GetCitizenProfileDto(
+    //string Id,
+    string UserName,
+    string FirstName,
+    string LastName,
+    string PhoneNumber,
+    string PhoneNumber2,
+    string NationalId,
+    Gender Gender,
+    int Education,
+    DateTime? BirthDate,
+    AddressDto Address,
+    MediaDto Avatar);
+
+public record GetStaffProfileDto(
+    string UserName,
+    string FirstName,
+    string LastName,
+    string Title,
+    string PhoneNumber,
+    int Education,
+    AddressDto Address,
+    MediaDto Avatar);
 
 
 
 
-
+public record GovLoginDto(
+    string Code,
+    string State);
 
