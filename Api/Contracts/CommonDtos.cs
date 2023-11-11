@@ -64,3 +64,12 @@ public record AddresMoreDetailDto(
     double? Latitude,
     double? Longitude);
 
+public record CitizenGetQuickAccess(
+    int Id,
+    string Title,
+    int Order,
+    int CategoryId,
+    MediaDto Media);
+
+
+

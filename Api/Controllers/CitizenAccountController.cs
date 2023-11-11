@@ -27,13 +27,14 @@ public class CitizenAccountController : ApiController
     {
     }
 
+    
 
     [HttpPost("Login")]
     public async Task<ActionResult> Login(LoginDto loginDto)
     {
         var mappedCaptcha = loginDto.Captcha.Adapt<CaptchaValidateModel>();
 
-        var command = new LoginCommand(loginDto.Username, loginDto.Password);
+        var command = new LoginCommand(loginDto.Username, loginDto.Password, mappedCaptcha);
         var result = await Sender.Send(command);
         if (result.UserNotConfirmed)
         {
@@ -66,7 +67,9 @@ public class CitizenAccountController : ApiController
     [HttpPost("Register")]
     public async Task<ActionResult> Register(RegisterDto registerDto)
     {
-        var command = new RegisterCitizenCommand(registerDto.Username, registerDto.Password, registerDto.Captcha);
+        var mappedCaptcha = registerDto.Captcha.Adapt<CaptchaValidateModel>();
+
+        var command = new RegisterCitizenCommand(registerDto.Username, registerDto.Password, mappedCaptcha);
         var result = await Sender.Send(command);
         if (result)
         {
@@ -132,6 +135,9 @@ public class CitizenAccountController : ApiController
         await Task.CompletedTask;
         return Ok();//NoContent
     }
+
+
+    //todo : Define Access Policy
 
     [Authorize]
     [HttpPut("Avatar")]
@@ -215,7 +221,6 @@ public class CitizenAccountController : ApiController
         }
     }
 
-    //todo : Pending for Decision
     [HttpPost("RequestToken")]
     public async Task<ActionResult> RequestToken(RequestTokenDto requestTokenDto)
     {
@@ -225,7 +230,6 @@ public class CitizenAccountController : ApiController
         return Ok(result);
     }
 
-    //todo : Pending for Decision
     [HttpPost("ResetPassword")]
     public async Task<ActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
     {
@@ -259,13 +263,4 @@ public class CitizenAccountController : ApiController
         return Ok();
     }
 
-    //Dtos
-    //todo : move and compelete dtos in another file & write validation
-    //public record UpdateUserDto();
-    
-    //public record ForgotPasswordDto();
-    //public record ForgotPasswordAppDto();
-    //public record GovLoginDto();
-    
-    
 }
