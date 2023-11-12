@@ -68,6 +68,7 @@ public static class DependencyInjection
         services.AddScoped<IViolationRepository, ViolationRepository>();
         services.AddScoped<IViolationTypeRepository, ViolationTypeRepository>();
         services.AddScoped<IQuickAccessRepository, QuickAccessRepository>();
+        services.AddScoped<ICommentRepository, CommentRepository>();
 
 
         return services;
