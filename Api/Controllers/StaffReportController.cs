@@ -28,14 +28,27 @@ public class StaffReportController : ApiController
     {
     }
 
-    //........................
+    //todo : Define Access Policies
+
+    //todo : Get dtos for : task by id , get violations
+    
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult> GetTasks()
+    public async Task<ActionResult<List<StaffGetReportListDto>>> GetTasks(int instanceId, [FromQuery]PagingInfo pagingInfo, [FromQuery]FilterGetReports filterGetReports)
     {
-        await Task.CompletedTask;
+        //have FilterGetReports
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+            return Unauthorized();
+
+        var query = new GetReportsQuery(pagingInfo, userId, instanceId);
+        var result = await Sender.Send(query);
+        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
+        //return Ok(result.ToList());
         return Ok();
     }
+
 
     //........................
     [Authorize]
@@ -46,14 +59,17 @@ public class StaffReportController : ApiController
         return Ok();
     }
 
-    //...................................
+    
     [Authorize]
     [HttpGet("AllReports")]
-    public async Task<ActionResult> GetAllReports(Guid id)
+    public async Task<ActionResult<List<StaffGetReportListDto>>> GetAllReports([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetAllReports filterGetAllReports)
     {
+        //have FilterGetAllReports (diffrent from FilterGetReports)
         await Task.CompletedTask;
         return Ok();
     }
+
+
 
 
 
@@ -71,7 +87,7 @@ public class StaffReportController : ApiController
 
         var query = new GetPossibleTransitionsQuery(id, userId, instanceId);
         var result = await Sender.Send(query);
-        //todo : fix this :
+        //todo : fix this :........  Map result and return   ......................
         //return result; 
         return Ok();    
     }
@@ -238,7 +254,6 @@ public class StaffReportController : ApiController
     }
 
 
-    //todo : shoudn't have id for  input param and route?
     [Authorize(Roles = "Operator")]
     [HttpPut("Accept/{id:Guid}")]
     public async Task<ActionResult> AcceptReportByOperator(Guid id, [FromForm] UpdateReportDto model)
@@ -289,12 +304,11 @@ public class StaffReportController : ApiController
 
 
 
-    //todo : Define & Set Input Dtos
-    //.............................................
     [Authorize(Roles = "Operator")]
     [HttpGet("Comments")]
-    public async Task<ActionResult> GetComments([FromQuery] PagingInfo pagingInfo)
+    public async Task<ActionResult<List<GetCommentsDto>>> GetComments([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetCommentViolation filter)
     {
+        //have FilterGetComments
         await Task.CompletedTask;
         return Ok();
     }
@@ -335,10 +349,9 @@ public class StaffReportController : ApiController
         return Ok();
     }
 
-    //................................................
     [Authorize(Roles = "Operator")]
     [HttpGet("Violations")]
-    public async Task<ActionResult> GetViolations()
+    public async Task<ActionResult<List<GetViolationsDto>>> GetViolations([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetCommentViolation filter)
     {
         await Task.CompletedTask;
         return Ok();
@@ -353,11 +366,29 @@ public class StaffReportController : ApiController
         return Ok();
     }
 
+    //todo : define Access Policy
+    [Authorize]
+    [HttpGet("Citizen/{id:string}")]
+    public async Task<ActionResult<GetCitizenDto>> GetCitizenById(string id)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
 
 
+    //todo : define Access Policy
+    [Authorize]
+    [HttpGet("ReportHistory/{id:Guid}")]
+    public async Task<ActionResult<List<TransitionLogDto>>> GetReportHistory(Guid id)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+    /*
     //??
     [Authorize]
-    [HttpGet("ReportsunkownEndpoint")]
+    [HttpGet("ReportsUnkownEndpoint")]
     public async Task<ActionResult<List<Report>>> GetReports([FromQuery] PagingInfo pagingInfo, int instanceId)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -369,6 +400,6 @@ public class StaffReportController : ApiController
         Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
         return Ok(result.ToList());
     }
-
+    */
 
 }

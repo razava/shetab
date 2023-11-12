@@ -68,40 +68,49 @@ public class AdminUserManagementController : ApiController
 
     [Authorize(Roles = "Admin, Manager")]
     [HttpGet("Roles/{id}")]
-    public async Task<IActionResult> GetUserRoles(string id)
+    public async Task<ActionResult<List<RolesDto>>> GetUserRoles(string id)
     {
         var query = new GetUserRolesQuery(id);
         var result = await Sender.Send(query);
-        //todo :  output Dto review
-        return Ok(result);
+        var mappedResult = result.Adapt<List<RolesDto>>();
+        return Ok(mappedResult);
     }
 
+
+    //................dtos & command....................
     [Authorize]
     [HttpPost("Regions/{id}")]
-    public async Task<IActionResult> SetUserReegions(string id)
+    public async Task<IActionResult> SetUserRegions(string id )
     {
         await Task.CompletedTask;
         return Ok();
     }
 
+    //.................dtos and query.........................
     [Authorize]
     [HttpGet("Regions/{id}")]
-    public async Task<IActionResult> GetUserReegions(string id)
+    public async Task<IActionResult> GetUserRegions(string id)
     {
         await Task.CompletedTask;
         return Ok();
     }
 
+    
+    //....................input filters..............
+    //instanceId ??
     [Authorize]
-    [HttpGet("All")]
-    public async Task<IActionResult> GetAllUsers(PagingInfo pagingInfo)
+    [HttpGet("AllUsers")]
+    public async Task<ActionResult<List<AdminGetUserList>>> GetAllUsers([FromQuery]PagingInfo pagingInfo, [FromQuery] FilterGetUsers filter)
     {
+        //have FilterGetUsers
         var query = new GetUsersQuery(pagingInfo);
         var result = await Sender.Send(query);
-        //todo :  output Dto review
+        //todo :  map result
         return Ok(result);
     }
 
+
+    //.....................not used ??????
     [Authorize]
     [HttpGet("User/{id}")]
     public async Task<IActionResult> GetUserById(string id)
@@ -154,29 +163,19 @@ public class AdminUserManagementController : ApiController
 
     [Authorize(Roles = "Executive")]
     [HttpGet("GetContractors")]
-    public async Task<IActionResult> GetContractors(PagingInfo pagingInfo)
+    public async Task<ActionResult<List<GetContractorsList>>> GetContractors([FromQuery] PagingInfo pagingInfo)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
         var query = new GetContractorsQuery(userId, pagingInfo);
         var result = await Sender.Send(query);
-        return Ok();
+        var mappedResult = result.Adapt<GetContractorsList>();
+        return Ok(mappedResult);
     }
 
     //todo : how about register Mayor[admin], Executive[admin, manager], Manager(organizationalUnit)
     //These are handled by UpdateRoles
 
-    public record CreateUserDto(
-        string Username,
-        string Password,
-        string FirstName = "",
-        string LastName = "",
-        string Title = "");
-    public record CreateContractorDto(
-        string PhoneNumber,
-        string Organization = "",
-        string FirstName = "",
-        string LastName = "",
-        string Title = "");
+    
 }

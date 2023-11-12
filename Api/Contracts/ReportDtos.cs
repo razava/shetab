@@ -1,5 +1,6 @@
 ﻿using Api.Dtos;
 using Application.Reports.Common;
+using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 
 namespace Api.Contracts;
@@ -34,6 +35,7 @@ public record MakeTransitionDto(
 
 
 public record CitizenGetReportListDto(
+    Guid Id,
     CategoryTitleDto Category,
     string Comments,
     AddresDetailDto Addres,
@@ -46,7 +48,22 @@ public record CitizenGetReportListDto(
     int CommentsCount,
     ICollection<MediaDto> Medias);
 
- 
+
+
+public class TransitionLogDto
+{
+    public Guid Id { get; set; }
+    public DateTime DateTime { get; set; }
+    public string Comment { get; set; }
+    public string Message { get; set; }
+    public ICollection<MediaDto> Attachments { get; set; } = new List<MediaDto>();
+    public ReasonDto Reason { get; set; }
+    public ActorType ActorType { get; set; }
+    public string ActorIdentifier { get; set; }
+    public bool IsPublic { get; set; }
+    public ActorDto Actor { get; set; }
+}
+
 
 public record CitizenGetReportDetailsDto(
     ICollection<MediaDto> Medias,
@@ -129,7 +146,7 @@ public class ActorDto
     public string PhoneNumber { get; set; }
     public List<ActorDto> Actors { get; set; }
 }
-
+//.........
 
 
 
@@ -211,11 +228,99 @@ public record ViolationPutDto(
     string Comments);
 
 
+public record StaffGetReportListDto(
+    Guid Id,
+    string LastStatus,
+    string TrackingNumber,
+    CategoryTitleDto Category,
+    DateTime Sent
+    //int Rating
+    );     //todo : Satisfaction.rating is correct
+
+//public record SatisfactionRatingDto(
+//    int Rating);
+
+//.............................................*********************************************
+public record StaffGetReportDetailsDto(
+    Guid Id,
+    string TrackingNumber,
+    string LastStatus,
+    GetShortCategoryDto Category,
+    AddressReportGet Address,
+    string Comments,
+    DateTime Sent,
+    DateTime Deadline,
+    DateTime? ResponseDeadline,
+    int? Rating,
+    Visibility Visibility,
+    bool IsIdentityVisible,
+    int Likes,
+    int CommentsCount,
+    ICollection<MediaDto> Medias
+    //Satisfaction [rating, comments, id]
+    );
+
+
+public record GetCitizenDto(
+    string UserName,
+    string FirstName,
+    string LastName,
+    MediaDto Avatar,
+    string PhoneNumber,
+    AddresDetailDto Address);
 
 
 
 
 
+public record FilterGetReports(
+    string FromRoleId,
+    DateTime? SentFromDate,
+    DateTime? SentToDate,
+    List<ReportState> CurrentStates,
+    string Query);
 
+
+public record FilterGetAllReports(
+    DateTime? SentFromDate,
+    DateTime? SentToDate,
+    List<string> RoleNames,
+    List<int> CategoryIds,
+    List<int> RegionIds,
+    List<ReportState> CurrentStates,
+    bool HasSatisfaction,  //??
+    int MinSatisfaction,   //??
+    int MaxSatisfaction,   //??
+    string Query);
+
+
+
+public record FilterGetCommentViolation(
+    DateTime? SentFromDate,
+    DateTime? SentToDate,
+    List<int> CategoryIds,
+    string Query);
+
+
+public record GetCommentsDto(
+    GetShortUserDto User,
+    string Text);
+
+
+public record GetShortUserDto(
+    string FirstName,
+    string LastName,
+    string UserName,
+    MediaDto Avatar);
+
+public record GetViolationsDto(
+    Guid? CommentId,
+    Guid? ReportId,
+    ViolationTypeDto ViolationType,
+    DateTime DateTime,
+    string Discription);
+
+//todo : fix this later
+public class ViolationTypeDto : ViolationType { }
 
 
