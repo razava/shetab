@@ -23,6 +23,12 @@ public class CategoryGetDto
 }
 
 
+public record GetShortCategoryDto(
+    int Id,
+    string Code,
+    string Title,
+    ICollection<FormElement> FormElements);
+
 //todo: Review this
 public class MediaDto : Media { }
 
@@ -70,6 +76,17 @@ public record CitizenGetQuickAccess(
     int Order,
     int CategoryId,
     MediaDto Media);
+
+
+public record RegionName(
+    string Name);
+
+public record AddressReportGet(
+    string Detail,
+    double? Latitude,
+    double? Longitude,
+    RegionName Region);
+
 
 
 

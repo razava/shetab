@@ -69,6 +69,16 @@ public class StaffCommonController : ApiController
         await Task.CompletedTask;
         return Ok();
     }
+
+    [Authorize]
+    [HttpGet("Executives")]
+    public async Task<ActionResult> GetExecutives()
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
+
+
 }
 
 //public class CategoryGetDto

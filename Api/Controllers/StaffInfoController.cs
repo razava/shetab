@@ -31,7 +31,7 @@ public class StaffInfoController : ApiController
         return Ok();
     }
 
-
+    /*
     [Authorize]
     [HttpGet("Report")]
     public async Task<ActionResult> GetAllReports()
@@ -47,6 +47,7 @@ public class StaffInfoController : ApiController
         await Task.CompletedTask;
         return Ok();
     }
+    */
 
     [Authorize]
     [HttpGet("Locations")]
@@ -56,13 +57,6 @@ public class StaffInfoController : ApiController
         return Ok();
     }
 
-    [Authorize]
-    [HttpGet("Executives")]
-    public async Task<ActionResult> GetExecutives()
-    {
-        await Task.CompletedTask;
-        return Ok();
-    }
 
     //todo : is this endpoint used??
     [Authorize]

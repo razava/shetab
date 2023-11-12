@@ -2,6 +2,7 @@
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ProcessAggregate;
 using Domain.Models.Relational.ReportAggregate;
+using System.Runtime.CompilerServices;
 
 namespace Api.Dtos;
 
@@ -258,38 +259,41 @@ public class ApplicationUserRestrictedDto
 public class GetTaskDto
 {
     public GetReportDto Report { get; set; }
-    public List<PossibleTransitionDto> PossibleTransitions { get; set; }
+    //this dto in below is from ReportDtos
+    public List<GetPossibleTransitionDto> PossibleTransitions { get; set; }
 }
 
-public class PossibleTransitionDto
-{
-    public string StageTitle { get; set; }
-    public int TransitionId { get; set; }
-    public IEnumerable<ReasonDto> ReasonList { get; set; }
-    public IEnumerable<ActorDto> Actors { get; set; }
-    public bool CanSendMessageToCitizen { get; set; }
-    public TransitionType TransitionType { get; set; }
-}
+//these dtos there are in ReportDtos.cs 
 
-public class ReasonDto
-{
-    public int Id { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
-}
-public class ActorDto
-{
-    public int Id { get; set; }
-    public string Identifier { get; set; }
-    public ActorType Type { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Title { get; set; }
-    public string DisplayName { get { return Title + ((FirstName + LastName).Length > 0 ? " (" + FirstName + " " + LastName + ")" : ""); } }
-    public string Organization { get; set; }
-    public string PhoneNumber { get; set; }
-    public List<ActorDto> Actors { get; set; }
-}
+//public class PossibleTransitionDto
+//{
+//    public string StageTitle { get; set; }
+//    public int TransitionId { get; set; }
+//    public IEnumerable<ReasonDto> ReasonList { get; set; }
+//    public IEnumerable<ActorDto> Actors { get; set; }
+//    public bool CanSendMessageToCitizen { get; set; }
+//    public TransitionType TransitionType { get; set; }
+//}
+
+//public class ReasonDto
+//{
+//    public int Id { get; set; }
+//    public string Title { get; set; }
+//    public string Description { get; set; }
+//}
+//public class ActorDto
+//{
+//    public int Id { get; set; }
+//    public string Identifier { get; set; }
+//    public ActorType Type { get; set; }
+//    public string FirstName { get; set; }
+//    public string LastName { get; set; }
+//    public string Title { get; set; }
+//    public string DisplayName { get { return Title + ((FirstName + LastName).Length > 0 ? " (" + FirstName + " " + LastName + ")" : ""); } }
+//    public string Organization { get; set; }
+//    public string PhoneNumber { get; set; }
+//    public List<ActorDto> Actors { get; set; }
+//}
 
 public class NextStageDto
 {
@@ -412,7 +416,8 @@ public class ObjectionModel
 public class ReportActionDetailsDto
 {
     public GetReportDto Report { get; set; }
-    public IEnumerable<PossibleTransitionDto> PossibleTransitions { get; set; }
+    //this dto in below is from ReportDtos
+    public IEnumerable<GetPossibleTransitionDto> PossibleTransitions { get; set; }
     public IEnumerable<StageDto> PossibleStages { get; set; }
     public IEnumerable<TransitionLogDto> History { get; set; }
 }
@@ -423,19 +428,21 @@ public class AdminReportActionDetailsDto
     public IEnumerable<TransitionLogDto> History { get; set; }
 }
 
-public class TransitionLogDto
-{
-    public Guid Id { get; set; }
-    public DateTime DateTime { get; set; }
-    public string Comment { get; set; }
-    public string Message { get; set; }
-    public ICollection<Media> Attachments { get; set; } = new List<Media>();
-    public ReasonDto Reason { get; set; }
-    public ActorType ActorType { get; set; }
-    public string ActorIdentifier { get; set; }
-    public bool IsPublic { get; set; }
-    public ActorDto Actor { get; set; }
-}
+//this dto moved to ReportDto.cs
+
+//public class TransitionLogDto
+//{
+//    public Guid Id { get; set; }
+//    public DateTime DateTime { get; set; }
+//    public string Comment { get; set; }
+//    public string Message { get; set; }
+//    public ICollection<Media> Attachments { get; set; } = new List<Media>();
+//    public ReasonDto Reason { get; set; }
+//    public ActorType ActorType { get; set; }
+//    public string ActorIdentifier { get; set; }
+//    public bool IsPublic { get; set; }
+//    public ActorDto Actor { get; set; }
+//}
 
 public class AdministrativeDivisionsDto
 {
