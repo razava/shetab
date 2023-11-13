@@ -1,6 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.Dtos;
+using Api.ExtensionMethods;
 using Api.Services.Authentication;
 using Application.Common.Interfaces.Persistence;
 using Application.Reports.Commands.AcceptByOperator;
@@ -44,7 +45,7 @@ public class StaffReportController : ApiController
 
         var query = new GetReportsQuery(pagingInfo, userId, instanceId);
         var result = await Sender.Send(query);
-        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
+        Response.AddPaginationHeaders(result.Meta);
         //return Ok(result.ToList());
         return Ok();
     }
