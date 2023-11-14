@@ -451,16 +451,19 @@ public class AdministrativeDivisionsDto
     public string ParsimapCode { get; set; }
 }
 
-public class GetMessageDto
-{
-    public Guid Id { get; set; }
-    public string Title { get; set; }
-    public string Content { get; set; }
-    public DateTime DateTime { get; set; }
-    public MessageType MessageType { get; set; }
-    public Guid SubjectId { get; set; }
-    public string FromId { get; set; }
-}
+
+//this dto moved to CommonDtos
+
+//public class GetMessageDto
+//{
+//    public Guid Id { get; set; }
+//    public string Title { get; set; }
+//    public string Content { get; set; }
+//    public DateTime DateTime { get; set; }
+//    public MessageType MessageType { get; set; }
+//    public Guid SubjectId { get; set; }
+//    public string FromId { get; set; }
+//}
 
 public class GetStageDto
 {
@@ -556,8 +559,11 @@ public class UpdateReportCommentsDto
     public string Comments { get; set; }
 }
 
-public class GetMessageCountDto
-{
-    public long Count { get; set; }
-    public DateTime DateTime { get; set; }
-}
+
+//this dto movd to CommonDtos
+
+//public class GetMessageCountDto
+//{
+//    public long Count { get; set; }
+//    public DateTime DateTime { get; set; }
+//}

@@ -1,4 +1,5 @@
 ﻿using Api.Abstractions;
+using Api.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +14,10 @@ public class CitizenNewsController : ApiController
     {
     }
 
-    //todo : Define & Set Dtos
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("News")]
-    public async Task<ActionResult> GetNews()
+    public async Task<ActionResult<List<GetNewsDto>>> GetNews()
     {
         await Task.CompletedTask;
         return Ok();

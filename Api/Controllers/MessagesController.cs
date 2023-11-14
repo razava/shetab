@@ -1,4 +1,6 @@
 ﻿using Api.Abstractions;
+using Api.Contracts;
+using Application.Common.Interfaces.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +20,7 @@ public class MessagesController : ApiController
 
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult> GetMessages()
+    public async Task<ActionResult<List<GetMessageDto>>> GetMessages([FromQuery] PagingInfo pagingInfo)
     {
         await Task.CompletedTask;
         return Ok();
@@ -27,7 +29,7 @@ public class MessagesController : ApiController
 
     [Authorize]
     [HttpGet("Count")]
-    public async Task<ActionResult> GetMessagesCount()
+    public async Task<ActionResult<GetMessageCountDto>> GetMessagesCount([FromQuery] TimeFilter timeFilter)
     {
         await Task.CompletedTask;
         return Ok();

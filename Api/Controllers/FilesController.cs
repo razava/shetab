@@ -2,6 +2,7 @@
 using Api.Contracts;
 using Application.Medias.Commands.AddMedia;
 using Domain.Models.Relational.Common;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,11 +18,12 @@ public class FilesController : ApiController
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Media>> GetFile(Guid id)
+    public async Task<ActionResult<MediaDto>> GetFile(Guid id)
     {
         var command = new GetMediaQuery(id);
         var media = await Sender.Send(command);
-        return Ok(media);
+        var mappedMedia = media.Adapt<MediaDto>();
+        return Ok(mappedMedia);
     }
 
     [HttpPost]

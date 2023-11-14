@@ -13,7 +13,7 @@ public class ManagementController : ApiController
     {
     }
 
-    [Authorize]
+    [Authorize(Roles = "PowerUser")]
     [HttpPost("Feedback/SendNow")]
     public async Task<ActionResult> SendNowFeedback()
     {
@@ -21,6 +21,14 @@ public class ManagementController : ApiController
         return Ok();
     }
 
+
+    [Authorize(Roles = "PowerUser")]
+    [HttpGet("DeleteReport/{trackingNumbers}")]
+    public async Task<ActionResult> DeleteReport(string trackingNumbers)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
 
 
 }

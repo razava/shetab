@@ -20,6 +20,7 @@ public class StaffCommonController : ApiController
     {
     }
 
+    //........... review dto.................
     [HttpGet("Categories")]
     public async Task<ActionResult<List<CategoryGetDto>>> GetCategory(int? instanceId)
     {
@@ -31,6 +32,7 @@ public class StaffCommonController : ApiController
         return result.Adapt<List<CategoryGetDto>>();
     }
 
+    //........... review dto.................
     [HttpGet("Categories/{id}")]
     public async Task<CategoryGetDto> GetCategory(int id)
     {
@@ -42,7 +44,7 @@ public class StaffCommonController : ApiController
 
     [Authorize]
     [HttpGet("ViolationTypes")]
-    public async Task<ActionResult> GetViolationTypes()
+    public async Task<ActionResult<List<ViolationTypeDto>>> GetViolationTypes()
     {
         await Task.CompletedTask;
         return Ok();
@@ -50,21 +52,21 @@ public class StaffCommonController : ApiController
 
 
     [HttpGet("RegionsByName")]
-    public async Task<IActionResult> GetRegionsByName()
+    public async Task<ActionResult<List<GetRegionByName>>> GetRegionsByName()
     {
         await Task.CompletedTask;
         return Ok();
     }
 
     [HttpGet("Educations")]
-    public async Task<IActionResult> GetEducations()
+    public async Task<ActionResult<List<EducationDto>>> GetEducations()
     {
         await Task.CompletedTask;
         return Ok();
     }
 
     [HttpGet("TaradodReason")]
-    public async Task<IActionResult> GetTaradodReason()
+    public async Task<ActionResult<List<TaradodReason>>> GetTaradodReason()
     {
         await Task.CompletedTask;
         return Ok();
@@ -72,7 +74,7 @@ public class StaffCommonController : ApiController
 
     [Authorize]
     [HttpGet("Executives")]
-    public async Task<ActionResult> GetExecutives()
+    public async Task<ActionResult<List<GetExecutiveDto>>> GetExecutives()
     {
         await Task.CompletedTask;
         return Ok();

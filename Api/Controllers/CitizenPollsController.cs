@@ -17,7 +17,7 @@ public class CitizenPollsController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Polls")]
-    public async Task<ActionResult> GetPolls()
+    public async Task<ActionResult> GetPolls(int instanceId)
     {
         await Task.CompletedTask;
         return Ok();

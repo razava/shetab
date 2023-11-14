@@ -1,4 +1,6 @@
 ﻿using Api.Abstractions;
+using Api.Contracts;
+using Application.Common.Interfaces.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +18,7 @@ public class StaffInfoController : ApiController
 
     [Authorize]
     [HttpGet("ListChart")]
-    public async Task<ActionResult> GetListChart()
+    public async Task<ActionResult<List<ChartDto>>> GetListChart()
     {
         await Task.CompletedTask;
         return Ok();
@@ -25,7 +27,7 @@ public class StaffInfoController : ApiController
 
     [Authorize]
     [HttpGet("Charts/{id}")]
-    public async Task<ActionResult> GetChartsById()
+    public async Task<ActionResult<InfoDto>> GetChartsById(int id/*, [FromQuery] PagingInfo pagingInfo*/)
     {
         await Task.CompletedTask;
         return Ok();
@@ -51,7 +53,7 @@ public class StaffInfoController : ApiController
 
     [Authorize]
     [HttpGet("Locations")]
-    public async Task<ActionResult> GetLocations()
+    public async Task<ActionResult<List<LocationDto>>> GetLocations()
     {
         await Task.CompletedTask;
         return Ok();
@@ -61,7 +63,7 @@ public class StaffInfoController : ApiController
     //todo : is this endpoint used??
     [Authorize]
     [HttpGet("Summary")]
-    public async Task<ActionResult> GetSummary()
+    public async Task<ActionResult<InfoDto>> GetSummary()
     {
         await Task.CompletedTask;
         return Ok();

@@ -1,4 +1,5 @@
 ﻿using Api.Abstractions;
+using Api.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +16,9 @@ public class AdminQuickAccessController : ApiController
 
     //todo : Define & Set Dtos
 
-    //TODO: Define access policy
-    //todo : this endpoint is shared with Citizen and can move to common Controller
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpGet]
-    //todo : define AdminGetQuickAccess Dto
-    public async Task<ActionResult> GetQuickAccesses()
+    public async Task<ActionResult<List<AdminGetQuickAccess>>> GetQuickAccesses([FromQuery] QueryFilter queryFilter)
     {
         await Task.CompletedTask;
         return Ok();
