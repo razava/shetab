@@ -1,6 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.Authentication;
 using Api.Contracts;
+using Api.ExtensionMethods;
 using Application.Authentication.Commands.LoginCommand;
 using Application.Authentication.Commands.RegisterCitizenCommand;
 using Application.Authentication.Commands.ResetPasswordCommand;
@@ -9,6 +10,8 @@ using Application.Authentication.Queries.ForgotPasswordQuery;
 using Application.Authentication.Queries.GetResetPasswordTokenQuery;
 using Application.Common.Interfaces.Security;
 using Application.Medias.Commands.AddMedia;
+using Application.Users.Commands.UpdateUserAvatar;
+using Application.Users.Queries.GetUserProfile;
 using Domain.Models.Relational.IdentityAggregate;
 using Mapster;
 using MediatR;
@@ -124,8 +127,15 @@ public class CitizenAccountController : ApiController
     [HttpGet]
     public async Task<ActionResult<GetCitizenProfileDto>> GetUser()
     {
-        await Task.CompletedTask;
-        return Ok();
+        var userId = User.GetUserId();
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+        var query = new GetUserProfileQuery(userId);
+        var result = await Sender.Send(query);
+        var mappedUser = result.Adapt<GetCitizenProfileDto>();
+        return Ok(mappedUser);
     }
 
     [Authorize(Roles = "Citizen")]
@@ -133,6 +143,7 @@ public class CitizenAccountController : ApiController
     public async Task<IActionResult> UpdateUser(UpdateCitizenProfileDto updateCitizenProfileDto)
     {
         await Task.CompletedTask;
+        //UpdateUserProfileCommand   //...........................................
         return Ok();//NoContent
     }
 
@@ -143,9 +154,15 @@ public class CitizenAccountController : ApiController
     [HttpPut("Avatar")]
     public async Task<ActionResult> UpdateAvatar(UploadDto avatar)
     {
-        //UpdateUserAvatarCommand
-        await Task.CompletedTask;
-        return Ok();
+        var userId = User.GetUserId();
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+        var command = new UpdateUserAvatarCommand(userId, avatar.File);
+        var result = await Sender.Send(command);
+        //todo : no need to handle result??
+        return NoContent();
     }
 
     [Authorize(Roles = "Citizen")]
@@ -157,7 +174,9 @@ public class CitizenAccountController : ApiController
         {
             return Unauthorized();
         }
-        var command = new ChangePasswordCommand(userName, changePasswordDto.OldPassword, changePasswordDto.NewPassword, changePasswordDto.Captcha);
+
+        var mappedCaptcha = changePasswordDto.Captcha.Adapt<CaptchaValidateModel>();
+        var command = new ChangePasswordCommand(userName, changePasswordDto.OldPassword, changePasswordDto.NewPassword, mappedCaptcha);
         var result = await Sender.Send(command);
         if (result)
         {
@@ -226,7 +245,10 @@ public class CitizenAccountController : ApiController
     {
         var query = new GetResetPasswordTokenQuery(requestTokenDto.PhoneNumber, requestTokenDto.VerificationCode);
         var result = await Sender.Send(query);
-        //todo : check not null result
+        if (result == null)
+        {
+            return BadRequest();
+        }
         return Ok(result);
     }
 

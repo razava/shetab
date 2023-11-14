@@ -1,11 +1,18 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.Dtos;
+using Api.ExtensionMethods;
+using Application.Comments.Commands.CreateComment;
+using Application.Comments.Commands.DeleteComment;
 using Application.Common.Interfaces.Persistence;
 using Application.Reports.Commands.CreateReportByCitizen;
 using Application.Reports.Common;
+using Application.Reports.Queries.GetCitizenReportById;
+using Application.Reports.Queries.GetNearestReports;
 using Application.Reports.Queries.GetRecentReports;
+using Application.Reports.Queries.GetUserReports;
 using Domain.Models.Relational;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +39,8 @@ public class CitizenReportController : ApiController
         var query = new GetRecentReportsQuery(pagingInfo, instanceId);
         var result = await Sender.Send(query);
         Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
-        return Ok();
+        var mappedResult = result.Adapt<List<CitizenGetReportListDto>>();
+        return Ok(mappedResult);
     }
 
     //todo : remove ,cause i think that not used.
@@ -49,10 +57,11 @@ public class CitizenReportController : ApiController
     [HttpGet("Nearest")]
     public async Task<ActionResult<List<CitizenGetReportListDto>>> GetNearest([FromQuery]PagingInfo pagingInfo, int instanceId)
     {
-        var query = new GetRecentReportsQuery(pagingInfo, instanceId);
+        var query = new GetNearestReportsQuery(pagingInfo, instanceId);
         var result = await Sender.Send(query);
         Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
-        return Ok();
+        var mappedResult = result.Adapt<List<CitizenGetReportListDto>>();
+        return Ok(mappedResult);
     }
 
     //todo : define & set dtos
@@ -78,8 +87,16 @@ public class CitizenReportController : ApiController
     [HttpGet("Mine")]
     public async Task<ActionResult<List<CitizenGetReportListDto>>> GetMyReports([FromQuery] PagingInfo pagingInfo, int instanceId)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var userId = User.GetUserId();
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+        var query = new GetUserReportsQuery(pagingInfo, userId);
+        var result = await Sender.Send(query);
+        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
+        var mappedResult = result.Adapt<List<CitizenGetReportListDto>>();
+        return Ok(mappedResult);
     }
 
 
@@ -87,8 +104,11 @@ public class CitizenReportController : ApiController
     [HttpGet("Mine/{id:Guid}")]
     public async Task<ActionResult<CitizenGetReportDetailsDto>> GetMyReportById(Guid id)
     {
-        await Task.CompletedTask;
-        return Ok();
+        //todo:....send userId to check that report belongs to citizen.............................
+        var query = new GetCitizenReportByIdQuery(id);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<CitizenGetReportDetailsDto>();
+        return Ok(mappedResult);
     }
 
 
@@ -126,7 +146,7 @@ public class CitizenReportController : ApiController
         var report = await Sender.Send(command);
 
         //TODO: Fix this ::::> is this okay?
-        return CreatedAtAction(nameof(GetMyReportById), report.Id, report);
+        return CreatedAtAction(nameof(GetMyReportById), report.Id);
     }
 
     
@@ -134,7 +154,7 @@ public class CitizenReportController : ApiController
     [HttpGet("QuickAccesses")]
     public async Task<ActionResult<List<CitizenGetQuickAccess>>> GetQuickAccesses()
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//.................................................
         return Ok();
     }
     
@@ -153,7 +173,17 @@ public class CitizenReportController : ApiController
     [HttpPost("Comment/{id:Guid}")]
     public async Task<ActionResult> CreateComment(int instanceId, Guid id, string comment)
     {
-        await Task.CompletedTask;
+        var userId = User.GetUserId();
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+        var command = new CreateCommentCommand(instanceId, userId, id, comment);
+        var result = await Sender.Send(command);
+        if (!result)
+        {
+            return Problem();
+        }
         return Ok();
     }
     
@@ -162,7 +192,7 @@ public class CitizenReportController : ApiController
     [HttpGet("Comments/{id:Guid}")]
     public async Task<ActionResult<List<CitizenGetComments>>> GetComments(Guid id, [FromQuery] PagingInfo pagingInfo)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//..............................
         return Ok();
     }
     
@@ -170,7 +200,13 @@ public class CitizenReportController : ApiController
     [HttpDelete("Comment/{commentId:Guid}")]
     public async Task<ActionResult> DeleteComment(Guid commentId)
     {
-        await Task.CompletedTask;
+        //todo:.....send userId to check that report belongs to citizen....................
+        var command = new DeleteCommentCommand(commentId);
+        var result = await Sender.Send(command);
+        if (!result)
+        {
+            return Problem();
+        }
         return Ok();
     }
 
@@ -179,7 +215,7 @@ public class CitizenReportController : ApiController
     [HttpPost("Feedback/{id:Guid}")]
     public async Task<ActionResult> Feedback(Guid id, CreateFeedbackDto createFeedbackDto)
     {
-        //need userId, RepoetId, token, rating
+        //need userId, RepoetId, token, rating..........................................
         await Task.CompletedTask;
         return Ok();
     }
@@ -189,7 +225,7 @@ public class CitizenReportController : ApiController
     [HttpPost("ReportViolation/{id:Guid}")]
     public async Task<ActionResult> CreateRepotrViolation(Guid id, CreateReportViolationDto createViolationDto)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//...........................................
         return Ok();
     }
 
@@ -197,7 +233,7 @@ public class CitizenReportController : ApiController
     [HttpPost("CommentViolation/{id:Guid}")]
     public async Task<ActionResult> CreateCommentViolation(Guid id, CreateCommentViolationDto createViolationDto)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//............................................
         return Ok();
     }
 

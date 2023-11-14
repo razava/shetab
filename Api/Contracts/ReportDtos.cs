@@ -11,8 +11,8 @@ public record CreateFeedbackDto(
 
 public record UpdateCommentDto(
     string Comment,
-    bool? IsSeen,
-    bool? IsVerified);
+    bool? IsSeen,         //..... ??
+    bool? IsVerified);    //..... ??
 
 public record ReplyCommentDto(
     string Comment);

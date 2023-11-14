@@ -70,7 +70,7 @@ public record ChangePasswordDto(
     string Username,
     string OldPassword,
     string NewPassword,
-    CaptchaValidateModel Captcha);
+    CaptchaValidateDto Captcha);
 
 
 public record ChangePasswordAppDto(

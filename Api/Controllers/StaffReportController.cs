@@ -1,16 +1,25 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.Dtos;
+using Api.ExtensionMethods;
 using Api.Services.Authentication;
+using Application.Comments.Commands.DeleteComment;
+using Application.Comments.Commands.ReplyComment;
+using Application.Comments.Commands.UpdateComment;
 using Application.Common.Interfaces.Persistence;
 using Application.Reports.Commands.AcceptByOperator;
 using Application.Reports.Commands.CreateReportByOperator;
 using Application.Reports.Commands.UpdateByOperator;
 using Application.Reports.Common;
 using Application.Reports.Queries.GetPossibleTransitions;
+using Application.Reports.Queries.GetReportById;
 using Application.Reports.Queries.GetReports;
+using Application.Users.Queries.GetUserById;
+using Application.Workspaces.Queries.GetPossibleSources;
+using DocumentFormat.OpenXml.Office2019.Word.Cid;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,13 +39,12 @@ public class StaffReportController : ApiController
 
     //todo : Define Access Policies
 
-    //todo : Get dtos for : task by id , get violations
     
     [Authorize]
     [HttpGet]
     public async Task<ActionResult<List<StaffGetReportListDto>>> GetTasks(int instanceId, [FromQuery]PagingInfo pagingInfo, [FromQuery]FilterGetReports filterGetReports)
     {
-        //have FilterGetReports
+        //have FilterGetReports.........................................
 
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
@@ -45,31 +53,39 @@ public class StaffReportController : ApiController
         var query = new GetReportsQuery(pagingInfo, userId, instanceId);
         var result = await Sender.Send(query);
         Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
-        //return Ok(result.ToList());
-        return Ok();
+        var mappedResult = result.Adapt<List<StaffGetReportListDto>>();
+        return Ok(mappedResult);
     }
 
 
-    //........................
     [Authorize]
     [HttpGet("{id:Guid}")]
-    public async Task<ActionResult> GetTaskById(Guid id)
+    public async Task<ActionResult<StaffGetReportDetailsDto>> GetTaskById(Guid id, int instanceId)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+        var query = new GetReportByIdQuery(id, userId, instanceId);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<StaffGetReportDetailsDto>();
+        return Ok(mappedResult);
     }
 
     
     [Authorize]
     [HttpGet("AllReports")]
-    public async Task<ActionResult<List<StaffGetReportListDto>>> GetAllReports([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetAllReports filterGetAllReports)
+    public async Task<ActionResult<List<StaffGetReportListDto>>> GetAllReports([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetAllReports filterGetAllReports, int instanceId)
     {
         //have FilterGetAllReports (diffrent from FilterGetReports)
-        await Task.CompletedTask;
-        return Ok();
+
+        //todo:.......send userId for reports belongs to Staff..............................................
+
+        var query = new GetAllReportsQuery(pagingInfo, instanceId);
+        var result = await Sender.Send(query);
+        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
+        var mappedResult = result.Adapt<List<StaffGetReportListDto>>();
+        return Ok(mappedResult);
     }
-
-
 
 
 
@@ -87,10 +103,10 @@ public class StaffReportController : ApiController
 
         var query = new GetPossibleTransitionsQuery(id, userId, instanceId);
         var result = await Sender.Send(query);
-        //todo : fix this :........  Map result and return   ......................
-        //return result; 
-        return Ok();    
+        var mappedResult = result.Adapt<List<GetPossibleTransitionDto>>();
+        return Ok(mappedResult);    
     }
+
 
     //TODO: Define access policy
     [Authorize]
@@ -112,7 +128,7 @@ public class StaffReportController : ApiController
             User.IsInRole("Executive"),
             User.IsInRole("Contractor"));
         var result = await Sender.Send(command);
-
+        //need to handle result?
         return Ok();
     }
 
@@ -121,16 +137,21 @@ public class StaffReportController : ApiController
     [HttpPost("Review/{id:Guid}")]
     public async Task<ActionResult> Review(Guid id, MoveToStageDto moveToStageDto)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//.........................................................
         return Ok();
     }
+
 
     //TODO: Define access policy
     [Authorize]
     [HttpGet("PossibleSources")]
     public async Task<ActionResult<List<GetPossibleSourceDto>>> GetPossibleSources()
     {
-        // query needs userId & user roles
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+        // query needs userId & user roles......................................................
+        //var query = new GetPossibleSourcesQuery(userId);
         await Task.CompletedTask;
         return Ok();
     }
@@ -145,12 +166,17 @@ public class StaffReportController : ApiController
         /* needs
         Guid reportId,
         string ActorIdentifier,
-        ActorType ActorType,
+        ActorType ActorType,      //............. ????????????????
         List<Guid> Attachments,
         string Comment,
         bool IsPublic,
         string Message
          */
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+
         return Ok();
     }
 
@@ -201,7 +227,7 @@ public class StaffReportController : ApiController
 
 
         var report = await Sender.Send(command);
-
+        //todo : handle result
         return Ok(report.Id);
     }
 
@@ -318,7 +344,13 @@ public class StaffReportController : ApiController
     [HttpPost("ReplyComment/{commentId:Guid}")]
     public async Task<ActionResult> ReplyComment(Guid commentId, ReplyCommentDto replyCommentDto)
     {
-        await Task.CompletedTask;
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+        var command = new ReplyCommentCommand(userId, commentId, replyCommentDto.Comment);
+        var result = await Sender.Send(command);
+        if (!result)
+            return Problem();
         return Ok();
     }
 
@@ -326,7 +358,13 @@ public class StaffReportController : ApiController
     [HttpPut("Comment/{commentId:Guid}")]
     public async Task<ActionResult> PutComment(Guid commentId, UpdateCommentDto updateCommentDto)
     {
-        await Task.CompletedTask;
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+        var command = new UpdateCommentCommand(userId, commentId, updateCommentDto.Comment);
+        var result = await Sender.Send(command);
+        if (!result)
+            return Problem();
         return Ok();
     }
 
@@ -335,7 +373,13 @@ public class StaffReportController : ApiController
     [HttpDelete("Comment/{id:Guid}")]
     public async Task<ActionResult> DeleteComment(Guid id)
     {
-        await Task.CompletedTask;
+        //todo:.....is seperate for citizen And Admin?..............................
+        var command = new DeleteCommentCommand(id);
+        var result = await Sender.Send(command);
+        if (!result)
+        {
+            return Problem();
+        }
         return Ok();
     }
 
@@ -345,7 +389,7 @@ public class StaffReportController : ApiController
     [HttpPut("Satisfaction/{id:Guid}")]   //id : reportId
     public async Task<ActionResult> PutSatisfaction(Guid id, PutSatisfactionDto putSatisfactionDto)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//....................................
         return Ok();
     }
 
@@ -353,7 +397,7 @@ public class StaffReportController : ApiController
     [HttpGet("Violations")]
     public async Task<ActionResult<List<GetViolationsDto>>> GetViolations([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetCommentViolation filter)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//.......................................
         return Ok();
     }
 
@@ -362,17 +406,21 @@ public class StaffReportController : ApiController
     [HttpPut("Violation/{id:Guid}")]
     public async Task<ActionResult> PutViolation(Guid id, ViolationPutDto violationPutDto)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//.......................................
         return Ok();
     }
 
     //todo : define Access Policy
     [Authorize]
-    [HttpGet("Citizen/{id:string}")]
+    [HttpGet("Citizen/{id}")]
     public async Task<ActionResult<GetCitizenDto>> GetCitizenById(string id)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var query = new GetUserByIdQuery(id);
+        var result = await Sender.Send(query);
+        if(result == null)
+            return NotFound();
+        var mappedResult = result.Adapt<GetCitizenDto>();
+        return Ok(mappedResult);
     }
 
 
@@ -381,7 +429,7 @@ public class StaffReportController : ApiController
     [HttpGet("ReportHistory/{id:Guid}")]
     public async Task<ActionResult<List<TransitionLogDto>>> GetReportHistory(Guid id)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//.............................................
         return Ok();
     }
 

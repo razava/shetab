@@ -37,7 +37,7 @@ public class AdminUserManagementController : ApiController
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(string id, UpdateUserDto updateUserDto)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//......................................
         return Ok();
     }
 
@@ -62,6 +62,8 @@ public class AdminUserManagementController : ApiController
         var mappedRoles = updateRolesDto.Roles.Adapt<List<IsInRoleModel>>();
         var commond = new UpdateRolesCommand(id, mappedRoles);
         var result = await Sender.Send(commond);
+        if (!result)
+            return Problem();
         //todo : handle result & set appropriate responses.
         return Ok();
     }
@@ -82,7 +84,7 @@ public class AdminUserManagementController : ApiController
     [HttpPost("Regions/{id}")]
     public async Task<IActionResult> SetUserRegions(string id )
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//............................
         return Ok();
     }
 
@@ -91,12 +93,11 @@ public class AdminUserManagementController : ApiController
     [HttpGet("Regions/{id}")]
     public async Task<IActionResult> GetUserRegions(string id)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//...........................
         return Ok();
     }
 
     
-    //....................input filters..............
     //instanceId ??
     [Authorize]
     [HttpGet("AllUsers")]
@@ -105,8 +106,8 @@ public class AdminUserManagementController : ApiController
         //have FilterGetUsers
         var query = new GetUsersQuery(pagingInfo);
         var result = await Sender.Send(query);
-        //todo :  map result
-        return Ok(result);
+        var mappedResult = result.Adapt<List<AdminGetUserList>>();
+        return Ok(mappedResult);
     }
 
 
@@ -117,7 +118,9 @@ public class AdminUserManagementController : ApiController
     {
         var query = new GetUserByIdQuery(id);
         var result = await Sender.Send(query);
-        //todo :  output Dto review
+        if (result == null)
+            return NotFound();
+        //todo: map to appropriate dto
         return Ok(result);
     }
 
@@ -158,6 +161,7 @@ public class AdminUserManagementController : ApiController
         var contractor = await Sender.Send(command);
         
         //TODO: Does executive have access to this endpoint?
+        //todo: map returning contractor in below response
         return CreatedAtAction(nameof(GetUserById), contractor.Id, contractor);
     }
 
