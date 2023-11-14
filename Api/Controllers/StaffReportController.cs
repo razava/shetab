@@ -53,8 +53,8 @@ public class StaffReportController : ApiController
         var query = new GetReportsQuery(pagingInfo, userId, instanceId);
         var result = await Sender.Send(query);
         Response.AddPaginationHeaders(result.Meta);
-        //return Ok(result.ToList());
-        return Ok();
+        var mappedResult = result.Adapt<List<StaffGetReportListDto>>();
+        return Ok(mappedResult);
     }
 
 
