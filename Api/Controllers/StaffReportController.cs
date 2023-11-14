@@ -52,9 +52,9 @@ public class StaffReportController : ApiController
 
         var query = new GetReportsQuery(pagingInfo, userId, instanceId);
         var result = await Sender.Send(query);
-        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
-        var mappedResult = result.Adapt<List<StaffGetReportListDto>>();
-        return Ok(mappedResult);
+        Response.AddPaginationHeaders(result.Meta);
+        //return Ok(result.ToList());
+        return Ok();
     }
 
 
