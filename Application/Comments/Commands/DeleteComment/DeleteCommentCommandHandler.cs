@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
+using Application.Common.Statics;
 using Domain.Models.Relational.ReportAggregate;
 using MediatR;
 
@@ -17,7 +18,15 @@ internal class DeleteCommentCommandHandler : IRequestHandler<DeleteCommentComman
 
     async Task<bool> IRequestHandler<DeleteCommentCommand, bool>.Handle(DeleteCommentCommand request, CancellationToken cancellationToken)
     {
-        _commentRepository.Delete(request.CommentId);
+        var comment = await _commentRepository.GetSingleAsync(c => c.Id == request.CommentId);
+        if (comment is null)
+            throw new Exception("Not found.");
+
+        if(!(comment.UserId == request.UserId || request.UserRoles.Contains(RoleNames.Operator)))
+        {
+            return false;
+        }
+        _commentRepository.Delete(comment);
         try
         {
             await _unitOfWork.SaveAsync();

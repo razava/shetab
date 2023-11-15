@@ -3,4 +3,6 @@
 namespace Application.Comments.Commands.DeleteComment;
 
 public record DeleteCommentCommand(
-    Guid CommentId) : IRequest<bool>;
+    Guid CommentId,
+    string UserId,
+    List<string> UserRoles) : IRequest<bool>;

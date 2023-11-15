@@ -201,7 +201,10 @@ public class CitizenReportController : ApiController
     public async Task<ActionResult> DeleteComment(Guid commentId)
     {
         //todo:.....send userId to check that report belongs to citizen....................
-        var command = new DeleteCommentCommand(commentId);
+        var userId = User.GetUserId();
+        if (userId is null)
+            return Unauthorized();
+        var command = new DeleteCommentCommand(commentId, userId, User.GetUserRoles());
         var result = await Sender.Send(command);
         if (!result)
         {
