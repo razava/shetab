@@ -40,7 +40,7 @@ internal sealed class MessageToCitizenCommandHandler : IRequestHandler<MessageTo
         if (report == null)
             throw new Exception("Report not found");
 
-        report.MessageToCitizen(actor.Identifier, actor.Type, request.Attachments, request.Message, request.Comment);
+        report.MessageToCitizen(actor.Identifier, request.Attachments, request.Message, request.Comment);
         await _unitOfWork.SaveAsync();
 
         return report;

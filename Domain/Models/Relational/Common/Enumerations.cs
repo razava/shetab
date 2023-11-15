@@ -162,5 +162,7 @@ public enum ReportLogType
     PublicNote,
     InternalNote,
     Change,
-    Feedback
+    Feedback,
+    Created,
+    Approved
 }

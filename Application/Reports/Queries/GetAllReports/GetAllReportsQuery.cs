@@ -2,9 +2,11 @@
 using Domain.Models.Relational;
 using MediatR;
 
-namespace Application.Reports.Queries.GetReports;
+namespace Application.Reports.Queries.GetAllReports;
 
 public sealed record GetAllReportsQuery(
     PagingInfo PagingInfo,
-    int instanceId) : IRequest<PagedList<Report>>;
+    int instanceId,
+    string UserId,
+    List<string> UserRoles) : IRequest<PagedList<Report>>;
 

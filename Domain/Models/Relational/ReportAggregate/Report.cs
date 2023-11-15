@@ -151,7 +151,7 @@ public class Report : Entity
             report.InitProcess();
         }
 
-        var log = TransitionLog.Create(report.Id, null, null, null, ReportMessages.Created, ActorType.Person, citizenId, null, null, true);
+        var log = TransitionLog.CreateNewReport(report.Id, ActorType.Person, citizenId);
 
         report.TransitionLogs.Add(log);
 
@@ -204,7 +204,7 @@ public class Report : Entity
 
         report.InitProcess();
 
-        var log = TransitionLog.Create(report.Id, null, null, null, ReportMessages.Created, ActorType.Person, operatorId, null, null, true);
+        var log = TransitionLog.CreateNewReport(report.Id, ActorType.Person, operatorId);
         
         report.TransitionLogs.Add(log);
 
@@ -254,7 +254,7 @@ public class Report : Entity
         Visibility = Visibility.Operators;
         Priority = Priority.Normal;
         InitProcess();
-        var log = TransitionLog.Create(Id, null, null, null, ReportMessages.Approved, ActorType.Person, operatorId, null, null, true);
+        var log = TransitionLog.CreateApproved(Id, operatorId);
 
         TransitionLogs.Add(log);
     }
@@ -268,25 +268,25 @@ public class Report : Entity
         Visibility? visibility)
     {
         updateReport(category, comments, address, attachments, visibility);
-        var log = TransitionLog.Create(Id, null, null, null, ReportMessages.Updated, ActorType.Person, operatorId, null, null, true);
+        //TODO: Log modified values
+        var comment = "";
+        var log = TransitionLog.CreateUpdate(Id, comment ?? "", operatorId);
 
         TransitionLogs.Add(log);
     }
 
     public Message MessageToCitizen(
         string actorIdentifier,
-        ActorType actorType,
         List<Guid> attachments,
         string message,
-        string comment,
-        bool isPublic = true)
+        string comment)
     {
         var now = DateTime.UtcNow;
 
         Responsed = now;
         ResponseDuration = (now - Sent).TotalSeconds;
 
-        var log = TransitionLog.Create(Id, null, comment, attachments, ReportMessages.Responsed, actorType, actorIdentifier, null, null, isPublic);
+        var log = TransitionLog.CreateMessageToCitizen(Id, comment, attachments, actorIdentifier, ResponseDuration ?? 0);
 
         TransitionLogs.Add(log);
 
@@ -335,6 +335,13 @@ public class Report : Entity
     }
     #endregion
 
+    public void UpdateFeedback(int rating)
+    {
+        IsFeedbacked = true;
+        Rating = rating;
+
+        TransitionLogs.Add(TransitionLog.CreateFeedback(Id, CitizenId, $"ثبت بازخورد شهروند با امتیاز {rating}"));
+    }
 
     #region Private methods
     private void updateReport(
@@ -470,9 +477,9 @@ public class Report : Entity
         //actorIds.ForEach(p => CurrentActorsStr = $"{CurrentActorsStr}|{p}");
         //CurrentActorsStr = CurrentActorsStr + "|";
 
-        var duration = now - LastStatusDateTime;
+        var duration = (now - LastStatusDateTime).TotalSeconds;
 
-        var log = TransitionLog.Create(Id, transitionId, comment, attachments, ReportMessages.Refered, actorType, actorIdentifier, reasonId, duration, transition.IsTransitionLogPublic);
+        var log = TransitionLog.CreateTransition(Id, transitionId, comment, attachments, ReportMessages.Refered, actorType, actorIdentifier, reasonId, duration, transition.IsTransitionLogPublic);
 
         TransitionLogs.Add(log);
 

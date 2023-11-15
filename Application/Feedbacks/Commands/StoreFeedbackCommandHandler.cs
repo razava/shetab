@@ -6,21 +6,37 @@ namespace Application.Feedbacks.Commands;
 internal sealed class StoreFeedbackCommandHandler : IRequestHandler<StoreFeedbackCommand, bool>
 {
     private readonly IFeedbackRepository _feedbackRepository;
+    private readonly IReportRepository _reportRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public StoreFeedbackCommandHandler(IFeedbackRepository feedbackRepository)
+    public StoreFeedbackCommandHandler(
+        IFeedbackRepository feedbackRepository,
+        IUnitOfWork unitOfWork,
+        IReportRepository reportRepository)
     {
         _feedbackRepository = feedbackRepository;
+        _unitOfWork = unitOfWork;
+        _reportRepository = reportRepository;
     }
 
     public async Task<bool> Handle(StoreFeedbackCommand request, CancellationToken cancellationToken)
     {
         //TODO: It's not completed yet. Decide where to put feedback, I think it's better to be implemented inside report.
         var feedback = await _feedbackRepository.GetSingleAsync(
-            f=>f.UserId==request.UserId && f.Token==request.Token && f.ReportId==request.ReportId);
+            f => f.UserId == request.UserId && f.Token == request.Token && f.ReportId == request.ReportId);
         if ((feedback is null))
         {
             throw new Exception("Not found.");
         }
+        var report = await _reportRepository.GetSingleAsync(r => r.Id == request.ReportId);
+        if (report is null)
+        {
+            throw new Exception("Not found.");
+        }
+        report.UpdateFeedback(request.Rating);
+
+        await _unitOfWork.SaveAsync();
+
         return true;
     }
 }

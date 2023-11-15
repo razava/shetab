@@ -4,5 +4,6 @@ using MediatR;
 namespace Application.Reports.Queries.GetCitizenReportById;
 
 public sealed record GetCitizenReportByIdQuery(
-    Guid id) : IRequest<Report>;
+    Guid id,
+    string UserId) : IRequest<Report>;
 
