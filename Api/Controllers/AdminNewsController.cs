@@ -1,4 +1,5 @@
 ﻿using Api.Abstractions;
+using Api.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,12 +14,11 @@ public class AdminNewsController : ApiController
     {
     }
 
-    //todo : Define & Set Dtos
 
     //TODO: Define access policy
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult> GetNews()
+    public async Task<ActionResult<List<GetNewsDto>>> GetNews()
     {
         await Task.CompletedTask;
         return Ok();
@@ -27,7 +27,7 @@ public class AdminNewsController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<ActionResult> CreateNew()
+    public async Task<ActionResult> CreateNew(CreateNewsDto createNewsDto)
     {
         await Task.CompletedTask;
         return Ok();
@@ -35,7 +35,7 @@ public class AdminNewsController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> EditNews(int id)
+    public async Task<ActionResult> EditNews(int id, UpdateNewsDto updateNewsDto)
     {
         await Task.CompletedTask;
         return Ok();

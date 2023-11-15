@@ -20,9 +20,8 @@ public class CitizenCommonController : ApiController
     }
 
 
-    //........... review dto.................
     [HttpGet("Categories")]
-    public async Task<ActionResult<List<CategoryGetDto>>> GetCategory(int? instanceId)
+    public async Task<ActionResult<List<CategoryGetDto>>> GetCategories(int? instanceId)
     {
         if (instanceId is null)
             return BadRequest();
@@ -34,13 +33,13 @@ public class CitizenCommonController : ApiController
 
     //..........................is needed for citizen?........
     //........... review dto.................
-    [HttpGet("Categories/{id}")]
-    public async Task<CategoryGetDto> GetCategory(int id)
-    {
-        var query = new GetCategoryByIdQuery(id);
-        var result = await Sender.Send(query);
-        return result.Adapt<CategoryGetDto>();
-    }
+    //[HttpGet("Categories/{id}")]
+    //public async Task<CategoryGetDto> GetCategory(int id)
+    //{
+    //    var query = new GetCategoryByIdQuery(id);
+    //    var result = await Sender.Send(query);
+    //    return result.Adapt<CategoryGetDto>();
+    //}
 
 
     [Authorize]

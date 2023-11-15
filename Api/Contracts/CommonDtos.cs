@@ -5,26 +5,28 @@ namespace Api.Contracts;
 
 public class CategoryGetDto
 {
-    public int ShahrbinInstanceId { get; set; }
+    //public int ShahrbinInstanceId { get; set; }
     public int Id { get; set; }
     public int Order { get; set; }
     public string Code { get; set; } = null!;
     public string Title { get; set; } = null!;
     public ICollection<CategoryGetDto> Categories { get; set; } = new List<CategoryGetDto>();
-    public int? ProcessId { get; set; }
+    //public int? ProcessId { get; set; }
     public string Description { get; set; } = string.Empty;
     public string AttachmentDescription { get; set; } = string.Empty;
     public int Duration { get; set; }
     public int? ResponseDuration { get; set; }
-    public CategoryType CategoryType { get; set; }
+    //public CategoryType CategoryType { get; set; }
     public bool IsDeleted { get; set; }
+    public bool ObjectionAllowed { get; set; }
+    public bool EditingAllowed { get; set; } = true;
     public ICollection<FormElement> FormElements { get; set; } = new List<FormElement>();
     public bool HideMap { get; set; }
 }
 
 
 //todo : review this ..................................
-public class CategoryUpdateDto
+public class CategoryGetDetailDto
 {
     public int Id { get; set; }
     public int? Order { get; set; }
@@ -36,8 +38,10 @@ public class CategoryUpdateDto
     public string AttachmentDescription { get; set; }
     public int? Duration { get; set; }
     public int? ResponseDuration { get; set; }
-    public CategoryType? CategoryType { get; set; }
+    //public CategoryType? CategoryType { get; set; }
+    public ICollection<FormElement> FormElements { get; set; } = new List<FormElement>();
     public bool ObjectionAllowed { get; set; }
+    public bool EditingAllowed { get; set; } = true;
     public bool IsDeleted { get; set; }
 }
 
@@ -46,10 +50,15 @@ public class CategoryUpdateDto
 public record FlattenCategoryDto(
     int Id,
     string Title,
-    CategoryUpdateDto Category);
+    CategoryGetDetailDto Category);
 
 
-//todo : review this .................................
+public record FlattenShortCategoryDto(
+    int Id,
+    string Title);
+
+
+
 public class CategoryCreateDto
 {
     public int Order { get; set; }
@@ -58,13 +67,13 @@ public class CategoryCreateDto
     public string Title { get; set; }
     public int? ProcessId { get; set; }
     public string Description { get; set; }
-    public string AttachmentDescription { get; set; }   //.....
+    public string AttachmentDescription { get; set; }
     public int Duration { get; set; }
     public int? ResponseDuration { get; set; }
-    //public ICollection<FormElement> FormElements { get; set; } = new List<FormElement>();
+    public ICollection<FormElement> FormElements { get; set; } = new List<FormElement>();
     public bool ObjectionAllowed { get; set; }
-    //public bool EditingAllowed { get; set; } = true;
-    public bool HideMap { get; set; }   //......
+    public bool EditingAllowed { get; set; } = true;
+    public bool HideMap { get; set; }   
 }
 
 
@@ -115,6 +124,7 @@ public record CategoryDetailDto(
     int? ResponseDuration,
     int Duration);
 
+
 public record AddresDetailDto(
     string Detail);
 
@@ -139,6 +149,14 @@ public record AdminGetQuickAccess(
     int CategoryId,
     MediaDto Media,
     bool IsDeleted);
+
+
+public record SetQuickAccessDto(
+    int CategoryId,
+    string Title,
+    int Order,
+    Guid MediaId);
+
 
 
 public record RegionName(
@@ -202,7 +220,50 @@ public record GetNewsDto(
     bool IsDeleted);
 
 
+public record CreateNewsDto(
+    string Title,
+    string Description,
+    string Url,
+    Guid ImageFileId,
+    DateTime Created);
+
+
+public record UpdateNewsDto(
+    string Title,
+    string Description,
+    string Url,
+    Guid ImageFileId,
+    DateTime Created,
+    bool IsDeleted);
+
+
 public record QueryFilter(
     string Query);
+
+
+public record GetProcessListDto(
+    int Id,
+    string Title);
+
+
+public record SetProcessDto(
+    string Title,
+    List<int> ActorIds);
+
+
+public record GetProcessDto(
+    int Id,
+    string Title,
+    List<int> ActorIds);
+
+public record GetExecutiveListDto(
+    int Id,
+    string Title,
+    string DisplayName);
+
+
+
+
+
 
 

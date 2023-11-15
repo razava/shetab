@@ -14,7 +14,6 @@ public class AdminQuickAccessController : ApiController
     {
     }
 
-    //todo : Define & Set Dtos
 
     [Authorize(Roles = "Admin")]
     [HttpGet]
@@ -27,7 +26,7 @@ public class AdminQuickAccessController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<ActionResult> CreateQuickAccess()
+    public async Task<ActionResult> CreateQuickAccess(SetQuickAccessDto setQuickAccessDto)
     {
         await Task.CompletedTask;
         return Ok();
@@ -35,7 +34,7 @@ public class AdminQuickAccessController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> EditQuickAccesses(int id)
+    public async Task<ActionResult> EditQuickAccesses(int id, SetQuickAccessDto setQuickAccessDto)
     {
         await Task.CompletedTask;
         return Ok();

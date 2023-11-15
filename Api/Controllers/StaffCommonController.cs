@@ -20,7 +20,6 @@ public class StaffCommonController : ApiController
     {
     }
 
-    //........... review dto.................
     [HttpGet("Categories")]
     public async Task<ActionResult<List<CategoryGetDto>>> GetCategory(int? instanceId)
     {
@@ -32,14 +31,13 @@ public class StaffCommonController : ApiController
         return result.Adapt<List<CategoryGetDto>>();
     }
 
-    //........... review dto.................
-    [HttpGet("Categories/{id}")]
-    public async Task<CategoryGetDto> GetCategory(int id)
-    {
-        var query = new GetCategoryByIdQuery(id);
-        var result = await Sender.Send(query);
-        return result.Adapt<CategoryGetDto>();
-    }
+    //[HttpGet("Categories/{id}")]
+    //public async Task<CategoryGetDto> GetCategory(int id)
+    //{
+    //    var query = new GetCategoryByIdQuery(id);
+    //    var result = await Sender.Send(query);
+    //    return result.Adapt<CategoryGetDto>();
+    //}
 
 
     [Authorize]

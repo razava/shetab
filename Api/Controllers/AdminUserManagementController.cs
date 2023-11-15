@@ -31,7 +31,6 @@ public class AdminUserManagementController : ApiController
 
     //todo : define roles for Authorize
 
-    //todo : set input Dtos
 
     [Authorize(Roles ="Admin")]
     [HttpPut("{id}")]
@@ -133,6 +132,8 @@ public class AdminUserManagementController : ApiController
     //    return Ok();
     //}
 
+
+    //todo : review returning response and dto.......
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<ApplicationUser>> CreateUser(CreateUserDto model)

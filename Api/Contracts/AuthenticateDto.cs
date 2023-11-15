@@ -53,7 +53,7 @@ public record UpdateCitizenProfileDto(
     int? Education,
     DateTime BirthDate,
     string PhoneNumber2,
-    AddressDto Address,
+    //AddressDto Address,
     string NationalId);
 
     
@@ -62,7 +62,7 @@ public record UpdateStaffProfileDto(
     string LastName,
     string PhoneNumber2,
     string Title,
-    AddressDto Address,
+    //AddressDto Address,
     int? EducationId);
 
 

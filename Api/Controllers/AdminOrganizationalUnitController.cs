@@ -1,4 +1,5 @@
 ﻿using Api.Abstractions;
+using Api.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,14 +14,12 @@ public class AdminOrganizationalUnitController : ApiController
     {
     }
 
-    //todo : Define & Set Dtos
     //TODO: Define access policy
 
 
-    //todo : can move to UserManagement
     [Authorize]
     [HttpGet("All")]
-    public async Task<ActionResult> GetAllOrgaizationalUnits()
+    public async Task<ActionResult<List<GetOrganizationalUnitListDto>>> GetAllOrgaizationalUnits(QueryFilter queryFilter)
     {
         await Task.CompletedTask;
         return Ok();
@@ -28,6 +27,7 @@ public class AdminOrganizationalUnitController : ApiController
 
 
     //todo : can move to Authenticate (??) cause relate to current User.
+    //todo : ............check usage.............
     [Authorize]
     [HttpGet]
     public async Task<ActionResult> GetOrgaizationalUnitsOfUser()
@@ -36,28 +36,25 @@ public class AdminOrganizationalUnitController : ApiController
         return Ok();
     }
 
-    //todo: can move to UserManagement
     [Authorize]
     [HttpGet("{id:int}")]
-    public async Task<ActionResult> GetOrgaizationalUnitById(int id)
+    public async Task<ActionResult<GetOrganizationalUnitDto>> GetOrgaizationalUnitById(int id)
     {
         await Task.CompletedTask;
         return Ok();
     }
 
-    //todo : can move to UserManagement
     [Authorize(Roles ="Admin")]
     [HttpPost]
-    public async Task<ActionResult> CreateOrgaizationalUnit()
+    public async Task<ActionResult> CreateOrgaizationalUnit(OrganizationalUnitCreateDto organizationalUnitCreateDto)
     {
         await Task.CompletedTask;
         return Ok();
     }
 
-    //todo : can move to UserManagement
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> EditOrgaizationalUnit(int id)
+    public async Task<ActionResult> EditOrgaizationalUnit(int id, OrganizationalUnitUpdateDto organizationalUnitUpdateDto)
     {
         await Task.CompletedTask;
         return Ok();

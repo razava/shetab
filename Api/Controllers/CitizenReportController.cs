@@ -43,10 +43,12 @@ public class CitizenReportController : ApiController
         return Ok(mappedResult);
     }
 
-    //todo : remove ,cause i think that not used.
+
+    //todo : review returning Dto....................................
+    //citizen can see review processes of other's reports.
     [Authorize(Roles = "Citizen")]
-    [HttpGet("{id:Guid}")]
-    public async Task<ActionResult<Report>> GetReportById(Guid id)
+    [HttpGet("ReportHistory/{id:Guid}")]
+    public async Task<ActionResult<List<TransitionLogDto>>> GetReportHistoryById(Guid id)
     {
         await Task.CompletedTask;
         return Ok();
@@ -67,7 +69,7 @@ public class CitizenReportController : ApiController
     //todo : define & set dtos
     [Authorize(Roles = "Citizen")]
     [HttpGet("Locations")]
-    public async Task<ActionResult<Report>> GetLocations(int instanceId/*??*/)
+    public async Task<ActionResult> GetLocations(int instanceId/*??*/)
     {
         await Task.CompletedTask;
         return Ok();
@@ -76,7 +78,7 @@ public class CitizenReportController : ApiController
     //todo : define & set dtos
     [Authorize(Roles = "Citizen")]
     [HttpGet("Locations/{id:Guid}")]
-    public async Task<ActionResult<Report>> GetLocations(Guid id)
+    public async Task<ActionResult> GetLocations(Guid id)
     {
         await Task.CompletedTask;
         return Ok();
@@ -114,7 +116,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpPost]
-    public async Task<ActionResult<Report>> CreateReport(int instanceId, [FromForm] CitizenCreateReportDto model)
+    public async Task<ActionResult> CreateReport(int instanceId, [FromForm] CitizenCreateReportDto model)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var username = User.FindFirstValue(ClaimTypes.Name);
@@ -195,7 +197,9 @@ public class CitizenReportController : ApiController
         await Task.CompletedTask;//..............................
         return Ok();
     }
-    
+
+
+
     [Authorize(Roles = "Citizen")]
     [HttpDelete("Comment/{commentId:Guid}")]
     public async Task<ActionResult> DeleteComment(Guid commentId)

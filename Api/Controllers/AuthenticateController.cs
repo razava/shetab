@@ -25,7 +25,6 @@ public class AuthenticateController : ApiController
     }
 
 
-    //todo : Define & Set Dtos
     //TODO: Define access policies
 
 
@@ -104,7 +103,10 @@ public class AuthenticateController : ApiController
         //todo : no need to handle result??
         return NoContent();
     }
+    
 
+    //Probably remove and instead use of Get/Regions/{id} from UserManagementController
+    /*
     [Authorize]
     [HttpGet("Regions")] //{instanceId}
     public async Task<ActionResult<GetUserRegionsDto>> GetRegions()
@@ -112,6 +114,8 @@ public class AuthenticateController : ApiController
         await Task.CompletedTask;   //........................................  
         return Ok();
     }
-
+    */
 
 }
+
+

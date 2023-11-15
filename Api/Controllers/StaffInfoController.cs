@@ -27,7 +27,7 @@ public class StaffInfoController : ApiController
 
     [Authorize]
     [HttpGet("Charts/{id}")]
-    public async Task<ActionResult<InfoDto>> GetChartsById(int id/*, [FromQuery] PagingInfo pagingInfo*/)
+    public async Task<ActionResult<InfoDto>> GetChartsById(int id/*, [FromQuery] PagingInfo pagingInfo*/)//time filter?
     {
         await Task.CompletedTask;
         return Ok();
@@ -69,6 +69,7 @@ public class StaffInfoController : ApiController
         return Ok();
     }
 
+    //............................................
     //todo : is this endpoint used??
     [Authorize]
     [HttpGet("Excel")]
