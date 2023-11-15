@@ -7,8 +7,8 @@ namespace Application.Reports.Commands.MessageToCitizen;
 
 public sealed record MessageToCitizenCommand(
     Guid reportId,
-    string ActorIdentifier,
-    ActorType ActorType,
+    string UserId,
+    List<string> UserRoles,
     List<Guid> Attachments,
     string Comment,
     bool IsPublic,

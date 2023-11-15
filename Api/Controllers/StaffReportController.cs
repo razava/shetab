@@ -374,7 +374,10 @@ public class StaffReportController : ApiController
     public async Task<ActionResult> DeleteComment(Guid id)
     {
         //todo:.....is seperate for citizen And Admin?..............................
-        var command = new DeleteCommentCommand(id);
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+        var command = new DeleteCommentCommand(id, userId, User.GetUserRoles());
         var result = await Sender.Send(command);
         if (!result)
         {
