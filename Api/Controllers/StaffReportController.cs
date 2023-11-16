@@ -12,6 +12,7 @@ using Application.Reports.Commands.CreateReportByOperator;
 using Application.Reports.Commands.MessageToCitizen;
 using Application.Reports.Commands.UpdateByOperator;
 using Application.Reports.Common;
+using Application.Reports.Queries.GetAllReports;
 using Application.Reports.Queries.GetPossibleTransitions;
 using Application.Reports.Queries.GetReportById;
 using Application.Reports.Queries.GetReports;
@@ -79,9 +80,11 @@ public class StaffReportController : ApiController
     {
         //have FilterGetAllReports (diffrent from FilterGetReports)
 
-        //todo:.......send userId for reports belongs to Staff..............................................
-
-        var query = new GetAllReportsQuery(pagingInfo, instanceId);
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+        var userRoles = User.GetUserRoles();
+            var query = new GetAllReportsQuery(pagingInfo, instanceId, userId, userRoles);
         var result = await Sender.Send(query);
         Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
         var mappedResult = result.Adapt<List<StaffGetReportListDto>>();

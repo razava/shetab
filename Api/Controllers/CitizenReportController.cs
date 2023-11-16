@@ -108,8 +108,11 @@ public class CitizenReportController : ApiController
     [HttpGet("Mine/{id:Guid}")]
     public async Task<ActionResult<CitizenGetReportDetailsDto>> GetMyReportById(Guid id)
     {
-        //todo:....send userId to check that report belongs to citizen.............................
-        var query = new GetCitizenReportByIdQuery(id);
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        var query = new GetCitizenReportByIdQuery(id, userId);
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<CitizenGetReportDetailsDto>();
         return Ok(mappedResult);
