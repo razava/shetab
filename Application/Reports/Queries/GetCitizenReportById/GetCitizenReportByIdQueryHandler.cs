@@ -20,6 +20,10 @@ internal sealed class GetCitizenReportByIdQueryHandler : IRequestHandler<GetCiti
             false);
         if (report is null)
             throw new Exception("Not found.");
+        if(report.CitizenId != request.UserId)
+        {
+            throw new Exception("Access denied.");
+        }
         return report;
     }
 }

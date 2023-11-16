@@ -9,4 +9,5 @@ public static class ReportMessages
     public static string Refered = "";
     public static string Objectioned = "";
     public static string Finished = "";
+    public static string Feedbacked = "";
 }

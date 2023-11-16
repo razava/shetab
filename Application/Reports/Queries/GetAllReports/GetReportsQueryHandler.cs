@@ -2,7 +2,7 @@
 using Domain.Models.Relational;
 using MediatR;
 
-namespace Application.Reports.Queries.GetReports;
+namespace Application.Reports.Queries.GetAllReports;
 
 internal sealed class GetAllReportsQueryHandler : IRequestHandler<GetAllReportsQuery, PagedList<Report>>
 {
@@ -15,6 +15,7 @@ internal sealed class GetAllReportsQueryHandler : IRequestHandler<GetAllReportsQ
 
     public async Task<PagedList<Report>> Handle(GetAllReportsQuery request, CancellationToken cancellationToken)
     {
+        //TODO: Implement appropriate filters
         var reports = await _reportRepository.GetPagedAsync(
             request.PagingInfo,
             null,

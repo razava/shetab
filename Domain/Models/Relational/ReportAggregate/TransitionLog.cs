@@ -1,9 +1,6 @@
-﻿using Amazon.Auth.AccessControlPolicy;
+﻿using Domain.Messages;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ProcessAggregate;
-using Domain.Models.Relational.ReportAggregate;
-using MongoDB.Driver.Core.Operations;
-using System.Net.Mail;
 
 namespace Domain.Models.Relational;
 
@@ -29,6 +26,7 @@ public class TransitionLog
     private TransitionLog() { }
 
     private TransitionLog(
+        ReportLogType type,
         Guid reportId,
         int? transitionId,
         string? comment,
@@ -37,11 +35,12 @@ public class TransitionLog
         ActorType actorType,
         string actorIdentifier,
         int? reasonId,
-        TimeSpan? duration,
+        double? duration,
         bool isPublic)
     {
         if(attachments is not null)
             attachments.ForEach(p => Attachments.Add(new Media() { Id = p }));
+        ReportLogType = type;
         Comment = comment ?? "";
         DateTime = DateTime.UtcNow;
         ReportId = reportId;
@@ -50,22 +49,129 @@ public class TransitionLog
         ActorType = actorType;
         ActorIdentifier = actorIdentifier;
         ReasonId = reasonId;
-        Duration = duration?.TotalSeconds;
+        Duration = duration;
         IsPublic = isPublic;
     }
 
-    public static TransitionLog Create(
+    public static TransitionLog CreateTransition(
         Guid reportId,
-        int? transitionId,
+        int transitionId,
         string? comment,
         List<Guid>? attachments,
         string message,
         ActorType actorType,
         string actorIdentifier,
         int? reasonId,
-        TimeSpan? duration,
+        double duration,
         bool isPublic)
     {
-        return new TransitionLog(reportId, transitionId, comment, attachments, message, actorType, actorIdentifier, reasonId, duration, isPublic);
+        return new TransitionLog(
+            ReportLogType.Transition,
+            reportId,
+            transitionId,
+            comment,
+            attachments,
+            message,
+            actorType,
+            actorIdentifier,
+            reasonId,
+            duration,
+            isPublic);
+    }
+
+    public static TransitionLog CreateNewReport(
+        Guid reportId,
+        ActorType actorType,
+        string actorIdentifier)
+    {
+        return new TransitionLog(
+            ReportLogType.Created,
+            reportId,
+            null,
+            null,
+            null,
+            ReportMessages.Created,
+            actorType,
+            actorIdentifier,
+            null,
+            null,
+            true);
+    }
+
+    public static TransitionLog CreateApproved(
+        Guid reportId,
+        string actorIdentifier)
+    {
+        return new TransitionLog(
+            ReportLogType.Created,
+            reportId,
+            null,
+            null,
+            null,
+            ReportMessages.Created,
+            ActorType.Person,
+            actorIdentifier,
+            null,
+            null,
+            true);
+    }
+
+    public static TransitionLog CreateMessageToCitizen(
+            Guid reportId,
+            string comment,
+            List<Guid>? attachments,
+            string actorIdentifier,
+            double duration)
+    {
+        return new TransitionLog(
+            ReportLogType.MessageToCitizen,
+            reportId,
+            null,
+            comment,
+            attachments,
+            ReportMessages.Responsed,
+            ActorType.Person,
+            actorIdentifier,
+            null,
+            duration,
+            true);
+    }
+
+    public static TransitionLog CreateUpdate(
+        Guid reportId,
+        string comment,
+        string actorIdentifier)
+    {
+        return new TransitionLog(
+            ReportLogType.Change,
+            reportId,
+            null,
+            comment,
+            null,
+            ReportMessages.Updated,
+            ActorType.Person,
+            actorIdentifier,
+            null,
+            null,
+            true);
+    }
+
+    public static TransitionLog CreateFeedback(
+        Guid reportId,
+        string actorIdentifier,
+        string comment)
+    {
+        return new TransitionLog(
+            ReportLogType.Feedback,
+            reportId,
+            null,
+            comment,
+            null,
+            ReportMessages.Feedbacked,
+            ActorType.Person,
+            actorIdentifier,
+            null,
+            null,
+            true);
     }
 }
