@@ -31,10 +31,11 @@ public class OldReportController : ApiController
 
 
 
-
+    
 
 
     //??
+    /*
     [Authorize]
     [HttpGet("Reports")]
     public async Task<ActionResult<List<Report>>> GetReports([FromQuery] PagingInfo pagingInfo, int instanceId)
@@ -48,6 +49,7 @@ public class OldReportController : ApiController
         Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
         return Ok(result.ToList());
     }
+    */
 
     //Moved to ReportDtos file
     /*

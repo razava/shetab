@@ -16,19 +16,16 @@ public class AdminCategoryController : ApiController
     }
 
     //todo : .................Commands & queries ............
-    //todo : Define & Set Dtos
     //TODO: Define access policies
 
-    //...........review dto...........
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<FlattenCategoryDto>>> GetCategories()
+    public async Task<ActionResult<List<FlattenShortCategoryDto>>> GetCategories()
     {
         await Task.CompletedTask;
         return Ok();
     }
 
-    //............review dto...............
     [Authorize]
     [HttpGet("All")]
     public async Task<ActionResult<List<FlattenCategoryDto>>> GetAllCategories([FromQuery] QueryFilter queryFilter)
@@ -37,16 +34,16 @@ public class AdminCategoryController : ApiController
         return Ok();
     }
 
-    //.......................................
+    
     [Authorize]
     [HttpGet("Processes")]
-    public async Task<ActionResult> GetProcesses()
+    public async Task<ActionResult<List<GetProcessListDto>>> GetProcesses()
     {
         await Task.CompletedTask;
         return Ok();
     }
 
-    //.......... review dto.................
+
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult> CreateCategory(CategoryCreateDto categoryCreateDto)
@@ -55,7 +52,6 @@ public class AdminCategoryController : ApiController
         return Ok();
     }
 
-    //.......... review dto.................
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:Guid}")]
     public async Task<ActionResult> EditCategory(Guid id, CategoryCreateDto categoryCreateDto)

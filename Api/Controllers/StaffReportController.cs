@@ -9,6 +9,7 @@ using Application.Comments.Commands.UpdateComment;
 using Application.Common.Interfaces.Persistence;
 using Application.Reports.Commands.AcceptByOperator;
 using Application.Reports.Commands.CreateReportByOperator;
+using Application.Reports.Commands.MessageToCitizen;
 using Application.Reports.Commands.UpdateByOperator;
 using Application.Reports.Common;
 using Application.Reports.Queries.GetPossibleTransitions;
@@ -162,21 +163,23 @@ public class StaffReportController : ApiController
     [HttpPost("MessageToCitizen/{id:Guid}")]
     public async Task<ActionResult> MessageToCitizen(Guid id, MessageToCitizenDto messageToCitizenDto)
     {
-        await Task.CompletedTask;
-        /* needs
-        Guid reportId,
-        string ActorIdentifier,
-        ActorType ActorType,      //............. ????????????????
-        List<Guid> Attachments,
-        string Comment,
-        bool IsPublic,
-        string Message
-         */
         var userId = User.GetUserId();
         if (userId == null)
             return Unauthorized();
+        var userRoles = User.GetUserRoles();
 
+        var command = new MessageToCitizenCommand(
+            id,
+            userId,
+            userRoles,
+            messageToCitizenDto.Attachments,
+            messageToCitizenDto.Comment,
+            messageToCitizenDto.IsPublic,
+            messageToCitizenDto.Message);
 
+        var result = await Sender.Send(command);
+        if (result == null)
+            return Problem();
         return Ok();
     }
 
@@ -373,7 +376,6 @@ public class StaffReportController : ApiController
     [HttpDelete("Comment/{id:Guid}")]
     public async Task<ActionResult> DeleteComment(Guid id)
     {
-        //todo:.....is seperate for citizen And Admin?..............................
         var userId = User.GetUserId();
         if (userId == null)
             return Unauthorized();

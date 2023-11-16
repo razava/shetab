@@ -50,10 +50,10 @@ public record UpdateCitizenProfileDto(
     string FirstName,
     string LastName,
     Gender? Gender,
-    int? Education,
+    Education? Education,
     DateTime BirthDate,
     string PhoneNumber2,
-    AddressDto Address,
+    //AddressDto Address,
     string NationalId);
 
     
@@ -62,9 +62,10 @@ public record UpdateStaffProfileDto(
     string LastName,
     string PhoneNumber2,
     string Title,
-    AddressDto Address,
-    int? EducationId);
-
+    string? Organization,
+    //AddressDto Address,
+    Education? Education);
+ 
 
 public record ChangePasswordDto(
     string Username,

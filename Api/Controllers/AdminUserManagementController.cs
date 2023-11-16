@@ -6,11 +6,13 @@ using Application.Users.Commands.CreateContractor;
 using Application.Users.Commands.CreateNewPassword;
 using Application.Users.Commands.CreateUser;
 using Application.Users.Commands.UpdateRoles;
+using Application.Users.Commands.UpdateUserProfile;
 using Application.Users.Common;
 using Application.Users.Queries.GetRoles;
 using Application.Users.Queries.GetUserById;
 using Application.Users.Queries.GetUsers;
 using Domain.Models.Relational.IdentityAggregate;
+using ErrorOr;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -31,14 +33,28 @@ public class AdminUserManagementController : ApiController
 
     //todo : define roles for Authorize
 
-    //todo : set input Dtos
 
     [Authorize(Roles ="Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(string id, UpdateUserDto updateUserDto)
     {
-        await Task.CompletedTask;//......................................
-        return Ok();
+        var command = new UpdateUserProfileCommand(
+            id,
+            updateUserDto.FirstName,
+            updateUserDto.LastName,
+            updateUserDto.Title,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
+
+        var result = await Sender.Send(command);
+        if (result == null)
+            return Problem();
+
+        return NoContent();
     }
 
 
@@ -133,6 +149,8 @@ public class AdminUserManagementController : ApiController
     //    return Ok();
     //}
 
+
+    //todo : review returning response and dto.......
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<ApplicationUser>> CreateUser(CreateUserDto model)
