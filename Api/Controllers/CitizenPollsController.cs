@@ -9,7 +9,7 @@ namespace Api.Controllers;
 [ApiController]
 public class CitizenPollsController : ApiController
 {
-    protected CitizenPollsController(ISender sender) : base(sender)
+    public CitizenPollsController(ISender sender) : base(sender)
     {
     }
 

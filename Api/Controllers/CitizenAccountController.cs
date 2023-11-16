@@ -27,7 +27,7 @@ namespace Api.Controllers;
 [ApiController]
 public class CitizenAccountController : ApiController
 {
-    protected CitizenAccountController(ISender sender) : base(sender)
+    public CitizenAccountController(ISender sender) : base(sender)
     {
     }
 

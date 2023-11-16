@@ -47,7 +47,7 @@ public record FilterGetUsers(
     DateTime? SentToDate,
     List<string> RoleNames,
     List<int> RegionIds,
-    string Query);
+    string? Query);
 
 
 public record CreateUserDto(

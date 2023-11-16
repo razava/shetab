@@ -10,7 +10,7 @@ namespace Api.Controllers;
 [ApiController]
 public class AdminOrganizationalUnitController : ApiController
 {
-    protected AdminOrganizationalUnitController(ISender sender) : base(sender)
+    public AdminOrganizationalUnitController(ISender sender) : base(sender)
     {
     }
 

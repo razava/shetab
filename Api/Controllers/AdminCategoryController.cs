@@ -15,7 +15,7 @@ namespace Api.Controllers;
 [ApiController]
 public class AdminCategoryController : ApiController
 {
-    protected AdminCategoryController(ISender sender) : base(sender)
+    public AdminCategoryController(ISender sender) : base(sender)
     {
     }
 

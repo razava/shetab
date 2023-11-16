@@ -9,7 +9,7 @@ namespace Api.Controllers;
 [ApiController]
 public class ManagementController : ApiController
 {
-    protected ManagementController(ISender sender) : base(sender)
+    public ManagementController(ISender sender) : base(sender)
     {
     }
 

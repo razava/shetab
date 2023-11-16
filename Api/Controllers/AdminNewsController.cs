@@ -10,7 +10,7 @@ namespace Api.Controllers;
 [ApiController]
 public class AdminNewsController : ApiController
 {
-    protected AdminNewsController(ISender sender) : base(sender)
+    public AdminNewsController(ISender sender) : base(sender)
     {
     }
 

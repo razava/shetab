@@ -11,7 +11,7 @@ namespace Api.Controllers;
 [ApiController]
 public class MessagesController : ApiController
 {
-    protected MessagesController(ISender sender) : base(sender)
+    public MessagesController(ISender sender) : base(sender)
     {
     }
 

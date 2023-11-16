@@ -11,7 +11,7 @@ namespace Api.Controllers;
 [ApiController]
 public class StaffInfoController : ApiController
 {
-    protected StaffInfoController(ISender sender) : base(sender)
+    public StaffInfoController(ISender sender) : base(sender)
     {
     }
 

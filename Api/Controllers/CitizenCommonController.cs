@@ -16,7 +16,7 @@ namespace Api.Controllers;
 [ApiController]
 public class CitizenCommonController : ApiController
 {
-    protected CitizenCommonController(ISender sender) : base(sender)
+    public CitizenCommonController(ISender sender) : base(sender)
     {
     }
 

@@ -35,7 +35,7 @@ namespace Api.Controllers;
 
 public class StaffReportController : ApiController
 {
-    protected StaffReportController(ISender sender) : base(sender)
+    public StaffReportController(ISender sender) : base(sender)
     {
     }
 

@@ -27,7 +27,7 @@ namespace Api.Controllers;
 [ApiController]
 public class AdminUserManagementController : ApiController
 {
-    protected AdminUserManagementController(ISender sender) : base(sender)
+    public AdminUserManagementController(ISender sender) : base(sender)
     {
     }
 
@@ -120,6 +120,7 @@ public class AdminUserManagementController : ApiController
     public async Task<ActionResult<List<AdminGetUserList>>> GetAllUsers([FromQuery]PagingInfo pagingInfo, [FromQuery] FilterGetUsers filter)
     {
         //have FilterGetUsers
+        var t = filter;
         var query = new GetUsersQuery(pagingInfo);
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<List<AdminGetUserList>>();

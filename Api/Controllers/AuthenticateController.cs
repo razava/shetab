@@ -18,7 +18,7 @@ using static Api.Controllers.CitizenAccountController;
 
 namespace Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/{instanceId}/[controller]")]
 [ApiController]
 public class AuthenticateController : ApiController
 {

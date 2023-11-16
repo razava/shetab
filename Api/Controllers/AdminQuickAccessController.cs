@@ -14,7 +14,7 @@ namespace Api.Controllers;
 [ApiController]
 public class AdminQuickAccessController : ApiController
 {
-    protected AdminQuickAccessController(ISender sender) : base(sender)
+    public AdminQuickAccessController(ISender sender) : base(sender)
     {
     }
 

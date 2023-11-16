@@ -10,7 +10,7 @@ namespace Api.Controllers;
 [ApiController]
 public class AdminProcessesController : ApiController
 {
-    protected AdminProcessesController(ISender sender) : base(sender)
+    public AdminProcessesController(ISender sender) : base(sender)
     {
     }
 
