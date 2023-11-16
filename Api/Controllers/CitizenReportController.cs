@@ -5,7 +5,9 @@ using Api.ExtensionMethods;
 using Application.Comments.Commands.CreateComment;
 using Application.Comments.Commands.DeleteComment;
 using Application.Common.Interfaces.Persistence;
+using Application.Configurations.Queries.QuickAccesses;
 using Application.Reports.Commands.CreateReportByCitizen;
+using Application.Reports.Commands.ReportViolation;
 using Application.Reports.Common;
 using Application.Reports.Queries.GetCitizenReportById;
 using Application.Reports.Queries.GetNearestReports;
@@ -154,10 +156,12 @@ public class CitizenReportController : ApiController
     
     [Authorize(Roles = "Citizen")]
     [HttpGet("QuickAccesses")]
-    public async Task<ActionResult<List<CitizenGetQuickAccess>>> GetQuickAccesses()
+    public async Task<ActionResult<List<CitizenGetQuickAccess>>> GetQuickAccesses(int instanceId)
     {
-        await Task.CompletedTask;//.................................................
-        return Ok();
+        var query = new QuickAccessQuery(instanceId);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List<CitizenGetQuickAccess>>();
+        return Ok(mappedResult);
     }
     
 
@@ -221,7 +225,7 @@ public class CitizenReportController : ApiController
     [HttpPost("Feedback/{id:Guid}")]
     public async Task<ActionResult> Feedback(Guid id, CreateFeedbackDto createFeedbackDto)
     {
-        //need userId, RepoetId, token, rating..........................................
+        //need userId, ReportId, token, rating..........................................
         await Task.CompletedTask;
         return Ok();
     }
@@ -229,11 +233,18 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpPost("ReportViolation/{id:Guid}")]
-    public async Task<ActionResult> CreateRepotrViolation(Guid id, CreateReportViolationDto createViolationDto)
+    public async Task<ActionResult> CreateRepotrViolation(Guid id, CreateReportViolationDto createDto)
     {
-        await Task.CompletedTask;//...........................................
+        var userId = User.GetUserId();
+        if (userId is null)
+            return Unauthorized();
+        var command = new ReportViolationCommand(id, userId, createDto.ViolationTypeId, createDto.Description);
+        var result = await Sender.Send(command);
+        if(result == null)
+            return Problem();
         return Ok();
     }
+
 
     [Authorize(Roles = "Citizen")]
     [HttpPost("CommentViolation/{id:Guid}")]

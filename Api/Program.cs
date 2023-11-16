@@ -154,7 +154,7 @@ else
 
 //Adding static settings
 builder.Services.AddMemoryCache();
-
+//builder.Services.AddMediatR();
 
 
 
@@ -189,6 +189,7 @@ app.UseAuthorization();
 //app.UseAccessControlMiddleware();
 app.UseStaticFiles();
 app.MapControllers();
+//app.MapControllerRoute(name: "default", pattern: "api/{controller}/{instanceId?}/{action}/{id?}");
 app.MapHub<NewEventHub>("/eventhub");
 
 

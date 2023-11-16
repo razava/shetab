@@ -2,6 +2,7 @@
 using Api.Contracts;
 using Application.Categories.Queries.GetCategory;
 using Application.Categories.Queries.GetCategoryById;
+using Application.Configurations.Queries.ViolationTypes;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ReportAggregate;
 using Mapster;
@@ -46,8 +47,10 @@ public class CitizenCommonController : ApiController
     [HttpGet("ViolationTypes")]
     public async Task<ActionResult<List<ViolationTypeDto>>> GetViolationTypes()
     {
-        await Task.CompletedTask;
-        return Ok();
+        var query = new ViolationTypesQuery();
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List<ViolationTypeDto>>();
+        return Ok(mappedResult);
     }
 
 

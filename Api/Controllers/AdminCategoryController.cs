@@ -1,6 +1,10 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
+using Application.Categories.Commands.AddCategory;
+using Application.Categories.Queries.GetCategory;
 using Application.Common.Interfaces.Persistence;
+using Domain.Models.Relational;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +24,12 @@ public class AdminCategoryController : ApiController
 
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<FlattenShortCategoryDto>>> GetCategories()
+    public async Task<ActionResult<List<FlattenShortCategoryDto>>> GetCategories(int instanceId)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var query = new GetCategoryQuery(instanceId);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List<FlattenShortCategoryDto>>();
+        return Ok(mappedResult);
     }
 
     [Authorize]
@@ -31,6 +37,7 @@ public class AdminCategoryController : ApiController
     public async Task<ActionResult<List<FlattenCategoryDto>>> GetAllCategories([FromQuery] QueryFilter queryFilter)
     {
         await Task.CompletedTask;
+        //Does GetCategoryQuery include categories list for this endpoint???
         return Ok();
     }
 
@@ -49,6 +56,7 @@ public class AdminCategoryController : ApiController
     public async Task<ActionResult> CreateCategory(CategoryCreateDto categoryCreateDto)
     {
         await Task.CompletedTask;
+        //AddCategoryCommand  need to complete......
         return Ok();
     }
 
@@ -56,7 +64,12 @@ public class AdminCategoryController : ApiController
     [HttpPut("{id:Guid}")]
     public async Task<ActionResult> EditCategory(Guid id, CategoryCreateDto categoryCreateDto)
     {
-        await Task.CompletedTask;
+        var category = categoryCreateDto.Adapt<Category>();
+        //todo : AddCategoryCommand  need to complete......
+        var command = new AddCategoryCommand(category);
+        var result = await Sender.Send(command);
+        if (result == null)
+            return Problem();
         return Ok();
     }
 
