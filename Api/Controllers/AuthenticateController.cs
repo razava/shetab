@@ -5,7 +5,9 @@ using Application.Authentication.Commands.LoginCommand;
 using Application.Authentication.Commands.RegisterCitizenCommand;
 using Application.Common.Interfaces.Security;
 using Application.Users.Commands.UpdateUserAvatar;
+using Application.Users.Commands.UpdateUserProfile;
 using Application.Users.Queries.GetUserProfile;
+using ErrorOr;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -81,11 +83,29 @@ public class AuthenticateController : ApiController
 
     [Authorize]
     [HttpPut("Profile")]
-    public async Task<ActionResult> UpdateProfile(UpdateStaffProfileDto updateProfileDto)
+    public async Task<ActionResult> UpdateProfile(UpdateStaffProfileDto updateDto)
     {
-        //UpdateUserProfileCommand    //...........................................
-        await Task.CompletedTask;
-        return Ok();
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        var command = new UpdateUserProfileCommand(
+            userId,
+            updateDto.FirstName,
+            updateDto.LastName,
+            updateDto.Title,
+            updateDto.Organization,
+            null,
+            null,
+            updateDto.Education,
+            null,
+            updateDto.PhoneNumber2);
+
+        var result = await Sender.Send(command);
+        if (result == null)
+            return Problem();
+
+        return NoContent();
     }
 
     //todo : Define Access Policy

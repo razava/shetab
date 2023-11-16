@@ -204,7 +204,6 @@ public class CitizenReportController : ApiController
     [HttpDelete("Comment/{commentId:Guid}")]
     public async Task<ActionResult> DeleteComment(Guid commentId)
     {
-        //todo:.....send userId to check that report belongs to citizen....................
         var userId = User.GetUserId();
         if (userId is null)
             return Unauthorized();

@@ -24,7 +24,7 @@ public enum Education
     Diplom,
     FogheDiplom,
     Lisans,
-    FogheDipolom,
+    FogheLisans,
     Doktora
 }
 

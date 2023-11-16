@@ -6,11 +6,13 @@ using Application.Users.Commands.CreateContractor;
 using Application.Users.Commands.CreateNewPassword;
 using Application.Users.Commands.CreateUser;
 using Application.Users.Commands.UpdateRoles;
+using Application.Users.Commands.UpdateUserProfile;
 using Application.Users.Common;
 using Application.Users.Queries.GetRoles;
 using Application.Users.Queries.GetUserById;
 using Application.Users.Queries.GetUsers;
 using Domain.Models.Relational.IdentityAggregate;
+using ErrorOr;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -36,8 +38,23 @@ public class AdminUserManagementController : ApiController
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(string id, UpdateUserDto updateUserDto)
     {
-        await Task.CompletedTask;//......................................
-        return Ok();
+        var command = new UpdateUserProfileCommand(
+            id,
+            updateUserDto.FirstName,
+            updateUserDto.LastName,
+            updateUserDto.Title,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
+
+        var result = await Sender.Send(command);
+        if (result == null)
+            return Problem();
+
+        return NoContent();
     }
 
 

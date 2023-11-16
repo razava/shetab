@@ -11,6 +11,7 @@ using Application.Authentication.Queries.GetResetPasswordTokenQuery;
 using Application.Common.Interfaces.Security;
 using Application.Medias.Commands.AddMedia;
 using Application.Users.Commands.UpdateUserAvatar;
+using Application.Users.Commands.UpdateUserProfile;
 using Application.Users.Queries.GetUserProfile;
 using Domain.Models.Relational.IdentityAggregate;
 using Mapster;
@@ -129,9 +130,7 @@ public class CitizenAccountController : ApiController
     {
         var userId = User.GetUserId();
         if (userId == null)
-        {
             return Unauthorized();
-        }
         var query = new GetUserProfileQuery(userId);
         var result = await Sender.Send(query);
         var mappedUser = result.Adapt<GetCitizenProfileDto>();
@@ -140,11 +139,29 @@ public class CitizenAccountController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpPut]
-    public async Task<IActionResult> UpdateUser(UpdateCitizenProfileDto updateCitizenProfileDto)
+    public async Task<IActionResult> UpdateUser(UpdateCitizenProfileDto updateDto)
     {
-        await Task.CompletedTask;
-        //UpdateUserProfileCommand   //...........................................
-        return Ok();//NoContent
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        var command = new UpdateUserProfileCommand(
+            userId,
+            updateDto.FirstName,
+            updateDto.LastName,
+            null,
+            null,
+            updateDto.NationalId,
+            updateDto.Gender,
+            updateDto.Education,
+            updateDto.BirthDate,
+            updateDto.PhoneNumber2);
+
+        var result = await Sender.Send(command);
+        if (result == null)
+            return Problem();
+
+        return NoContent();
     }
 
 
