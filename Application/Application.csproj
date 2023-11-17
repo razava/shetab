@@ -23,7 +23,6 @@
     <Folder Include="Categories\Commands\DeleteCategory\" />
     <Folder Include="Comments\Queries\GetComments\" />
     <Folder Include="Feedbacks\Queries\" />
-    <Folder Include="QuickAccesses\Queries\" />
     <Folder Include="Setup\Queries\" />
     <Folder Include="Workspaces\Commands\" />
   </ItemGroup>

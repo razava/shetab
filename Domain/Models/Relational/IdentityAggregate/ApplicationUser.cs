@@ -41,10 +41,10 @@ public class ApplicationUser : IdentityUser
 }
 
 
-public class ExecutiveContractor
+public class ReportLikes
 {
-    public string ExecutiveId { get; set; } = null!;
-    public ApplicationUser Executive { get; set; } = null!;
-    public string ContractorId { get; set; } = null!;
-    public ApplicationUser Contractor { get; set; } = null!;
+    public string LikedById { get; set; } = null!;
+    public ApplicationUser LikedBy { get; set; } = null!;
+    public Guid ReportId { get; set; }
+    public Report Report { get; set; } = null!;
 }

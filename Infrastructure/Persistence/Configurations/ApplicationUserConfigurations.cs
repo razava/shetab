@@ -18,12 +18,6 @@ public class ApplicationUserConfigurations : IEntityTypeConfiguration<Applicatio
 
         builder.OwnsOne(u => u.Avatar);
         builder.OwnsOne(u => u.Address);
-
-
-        builder.HasMany(u => u.ReportsLiked)
-            .WithMany(r => r.LikedBy)
-            .UsingEntity("ReportLikes");
-
         builder.HasMany(u => u.Reports)
             .WithOne(r => r.Citizen)
             .OnDelete(DeleteBehavior.NoAction);
@@ -52,5 +46,11 @@ public class ApplicationUserConfigurations : IEntityTypeConfiguration<Applicatio
                 ec => ec.HasOne(e => e.Executive).WithMany().HasForeignKey(e => e.ExecutiveId).HasPrincipalKey(u => u.Id),
                 ec => ec.HasOne(c => c.Contractor).WithMany().HasForeignKey(c => c.ContractorId).HasPrincipalKey(u => u.Id),
                 j => j.HasKey(e=> new { e.ExecutiveId, e.ContractorId}));
+        builder.HasMany(u => u.ReportsLiked)
+            .WithMany(r => r.LikedBy)
+            .UsingEntity<ReportLikes>(
+                rl => rl.HasOne(u => u.Report).WithMany().HasForeignKey(u => u.ReportId).HasPrincipalKey(r => r.Id),
+                rl => rl.HasOne(r => r.LikedBy).WithMany().HasForeignKey(r => r.LikedById).HasPrincipalKey(u => u.Id),
+                j => j.HasKey(e => new { e.LikedById, e.ReportId }));
     }
 }
