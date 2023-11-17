@@ -59,9 +59,9 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Nearest")]
-    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetNearest([FromQuery]PagingInfo pagingInfo, int instanceId)
+    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetNearest([FromQuery]PagingInfo pagingInfo, int instanceId, double x, double y)
     {
-        var query = new GetNearestReportsQuery(pagingInfo, instanceId);
+        var query = new GetNearestReportsQuery(pagingInfo, instanceId, x, y);
         var result = await Sender.Send(query);
         Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
         var mappedResult = result.Adapt<List<CitizenGetReportListDto>>();

@@ -46,6 +46,7 @@ public static class DependencyInjection
                 {
                     o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                     o.MigrationsAssembly("Infrastructure");
+                    o.UseNetTopologySuite();
                 }));
         return services;
     }
@@ -69,6 +70,7 @@ public static class DependencyInjection
         services.AddScoped<IViolationTypeRepository, ViolationTypeRepository>();
         services.AddScoped<IQuickAccessRepository, QuickAccessRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
+        services.AddScoped<IReportLikesRepository, ReportLikesRepository>();
 
 
         return services;
