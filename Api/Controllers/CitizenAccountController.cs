@@ -169,7 +169,7 @@ public class CitizenAccountController : ApiController
 
     [Authorize]
     [HttpPut("Avatar")]
-    public async Task<ActionResult> UpdateAvatar(UploadDto avatar)
+    public async Task<ActionResult> UpdateAvatar([FromForm] UploadDto avatar)
     {
         var userId = User.GetUserId();
         if (userId == null)

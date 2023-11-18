@@ -47,28 +47,28 @@ public record RegisterAppDto(
 
 
 public record UpdateCitizenProfileDto(
-    string FirstName,
-    string LastName,
+    string? FirstName,
+    string? LastName,
     Gender? Gender,
     Education? Education,
-    DateTime BirthDate,
-    string PhoneNumber2,
+    DateTime? BirthDate,
+    string? PhoneNumber2,
     //AddressDto Address,
-    string NationalId);
+    string? NationalId);
 
     
 public record UpdateStaffProfileDto(
-    string FirstName,
-    string LastName,
-    string PhoneNumber2,
-    string Title,
+    string? FirstName,
+    string? LastName,
+    string? PhoneNumber2,
+    string? Title,
     string? Organization,
     //AddressDto Address,
     Education? Education);
  
 
 public record ChangePasswordDto(
-    string Username,
+    //string Username,
     string OldPassword,
     string NewPassword,
     CaptchaValidateDto Captcha);

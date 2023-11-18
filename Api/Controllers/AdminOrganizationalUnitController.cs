@@ -19,7 +19,7 @@ public class AdminOrganizationalUnitController : ApiController
 
     [Authorize]
     [HttpGet("All")]
-    public async Task<ActionResult<List<GetOrganizationalUnitListDto>>> GetAllOrgaizationalUnits(QueryFilter queryFilter)
+    public async Task<ActionResult<List<GetOrganizationalUnitListDto>>> GetAllOrgaizationalUnits([FromQuery]QueryFilter queryFilter)
     {
         await Task.CompletedTask;
         return Ok();

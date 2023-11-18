@@ -46,7 +46,7 @@ public class AuthenticateController : ApiController
 
     [Authorize]
     [HttpPut("ChangePassword")]
-    public async Task<ActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
+    public async Task<ActionResult> ChangePassword(ChangePasswordAppDto changePasswordDto)
     {
         var userName = User.FindFirstValue(ClaimTypes.Name);
         if (userName is null)
@@ -111,7 +111,7 @@ public class AuthenticateController : ApiController
     //todo : Define Access Policy
     [Authorize]
     [HttpPut("Avatar")]
-    public async Task<ActionResult> UpdateAvatar(UploadDto avatar)
+    public async Task<ActionResult> UpdateAvatar([FromForm]UploadDto avatar)
     {
         var userId = User.GetUserId();
         if (userId == null)

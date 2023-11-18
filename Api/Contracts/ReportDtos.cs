@@ -274,32 +274,32 @@ public record GetCitizenDto(
 
 
 public record FilterGetReports(
-    string FromRoleId,
+    string? FromRoleId,
     DateTime? SentFromDate,
     DateTime? SentToDate,
-    List<ReportState> CurrentStates,
-    string Query);
+    List<ReportState>? CurrentStates,
+    string? Query);
 
 
 public record FilterGetAllReports(
     DateTime? SentFromDate,
     DateTime? SentToDate,
-    List<string> RoleNames,
-    List<int> CategoryIds,
-    List<int> RegionIds,
-    List<ReportState> CurrentStates,
+    List<string>? RoleNames,
+    List<int>? CategoryIds,
+    List<int>? RegionIds,
+    List<ReportState>? CurrentStates,
     bool HasSatisfaction,  //??
     int MinSatisfaction,   //??
     int MaxSatisfaction,   //??
-    string Query);
+    string? Query);
 
 
 
 public record FilterGetCommentViolation(
     DateTime? SentFromDate,
     DateTime? SentToDate,
-    List<int> CategoryIds,
-    string Query);
+    List<int>? CategoryIds,
+    string? Query);
 
 
 public record GetCommentsDto(

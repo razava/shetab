@@ -3,6 +3,16 @@ using Domain.Models.Relational.ReportAggregate;
 
 namespace Api.Contracts;
 
+
+
+public class LocationDto
+{
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
+}
+
+
+
 public class CategoryGetDto
 {
     //public int ShahrbinInstanceId { get; set; }
@@ -238,7 +248,7 @@ public record UpdateNewsDto(
 
 
 public record QueryFilter(
-    string Query);
+    string? Query);
 
 
 public record GetProcessListDto(

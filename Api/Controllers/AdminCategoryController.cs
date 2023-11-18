@@ -26,10 +26,12 @@ public class AdminCategoryController : ApiController
     [HttpGet]
     public async Task<ActionResult<List<FlattenShortCategoryDto>>> GetCategories(int instanceId)
     {
-        var query = new GetCategoryQuery(instanceId);
-        var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<FlattenShortCategoryDto>>();
-        return Ok(mappedResult);
+        //todo : need a query that return flat list.............................................
+        //var query = new GetCategoryQuery(instanceId);
+        //var result = await Sender.Send(query);
+        //var mappedResult = result.Adapt<List<FlattenShortCategoryDto>>();
+        //return Ok(mappedResult);
+        return Ok();
     }
 
     [Authorize]

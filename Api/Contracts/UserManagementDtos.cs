@@ -18,9 +18,9 @@ public record RolesDto(
     bool IsIn);
 
 public record UpdateUserDto(
-    string FirstName,
-    string LastName,
-    string Title);
+    string? FirstName,
+    string? LastName,
+    string? Title);
 
 
 public record AdminGetUserList(
@@ -45,8 +45,8 @@ public record AdminGetUserList(
 public record FilterGetUsers(
     DateTime? SentFromDate,
     DateTime? SentToDate,
-    List<string> RoleNames,
-    List<int> RegionIds,
+    List<string>? RoleNames,
+    List<int>? RegionIds,
     string? Query);
 
 

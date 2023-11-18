@@ -120,6 +120,7 @@ public class AdminUserManagementController : ApiController
     public async Task<ActionResult<List<AdminGetUserList>>> GetAllUsers([FromQuery]PagingInfo pagingInfo, [FromQuery] FilterGetUsers filter)
     {
         //have FilterGetUsers
+        //todo : query shuold get instanceId for returning this instance's staffs
         var t = filter;
         var query = new GetUsersQuery(pagingInfo);
         var result = await Sender.Send(query);

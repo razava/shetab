@@ -7,6 +7,7 @@ using Application.Comments.Commands.DeleteComment;
 using Application.Common.Interfaces.Persistence;
 using Application.Configurations.Queries.QuickAccesses;
 using Application.Reports.Commands.CreateReportByCitizen;
+using Application.Reports.Commands.Like;
 using Application.Reports.Commands.ReportViolation;
 using Application.Reports.Common;
 using Application.Reports.Queries.GetCitizenReportById;
@@ -52,16 +53,16 @@ public class CitizenReportController : ApiController
     [HttpGet("ReportHistory/{id:Guid}")]
     public async Task<ActionResult<List<TransitionLogDto>>> GetReportHistoryById(Guid id)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//...............................
         return Ok();
     }
 
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Nearest")]
-    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetNearest([FromQuery]PagingInfo pagingInfo, int instanceId, double x, double y)
+    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetNearest([FromQuery]PagingInfo pagingInfo, int instanceId, LocationDto locationDto)
     {
-        var query = new GetNearestReportsQuery(pagingInfo, instanceId, x, y);
+        var query = new GetNearestReportsQuery(pagingInfo, instanceId, locationDto.Longitude, locationDto.Latitude);
         var result = await Sender.Send(query);
         Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
         var mappedResult = result.Adapt<List<CitizenGetReportListDto>>();
@@ -73,10 +74,11 @@ public class CitizenReportController : ApiController
     [HttpGet("Locations")]
     public async Task<ActionResult> GetLocations(int instanceId/*??*/)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//.......................
         return Ok();
     }
 
+    //todo : check usage
     //todo : define & set dtos
     [Authorize(Roles = "Citizen")]
     [HttpGet("Locations/{id:Guid}")]
@@ -152,7 +154,6 @@ public class CitizenReportController : ApiController
             model.IsIdentityVisible);
         var report = await Sender.Send(command);
 
-        //TODO: Fix this ::::> is this okay?
         return CreatedAtAction(nameof(GetMyReportById), report.Id);
     }
 
@@ -161,6 +162,7 @@ public class CitizenReportController : ApiController
     [HttpGet("QuickAccesses")]
     public async Task<ActionResult<List<CitizenGetQuickAccess>>> GetQuickAccesses(int instanceId)
     {
+        //there is 2 query for get QuickAccess in application layer.
         var query = new QuickAccessQuery(instanceId);
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<List<CitizenGetQuickAccess>>();
@@ -173,7 +175,13 @@ public class CitizenReportController : ApiController
     //in old version returns int for report Likes number. 
     public async Task<ActionResult> Like(Guid id, bool isLiked)
     {
-        await Task.CompletedTask;
+        var userId = User.GetUserId();
+        if (userId == null) 
+            return Unauthorized();
+        var command = new LikeCommand(userId, id, isLiked);
+        var result = await Sender.Send(command);
+        if (!result)
+            return Problem();
         return Ok();
     }
 

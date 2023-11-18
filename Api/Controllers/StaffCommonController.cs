@@ -24,6 +24,7 @@ public class StaffCommonController : ApiController
     [HttpGet("Categories")]
     public async Task<ActionResult<List<CategoryGetDto>>> GetCategory(int? instanceId)
     {
+        //todo : check for including categories list for tree structure...................
         if (instanceId is null)
             return BadRequest();
         var query = new GetCategoryQuery(instanceId.Value);
