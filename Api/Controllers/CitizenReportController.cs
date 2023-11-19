@@ -108,7 +108,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Mine/{id:Guid}")]
-    public async Task<ActionResult<CitizenGetReportDetailsDto>> GetMyReportById(Guid id)
+    public async Task<ActionResult<CitizenGetReportDetailsDto>> GetMyReportById(Guid id, int instanceId)
     {
         var userId = User.GetUserId();
         if (userId == null)
@@ -135,13 +135,13 @@ public class CitizenReportController : ApiController
         var phoneNumber = username;
         var addressInfo = new AddressInfo(
             model.Address.RegionId,
-            model.Address.Street!,
-            model.Address.Valley!,
+            model.Address.Street,
+            model.Address.Valley,
             model.Address.Detail,
-            model.Address.Number!,
-            model.Address.PostalCode!,
-            model.Address.Latitude!.Value,
-            model.Address.Longitude!.Value);
+            model.Address.Number,
+            model.Address.PostalCode,
+            model.Address.Latitude,
+            model.Address.Longitude);
 
         var command = new CreateReportByCitizenCommand(
             instanceId,
@@ -150,11 +150,17 @@ public class CitizenReportController : ApiController
             model.CategoryId,
             model.Comments,
             addressInfo,
-            model.Attachments,
+            model.Attachments ?? new List<Guid>(),
             model.IsIdentityVisible);
         var report = await Sender.Send(command);
+        
+        var routeValues = new {id = report.Id, instanceId = instanceId };
+        return CreatedAtAction(nameof(GetMyReportById), routeValues, report.Adapt<CitizenGetReportDetailsDto>());
+        //return CreatedAtAction(nameof(GetMyReportById), routeValues, report);
+        //return CreatedAtAction(nameof(GetMyReportById), report.Id, report);
+        //return CreatedAtAction(nameof(GetMyReportById), report.Id, report.Adapt<CitizenGetReportDetailsDto>());
+        //return CreatedAtAction(nameof(GetMyReportById), report.Id);
 
-        return CreatedAtAction(nameof(GetMyReportById), report.Id);
     }
 
     

@@ -215,8 +215,8 @@ public class StaffReportController : ApiController
             model.Address.Detail,
             model.Address.Number,
             model.Address.PostalCode,
-            model.Address.Latitude!.Value,
-            model.Address.Longitude!.Value);
+            model.Address.Latitude,
+            model.Address.Longitude);
 
         var command = new CreateReportByOperatorCommand(
             instanceId,
@@ -267,8 +267,8 @@ public class StaffReportController : ApiController
                 model.Address.Detail,
                 model.Address.Number,
                 model.Address.PostalCode,
-                model.Address.Latitude!.Value,
-                model.Address.Longitude!.Value);
+                model.Address.Latitude,
+                model.Address.Longitude);
 
         }
         //TODO: Visibility should be considerd
@@ -316,8 +316,8 @@ public class StaffReportController : ApiController
                 model.Address.Detail,
                 model.Address.Number,
                 model.Address.PostalCode,
-                model.Address.Latitude!.Value,
-                model.Address.Longitude!.Value);
+                model.Address.Latitude,
+                model.Address.Longitude);
 
         }
         //TODO: Visibility should be considerd

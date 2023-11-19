@@ -112,8 +112,8 @@ public class AddressDto
     public string Detail { get; set; } = string.Empty;//todo : nullable?
     public string Number { get; set; } = string.Empty;
     public string PostalCode { get; set; } = string.Empty;
-    public double? Latitude { get; set; }
-    public double? Longitude { get; set; }
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
     public double? Elevation { get; set; }
 }
 

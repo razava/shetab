@@ -80,7 +80,7 @@ public record CitizenGetReportDetailsDto(
 
 public record CitizenCreateReportDto(
     int CategoryId,
-    string? Comments,
+    string Comments,
     AddressDto Address,
     List<Guid>? Attachments,
     bool IsIdentityVisible);
