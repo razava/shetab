@@ -209,7 +209,7 @@ public class StaffReportController : ApiController
         }
 
         var addressInfo = new AddressInfo(
-            model.Address.RegionId!.Value,
+            model.Address.RegionId,
             model.Address.Street,
             model.Address.Valley,
             model.Address.Detail,
@@ -261,7 +261,7 @@ public class StaffReportController : ApiController
         if (model.Address != null)
         {
             addressInfo = new AddressInfo(
-                model.Address.RegionId!.Value,
+                model.Address.RegionId,
                 model.Address.Street,
                 model.Address.Valley,
                 model.Address.Detail,
@@ -310,7 +310,7 @@ public class StaffReportController : ApiController
         if (model.Address != null)
         {
             addressInfo = new AddressInfo(
-                model.Address.RegionId!.Value,
+                model.Address.RegionId,
                 model.Address.Street,
                 model.Address.Valley,
                 model.Address.Detail,

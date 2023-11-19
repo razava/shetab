@@ -60,7 +60,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Nearest")]
-    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetNearest([FromQuery]PagingInfo pagingInfo, int instanceId, LocationDto locationDto)
+    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetNearest([FromQuery]PagingInfo pagingInfo, int instanceId, [FromQuery] LocationDto locationDto)
     {
         var query = new GetNearestReportsQuery(pagingInfo, instanceId, locationDto.Longitude, locationDto.Latitude);
         var result = await Sender.Send(query);
@@ -134,12 +134,12 @@ public class CitizenReportController : ApiController
 
         var phoneNumber = username;
         var addressInfo = new AddressInfo(
-            model.Address.RegionId!.Value,
-            model.Address.Street,
-            model.Address.Valley,
+            model.Address.RegionId,
+            model.Address.Street!,
+            model.Address.Valley!,
             model.Address.Detail,
-            model.Address.Number,
-            model.Address.PostalCode,
+            model.Address.Number!,
+            model.Address.PostalCode!,
             model.Address.Latitude!.Value,
             model.Address.Longitude!.Value);
 

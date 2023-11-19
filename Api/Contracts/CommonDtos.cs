@@ -105,11 +105,11 @@ public class MediaDto : Media { }
 
 public class AddressDto
 {
-    public int? RegionId { get; set; }
+    public int RegionId { get; set; }
 
     public string Street { get; set; } = string.Empty;
     public string Valley { get; set; } = string.Empty;
-    public string Detail { get; set; } = string.Empty;
+    public string Detail { get; set; } = string.Empty;//todo : nullable?
     public string Number { get; set; } = string.Empty;
     public string PostalCode { get; set; } = string.Empty;
     public double? Latitude { get; set; }
