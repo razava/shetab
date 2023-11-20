@@ -38,7 +38,7 @@ public record CitizenGetReportListDto(
     Guid Id,
     CategoryTitleDto Category,
     string Comments,
-    AddresDetailDto Addres,
+    AddressDetailDto Address,
     string TrackingNumber,
     string LastStatus,
     DateTime Sent,
@@ -72,7 +72,7 @@ public record CitizenGetReportDetailsDto(
     string Comments,
     string TrackingNumber,
     DateTime Sent,
-    AddresMoreDetailDto Address,
+    AddressMoreDetailDto Address,
     int CommentsCount,
     int Likes,
     bool IsIdentityVisible);
@@ -267,7 +267,7 @@ public record GetCitizenDto(
     string LastName,
     MediaDto Avatar,
     string PhoneNumber,
-    AddresDetailDto Address);
+    AddressDetailDto Address);
 
 
 

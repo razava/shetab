@@ -118,6 +118,9 @@ builder.Services.AddAuthentication(options =>
 //AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+//Config Mapster
+MapsterConfigurations.Config();
+
 //Configurations
 builder.Services.Configure<SmsOptions>(builder.Configuration.GetSection(SmsOptions.Name));
 builder.Services.Configure<GeneralSettings>(builder.Configuration.GetSection(GeneralSettings.Name));

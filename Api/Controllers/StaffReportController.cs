@@ -154,10 +154,11 @@ public class StaffReportController : ApiController
         var userId = User.GetUserId();
         if (userId == null)
             return Unauthorized();
-        // query needs userId & user roles......................................................
-        //var query = new GetPossibleSourcesQuery(userId);
-        await Task.CompletedTask;
-        return Ok();
+        var userRoles = User.GetUserRoles();
+        var query = new GetPossibleSourcesQuery(userId, userRoles);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List<GetPossibleSourceDto>>();
+        return Ok(mappedResult);
     }
 
 

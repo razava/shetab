@@ -135,11 +135,11 @@ public record CategoryDetailDto(
     int Duration);
 
 
-public record AddresDetailDto(
+public record AddressDetailDto(
     string Detail);
 
 
-public record AddresMoreDetailDto(
+public record AddressMoreDetailDto(
     string Detail,
     double? Latitude,
     double? Longitude);

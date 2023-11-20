@@ -156,10 +156,7 @@ public class CitizenReportController : ApiController
         
         var routeValues = new {id = report.Id, instanceId = instanceId };
         return CreatedAtAction(nameof(GetMyReportById), routeValues, report.Adapt<CitizenGetReportDetailsDto>());
-        //return CreatedAtAction(nameof(GetMyReportById), routeValues, report);
-        //return CreatedAtAction(nameof(GetMyReportById), report.Id, report);
-        //return CreatedAtAction(nameof(GetMyReportById), report.Id, report.Adapt<CitizenGetReportDetailsDto>());
-        //return CreatedAtAction(nameof(GetMyReportById), report.Id);
+        
 
     }
 
