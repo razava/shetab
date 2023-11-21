@@ -7,6 +7,6 @@ namespace Application.Reports.Queries.GetNearestReports;
 public sealed record GetNearestReportsQuery(
     PagingInfo PagingInfo,
     int InstanceId,
-    double X,
-    double Y) : IRequest<PagedList<Report>>;
+    double Longitude,
+    double Latitude) : IRequest<PagedList<Report>>;
 

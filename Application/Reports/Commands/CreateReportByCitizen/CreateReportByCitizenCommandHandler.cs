@@ -30,6 +30,8 @@ internal sealed class CreateReportByCitizenCommandHandler : IRequestHandler<Crea
             throw new Exception();
         }
         var address = request.Address.Adapt<Address>();
+        address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
+
         var report = Report.NewByCitizen(
             request.citizenId,
             request.phoneNumber,
