@@ -41,8 +41,10 @@ public class Report : Entity
     public ProcessTransition? LastTransition { get; private set; }
     public int? LastReasonId { get; private set; }
     public ProcessReason? LastReason { get; private set; }
-    public string CurrentActorsStr { get; private set; } = string.Empty;
-    public ICollection<Actor> CurrentActors { get; private set; } = new List<Actor>();
+    //public string CurrentActorsStr { get; private set; } = string.Empty;
+    //public ICollection<Actor> CurrentActors { get; private set; } = new List<Actor>();
+    public int? CurrentActorId { get; set; }
+    public Actor? CurrentActor { get; set; }
     public ICollection<TransitionLog> TransitionLogs { get; private set; } = new List<TransitionLog>();
 
 
@@ -317,11 +319,11 @@ public class Report : Entity
         string comment,
         ActorType actorType,
         string actorIdentifier,
-        List<int> actorIds,
+        int toActorId,
         bool isExecutive = false,
         bool isContractor = false)
     {
-        makeTransition(transitionId, reasonId, attachments, comment, actorType, actorIdentifier, actorIds, isExecutive, isContractor);
+        makeTransition(transitionId, reasonId, attachments, comment, actorType, actorIdentifier, toActorId, isExecutive, isContractor);
     }
 
     public List<ProcessTransition> GetPossibleTransitions()
@@ -410,7 +412,7 @@ public class Report : Entity
                     "",
                     ActorType.Auto,
                     bot.Id,
-                    bot.DestinationActors.Select(p => p.Id).ToList());
+                    bot.DestinationActorId);
                 break;
             }
         }
@@ -423,7 +425,7 @@ public class Report : Entity
         string comment,
         ActorType actorType,
         string actorIdentifier,
-        List<int> actorIds,
+        int toActorId,
         bool isExecutive = false,
         bool isContractor = false)
     {
@@ -464,8 +466,7 @@ public class Report : Entity
             }
         }
 
-        var actorsSpecified = transition.To.Actors.Any(a => actorIds.Contains(a.Id));
-        CurrentActors = transition.To.Actors.Where(ca => actorIds.Contains(ca.Id) || actorsSpecified).ToList();
+        CurrentActor = transition.To.Actors.Where(ca => ca.Id == toActorId).SingleOrDefault();
 
         //if (actorIds.Count == 0)
         //{

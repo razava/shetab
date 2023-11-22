@@ -55,7 +55,7 @@ internal sealed class MakeTransitionCommandHandler : IRequestHandler<MakeTransit
             request.Comment,
             ActorType.Person,
             request.ActorIdentifier,
-            request.ActorIds,
+            request.ToActorId,
             request.IsExecutive,
             request.IsContractor);
 

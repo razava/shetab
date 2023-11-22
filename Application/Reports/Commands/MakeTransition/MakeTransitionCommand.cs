@@ -12,7 +12,7 @@ public sealed record MakeTransitionCommand(
     List<Guid> Attachments,
     string Comment,
     string ActorIdentifier,
-    List<int> ActorIds,
+    int ToActorId,
     bool IsExecutive = false,
     bool IsContractor = false) : IRequest<Report>;
 

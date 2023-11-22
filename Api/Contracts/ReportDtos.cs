@@ -27,7 +27,7 @@ public record MakeTransitionDto(
     int ReasonId,
     List<Guid> Attachments,
     string Comment,
-    List<int> ActorIds)
+    int ToActorId)
 {
     public List<Guid> Attachments { get; init; } = Attachments ?? new List<Guid>();
     public string Comment { get; init; } = Comment ?? "";

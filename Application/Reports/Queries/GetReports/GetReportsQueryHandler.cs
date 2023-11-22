@@ -21,7 +21,7 @@ internal sealed class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, 
         var actorIds = actors.Select(a => a.Id).ToList();
         var reports = await _reportRepository.GetPagedAsync(
             request.PagingInfo,
-            r => r.CurrentActors.Any(ca => actorIds.Contains(ca.Id)),
+            r => r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value),
             false,
             a => a.OrderBy(r => r.Sent));
 

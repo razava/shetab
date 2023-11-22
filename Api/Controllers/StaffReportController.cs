@@ -128,7 +128,7 @@ public class StaffReportController : ApiController
             model.Attachments,
             model.Comment,
             userId,
-            model.ActorIds,
+            model.ToActorId,
             User.IsInRole("Executive"),
             User.IsInRole("Contractor"));
         var result = await Sender.Send(command);
