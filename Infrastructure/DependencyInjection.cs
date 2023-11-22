@@ -97,7 +97,11 @@ public static class DependencyInjection
     public static IServiceCollection AddCommunication(this IServiceCollection services)
     {
         services.AddSingleton<ICommunicationService, CommunicationService>();
-        services.AddSingleton<ISmsService>(x => new KaveNegarSms(new KaveNegarInfo("", "", "")));
+        services.AddSingleton<ISmsService>(x => new KaveNegarSms(
+            new KaveNegarInfo(
+                "10008000600033",
+                "6367746F52314D6A52574C4E5766372F76653278365466334B6F777A35463764732F765667653332396F593D",
+                "Namay")));
 
         return services;
     }
