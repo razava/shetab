@@ -17,7 +17,7 @@ internal sealed class GetNearestReportsQueryHandler : IRequestHandler<GetNearest
 
     public async Task<PagedList<Report>> Handle(GetNearestReportsQuery request, CancellationToken cancellationToken)
     {
-        var currentLocation = new Point(request.Longitude, request.Latitude);
+        var currentLocation = new Point(request.Longitude, request.Latitude) { SRID = 4326 };
         var reports = await _reportRepository.GetPagedAsync(
             request.PagingInfo,
             r => r.Visibility == Visibility.EveryOne && r.ShahrbinInstanceId == request.InstanceId && r.Address.Location != null,

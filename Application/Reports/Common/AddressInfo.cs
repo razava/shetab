@@ -1,4 +1,6 @@
-﻿namespace Application.Reports.Common;
+﻿using NetTopologySuite.Geometries;
+
+namespace Application.Reports.Common;
 
 public record AddressInfo(
     int RegionId,
@@ -9,4 +11,7 @@ public record AddressInfo(
     string PostalCode,
     double Latitude,
     double Longitude,
-    double? Elevation = null);
+    double? Elevation = null)
+{
+    public Point Location { get { return new Point(Longitude, Latitude) { SRID = 4326 }; } }
+}

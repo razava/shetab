@@ -37,7 +37,7 @@ internal sealed class CreateReportByOperatorCommandHandler : IRequestHandler<Cre
             throw new Exception();
         }
         var address = request.Address.Adapt<Address>();
-        address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
+        //address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
         var user = await _userRepository.GetOrCreateCitizen(request.phoneNumber, request.firstName, request.lastName);
 
         List<Media> medias = new List<Media>();

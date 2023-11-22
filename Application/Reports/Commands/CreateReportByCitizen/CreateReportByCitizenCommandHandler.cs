@@ -36,7 +36,7 @@ internal sealed class CreateReportByCitizenCommandHandler : IRequestHandler<Crea
             throw new Exception();
         }
         var address = request.Address.Adapt<Address>();
-        address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
+        //address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
 
         List<Media> medias = new List<Media>();
         if (request.Attachments is not null)
