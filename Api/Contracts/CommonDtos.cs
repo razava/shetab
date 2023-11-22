@@ -165,7 +165,7 @@ public record SetQuickAccessDto(
     int CategoryId,
     string Title,
     int Order,
-    Guid MediaId);
+    IFormFile Image);
 
 
 

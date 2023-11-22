@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
+using Infrastructure.Storage;
 using MediatR;
 
 namespace Application.QuickAccesses.Commands.UpdateQuickAccessCommand;
@@ -8,28 +9,27 @@ namespace Application.QuickAccesses.Commands.UpdateQuickAccessCommand;
 internal sealed class UpdateQuickAccessCommandHandler : IRequestHandler<UpdateQuickAccessCommand, QuickAccess>
 {
     private readonly IQuickAccessRepository _quickAccessRepository;
-    private readonly IMediaRepository _mediaRepository;
+    private readonly IStorageService _storageService;
     private readonly IUnitOfWork _unitOfWork;
 
     public UpdateQuickAccessCommandHandler(
         IQuickAccessRepository quickAccessRepository,
         IUnitOfWork unitOfWork,
-        IMediaRepository mediaRepository)
+        IStorageService storageService)
     {
         _quickAccessRepository = quickAccessRepository;
         _unitOfWork = unitOfWork;
-        _mediaRepository = mediaRepository;
+        _storageService = storageService;
     }
 
     public async Task<QuickAccess> Handle(UpdateQuickAccessCommand request, CancellationToken cancellationToken)
     {
         Media? media = null;
-        if(request.ImageId is not null)
+        if(request.Image is not null)
         {
-            media = await _mediaRepository.GetSingleAsync(m => m.Id == request.ImageId);
+            media = await _storageService.WriteFileAsync(request.Image, AttachmentType.News);
             if (media is null)
                 throw new Exception("Image not found.");
-            _mediaRepository.Delete(media);
         }
         
 

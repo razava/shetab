@@ -92,7 +92,7 @@ public class Report : Entity
         Category category,
         string comments,
         Address address,
-        List<Guid> attachments,
+        List<Media> attachments,
         Visibility visibility = Visibility.EveryOne,
         Priority priority = Priority.Normal,
         bool isIdentityVisible = true) : base(id)
@@ -105,7 +105,7 @@ public class Report : Entity
         ProcessId = category.ProcessId ?? throw new Exception("Category should have a process assigned to.");
         Process = category.Process ?? throw new Exception("Process is not loaded.");
         Comments = comments;
-        attachments.ForEach(p => Medias.Add(new Media() { Id = p }));
+        Medias = attachments;
         IsIdentityVisible = isIdentityVisible;
         Address = address;
         Sent = now;
@@ -128,7 +128,7 @@ public class Report : Entity
         Category category,
         string comments,
         Address address,
-        List<Guid> attachments,
+        List<Media> attachments,
         Visibility visibility,
         Priority priority = Priority.Normal,
         bool isIdentityVisible = true)
@@ -181,7 +181,7 @@ public class Report : Entity
         Category category,
         string comments,
         Address address,
-        List<Guid> attachments,
+        List<Media> attachments,
         Visibility visibility,
         Priority priority = Priority.Normal,
         bool isIdentityVisible = true)
@@ -244,7 +244,7 @@ public class Report : Entity
         Category? category,
         string? comments,
         Address? address,
-        List<Guid>? attachments,
+        List<Media>? attachments,
         Visibility? visibility)
     {
         updateReport(category, comments, address, attachments, visibility);
@@ -264,7 +264,7 @@ public class Report : Entity
         Category? category,
         string? comments,
         Address? address,
-        List<Guid>? attachments,
+        List<Media>? attachments,
         Visibility? visibility)
     {
         updateReport(category, comments, address, attachments, visibility);
@@ -277,7 +277,7 @@ public class Report : Entity
 
     public Message MessageToCitizen(
         string actorIdentifier,
-        List<Guid> attachments,
+        List<Media> attachments,
         string message,
         string comment)
     {
@@ -313,7 +313,7 @@ public class Report : Entity
     public void MakeTransition(
         int transitionId,
         int reasonId,
-        List<Guid> attachments,
+        List<Media> attachments,
         string comment,
         ActorType actorType,
         string actorIdentifier,
@@ -348,7 +348,7 @@ public class Report : Entity
         Category? category,
         string? comments,
         Address? address,
-        List<Guid>? attachments,
+        List<Media>? attachments,
         Visibility? visibility)
     {
         var now = DateTime.UtcNow;
@@ -367,8 +367,7 @@ public class Report : Entity
         Visibility = visibility ?? Visibility;
         if (attachments != null)
         {
-            Medias.Clear();
-            attachments.ForEach(p => Medias.Add(new Media() { Id = p }));
+            Medias = attachments;
         }
             
 
@@ -407,7 +406,7 @@ public class Report : Entity
                 makeTransition(
                     bot.TransitionId,
                     bot.ReasonId,
-                    new List<Guid>(),
+                    new List<Media>(),
                     "",
                     ActorType.Auto,
                     bot.Id,
@@ -420,7 +419,7 @@ public class Report : Entity
     private void makeTransition(
         int transitionId,
         int? reasonId,
-        List<Guid> attachments,
+        List<Media> attachments,
         string comment,
         ActorType actorType,
         string actorIdentifier,

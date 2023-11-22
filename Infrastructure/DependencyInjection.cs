@@ -56,7 +56,7 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork> ();
         services.AddScoped<ICategoryRepository, CategoryRepository> ();
         services.AddScoped<IFeedbackRepository, FeedbackRepository> ();
-        services.AddScoped<IMediaRepository, MediaRepository> ();
+        services.AddScoped<IUploadRepository, UploadRepository> ();
         services.AddScoped<IProcessRepository, ProcessRepository> ();
         services.AddScoped<IReportRepository, ReportRepository> ();
         services.AddScoped<IUserRepository, UserRepository>();

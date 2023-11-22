@@ -38,7 +38,7 @@ public class AdminQuickAccessController : ApiController
             instanceId,
             setDto.CategoryId,
             setDto.Title,
-            setDto.MediaId,
+            setDto.Image,
             setDto.Order,
             false);
         var result = await Sender.Send(command);
@@ -56,7 +56,7 @@ public class AdminQuickAccessController : ApiController
             id,
             setDto.CategoryId,
             setDto.Title,
-            setDto.MediaId,
+            setDto.Image,
             setDto.Order,
             false);
         var result = await Sender.Send(command);

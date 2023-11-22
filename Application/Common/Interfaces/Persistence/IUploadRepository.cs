@@ -2,6 +2,6 @@
 
 namespace Application.Common.Interfaces.Persistence;
 
-public interface IMediaRepository : IGenericRepository<Media>
+public interface IUploadRepository : IGenericRepository<Upload>
 {
 }

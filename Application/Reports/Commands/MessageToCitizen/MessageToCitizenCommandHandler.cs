@@ -2,6 +2,7 @@
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Domain.Models.Relational;
+using Domain.Models.Relational.Common;
 using MediatR;
 
 namespace Application.Reports.Commands.MessageToCitizen;
@@ -10,19 +11,22 @@ internal sealed class MessageToCitizenCommandHandler : IRequestHandler<MessageTo
 {
     private readonly IReportRepository _reportRepository;
     private readonly ICommunicationService _communication;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IActorRepository _actorRepository;
+    private readonly IUploadRepository _uploadRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     public MessageToCitizenCommandHandler(
         IUnitOfWork unitOfWork,
         IReportRepository reportRepository,
         ICommunicationService communication,
-        IActorRepository actorRepository)
+        IActorRepository actorRepository,
+        IUploadRepository uploadRepository)
     {
         _unitOfWork = unitOfWork;
         _reportRepository = reportRepository;
         _communication = communication;
         _actorRepository = actorRepository;
+        _uploadRepository = uploadRepository;
     }
 
     public async Task<Report> Handle(MessageToCitizenCommand request, CancellationToken cancellationToken)
@@ -40,7 +44,25 @@ internal sealed class MessageToCitizenCommandHandler : IRequestHandler<MessageTo
         if (report == null)
             throw new Exception("Report not found");
 
-        report.MessageToCitizen(actor.Identifier, request.Attachments, request.Message, request.Comment);
+        List<Media> medias = new List<Media>();
+        if (request.Attachments is not null)
+        {
+            List<Upload> attachments = new List<Upload>();
+            if (request.Attachments.Count > 0)
+            {
+                attachments = (await _uploadRepository
+                .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == request.UserId))
+                .ToList() ?? new List<Upload>();
+                if (request.Attachments.Count != attachments.Count)
+                {
+                    throw new Exception("Attachments failure.");
+                }
+                attachments.ForEach(a => a.IsUsed = true);
+                medias = attachments.Select(a => a.Media).ToList();
+            }
+        }
+
+        report.MessageToCitizen(actor.Identifier, medias, request.Message, request.Comment);
         await _unitOfWork.SaveAsync();
 
         return report;

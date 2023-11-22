@@ -12,13 +12,19 @@ internal sealed class CreateReportByCitizenCommandHandler : IRequestHandler<Crea
 {
     private readonly IReportRepository _reportRepository;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IUploadRepository _uploadRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateReportByCitizenCommandHandler(IUnitOfWork unitOfWork, IReportRepository reportRepository, ICategoryRepository categoryRepository)
+    public CreateReportByCitizenCommandHandler(
+        IUnitOfWork unitOfWork,
+        IReportRepository reportRepository,
+        ICategoryRepository categoryRepository,
+        IUploadRepository uploadRepository)
     {
         _unitOfWork = unitOfWork;
         _reportRepository = reportRepository;
         _categoryRepository = categoryRepository;
+        _uploadRepository = uploadRepository;
     }
 
     public async Task<Report> Handle(CreateReportByCitizenCommand request, CancellationToken cancellationToken)
@@ -32,13 +38,31 @@ internal sealed class CreateReportByCitizenCommandHandler : IRequestHandler<Crea
         var address = request.Address.Adapt<Address>();
         address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
 
+        List<Media> medias = new List<Media>();
+        if (request.Attachments is not null)
+        {
+            List<Upload> attachments = new List<Upload>();
+            if (request.Attachments.Count > 0)
+            {
+                attachments = (await _uploadRepository
+                .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == request.citizenId))
+                .ToList() ?? new List<Upload>();
+                if (request.Attachments.Count != attachments.Count)
+                {
+                    throw new Exception("Attachments failure.");
+                }
+                attachments.ForEach(a => a.IsUsed = true);
+                medias = attachments.Select(a => a.Media).ToList();
+            }
+        }
+
         var report = Report.NewByCitizen(
             request.citizenId,
             request.phoneNumber,
             category,
             request.Comments,
             address,
-            request.Attachments,
+            medias,
             Visibility.EveryOne,
             Priority.Normal,
             request.IsIdentityVisible);

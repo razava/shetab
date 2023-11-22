@@ -10,13 +10,19 @@ internal sealed class AcceptByOperatorCommandHandler : IRequestHandler<AcceptByO
 {
     private readonly IReportRepository _reportRepository;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IUploadRepository _uploadRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public AcceptByOperatorCommandHandler(IUnitOfWork unitOfWork, IReportRepository reportRepository, ICategoryRepository categoryRepository)
+    public AcceptByOperatorCommandHandler(
+        IUnitOfWork unitOfWork,
+        IReportRepository reportRepository,
+        ICategoryRepository categoryRepository,
+        IUploadRepository uploadRepository)
     {
         _unitOfWork = unitOfWork;
         _reportRepository = reportRepository;
         _categoryRepository = categoryRepository;
+        _uploadRepository = uploadRepository;
     }
 
     public async Task<Report> Handle(AcceptByOperatorCommand request, CancellationToken cancellationToken)
@@ -43,12 +49,30 @@ internal sealed class AcceptByOperatorCommandHandler : IRequestHandler<AcceptByO
             address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
         }
 
+        List<Media>? medias = null;
+        if (request.Attachments is not null)
+        {
+            List<Upload> attachments = new List<Upload>();
+            if (request.Attachments.Count > 0)
+            {
+                attachments = (await _uploadRepository
+                .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == request.operatorId))
+                .ToList() ?? new List<Upload>();
+                if (request.Attachments.Count != attachments.Count)
+                {
+                    throw new Exception("Attachments failure.");
+                }
+                attachments.ForEach(a => a.IsUsed = true);
+                medias = attachments.Select(a => a.Media).ToList();
+            }
+        }
+
         report.Accept(
             request.operatorId,
             category,
             request.Comments,
             address,
-            request.Attachments,
+            medias,
             null);
 
         await _unitOfWork.SaveAsync();

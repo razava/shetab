@@ -3,9 +3,9 @@ using Domain.Models.Relational.Common;
 
 namespace Infrastructure.Persistence.Repositories;
 
-public class MediaRepository: GenericRepository<Media>, IMediaRepository
+public class UploadRepository : GenericRepository<Upload>, IUploadRepository
 {
-    public MediaRepository(ApplicationDbContext dbContext) : base(dbContext)
+    public UploadRepository(ApplicationDbContext context) : base(context)
     {
         
     }

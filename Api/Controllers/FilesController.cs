@@ -1,9 +1,9 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
-using Application.Medias.Commands.AddMedia;
-using Domain.Models.Relational.Common;
-using Mapster;
+using Api.ExtensionMethods;
+using Application.Uploads.Commands.CreateUpload;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -20,23 +20,28 @@ public class FilesController : ApiController
     [HttpGet("{id}")]
     public async Task<ActionResult<MediaDto>> GetFile(Guid id)
     {
-        var command = new GetMediaQuery(id);
-        var media = await Sender.Send(command);
-        var mappedMedia = media.Adapt<MediaDto>();
-        return Ok(mappedMedia);
+        //var command = new GetMediaQuery(id);
+        //var media = await Sender.Send(command);
+        //var mappedMedia = media.Adapt<MediaDto>();
+        //return Ok(mappedMedia);
+        throw new NotImplementedException();
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> PostFile([FromForm] UploadDto upload)
     {
-        var command = new AddMediaCommand(upload.File, upload.AttachmentType);
-        var media = await Sender.Send(command);
-        if (media == null)
+        var userId = User.GetUserId();
+        if (userId is null)
+            return Unauthorized();
+        var command = new AddUploadCommand(userId, upload.File, upload.AttachmentType);
+        var result = await Sender.Send(command);
+        if (result == null)
         {
             return Problem();
         }
         
-        return CreatedAtAction(nameof(GetFile), media.Id, media);
+        return CreatedAtAction(nameof(GetFile), result.Id, result);
     }
 }
 

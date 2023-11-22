@@ -30,7 +30,7 @@ public class TransitionLog
         Guid reportId,
         int? transitionId,
         string? comment,
-        List<Guid>? attachments,
+        List<Media>? attachments,
         string message,
         ActorType actorType,
         string actorIdentifier,
@@ -39,7 +39,7 @@ public class TransitionLog
         bool isPublic)
     {
         if(attachments is not null)
-            attachments.ForEach(p => Attachments.Add(new Media() { Id = p }));
+            Attachments = attachments;
         ReportLogType = type;
         Comment = comment ?? "";
         DateTime = DateTime.UtcNow;
@@ -57,7 +57,7 @@ public class TransitionLog
         Guid reportId,
         int transitionId,
         string? comment,
-        List<Guid>? attachments,
+        List<Media>? attachments,
         string message,
         ActorType actorType,
         string actorIdentifier,
@@ -119,7 +119,7 @@ public class TransitionLog
     public static TransitionLog CreateMessageToCitizen(
             Guid reportId,
             string comment,
-            List<Guid>? attachments,
+            List<Media>? attachments,
             string actorIdentifier,
             double duration)
     {
