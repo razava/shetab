@@ -53,7 +53,7 @@ public class StaffReportController : ApiController
             return Unauthorized();
         var instanceId = User.GetUserInstanceId();
 
-        var query = new GetReportsQuery(pagingInfo, userId, fromRoleId, instanceId.Value);
+        var query = new GetReportsQuery(pagingInfo, userId, fromRoleId, instanceId);
         var result = await Sender.Send(query);
         Response.AddPaginationHeaders(result.Meta);
         var mappedResult = result.Adapt<List<StaffGetReportListDto>>();
@@ -86,9 +86,8 @@ public class StaffReportController : ApiController
             return Unauthorized();
         var userRoles = User.GetUserRoles();
         var instanceId = User.GetUserInstanceId();
-        if (instanceId is null)
-            return Forbid();
-        var query = new GetAllReportsQuery(pagingInfo, instanceId.Value, userId, userRoles);
+        
+        var query = new GetAllReportsQuery(pagingInfo, instanceId, userId, userRoles);
         var result = await Sender.Send(query);
         Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
         var mappedResult = result.Adapt<List<StaffGetReportListDto>>();
@@ -106,9 +105,8 @@ public class StaffReportController : ApiController
         if (userId is null)
             return Unauthorized();
         var instanceId = User.GetUserInstanceId();
-        if (instanceId is null)
-            return Forbid();
-        var query = new GetPossibleTransitionsQuery(id, userId, instanceId.Value);
+        
+        var query = new GetPossibleTransitionsQuery(id, userId, instanceId);
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<List<GetPossibleTransitionDto>>();
         return Ok(mappedResult);    
