@@ -2,12 +2,13 @@
 
 public static class ReportMessages
 {
+    public static string NeedAcceptance = "در انتظار تأیید در سامانه";
     public static string Created = "ثبت درخواست در سامانه";
-    public static string Updated = "";
-    public static string Approved = "";
-    public static string Responsed = "";
-    public static string Refered = "";
-    public static string Objectioned = "";
-    public static string Finished = "";
-    public static string Feedbacked = "";
+    public static string Updated = "بروزرسانی درخواست";
+    public static string Approved = "تأیید شده";
+    public static string Responsed = "پاسخ داده شده";
+    public static string Refered = "ارجاع داده شده";
+    public static string Objectioned = "ثبت اعتراض";
+    public static string Finished = "پایان یافته";
+    public static string Feedbacked = "ثبت بازخورد شهروند";
 }
