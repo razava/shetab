@@ -36,7 +36,7 @@ internal sealed class CreateReportByOperatorCommandHandler : IRequestHandler<Cre
             //TODO: Handle this error
             throw new Exception();
         }
-        var address = request.Address.Adapt<Address>();
+        var address = request.Address.GetAddress();
         //address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
         var user = await _userRepository.GetOrCreateCitizen(request.phoneNumber, request.firstName, request.lastName);
 

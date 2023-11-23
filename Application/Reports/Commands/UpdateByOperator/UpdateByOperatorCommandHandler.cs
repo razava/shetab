@@ -45,7 +45,7 @@ internal sealed class UpdateByOperatorCommandHandler : IRequestHandler<UpdateByO
         Address? address = null;
         if (request.Address is not null)
         {
-            address = request.Address.Adapt<Address>();
+            address = request.Address.GetAddress();
             //address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
         }
 

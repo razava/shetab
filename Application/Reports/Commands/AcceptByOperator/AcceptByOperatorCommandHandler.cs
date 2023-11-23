@@ -45,7 +45,7 @@ internal sealed class AcceptByOperatorCommandHandler : IRequestHandler<AcceptByO
         Address? address = null;
         if (request.Address is not null)
         {
-            address = report.Address.Adapt<Address>();
+            address = request.Address.GetAddress();
             //address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
         }
 
