@@ -5,14 +5,24 @@ namespace Api.ExtensionMethods;
 
 public static class ClaimsPrincipalExtensionMethods
 {
-    public static string? GetUserName(this ClaimsPrincipal value)
+    public static string GetUserName(this ClaimsPrincipal value)
     {
-        return value.FindFirstValue(ClaimTypes.Name);
+        var result = value.FindFirstValue(ClaimTypes.Name);
+        if (result is null)
+        {
+            throw new Exception(); 
+        }
+        return result;
     }
 
-    public static string? GetUserId(this ClaimsPrincipal value)
+    public static string GetUserId(this ClaimsPrincipal value)
     {
-        return value.FindFirstValue(ClaimTypes.NameIdentifier);
+        var result = value.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (result is null)
+        {
+            throw new Exception();
+        }
+        return result;
     }
 
     public static List<string> GetUserRoles(this ClaimsPrincipal value)
@@ -20,9 +30,14 @@ public static class ClaimsPrincipalExtensionMethods
         return value.FindAll(ClaimTypes.Role).Select(p => p.Value).ToList();
     }
 
-    public static int? GetUserInstanceId(this ClaimsPrincipal value)
+    public static int GetUserInstanceId(this ClaimsPrincipal value)
     {
         int result;
-        return int.TryParse(value.FindFirstValue(AppClaimTypes.InstanceId), out result) ? result : null;
+        if(!int.TryParse(value.FindFirstValue(AppClaimTypes.InstanceId), out result))
+        {
+            throw new Exception();
+        }
+
+        return result;
     }
 }
