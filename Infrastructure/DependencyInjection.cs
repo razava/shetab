@@ -10,6 +10,7 @@ using Infrastructure.Communications.Sms.Panels;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Storage;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +20,7 @@ namespace Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
     {
         services.AddPersistence(configuration.GetConnectionString("DefaultConnection"));
         services.AddRepositories();
@@ -28,7 +29,7 @@ public static class DependencyInjection
             configuration["JWT:ValidIssuer"] ?? throw new Exception(),
             configuration["JWT:ValidAudience"] ?? throw new Exception(),
             new TimeSpan(24, 0, 0)));
-        services.AddStorage();
+        services.AddStorage(webHostEnvironment);
         services.AddCommunication();
         return services;
     }
@@ -87,9 +88,10 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddStorage(this IServiceCollection services)
+    public static IServiceCollection AddStorage(this IServiceCollection services, IWebHostEnvironment webHostEnvironment)
     {
-        services.AddScoped<IStorageService>(x => new StorageService("", new List<Size>()));
+        //var temp = services.getrequiredservice<IWebHostEnvironment>();
+        services.AddScoped<IStorageService>(x => new StorageService(/*"",*/webHostEnvironment, new List<Size>()));
 
         return services;
     }

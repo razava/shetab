@@ -24,8 +24,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         base.OnModelCreating(builder);
     }
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //    => optionsBuilder.LogTo(Console.WriteLine);
-    public DbSet<Media> Media { get; set; }
+    //    => optionsBuilder.LogTo(Console.WriteLine); 
+    //public DbSet<Media> Media { get; set; }
+    public DbSet<Upload> Upload { get; set; }
     public DbSet<Category> Category { get; set; }
     public DbSet<Process> Process { get; set; }
     public DbSet<ProcessStage> Stage { get; set; }

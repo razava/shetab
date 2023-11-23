@@ -44,15 +44,16 @@ public class StaffReportController : ApiController
     
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<StaffGetReportListDto>>> GetTasks(int instanceId, string fromRoleId, [FromQuery]PagingInfo pagingInfo, [FromQuery]FilterGetReports filterGetReports)
+    public async Task<ActionResult<List<StaffGetReportListDto>>> GetTasks( string? fromRoleId, [FromQuery]PagingInfo pagingInfo, [FromQuery]FilterGetReports filterGetReports)
     {
         //have FilterGetReports.........................................
 
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
+        var instanceId = User.GetUserInstanceId();
 
-        var query = new GetReportsQuery(pagingInfo, userId, fromRoleId, instanceId);
+        var query = new GetReportsQuery(pagingInfo, userId, fromRoleId, instanceId.Value);
         var result = await Sender.Send(query);
         Response.AddPaginationHeaders(result.Meta);
         var mappedResult = result.Adapt<List<StaffGetReportListDto>>();
@@ -76,7 +77,7 @@ public class StaffReportController : ApiController
     
     [Authorize]
     [HttpGet("AllReports")]
-    public async Task<ActionResult<List<StaffGetReportListDto>>> GetAllReports([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetAllReports filterGetAllReports, int instanceId)
+    public async Task<ActionResult<List<StaffGetReportListDto>>> GetAllReports([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetAllReports filterGetAllReports)
     {
         //have FilterGetAllReports (diffrent from FilterGetReports)
 
@@ -84,7 +85,10 @@ public class StaffReportController : ApiController
         if (userId == null)
             return Unauthorized();
         var userRoles = User.GetUserRoles();
-            var query = new GetAllReportsQuery(pagingInfo, instanceId, userId, userRoles);
+        var instanceId = User.GetUserInstanceId();
+        if (instanceId is null)
+            return Forbid();
+        var query = new GetAllReportsQuery(pagingInfo, instanceId.Value, userId, userRoles);
         var result = await Sender.Send(query);
         Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
         var mappedResult = result.Adapt<List<StaffGetReportListDto>>();
@@ -93,19 +97,18 @@ public class StaffReportController : ApiController
 
 
 
-    //TODO: Define access policy : other staff?
-    [Authorize(Roles = "Operator")]
+    //TODO: Define access policy
+    [Authorize]
     [HttpGet("PossibleTransitions/{id:Guid}")]
     public async Task<ActionResult<List<GetPossibleTransitionDto>>> GetPossibleTransitions(Guid id)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
-
-        //TODO: Get this from token
-        var instanceId = 1;
-
-        var query = new GetPossibleTransitionsQuery(id, userId, instanceId);
+        var instanceId = User.GetUserInstanceId();
+        if (instanceId is null)
+            return Forbid();
+        var query = new GetPossibleTransitionsQuery(id, userId, instanceId.Value);
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<List<GetPossibleTransitionDto>>();
         return Ok(mappedResult);    

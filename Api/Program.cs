@@ -14,13 +14,14 @@ using Infrastructure;
 using Infrastructure.Communications.PushNotification;
 using Infrastructure.Persistence;
 using Domain.Models.Relational.IdentityAggregate;
+using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services
-    .AddApplication()
-    .AddInfrastructure(builder.Configuration);
+.AddApplication()
+    .AddInfrastructure(builder.Configuration, builder.Environment);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

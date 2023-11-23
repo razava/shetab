@@ -41,7 +41,7 @@ public class FilesController : ApiController
             return Problem();
         }
         
-        return CreatedAtAction(nameof(GetFile), result.Id, result);
+        return StatusCode(StatusCodes.Status201Created, new {id = result.Id});
     }
 }
 
