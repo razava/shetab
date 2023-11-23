@@ -112,8 +112,6 @@ public class Report : Entity
         Address = address;
         Sent = now;
         //TODO: Update report state to contain more info and use ToString to get description instead of LastStatus been stored in database.
-        ReportState = ReportState.NeedAcceptance;
-        LastStatus = "ثبت درخواست در سامانه";
         LastStatusDateTime = now;
         Deadline = now.AddHours(category.Duration);
         ResponseDeadline = category.ResponseDuration == null ? null : now.AddHours(category.ResponseDuration.Value);
@@ -147,6 +145,8 @@ public class Report : Entity
             priority,
             isIdentityVisible);
 
+        report.ReportState = ReportState.NeedAcceptance;
+        report.LastStatus = ReportMessages.NeedAcceptance;
 
         if (!category.EditingAllowed)
         {
@@ -224,6 +224,8 @@ public class Report : Entity
                     new MessageRecepient() { Type = RecepientType.Person, ToId = report.CitizenId }
                 }
             };
+        report.ReportState = ReportState.Live;
+        report.LastStatus = "ثبت درخواست در سامانه";
         report.Messages.Add(message);
 
         return report;
