@@ -274,7 +274,6 @@ public record GetCitizenDto(
 
 
 public record FilterGetReports(
-    string? FromRoleId,
     DateTime? SentFromDate,
     DateTime? SentToDate,
     List<ReportState>? CurrentStates,

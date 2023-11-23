@@ -44,7 +44,7 @@ public class StaffReportController : ApiController
     
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<StaffGetReportListDto>>> GetTasks(int instanceId, [FromQuery]PagingInfo pagingInfo, [FromQuery]FilterGetReports filterGetReports)
+    public async Task<ActionResult<List<StaffGetReportListDto>>> GetTasks(int instanceId, string fromRoleId, [FromQuery]PagingInfo pagingInfo, [FromQuery]FilterGetReports filterGetReports)
     {
         //have FilterGetReports.........................................
 
@@ -52,7 +52,7 @@ public class StaffReportController : ApiController
         if (userId is null)
             return Unauthorized();
 
-        var query = new GetReportsQuery(pagingInfo, userId, "", instanceId);
+        var query = new GetReportsQuery(pagingInfo, userId, fromRoleId, instanceId);
         var result = await Sender.Send(query);
         Response.AddPaginationHeaders(result.Meta);
         var mappedResult = result.Adapt<List<StaffGetReportListDto>>();
