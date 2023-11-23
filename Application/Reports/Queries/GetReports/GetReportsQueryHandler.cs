@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
+using Domain.Models.Relational.Common;
 using MediatR;
 
 namespace Application.Reports.Queries.GetReports;
@@ -17,11 +18,21 @@ internal sealed class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, 
 
     public async Task<PagedList<Report>> Handle(GetReportsQuery request, CancellationToken cancellationToken)
     {
-        var actors = await _userRepository.GetActorsAsync(request.userId);
+        var actors = await _userRepository.GetActorsAsync(request.UserId);
         var actorIds = actors.Select(a => a.Id).ToList();
+        System.Linq.Expressions.Expression<Func<Report, bool>>? filter;
+        if (request.FromRoleId is null)
+        {
+            filter = r => r.ReportState == ReportState.NeedAcceptance;
+        }
+        else
+        {
+            filter = r => r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value) &&
+                     r.LastTransition != null && r.LastTransition.From.DisplayRoleId == request.FromRoleId;
+        }
         var reports = await _reportRepository.GetPagedAsync(
             request.PagingInfo,
-            r => r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value),
+            filter,
             false,
             a => a.OrderBy(r => r.Sent));
 

@@ -1,9 +1,6 @@
 ﻿using Application.Common.Interfaces.Persistence;
-using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
-using ErrorOr;
-using Mapster;
 using MediatR;
 
 namespace Application.Reports.Queries.GetPossibleTransitions;

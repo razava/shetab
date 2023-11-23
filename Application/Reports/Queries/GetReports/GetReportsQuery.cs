@@ -6,6 +6,7 @@ namespace Application.Reports.Queries.GetReports;
 
 public sealed record GetReportsQuery(
     PagingInfo PagingInfo,
-    string userId,
-    int instanceId) : IRequest<PagedList<Report>>;
+    string UserId,
+    string FromRoleId,
+    int InstanceId) : IRequest<PagedList<Report>>;
 

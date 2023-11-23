@@ -20,7 +20,7 @@ public class ReportRepository: GenericRepository<Report>, IReportRepository
     public async Task<Report?> GetByIDAsync(Guid id, bool trackChanges = true)
     {
         //TransitionLogs won't be modified, so there is no need to include them
-        var result = await base.GetSingleAsync(r => r.Id == id, trackChanges, @"CurrentActors");
+        var result = await base.GetSingleAsync(r => r.Id == id, trackChanges, @"CurrentActor");
 
         if (result is null)
             return null;
