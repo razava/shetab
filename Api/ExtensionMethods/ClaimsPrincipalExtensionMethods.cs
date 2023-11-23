@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using Api.Services.Authentication;
+using System.Security.Claims;
 
 namespace Api.ExtensionMethods;
 
@@ -17,5 +18,11 @@ public static class ClaimsPrincipalExtensionMethods
     public static List<string> GetUserRoles(this ClaimsPrincipal value)
     {
         return value.FindAll(ClaimTypes.Role).Select(p => p.Value).ToList();
+    }
+
+    public static int? GetUserInstanceId(this ClaimsPrincipal value)
+    {
+        int result;
+        return int.TryParse(value.FindFirstValue(AppClaimTypes.InstanceId), out result) ? result : null;
     }
 }
