@@ -14,7 +14,7 @@ public class ProcessRepository : GenericRepository<Process>, IProcessRepository
 
     public async Task<Process?> GetByIDAsync(int id, bool trackChanges = true)
     {
-        var includedStage = @"Stages,Stages.Actors,Stages.Actors.Regions,Stages.Actors.BotActor,Stages.Actors.BotActor.Transition,Stages.Actors.BotActor.DestinationActors";
+        var includedStage = @"Stages,Stages.Actors,Stages.Actors.Regions,Stages.Actors.BotActor,Stages.Actors.BotActor.Transition,Stages.Actors.BotActor.DestinationActor";
         var includedTransition = @"Transitions,Transitions.From,Transitions.To,Transitions.ReasonList";
         var includedRevisionUnit = @"RevisionUnit";
         var result = await base.GetSingleAsync(p => p.Id == id, trackChanges, $"{includedStage},{includedTransition},{includedRevisionUnit}");
