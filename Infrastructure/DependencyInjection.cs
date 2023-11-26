@@ -5,11 +5,10 @@ using Domain.Models.Relational.IdentityAggregate;
 using Infrastructure.Authentication;
 using Infrastructure.Captcha;
 using Infrastructure.Communications;
-using Infrastructure.Communications.Sms;
-using Infrastructure.Communications.Sms.Panels;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Storage;
+using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +29,10 @@ public static class DependencyInjection
             configuration["JWT:ValidAudience"] ?? throw new Exception(),
             new TimeSpan(24, 0, 0)));
         services.AddStorage(webHostEnvironment);
-        services.AddCommunication();
+        services.AddCommunication(
+            configuration["MessageBroker:Host"]!,
+            configuration["MessageBroker:Username"]!,
+            configuration["MessageBroker:Password"]!);
         return services;
     }
 
@@ -96,14 +98,38 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddCommunication(this IServiceCollection services)
+    public static IServiceCollection AddCommunication(
+        this IServiceCollection services,
+        string host,
+        string username,
+        string password)
     {
-        services.AddSingleton<ICommunicationService, CommunicationService>();
-        services.AddSingleton<ISmsService>(x => new KaveNegarSms(
-            new KaveNegarInfo(
-                "10008000600033",
-                "6367746F52314D6A52574C4E5766372F76653278365466334B6F777A35463764732F765667653332396F593D",
-                "Namay")));
+        // Add MassTransit as a service
+        services.AddMassTransit(busConfigurator =>
+        {
+            busConfigurator.SetKebabCaseEndpointNameFormatter();
+
+            busConfigurator.UsingRabbitMq((context, configurator) =>
+            {
+                //configurator.Message<MessageBrokerMessage>(x =>
+                //{
+                //    x.SetEntityName("shahrbin-communication");
+                //});
+                configurator.Host(new Uri(host), h =>
+                {
+                    h.Username(username);
+                    h.Password(password);
+                });
+                configurator.ConfigureEndpoints(context);
+            });
+        });
+
+        services.AddScoped<ICommunicationService, CommunicationServiceUsingMessageBroker>();
+        //services.AddSingleton<ISmsService>(x => new KaveNegarSms(
+        //    new KaveNegarInfo(
+        //        "10008000600033",
+        //        "6367746F52314D6A52574C4E5766372F76653278365466334B6F777A35463764732F765667653332396F593D",
+        //        "Namay")));
 
         return services;
     }
