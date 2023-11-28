@@ -20,7 +20,10 @@ internal sealed class GetNearestReportsQueryHandler : IRequestHandler<GetNearest
         var currentLocation = new Point(request.Longitude, request.Latitude) { SRID = 4326 };
         var reports = await _reportRepository.GetPagedAsync(
             request.PagingInfo,
-            r => r.Visibility == Visibility.EveryOne && r.ShahrbinInstanceId == request.InstanceId && r.Address.Location != null,
+            r => r.ReportState != ReportState.NeedAcceptance
+                 && r.Visibility == Visibility.EveryOne
+                 && r.ShahrbinInstanceId == request.InstanceId
+                 && r.Address.Location != null,
             false,
             o => o.OrderBy(r => r.Address.Location!.Distance(currentLocation)));
 
