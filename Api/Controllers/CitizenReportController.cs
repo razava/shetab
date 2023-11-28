@@ -13,6 +13,7 @@ using Application.Reports.Common;
 using Application.Reports.Queries.GetCitizenReportById;
 using Application.Reports.Queries.GetNearestReports;
 using Application.Reports.Queries.GetRecentReports;
+using Application.Reports.Queries.GetReportById;
 using Application.Reports.Queries.GetUserReports;
 using Domain.Models.Relational;
 using Mapster;
@@ -37,34 +38,38 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet]
-    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetReports([FromQuery] PagingInfo pagingInfo, int instanceId)
+    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetReports(int instanceId, [FromQuery] PagingInfo pagingInfo)
     {
         var query = new GetRecentReportsQuery(pagingInfo, instanceId);
+        //todo : handle user profile data
         var result = await Sender.Send(query);
-        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
+        Response.AddPaginationHeaders(result.Meta);
         var mappedResult = result.Adapt<List<CitizenGetReportListDto>>();
         return Ok(mappedResult);
     }
 
 
     //todo : review returning Dto....................................
-    //citizen can see review processes of other's reports.
     [Authorize(Roles = "Citizen")]
     [HttpGet("ReportHistory/{id:Guid}")]
     public async Task<ActionResult<List<TransitionLogDto>>> GetReportHistoryById(Guid id)
     {
-        await Task.CompletedTask;//...............................
-        return Ok();
+        var userId = User.GetUserId();
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetHistoryQuery(id, userId, instanceId);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List<TransitionLogDto>>();
+        return Ok(mappedResult);
     }
 
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Nearest")]
-    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetNearest([FromQuery]PagingInfo pagingInfo, int instanceId, [FromQuery] LocationDto locationDto)
+    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetNearest(int instanceId, [FromQuery]PagingInfo pagingInfo, [FromQuery] LocationDto locationDto)
     {
         var query = new GetNearestReportsQuery(pagingInfo, instanceId, locationDto.Longitude, locationDto.Latitude);
         var result = await Sender.Send(query);
-        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
+        Response.AddPaginationHeaders(result.Meta);
         var mappedResult = result.Adapt<List<CitizenGetReportListDto>>();
         return Ok(mappedResult);
     }
@@ -72,7 +77,7 @@ public class CitizenReportController : ApiController
     //todo : define & set dtos
     [Authorize(Roles = "Citizen")]
     [HttpGet("Locations")]
-    public async Task<ActionResult> GetLocations(int instanceId/*??*/)
+    public async Task<ActionResult> GetLocations()
     {
         await Task.CompletedTask;//.......................
         return Ok();
@@ -82,7 +87,7 @@ public class CitizenReportController : ApiController
     //todo : define & set dtos
     [Authorize(Roles = "Citizen")]
     [HttpGet("Locations/{id:Guid}")]
-    public async Task<ActionResult> GetLocations(Guid id)
+    public async Task<ActionResult> GetLocationsById(Guid id)
     {
         await Task.CompletedTask;
         return Ok();
@@ -91,7 +96,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Mine")]
-    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetMyReports([FromQuery] PagingInfo pagingInfo, int instanceId)
+    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetMyReports([FromQuery] PagingInfo pagingInfo)
     {
         var userId = User.GetUserId();
         if (userId == null)
@@ -100,7 +105,7 @@ public class CitizenReportController : ApiController
         }
         var query = new GetUserReportsQuery(pagingInfo, userId);
         var result = await Sender.Send(query);
-        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
+        Response.AddPaginationHeaders(result.Meta);
         var mappedResult = result.Adapt<List<CitizenGetReportListDto>>();
         return Ok(mappedResult);
     }
@@ -108,7 +113,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Mine/{id:Guid}")]
-    public async Task<ActionResult<CitizenGetReportDetailsDto>> GetMyReportById(Guid id, int instanceId)
+    public async Task<ActionResult<CitizenGetReportDetailsDto>> GetMyReportById(Guid id)
     {
         var userId = User.GetUserId();
         if (userId == null)
@@ -123,7 +128,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpPost]
-    public async Task<ActionResult> CreateReport(int instanceId, [FromForm] CitizenCreateReportDto model)
+    public async Task<ActionResult> CreateReport(int instanceId, CitizenCreateReportDto model)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var username = User.FindFirstValue(ClaimTypes.Name);

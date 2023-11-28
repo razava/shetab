@@ -98,8 +98,16 @@ public record GetShortCategoryDto(
 
 
 //todo: Review this
-public class MediaDto : Media { }
-
+public class MediaDto
+{
+    public string Url { get; set; } = string.Empty;
+    public string Url2 { get; set; } = string.Empty;
+    public string Url3 { get; set; } = string.Empty;
+    public string Url4 { get; set; } = string.Empty;
+    public string AlternateText { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public MediaType MediaType { get; set; }
+}
 
 
 
@@ -176,7 +184,8 @@ public record AddressReportGet(
     string Detail,
     double? Latitude,
     double? Longitude,
-    RegionName Region);
+    int? RegionId,
+    RegionName Region/* ?? */);
 
 
 public record GetRegionByName(

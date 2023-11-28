@@ -1,6 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.Authentication;
 using Api.Contracts;
+using Api.ExtensionMethods;
 using Application.Common.Interfaces.Persistence;
 using Application.Users.Commands.CreateContractor;
 using Application.Users.Commands.CreateNewPassword;
@@ -61,7 +62,7 @@ public class AdminUserManagementController : ApiController
 
     [Authorize(Roles = "Admin, Manager")]
     [HttpPut("Password/{id}")]
-    public async Task<IActionResult> ChangePasswordById(string id, NewPasswordDto newPasswordDto)
+    public async Task<IActionResult> ChangePasswordById(string id, [FromBody] NewPasswordDto newPasswordDto)
     {
         var command = new CreateNewPasswordCommand(id, newPasswordDto.NewPassword);
         var result = await Sender.Send(command);
@@ -98,7 +99,7 @@ public class AdminUserManagementController : ApiController
     //................dtos & command....................
     [Authorize]
     [HttpPost("Regions/{id}")]
-    public async Task<IActionResult> SetUserRegions(string id )
+    public async Task<IActionResult> SetUserRegions(string id, SetRegionsDto setRegionsDto)
     {
         await Task.CompletedTask;//............................
         return Ok();
@@ -124,6 +125,7 @@ public class AdminUserManagementController : ApiController
         var t = filter;
         var query = new GetUsersQuery(pagingInfo);
         var result = await Sender.Send(query);
+        Response.AddPaginationHeaders(result.Meta);
         var mappedResult = result.Adapt<List<AdminGetUserList>>();
         return Ok(mappedResult);
     }
@@ -194,6 +196,7 @@ public class AdminUserManagementController : ApiController
             return Unauthorized();
         var query = new GetContractorsQuery(userId, pagingInfo);
         var result = await Sender.Send(query);
+        Response.AddPaginationHeaders(result.Meta);
         var mappedResult = result.Adapt<GetContractorsList>();
         return Ok(mappedResult);
     }

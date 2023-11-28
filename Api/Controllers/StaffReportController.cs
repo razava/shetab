@@ -74,6 +74,7 @@ public class StaffReportController : ApiController
         return Ok(mappedResult);
     }
 
+
     
     [Authorize]
     [HttpGet("AllReports")]
@@ -89,11 +90,20 @@ public class StaffReportController : ApiController
         
         var query = new GetAllReportsQuery(pagingInfo, instanceId, userId, userRoles);
         var result = await Sender.Send(query);
-        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
+        Response.AddPaginationHeaders(result.Meta);
         var mappedResult = result.Adapt<List<StaffGetReportListDto>>();
         return Ok(mappedResult);
     }
 
+
+    //todo :...... dtos & command.....................
+    [Authorize]
+    [HttpGet("Report/{id}")]
+    public async Task<ActionResult> GetReportById()
+    {
+        await Task.CompletedTask;//......................
+        return Ok();
+    }
 
 
     //TODO: Define access policy
@@ -192,7 +202,7 @@ public class StaffReportController : ApiController
 
     [Authorize(Roles = "Operator")]
     [HttpPost("RegisterByOperator")]
-    public async Task<ActionResult<Guid>> CreateReportByOperator([FromForm] OperatorCreateReportDto model)
+    public async Task<ActionResult<Guid>> CreateReportByOperator(OperatorCreateReportDto model)
     {
         var instanceIdStr = User.FindFirstValue(AppClaimTypes.InstanceId);
         if (instanceIdStr == null)
@@ -241,7 +251,7 @@ public class StaffReportController : ApiController
 
     [Authorize(Roles = "Operator")]
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateReportByOperator(Guid id, [FromForm] UpdateReportDto model)
+    public async Task<ActionResult> UpdateReportByOperator(Guid id, UpdateReportDto model)
     {
         var instanceIdStr = User.FindFirstValue(AppClaimTypes.InstanceId);
         if (instanceIdStr == null)
@@ -290,7 +300,7 @@ public class StaffReportController : ApiController
 
     [Authorize(Roles = "Operator")]
     [HttpPut("Accept/{id:Guid}")]
-    public async Task<ActionResult> AcceptReportByOperator(Guid id, [FromForm] UpdateReportDto model)
+    public async Task<ActionResult> AcceptReportByOperator(Guid id, UpdateReportDto model)
     {
         var instanceIdStr = User.FindFirstValue(AppClaimTypes.InstanceId);
         if (instanceIdStr == null)
@@ -439,25 +449,14 @@ public class StaffReportController : ApiController
     [HttpGet("ReportHistory/{id:Guid}")]
     public async Task<ActionResult<List<TransitionLogDto>>> GetReportHistory(Guid id)
     {
-        await Task.CompletedTask;//.............................................
-        return Ok();
-    }
-
-    /*
-    //??
-    [Authorize]
-    [HttpGet("ReportsUnkownEndpoint")]
-    public async Task<ActionResult<List<Report>>> GetReports([FromQuery] PagingInfo pagingInfo, int instanceId)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId is null)
-            return Unauthorized();
-
-        var query = new GetReportsQuery(pagingInfo, userId, instanceId);
+        var userId = User.GetUserId();
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetHistoryQuery(id, userId, instanceId);
         var result = await Sender.Send(query);
-        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Meta));
-        return Ok(result.ToList());
+        var mappedResult = result.Adapt<List<TransitionLogDto>>();
+        return Ok(mappedResult);
     }
-    */
+
+    
 
 }
