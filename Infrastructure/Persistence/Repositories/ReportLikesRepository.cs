@@ -37,7 +37,7 @@ public class ReportLikesRepository : IReportLikesRepository
 
         if(result && !isAlreadyLiked)
         {
-            context.Set<ReportLikes>().Add(new ReportLikes { ReportId = reportId });
+            context.Set<ReportLikes>().Add(new ReportLikes { ReportId = reportId, LikedById = userId });
             return result;
         }
         if(!result && isAlreadyLiked)
