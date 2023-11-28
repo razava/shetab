@@ -34,7 +34,7 @@ public class CitizenAccountController : ApiController
     
 
     [HttpPost("Login")]
-    public async Task<ActionResult> Login(LoginDto loginDto)
+    public async Task<ActionResult> Login([FromBody] LoginDto loginDto)
     {
         var mappedCaptcha = loginDto.Captcha.Adapt<CaptchaValidateModel>();
 
@@ -52,7 +52,7 @@ public class CitizenAccountController : ApiController
     }
 
     [HttpPost("LoginApp")]
-    public async Task<ActionResult> LoginApp(LoginAppDto loginAppDto)
+    public async Task<ActionResult> LoginApp([FromBody] LoginAppDto loginAppDto)
     {
         var command = new LoginCommand(loginAppDto.Username, loginAppDto.Password);
         var result = await Sender.Send(command);
@@ -69,7 +69,7 @@ public class CitizenAccountController : ApiController
 
 
     [HttpPost("Register")]
-    public async Task<ActionResult> Register(RegisterDto registerDto)
+    public async Task<ActionResult> Register([FromBody] RegisterDto registerDto)
     {
         var mappedCaptcha = registerDto.Captcha.Adapt<CaptchaValidateModel>();
 
@@ -86,7 +86,7 @@ public class CitizenAccountController : ApiController
     }
 
     [HttpPost("RegisterApp")]
-    public async Task<ActionResult> RegisterApp(RegisterAppDto registerAppDto)
+    public async Task<ActionResult> RegisterApp([FromBody] RegisterAppDto registerAppDto)
     {
         var command = new RegisterCitizenCommand(registerAppDto.Username, registerAppDto.Password);
         var result = await Sender.Send(command);
@@ -101,7 +101,7 @@ public class CitizenAccountController : ApiController
     }
 
     [HttpPost("Verify")]
-    public async Task<ActionResult> Verify(VerificationDto verificationDto)
+    public async Task<ActionResult> Verify([FromBody] VerificationDto verificationDto)
     {
         var command = new VerifyPhoneNumberCommand(verificationDto.Username, verificationDto.VerificationCode);
         var result = await Sender.Send(command);
@@ -123,6 +123,7 @@ public class CitizenAccountController : ApiController
             return Unauthorized();
         }
     }
+
 
     [Authorize(Roles = "Citizen")]
     [HttpGet]
@@ -184,14 +185,13 @@ public class CitizenAccountController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpPut("Password")]
-    public async Task<ActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
+    public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto)
     {
         var userName = User.FindFirstValue(ClaimTypes.Name);
         if (userName is null)
         {
             return Unauthorized();
         }
-
         var mappedCaptcha = changePasswordDto.Captcha.Adapt<CaptchaValidateModel>();
         var command = new ChangePasswordCommand(userName, changePasswordDto.OldPassword, changePasswordDto.NewPassword, mappedCaptcha);
         var result = await Sender.Send(command);
@@ -207,7 +207,7 @@ public class CitizenAccountController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpPut("PasswordApp")]
-    public async Task<ActionResult> ChangePasswordApp(ChangePasswordAppDto changePasswordAppDto)
+    public async Task<ActionResult> ChangePasswordApp([FromBody] ChangePasswordAppDto changePasswordAppDto)
     {
         var userName = User.FindFirstValue(ClaimTypes.Name);
         if (userName is null)
@@ -227,7 +227,7 @@ public class CitizenAccountController : ApiController
     }
 
     [HttpPost("ForgotPasswod")]
-    public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
     {
         var mappedCaptcha = forgotPasswordDto.Captcha.Adapt<CaptchaValidateModel>();
         var query = new ForgotPasswordQuery(forgotPasswordDto.PhoneNumber, mappedCaptcha);
@@ -243,7 +243,7 @@ public class CitizenAccountController : ApiController
     }
 
     [HttpPost("ForgotPasswodApp")]
-    public async Task<IActionResult> ForgotPasswordApp(ForgotPasswordAppDto forgotPasswordDto)
+    public async Task<IActionResult> ForgotPasswordApp([FromBody] ForgotPasswordAppDto forgotPasswordDto)
     {
         var query = new ForgotPasswordQuery(forgotPasswordDto.PhoneNumber);
         var result = await Sender.Send(query);
@@ -258,7 +258,7 @@ public class CitizenAccountController : ApiController
     }
 
     [HttpPost("RequestToken")]
-    public async Task<ActionResult> RequestToken(RequestTokenDto requestTokenDto)
+    public async Task<ActionResult> RequestToken([FromBody] RequestTokenDto requestTokenDto)
     {
         var query = new GetResetPasswordTokenQuery(requestTokenDto.PhoneNumber, requestTokenDto.VerificationCode);
         var result = await Sender.Send(query);
@@ -270,7 +270,7 @@ public class CitizenAccountController : ApiController
     }
 
     [HttpPost("ResetPassword")]
-    public async Task<ActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+    public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
     {
         var command = new ResetPasswordCommand(resetPasswordDto.Username, resetPasswordDto.ResetPasswordToken, resetPasswordDto.NewPassword);
         var result = await Sender.Send(command);
@@ -296,7 +296,7 @@ public class CitizenAccountController : ApiController
     }
 
     [HttpPost("LoginGov")]
-    public async Task<IActionResult> LoginGov(GovLoginDto govLoginDto)
+    public async Task<IActionResult> LoginGov([FromBody] GovLoginDto govLoginDto)
     {
         await Task.CompletedTask;
         return Ok();

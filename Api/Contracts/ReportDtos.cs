@@ -1,5 +1,6 @@
 ﻿using Api.Dtos;
 using Application.Reports.Common;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 
@@ -36,7 +37,9 @@ public record MakeTransitionDto(
 
 public record CitizenGetReportListDto(
     Guid Id,
-    CategoryTitleDto Category,
+    int CategoryId,
+    CategoryTitleDto Category,//?
+    GetCitizenShortDto Citizen,  //todo : ???? review this, depends on what application layer returns(display name?)
     string Comments,
     AddressDetailDto Address,
     string TrackingNumber,
@@ -61,14 +64,15 @@ public class TransitionLogDto
     public ActorType ActorType { get; set; }
     public string ActorIdentifier { get; set; }
     public bool IsPublic { get; set; }
-    public ActorDto Actor { get; set; }
+    public ActorShortDto Actor { get; set; }   //todo : Handle from Application Layer
 }
 
 
 public record CitizenGetReportDetailsDto(
     ICollection<MediaDto> Medias,
     string LastStatus,
-    CategoryDetailDto Category,
+    int CategoryId,
+    CategoryDetailDto Category,//?
     string Comments,
     string TrackingNumber,
     DateTime Sent,
@@ -148,11 +152,19 @@ public class ActorDto
 }
 //.........
 
+public class ActorShortDto
+{
+    //todo : is this correct that set ? for fix warnings here?
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string? Title { get; set; }
+    public string DisplayName { get { return Title + ((FirstName + LastName).Length > 0 ? " (" + FirstName + " " + LastName + ")" : ""); } }
+}
 
 
 public record MoveToStageDto(
-    bool IsAccepted,
-    int StageId,
+bool IsAccepted,
+int StageId,
     ICollection<ActorDto> Actors,
     string Comment,
     ICollection<Guid> Attachments,
@@ -190,7 +202,7 @@ public class OperatorCreateReportDto
     //These are specific for verifying the report by operator
     public Guid? Id { get; set; }
 
-    public ICollection<MediaDto> Medias { get; set; } = new List<MediaDto>();
+    //public ICollection<MediaDto> Medias { get; set; } = new List<MediaDto>();
 
     public Visibility Visibility { get; set; } = Visibility.Operators;
 }
@@ -232,7 +244,8 @@ public record StaffGetReportListDto(
     Guid Id,
     string LastStatus,
     string TrackingNumber,
-    CategoryTitleDto Category,
+    int CategoryId,
+    CategoryTitleDto Category,//?
     DateTime Sent
     //int Rating
     );     //todo : Satisfaction.rating is correct
@@ -245,7 +258,8 @@ public record StaffGetReportDetailsDto(
     Guid Id,
     string TrackingNumber,
     string LastStatus,
-    GetShortCategoryDto Category,
+    int CategoryId,
+    GetShortCategoryDto Category,//?
     AddressReportGet Address,
     string Comments,
     DateTime Sent,
@@ -269,6 +283,11 @@ public record GetCitizenDto(
     string PhoneNumber,
     AddressDetailDto Address);
 
+
+public record GetCitizenShortDto(
+    string FirstName,
+    string LastName,
+    MediaDto Avatar);
 
 
 

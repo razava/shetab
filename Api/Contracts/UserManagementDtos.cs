@@ -7,6 +7,8 @@ namespace Api.Contracts;
 public record NewPasswordDto(
     string NewPassword);
 
+public record SetRegionsDto(
+     List<int>? RegionIds);
 
 public record UpdateRolesDto(
     //List<IsInRoleModel> Roles);
