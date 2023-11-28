@@ -23,12 +23,13 @@ internal sealed class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, 
         System.Linq.Expressions.Expression<Func<Report, bool>>? filter;
         if (request.FromRoleId is null)
         {
-            filter = r => r.ReportState == ReportState.NeedAcceptance;
+            filter = r => r.ReportState == ReportState.NeedAcceptance && r.ShahrbinInstanceId == request.InstanceId;
         }
         else
         {
             filter = r => r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value) &&
-                     r.LastTransition != null && r.LastTransition.From.DisplayRoleId == request.FromRoleId;
+                     r.LastTransition != null && r.LastTransition.From.DisplayRoleId == request.FromRoleId &&
+                     r.ShahrbinInstanceId == request.InstanceId;
         }
         var reports = await _reportRepository.GetPagedAsync(
             request.PagingInfo,

@@ -18,7 +18,7 @@ internal sealed class GetAllReportsQueryHandler : IRequestHandler<GetAllReportsQ
         //TODO: Implement appropriate filters
         var reports = await _reportRepository.GetPagedAsync(
             request.PagingInfo,
-            null,
+            r => r.ShahrbinInstanceId == request.instanceId,
             false,
             a => a.OrderBy(r => r.Sent));
 
