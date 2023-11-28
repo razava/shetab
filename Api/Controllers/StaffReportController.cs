@@ -52,8 +52,8 @@ public class StaffReportController : ApiController
         if (userId is null)
             return Unauthorized();
         var instanceId = User.GetUserInstanceId();
-
-        var query = new GetReportsQuery(pagingInfo, userId, fromRoleId, instanceId);
+        var roles = User.GetUserRoles();
+        var query = new GetReportsQuery(pagingInfo, userId, roles, fromRoleId, instanceId);
         var result = await Sender.Send(query);
         Response.AddPaginationHeaders(result.Meta);
         var mappedResult = result.Adapt<List<StaffGetReportListDto>>();

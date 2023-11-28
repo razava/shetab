@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
+using Application.Common.Statics;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using MediatR;
@@ -21,7 +22,7 @@ internal sealed class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, 
         var actors = await _userRepository.GetActorsAsync(request.UserId);
         var actorIds = actors.Select(a => a.Id).ToList();
         System.Linq.Expressions.Expression<Func<Report, bool>>? filter;
-        if (request.FromRoleId is null)
+        if (request.FromRoleId is null && request.Roles.Contains(RoleNames.Operator))
         {
             filter = r => r.ReportState == ReportState.NeedAcceptance && r.ShahrbinInstanceId == request.InstanceId;
         }
