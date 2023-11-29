@@ -16,9 +16,9 @@ internal sealed class GetAllReportsQueryHandler : IRequestHandler<GetAllReportsQ
     public async Task<PagedList<Report>> Handle(GetAllReportsQuery request, CancellationToken cancellationToken)
     {
         //TODO: Implement appropriate filters
-        var reports = await _reportRepository.GetPagedAsync(
-            request.PagingInfo,
-            r => r.ShahrbinInstanceId == request.instanceId,
+        var reports = await _reportRepository.GetPagedAsync(request.PagingInfo,
+            r => r.ShahrbinInstanceId == request.instanceId
+                 && r.TransitionLogs.Any(tl => tl.ActorIdentifier == request.UserId),
             false,
             a => a.OrderBy(r => r.Sent));
 

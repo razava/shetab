@@ -18,7 +18,9 @@ internal sealed class GetRecentReportsQueryHandler : IRequestHandler<GetRecentRe
     {
         var reports = await _reportRepository.GetPagedAsync(
             request.PagingInfo,
-            r => r.ReportState != ReportState.NeedAcceptance && r.Visibility == Visibility.EveryOne && r.ShahrbinInstanceId == request.instanceId,
+            r => r.ReportState != ReportState.NeedAcceptance
+                 && r.Visibility == Visibility.EveryOne
+                 && r.ShahrbinInstanceId == request.instanceId,
             false,
             o => o.OrderByDescending(r => r.LastStatusDateTime));
 
