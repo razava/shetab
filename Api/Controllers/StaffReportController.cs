@@ -63,7 +63,7 @@ public class StaffReportController : ApiController
 
     [Authorize]
     [HttpGet("{id:Guid}")]
-    public async Task<ActionResult<StaffGetReportDetailsDto>> GetTaskById(Guid id, int instanceId)
+    public async Task<ActionResult<StaffGetReportDetailsDto>> GetReportById(Guid id, int instanceId)
     {
         var userId = User.GetUserId();
         if (userId == null)
@@ -95,15 +95,6 @@ public class StaffReportController : ApiController
         return Ok(mappedResult);
     }
 
-
-    //todo :...... dtos & command.....................
-    [Authorize]
-    [HttpGet("Report/{id}")]
-    public async Task<ActionResult> GetReportById()
-    {
-        await Task.CompletedTask;//......................
-        return Ok();
-    }
 
 
     //TODO: Define access policy
