@@ -14,7 +14,7 @@ namespace Shahrbin.Api.Controllers
     [ApiController]
     public class MapController : ApiController
     {
-        protected MapController(ISender sender) : base(sender)
+        public MapController(ISender sender) : base(sender)
         {
         }
 

@@ -1,9 +1,8 @@
 ﻿using Application.Common.Interfaces.Map;
 using Application.Common.Interfaces.Map.ParsiMap;
-using DocumentFormat.OpenXml.Bibliography;
-using Domain.Models.Relational.Common;
 using Infrastructure.Map.ParsiMap;
 using Mapster;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 
 namespace Infrastructure.Map;
@@ -12,13 +11,13 @@ public class ParsiMapService : IMapService
 {
     private readonly HttpClient _client;
     private readonly ParsiMapOptions _mapOptions;
-    public ParsiMapService(ParsiMapOptions parsiMapOptions)
+    public ParsiMapService(IOptions<ParsiMapOptions> parsiMapOptions)
     {
         _client = new HttpClient(new HttpClientHandler()
         {
             AllowAutoRedirect = false
         });
-        _mapOptions = parsiMapOptions;
+        _mapOptions = parsiMapOptions.Value;
     }
     public async Task<ForwardResultApplication> Forward(string address)
     {
