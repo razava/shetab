@@ -2,6 +2,7 @@
 using Api.Contracts;
 using Application.Categories.Queries.GetCategory;
 using Application.Categories.Queries.GetCategoryById;
+using Application.Configurations.Queries.ShahrbinInstanceManagement;
 using Application.Configurations.Queries.ViolationTypes;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ReportAggregate;
@@ -53,6 +54,14 @@ public class CitizenCommonController : ApiController
         return Ok(mappedResult);
     }
 
+    [Authorize]
+    [HttpGet("ShahrbinInstances")]
+    public async Task<ActionResult<List<ShahrbinInstance>>> GetShahrbinInstances()
+    {
+        var query = new ShahrbinInstancesQuery();
+        var result = await Sender.Send(query);
+        return Ok(result);
+    }
 
     [HttpGet("RegionsByName")]
     public async Task<ActionResult<List<GetRegionByName>>> GetRegionsByName()

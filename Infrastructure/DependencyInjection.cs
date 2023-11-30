@@ -74,6 +74,7 @@ public static class DependencyInjection
         services.AddScoped<IQuickAccessRepository, QuickAccessRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<IReportLikesRepository, ReportLikesRepository>();
+        services.AddScoped<IShahrbinInstanceRepository, ShahrbinInstanceRepository>();
 
 
         return services;
