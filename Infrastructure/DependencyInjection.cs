@@ -1,10 +1,13 @@
 ﻿using Application.Common.Interfaces.Communication;
+using Application.Common.Interfaces.Map;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Security;
 using Domain.Models.Relational.IdentityAggregate;
 using Infrastructure.Authentication;
 using Infrastructure.Captcha;
 using Infrastructure.Communications;
+using Infrastructure.Map;
+using Infrastructure.Map.ParsiMap;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Storage;
@@ -33,6 +36,8 @@ public static class DependencyInjection
             configuration["MessageBroker:Host"]!,
             configuration["MessageBroker:Username"]!,
             configuration["MessageBroker:Password"]!);
+        services.AddMap(configuration);
+        
         return services;
     }
 
@@ -132,6 +137,13 @@ public static class DependencyInjection
         //        "6367746F52314D6A52574C4E5766372F76653278365466334B6F777A35463764732F765667653332396F593D",
         //        "Namay")));
 
+        return services;
+    }
+
+    public static IServiceCollection AddMap(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<ParsiMapOptions>(configuration.GetSection(ParsiMapOptions.Name));
+        services.AddScoped<IMapService, ParsiMapService>();
         return services;
     }
 }

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Shahrbin.Api.Middlewares;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Application;
@@ -14,7 +13,7 @@ using Infrastructure;
 using Infrastructure.Communications.PushNotification;
 using Infrastructure.Persistence;
 using Domain.Models.Relational.IdentityAggregate;
-using Microsoft.AspNetCore.Hosting;
+using Infrastructure.Map.ParsiMap;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -125,7 +124,7 @@ MapsterConfigurations.Config();
 //Configurations
 builder.Services.Configure<SmsOptions>(builder.Configuration.GetSection(SmsOptions.Name));
 builder.Services.Configure<GeneralSettings>(builder.Configuration.GetSection(GeneralSettings.Name));
-builder.Services.Configure<ParsiMapOptions>(builder.Configuration.GetSection(ParsiMapOptions.Name));
+
 builder.Services.Configure<FirebaseProxyOptions>(builder.Configuration.GetSection(FirebaseProxyOptions.Name));
 builder.Services.Configure<FeedbackOptions>(builder.Configuration.GetSection(FeedbackOptions.Name));
 builder.Services.Configure<List<AppVersion>>(builder.Configuration.GetSection("AppVersions"));
