@@ -15,7 +15,7 @@ public class SixLaborsCaptchaProvider : ICaptchaProvider
         {
             DrawLines = 7,
             TextColor = new Color[] { Color.Blue, Color.Black },
-            FontFamilies = new string[] { "Marlboro", "Arial", "Verdana", "Times New Roman" }
+            FontFamilies = new string[] { "Marlboro" }
         });
         keyValuePairs = new HashSet<Tuple<Guid, string, DateTime>>();
     }
