@@ -1,7 +1,9 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
+using Application.AdministrativeDivisions.Queries.GetProvince;
 using Application.Categories.Queries.GetCategory;
 using Application.Categories.Queries.GetCategoryById;
+using Application.Configurations.Queries.ShahrbinInstanceManagement;
 using Application.Configurations.Queries.ViolationTypes;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
@@ -21,6 +23,19 @@ public class StaffCommonController : ApiController
     {
     }
 
+    //todo : define access policies
+
+    [Authorize]
+    [HttpGet("ShahrbinInstances")]
+    public async Task<IActionResult> GetInstances()
+    {
+        var query = new ShahrbinInstancesQuery();
+        var result = await Sender.Send(query);
+        return Ok(result);
+    }
+
+
+    [Authorize]
     [HttpGet("Categories")]
     public async Task<ActionResult<List<CategoryGetDto>>> GetCategory(int? instanceId)
     {
@@ -53,6 +68,7 @@ public class StaffCommonController : ApiController
     }
 
 
+    [Authorize]
     [HttpGet("RegionsByName")]
     public async Task<ActionResult<List<GetRegionByName>>> GetRegionsByName()
     {
@@ -60,6 +76,19 @@ public class StaffCommonController : ApiController
         return Ok();
     }
 
+
+    [Authorize]
+    [HttpGet("Regions/{id}")]
+    public async Task<ActionResult<List<GetRegionDto>>> GetRegionsByCityId(int id)
+    {
+        var query = new GetRegionQuery(id);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List<GetRegionDto>>();
+        return Ok(mappedResult);
+    }
+
+
+    [Authorize]
     [HttpGet("Educations")]
     public async Task<ActionResult<List<EducationDto>>> GetEducations()
     {
@@ -67,6 +96,8 @@ public class StaffCommonController : ApiController
         return Ok();
     }
 
+
+    [Authorize]
     [HttpGet("TaradodReason")]
     public async Task<ActionResult<List<TaradodReason>>> GetTaradodReason()
     {
@@ -74,6 +105,8 @@ public class StaffCommonController : ApiController
         return Ok();
     }
 
+
+    [Authorize]
     [Authorize]
     [HttpGet("Executives")]
     public async Task<ActionResult<List<GetExecutiveDto>>> GetExecutives()

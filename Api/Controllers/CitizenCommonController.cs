@@ -1,5 +1,6 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
+using Application.AdministrativeDivisions.Queries.GetProvince;
 using Application.Categories.Queries.GetCategory;
 using Application.Categories.Queries.GetCategoryById;
 using Application.Configurations.Queries.ShahrbinInstanceManagement;
@@ -22,6 +23,10 @@ public class CitizenCommonController : ApiController
     }
 
 
+    //todo : define access policies
+
+
+    [Authorize]
     [HttpGet("Categories")]
     public async Task<ActionResult<List<CategoryGetDto>>> GetCategories(int? instanceId)
     {
@@ -63,6 +68,8 @@ public class CitizenCommonController : ApiController
         return Ok(result);
     }
 
+
+    [Authorize]
     [HttpGet("RegionsByName")]
     public async Task<ActionResult<List<GetRegionByName>>> GetRegionsByName()
     {
@@ -70,6 +77,19 @@ public class CitizenCommonController : ApiController
         return Ok();
     }
 
+
+    [Authorize]
+    [HttpGet("Regions/{id}")]
+    public async Task<ActionResult<List<GetRegionDto>>> GetRegionsByCityId(int id)
+    {
+        var query = new GetRegionQuery(id);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List<GetRegionDto>>();
+        return Ok(mappedResult);
+    }
+
+
+    [Authorize]
     [HttpGet("Educations")]
     public async Task<ActionResult<List<EducationDto>>> GetEducations()
     {
@@ -77,6 +97,8 @@ public class CitizenCommonController : ApiController
         return Ok();
     }
 
+
+    [Authorize]
     [HttpGet("TaradodReason")]
     public async Task<ActionResult<List<TaradodReason>>> GetTaradodReason()
     {

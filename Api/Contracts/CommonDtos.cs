@@ -194,6 +194,11 @@ public record GetRegionByName(
     //,string ParsimapCode //??
     );
 
+public record GetRegionDto(
+    int Id,
+    string Name,
+    string ParsimapCode);
+
 
 public record EducationDto(
     int Id,
