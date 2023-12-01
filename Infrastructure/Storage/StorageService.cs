@@ -109,9 +109,9 @@ public class StorageService : IStorageService
             }
 
         }
-        catch
+        catch(Exception e)
         {
-            return null;
+            throw e.InnerException!;
         }
 
         return result;
