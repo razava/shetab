@@ -77,8 +77,10 @@ public record CitizenGetReportDetailsDto(
     string TrackingNumber,
     DateTime Sent,
     AddressMoreDetailDto Address,
-    double? Duration,
-    double? ResponseDuration,
+    double? Duration, //?
+    double? ResponseDuration, //?
+    DateTime Deadline,
+    DateTime? ResponseDeadline,
     int CommentsCount,
     int Likes,
     bool IsIdentityVisible);

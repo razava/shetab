@@ -226,7 +226,7 @@ public class CitizenAccountController : ApiController
         }
     }
 
-    [HttpPost("ForgotPasswod")]
+    [HttpPost("ForgotPassword")]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
     {
         var mappedCaptcha = forgotPasswordDto.Captcha.Adapt<CaptchaValidateModel>();
@@ -242,7 +242,7 @@ public class CitizenAccountController : ApiController
         }
     }
 
-    [HttpPost("ForgotPasswodApp")]
+    [HttpPost("ForgotPasswordApp")]
     public async Task<IActionResult> ForgotPasswordApp([FromBody] ForgotPasswordAppDto forgotPasswordDto)
     {
         var query = new ForgotPasswordQuery(forgotPasswordDto.PhoneNumber);
