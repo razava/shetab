@@ -12,6 +12,9 @@ public class LocationDto
 }
 
 
+public record GetEnum(
+    int Value,
+    string Title);
 
 public class CategoryGetDto
 {

@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.Relational.Common;
+﻿using System.ComponentModel;
+
+namespace Domain.Models.Relational.Common;
 
 public enum MediaType
 {
@@ -11,20 +13,31 @@ public enum MediaType
 
 public enum Gender
 {
+    [Description("تعریف نشده")]
     NotDefined,
+    [Description("زن")]
     Female,
+    [Description("مرد")]
     Male,
+    [Description("غیره")]
     Other
 }
 
 public enum Education
 {
+    [Description("تعریف نشده")]
     NotDefined,
+    [Description("ابتدایی")]
     Ebtedai,
+    [Description("دیپلم")]
     Diplom,
+    [Description("فوق دیپلم")]
     FogheDiplom,
+    [Description("لیسانس")]
     Lisans,
+    [Description("فوق لیسانس")]
     FogheLisans,
+    [Description("دکترا")]
     Doktora
 }
 

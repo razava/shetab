@@ -1,5 +1,6 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
+using Api.ExtensionMethods;
 using Application.AdministrativeDivisions.Queries.GetProvince;
 using Application.Categories.Queries.GetCategory;
 using Application.Categories.Queries.GetCategoryById;
@@ -33,6 +34,32 @@ public class StaffCommonController : ApiController
         var result = await Sender.Send(query);
         return Ok(result);
     }
+
+    //todo : Define Access policy
+    [Authorize]
+    [HttpGet("MyShahrbinInstance")]
+    public async Task<ActionResult<List<ShahrbinInstance>>> MyGetShahrbinInstance()
+    {
+        var instanceId = User.GetUserInstanceId();
+
+        var query = new ShahrbinInstancesQuery();
+        var result = await Sender.Send(query);
+        var instanceResult = result.SingleOrDefault(result => result.Id == instanceId);
+        //ShahrbinInstance instanceResult;
+        //foreach (var instance in result)
+        //{
+        //    if (instance.Id == instanceId)
+        //    {
+        //        instanceResult = instance;
+        //        break;
+        //    }
+        //}
+
+        if (instanceResult == null)
+            return NotFound();
+        return Ok(instanceResult);
+    }
+
 
 
     [Authorize]
@@ -92,8 +119,12 @@ public class StaffCommonController : ApiController
     [HttpGet("Educations")]
     public async Task<ActionResult<List<EducationDto>>> GetEducations()
     {
-        await Task.CompletedTask;
-        return Ok();
+        var result = new List<GetEnum>();
+        foreach (var item in Enum.GetValues(typeof(Education)).Cast<Education>())
+        {
+            result.Add(new GetEnum((int)item, item.GetDescription()!));
+        }
+        return Ok(result);
     }
 
 

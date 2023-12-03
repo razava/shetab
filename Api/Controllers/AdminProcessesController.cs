@@ -18,7 +18,7 @@ public class AdminProcessesController : ApiController
     //this endpoint is duplicate with GetProcesses in AdminCategoryController
     [Authorize(Roles = "Admin")]
     [HttpGet]
-    public async Task<ActionResult<List<GetProcessListDto>>> GetProcesses(QueryFilter queryFilter)
+    public async Task<ActionResult<List<GetProcessListDto>>> GetProcesses([FromQuery]QueryFilter queryFilter)
     {
         await Task.CompletedTask;
         return Ok();
