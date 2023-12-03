@@ -264,6 +264,7 @@ public record StaffGetReportDetailsDto(
     string LastStatus,
     int CategoryId,
     GetShortCategoryDto Category,//?
+    string CitizenId,
     AddressReportGet Address,
     string Comments,
     DateTime Sent,
