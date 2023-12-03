@@ -64,15 +64,16 @@ public class StaffCommonController : ApiController
 
     [Authorize]
     [HttpGet("Categories")]
-    public async Task<ActionResult<List<CategoryGetDto>>> GetCategory(int? instanceId)
+    public async Task<ActionResult<CategoryGetDto>> GetCategory(int? instanceId)
     {
         //todo : check for including categories list for tree structure...................
         if (instanceId is null)
             return BadRequest();
         var query = new GetCategoryQuery(instanceId.Value);
         var result = await Sender.Send(query);
+        var root = result.Where(r => r.ParentId == null).Single();
 
-        return result.Adapt<List<CategoryGetDto>>();
+        return root.Adapt<CategoryGetDto>();
     }
 
     //[HttpGet("Categories/{id}")]

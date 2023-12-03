@@ -160,6 +160,8 @@ public class StaffReportController : ApiController
         var query = new GetPossibleSourcesQuery(userId, userRoles);
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<List<GetPossibleSourceDto>>();
+        var newReportsSource = new GetPossibleSourceDto(null, "", "جدید");
+        mappedResult.Insert(0, newReportsSource);
         return Ok(mappedResult);
     }
 
