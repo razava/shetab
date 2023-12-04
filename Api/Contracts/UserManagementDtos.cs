@@ -78,3 +78,10 @@ public record GetContractorsList(
     string Organization);
 
 
+public record GetCitizenDto(
+    string UserName,
+    string FirstName,
+    string LastName,
+    MediaDto Avatar,
+    string PhoneNumber,
+    AddressDetailDto Address);

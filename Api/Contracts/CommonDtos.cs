@@ -16,87 +16,14 @@ public record GetEnum(
     int Value,
     string Title);
 
-public class CategoryGetDto
-{
-    //public int ShahrbinInstanceId { get; set; }
-    public int Id { get; set; }
-    public int Order { get; set; }
-    public string Code { get; set; } = null!;
-    public string Title { get; set; } = null!;
-    public ICollection<CategoryGetDto> Categories { get; set; } = new List<CategoryGetDto>();
-    //public int? ProcessId { get; set; }
-    public string Description { get; set; } = string.Empty;
-    public string AttachmentDescription { get; set; } = string.Empty;
-    public int Duration { get; set; }
-    public int? ResponseDuration { get; set; }
-    //public CategoryType CategoryType { get; set; }
-    public bool IsDeleted { get; set; }
-    public bool ObjectionAllowed { get; set; }
-    public bool EditingAllowed { get; set; } = true;
-    public ICollection<FormElement> FormElements { get; set; } = new List<FormElement>();
-    public bool HideMap { get; set; }
-}
+
+public record QueryFilter(
+    string? Query);
 
 
-//todo : review this ..................................
-public class CategoryGetDetailDto
-{
-    public int Id { get; set; }
-    public int? Order { get; set; }
-    public int? ParentId { get; set; }
-    public string Code { get; set; }
-    public string Title { get; set; }
-    public int? ProcessId { get; set; }
-    public string Description { get; set; }
-    public string AttachmentDescription { get; set; }
-    public int? Duration { get; set; }
-    public int? ResponseDuration { get; set; }
-    //public CategoryType? CategoryType { get; set; }
-    public ICollection<FormElement> FormElements { get; set; } = new List<FormElement>();
-    public bool ObjectionAllowed { get; set; }
-    public bool EditingAllowed { get; set; } = true;
-    public bool IsDeleted { get; set; }
-}
-
-
-//todo : review this .................................
-public record FlattenCategoryDto(
-    int Id,
-    string Title,
-    CategoryGetDetailDto Category);
-
-
-public record FlattenShortCategoryDto(
-    int Id,
-    string Title);
-
-
-
-public class CategoryCreateDto
-{
-    public int Order { get; set; }
-    public int? ParentId { get; set; }
-    public string Code { get; set; }
-    public string Title { get; set; }
-    public int? ProcessId { get; set; }
-    public string Description { get; set; }
-    public string AttachmentDescription { get; set; }
-    public int Duration { get; set; }
-    public int? ResponseDuration { get; set; }
-    public ICollection<FormElement> FormElements { get; set; } = new List<FormElement>();
-    public bool ObjectionAllowed { get; set; }
-    public bool EditingAllowed { get; set; } = true;
-    public bool HideMap { get; set; }   
-}
-
-
-
-public record GetShortCategoryDto(
-    int Id,
-    string Code,
-    string Title,
-    ICollection<FormElement> FormElements);
-
+public record TimeFilter(
+    DateTime? SentFromDate,
+    DateTime? SentToDate);
 
 
 
@@ -128,6 +55,24 @@ public class AddressDto
     public double? Elevation { get; set; }
 }
 
+public record AddressDetailDto(
+    string Detail);
+
+public record AddressMoreDetailDto(
+    string Detail,
+    double? Latitude,
+    double? Longitude);
+
+
+public record AddressReportGet(
+    string Detail,
+    double? Latitude,
+    double? Longitude,
+    int? RegionId,
+    RegionName Region/* ?? */);
+
+public record RegionName(
+    string Name);
 
 
 public record GetUserRegionsDto(
@@ -137,23 +82,18 @@ public record GetUserRegionsDto(
     int CityId);
 
 
-public record CategoryTitleDto(
-    string Title);
+public record GetRegionByName(
+    int Id,
+    string Name
+    //,string ParsimapCode //??
+    );
 
-public record CategoryDetailDto(
-    string Title,
-    int? ResponseDuration,
-    int Duration);
+public record GetRegionDto(
+    int Id,
+    string Name,
+    string ParsimapCode);
 
 
-public record AddressDetailDto(
-    string Detail);
-
-
-public record AddressMoreDetailDto(
-    string Detail,
-    double? Latitude,
-    double? Longitude);
 
 public record CitizenGetQuickAccess(
     int Id,
@@ -178,29 +118,6 @@ public record SetQuickAccessDto(
     int Order,
     IFormFile Image);
 
-
-
-public record RegionName(
-    string Name);
-
-public record AddressReportGet(
-    string Detail,
-    double? Latitude,
-    double? Longitude,
-    int? RegionId,
-    RegionName Region/* ?? */);
-
-
-public record GetRegionByName(
-    int Id,
-    string Name
-    //,string ParsimapCode //??
-    );
-
-public record GetRegionDto(
-    int Id,
-    string Name,
-    string ParsimapCode);
 
 
 public record EducationDto(
@@ -231,12 +148,6 @@ public record GetMessageCountDto(
     DateTime DateTime);
 
 
-public record TimeFilter(
-    DateTime? SentFromDate,
-    DateTime? SentToDate);
-
-
-
 public record GetNewsDto(
     int Id,
     string Title,
@@ -262,10 +173,6 @@ public record UpdateNewsDto(
     Guid ImageFileId,
     DateTime Created,
     bool IsDeleted);
-
-
-public record QueryFilter(
-    string? Query);
 
 
 public record GetProcessListDto(
