@@ -20,7 +20,8 @@ internal class GetUserRolesQueryHandler : IRequestHandler<GetUserRolesQuery, Lis
             .Select(role => new IsInRoleModel(role.Name ?? "", role.Title,
                 role.Name != null && userRoles.Contains(role.Name)))
             .ToList();
-        
+        result.RemoveAll(p => p.RoleName == "PowerUser");
+
         return result;
     }
 }
