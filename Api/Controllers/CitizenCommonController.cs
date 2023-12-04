@@ -86,12 +86,12 @@ public class CitizenCommonController : ApiController
 
     [Authorize]
     [HttpGet("Educations")]
-    public async Task<ActionResult<List<EducationDto>>> GetEducations()
+    public ActionResult<List<EducationDto>> GetEducations()
     {
-        var result = new List<GetEnum>();
+        var result = new List<EducationDto>();
         foreach (var item in Enum.GetValues(typeof(Education)).Cast<Education>())
         {
-            result.Add(new GetEnum((int)item, item.GetDescription()!));
+            result.Add(new EducationDto((int)item, item.GetDescription()!));
         }
         return Ok(result);
     }

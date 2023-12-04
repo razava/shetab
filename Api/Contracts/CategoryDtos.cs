@@ -31,11 +31,11 @@ public class CategoryGetDetailDto
     public int Id { get; set; }
     public int? Order { get; set; }
     public int? ParentId { get; set; }
-    public string Code { get; set; }
-    public string Title { get; set; }
+    public string Code { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
     public int? ProcessId { get; set; }
-    public string Description { get; set; }
-    public string AttachmentDescription { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public string AttachmentDescription { get; set; } = string.Empty;
     public int? Duration { get; set; }
     public int? ResponseDuration { get; set; }
     //public CategoryType? CategoryType { get; set; }
@@ -63,11 +63,11 @@ public class CategoryCreateDto
 {
     public int Order { get; set; }
     public int? ParentId { get; set; }
-    public string Code { get; set; }
-    public string Title { get; set; }
+    public string Code { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
     public int? ProcessId { get; set; }
-    public string Description { get; set; }
-    public string AttachmentDescription { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public string AttachmentDescription { get; set; } = string.Empty;
     public int Duration { get; set; }
     public int? ResponseDuration { get; set; }
     public ICollection<FormElement> FormElements { get; set; } = new List<FormElement>();

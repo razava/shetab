@@ -169,14 +169,14 @@ public class TransitionLogDto
 {
     public Guid Id { get; set; }
     public DateTime DateTime { get; set; }
-    public string Comment { get; set; }
-    public string Message { get; set; }
+    public string Comment { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
     public ICollection<MediaDto> Attachments { get; set; } = new List<MediaDto>();
-    public ReasonDto Reason { get; set; }
+    public ReasonDto Reason { get; set; } = default!;
     public ActorType ActorType { get; set; }
-    public string ActorIdentifier { get; set; }
+    public string ActorIdentifier { get; set; } = string.Empty;
     public bool IsPublic { get; set; }
-    public ActorShortDto Actor { get; set; }   //todo : Handle from Application Layer
+    public ActorShortDto Actor { get; set; } = default!;   //todo : Handle from Application Layer
 }
 
 public class ActorShortDto
@@ -191,10 +191,10 @@ public class ActorShortDto
 
 public class GetPossibleTransitionDto
 {
-    public string StageTitle { get; set; }
+    public string StageTitle { get; set; } = string.Empty;
     public int TransitionId { get; set; }
-    public IEnumerable<ReasonDto> ReasonList { get; set; }
-    public IEnumerable<ActorDto> Actors { get; set; }
+    public IEnumerable<ReasonDto> ReasonList { get; set; } = new List<ReasonDto>();
+    public IEnumerable<ActorDto> Actors { get; set; } = new List<ActorDto>();
     public bool CanSendMessageToCitizen { get; set; }
     public TransitionType TransitionType { get; set; }
 }
@@ -202,21 +202,21 @@ public class GetPossibleTransitionDto
 public class ReasonDto
 {
     public int Id { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
 }
 public class ActorDto
 {
     public int Id { get; set; }
-    public string Identifier { get; set; }
+    public string Identifier { get; set; } = string.Empty;
     public ActorType Type { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Title { get; set; }
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
     public string DisplayName { get { return Title + ((FirstName + LastName).Length > 0 ? " (" + FirstName + " " + LastName + ")" : ""); } }
-    public string Organization { get; set; }
-    public string PhoneNumber { get; set; }
-    public List<ActorDto> Actors { get; set; }
+    public string Organization { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
+    public List<ActorDto> Actors { get; set; } = new List<ActorDto>();
 }
 
 

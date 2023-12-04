@@ -14,16 +14,16 @@ public class InfoDto
 
 public class InfoSingleton
 {
-    public string Value { get; set; }
-    public string Title { get; set; }
-    public string Icon { get; set; }
+    public string Value { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string Icon { get; set; } = string.Empty;
 }
 
 public class InfoChart
 {
     public List<InfoSerie> Series { get; set; } = new List<InfoSerie>();
-    public string ChartTitle { get; set; }
-    public string ChartIcon { get; set; }
+    public string ChartTitle { get; set; } = string.Empty;
+    public string ChartIcon { get; set; } = string.Empty;
     public bool IsStacked { get; set; }
     public bool IsHorizontal { get; set; }
 
@@ -47,13 +47,13 @@ public class InfoChart
 public class InfoSerie
 {
     public List<DataItem> Values { get; set; } = new List<DataItem>();
-    public string Title { get; set; }
-    public string Icon { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Icon { get; set; } = string.Empty;
 }
 
 public class DataItem
 {
-    public DataItem(string title, string value, string displayValue, object parameters = null)
+    public DataItem(string title, string value, string displayValue, object? parameters = null)
     {
         Title = title;
         Value = value;
@@ -63,10 +63,8 @@ public class DataItem
     public string Title { get; set; }
     public string Value { get; set; }
     public string DisplayValue { get; set; }
-    public object Parameters { get; set; }
+    public object? Parameters { get; set; }
 }
-
-
 
 
 

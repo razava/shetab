@@ -31,6 +31,7 @@ public class AdminCategoryController : ApiController
         //var result = await Sender.Send(query);
         //var mappedResult = result.Adapt<List<FlattenShortCategoryDto>>();
         //return Ok(mappedResult);
+        await Task.CompletedTask;
         return Ok();
     }
 
