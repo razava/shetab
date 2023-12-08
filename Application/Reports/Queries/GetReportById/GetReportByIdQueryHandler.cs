@@ -18,7 +18,8 @@ internal sealed class GetReportByIdQueryHandler : IRequestHandler<GetReportByIdQ
         //TODO: check whether user can access to content or not
         var report = await _reportRepository.GetSingleAsync(
             r => r.Id == request.id,
-            false);
+            false,
+            "Medias");
         if (report is null)
             throw new Exception("Not found.");
         return report;
