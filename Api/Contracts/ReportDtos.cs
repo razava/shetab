@@ -104,8 +104,10 @@ public record StaffGetReportListDto(
     string LastStatus,
     string TrackingNumber,
     int CategoryId,
-    CategoryTitleDto Category,//?
-    DateTime Sent
+    DateTime Sent,
+    DateTime Deadline,
+    DateTime? ResponseDeadline,
+    int? Rating
     //int Rating
     );     //todo : Satisfaction.rating is correct
 
