@@ -12,12 +12,10 @@ public class StorageService : IStorageService
     private readonly string _destinationPath;
     private readonly List<Size> _imageQualities;
     private const long maxAllowdFileSize = 10 * 1024 * 1024;
-    //private readonly IWebHostEnvironment webHostEnvironment;
 
-    public StorageService(/*string destinationPath, */IWebHostEnvironment webHostEnvironment, List<Size> imageQualities)
+    public StorageService(string destinationPath, List<Size>? imageQualities)
     {
-        _destinationPath = webHostEnvironment.WebRootPath;
-        //var webRootPath = webHostEnvironment.WebRootPath;
+        _destinationPath = destinationPath;
         _imageQualities = imageQualities ?? new List<Size>() { new Size(100, 100), new Size(200, 200), new Size(300, 300) };
     }
 

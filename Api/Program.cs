@@ -123,12 +123,10 @@ MapsterConfigurations.Config();
 
 //Configurations
 
-builder.Services.Configure<SmsOptions>(builder.Configuration.GetSection(SmsOptions.Name));
 builder.Services.Configure<GeneralSettings>(builder.Configuration.GetSection(GeneralSettings.Name));
 builder.Services.Configure<FirebaseProxyOptions>(builder.Configuration.GetSection(FirebaseProxyOptions.Name));
 builder.Services.Configure<FeedbackOptions>(builder.Configuration.GetSection(FeedbackOptions.Name));
 builder.Services.Configure<List<AppVersion>>(builder.Configuration.GetSection("AppVersions"));
-//builder.Services.Configure<ImageQualityOptions>(builder.Configuration.GetSection(ImageQualityOptions.Name));
 
 builder.Services.AddSignalR();
 // ReCaptcha
