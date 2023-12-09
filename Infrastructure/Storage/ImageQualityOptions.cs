@@ -1,4 +1,6 @@
-﻿namespace Api.Configurations;
+﻿using SixLabors.ImageSharp;
+
+namespace Infrastructure.Storage;
 
 public class ImageQualityOptions
 {

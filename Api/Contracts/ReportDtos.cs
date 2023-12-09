@@ -29,7 +29,7 @@ public record CitizenGetReportListDto(
     bool IsLiked,
     int Likes,
     int CommentsCount,
-    ICollection<MediaDto> Medias);
+    List<MediaDto> Medias);
 
 
 public record GetCitizenShortDto(
@@ -39,7 +39,7 @@ public record GetCitizenShortDto(
 
 
 public record CitizenGetReportDetailsDto(
-    ICollection<MediaDto> Medias,
+    List<MediaDto> Medias,
     string LastStatus,
     int CategoryId,
     CategoryDetailDto Category,//?
@@ -104,8 +104,10 @@ public record StaffGetReportListDto(
     string LastStatus,
     string TrackingNumber,
     int CategoryId,
-    CategoryTitleDto Category,//?
-    DateTime Sent
+    DateTime Sent,
+    DateTime Deadline,
+    DateTime? ResponseDeadline,
+    int? Rating
     //int Rating
     );     //todo : Satisfaction.rating is correct
 
@@ -127,7 +129,7 @@ public record StaffGetReportDetailsDto(
     bool IsIdentityVisible,
     int Likes,
     int CommentsCount,
-    ICollection<MediaDto> Medias
+    List<MediaDto> Medias
     //Satisfaction [rating, comments, id]
     );
 
@@ -171,7 +173,7 @@ public class TransitionLogDto
     public DateTime DateTime { get; set; }
     public string Comment { get; set; } = string.Empty;
     public string Message { get; set; } = string.Empty;
-    public ICollection<MediaDto> Attachments { get; set; } = new List<MediaDto>();
+    public List<MediaDto> Attachments { get; set; } = new List<MediaDto>();
     public ReasonDto Reason { get; set; } = default!;
     public ActorType ActorType { get; set; }
     public string ActorIdentifier { get; set; } = string.Empty;
@@ -223,9 +225,9 @@ public class ActorDto
 public record MoveToStageDto(
 bool IsAccepted,
 int StageId,
-    ICollection<ActorDto> Actors,
+    List<ActorDto> Actors,
     string Comment,
-    ICollection<Guid> Attachments,
+    List<Guid> Attachments,
     ActorType? ActorType,
     string ActorIdentifier,
     Visibility? Visibility);

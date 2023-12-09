@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SixLabors.ImageSharp;
 
 namespace Infrastructure;
 
@@ -24,25 +25,19 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
     {
-        services.AddPersistence(configuration.GetConnectionString("DefaultConnection"));
+        services.AddPersistence(configuration);
         services.AddRepositories();
-        services.AddSecurity(new JwtInfo(
-            configuration["JWT:Secret"] ?? throw new Exception(),
-            configuration["JWT:ValidIssuer"] ?? throw new Exception(),
-            configuration["JWT:ValidAudience"] ?? throw new Exception(),
-            new TimeSpan(24, 0, 0)));
-        services.AddStorage(webHostEnvironment);
-        services.AddCommunication(
-            configuration["MessageBroker:Host"]!,
-            configuration["MessageBroker:Username"]!,
-            configuration["MessageBroker:Password"]!);
+        services.AddSecurity(configuration);
+        services.AddStorage(configuration, webHostEnvironment);
+        services.AddCommunication(configuration);
         services.AddMap(configuration);
         
         return services;
     }
 
-    public static IServiceCollection AddPersistence(this IServiceCollection services, string? connectionString)
+    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
         if (connectionString is null)
             throw new Exception("Connection string cannot be null.");
         var assembly = typeof(DependencyInjection).Assembly;
@@ -85,8 +80,14 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddSecurity(this IServiceCollection services, JwtInfo jwtInfo)
+    public static IServiceCollection AddSecurity(this IServiceCollection services, IConfiguration configuration)
     {
+        var jwtInfo = new JwtInfo(
+            configuration["JWT:Secret"] ?? throw new Exception(),
+            configuration["JWT:ValidIssuer"] ?? throw new Exception(),
+            configuration["JWT:ValidAudience"] ?? throw new Exception(),
+            new TimeSpan(24, 0, 0));
+
         services.AddScoped<IAuthenticationService>(x => new AuthenticationService(
             x.GetRequiredService<UserManager<ApplicationUser>>(),
             x.GetRequiredService<IUnitOfWork>(),
@@ -96,20 +97,21 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddStorage(this IServiceCollection services, IWebHostEnvironment webHostEnvironment)
+    public static IServiceCollection AddStorage(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
     {
-        //var temp = services.getrequiredservice<IWebHostEnvironment>();
-        services.AddScoped<IStorageService>(x => new StorageService(/*"",*/webHostEnvironment, new List<Size>()));
+        var imageSizes = configuration.GetSection(ImageQualityOptions.Name).GetSection("ImageQualities").Get<List<Size>>();
+        services.AddScoped<IStorageService>(x => new StorageService(webHostEnvironment.WebRootPath, imageSizes));
 
         return services;
     }
 
     public static IServiceCollection AddCommunication(
         this IServiceCollection services,
-        string host,
-        string username,
-        string password)
+        IConfiguration configuration)
     {
+        string host = configuration["MessageBroker:Host"] ?? throw new Exception("Message broker configurations not found");
+        string username = configuration["MessageBroker:Username"]! ?? throw new Exception("Message broker configurations not found");
+        string password = configuration["MessageBroker:Password"]! ?? throw new Exception("Message broker configurations not found");
         // Add MassTransit as a service
         services.AddMassTransit(busConfigurator =>
         {
