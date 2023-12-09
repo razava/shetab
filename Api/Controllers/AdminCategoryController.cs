@@ -44,7 +44,7 @@ public class AdminCategoryController : ApiController
         return Ok();
     }
 
-    
+    /*
     [Authorize]
     [HttpGet("Processes")]
     public async Task<ActionResult<List<GetProcessListDto>>> GetProcesses()
@@ -52,7 +52,7 @@ public class AdminCategoryController : ApiController
         await Task.CompletedTask;
         return Ok();
     }
-
+    */
 
     [Authorize(Roles = "Admin")]
     [HttpPost]

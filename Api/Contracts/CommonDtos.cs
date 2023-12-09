@@ -81,12 +81,13 @@ public record GetUserRegionsDto(
     string Name,
     int CityId);
 
-
+/*
 public record GetRegionByName(
     int Id,
     string Name
     //,string ParsimapCode //??
     );
+*/
 
 public record GetRegionDto(
     int Id,
