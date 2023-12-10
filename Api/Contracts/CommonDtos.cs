@@ -183,6 +183,7 @@ public record GetProcessListDto(
 
 public record SetProcessDto(
     string Title,
+    string Code,
     List<int> ActorIds);
 
 
@@ -195,6 +196,7 @@ public record GetExecutiveListDto(
     int Id,
     string Title,
     string DisplayName);
+
 
 
 
