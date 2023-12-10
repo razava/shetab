@@ -66,7 +66,6 @@ public class StaffCommonController : ApiController
     [HttpGet("Categories")]
     public async Task<ActionResult<CategoryGetDto>> GetCategory(int? instanceId)
     {
-        //todo : check for including categories list for tree structure...................
         if (instanceId is null)
             return BadRequest();
         var query = new GetCategoryQuery(instanceId.Value);
@@ -95,15 +94,15 @@ public class StaffCommonController : ApiController
         return Ok(mappedResult);
     }
 
-
+    /*
     [Authorize]
     [HttpGet("RegionsByName")]
     public async Task<ActionResult<List<GetRegionByName>>> GetRegionsByName()
     {
         await Task.CompletedTask;
         return Ok();
-    }
-
+    }*/
+    
 
     [Authorize]
     [HttpGet("Regions/{id}")]
@@ -138,9 +137,9 @@ public class StaffCommonController : ApiController
     }
 
 
+    
     [Authorize]
-    [Authorize]
-    [HttpGet("Executives")]
+    [HttpGet("Executives")]  //will use in reportFilters and ChartFilters
     public async Task<ActionResult<List<GetExecutiveDto>>> GetExecutives()
     {
         await Task.CompletedTask;
