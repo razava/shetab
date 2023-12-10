@@ -247,4 +247,3 @@ public record MessageToCitizenDto(
 
 
 
-
