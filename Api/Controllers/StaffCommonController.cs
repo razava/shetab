@@ -6,6 +6,7 @@ using Application.Categories.Queries.GetCategory;
 using Application.Categories.Queries.GetCategoryById;
 using Application.Configurations.Queries.ShahrbinInstanceManagement;
 using Application.Configurations.Queries.ViolationTypes;
+using Application.Users.Queries.GetRegions;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ReportAggregate;
@@ -137,7 +138,7 @@ public class StaffCommonController : ApiController
     }
 
 
-    
+    //todo : define access policeis
     [Authorize]
     [HttpGet("Executives")]  //will use in reportFilters and ChartFilters
     public async Task<ActionResult<List<GetExecutiveDto>>> GetExecutives()
@@ -146,6 +147,16 @@ public class StaffCommonController : ApiController
         return Ok();
     }
 
+    [Authorize]
+    [HttpGet("UserRegions/{id}")]
+    public async Task<ActionResult<List<IsInRegionDto>>> GetUserRegions(string id)
+    {
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetUserRegionsQuery(instanceId, id);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List<IsInRegionDto>>();
+        return Ok(mappedResult);
+    }
 
 }
 
