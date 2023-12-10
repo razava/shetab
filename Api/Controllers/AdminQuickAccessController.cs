@@ -1,8 +1,9 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
-using Application.Configurations.Queries.QuickAccesses;
+using Api.ExtensionMethods;
 using Application.QuickAccesses.Commands.AddQuickAccessCommand;
 using Application.QuickAccesses.Commands.UpdateQuickAccessCommand;
+using Application.QuickAccesses.Queries.GetQuickAccesses;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -23,7 +24,8 @@ public class AdminQuickAccessController : ApiController
     [HttpGet]
     public async Task<ActionResult<List<AdminGetQuickAccess>>> GetQuickAccesses(int instanceId, [FromQuery] QueryFilter queryFilter)
     {
-        var query = new QuickAccessQuery(instanceId);
+        var roles = User.GetUserRoles();
+        var query = new GetQuickAccessesQuery(instanceId, roles);
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<AdminGetQuickAccess>();
         return Ok(mappedResult);

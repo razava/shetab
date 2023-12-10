@@ -1,11 +1,10 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
-using Api.Dtos;
 using Api.ExtensionMethods;
 using Application.Comments.Commands.CreateComment;
 using Application.Comments.Commands.DeleteComment;
 using Application.Common.Interfaces.Persistence;
-using Application.Configurations.Queries.QuickAccesses;
+using Application.QuickAccesses.Queries.GetQuickAccesses;
 using Application.Reports.Commands.CreateReportByCitizen;
 using Application.Reports.Commands.Like;
 using Application.Reports.Commands.ReportViolation;
@@ -15,12 +14,10 @@ using Application.Reports.Queries.GetNearestReports;
 using Application.Reports.Queries.GetRecentReports;
 using Application.Reports.Queries.GetReportById;
 using Application.Reports.Queries.GetUserReports;
-using Domain.Models.Relational;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System.Security.Claims;
 
 namespace Api.Controllers;
@@ -171,7 +168,7 @@ public class CitizenReportController : ApiController
     public async Task<ActionResult<List<CitizenGetQuickAccess>>> GetQuickAccesses(int instanceId)
     {
         //there is 2 query for get QuickAccess in application layer.
-        var query = new QuickAccessQuery(instanceId);
+        var query = new GetQuickAccessesQuery(instanceId);
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<List<CitizenGetQuickAccess>>();
         return Ok(mappedResult);

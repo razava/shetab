@@ -21,6 +21,7 @@
     <Folder Include="Abstractions\Messaging\" />
     <Folder Include="Categories\Commands\DeleteCategory\" />
     <Folder Include="Comments\Queries\GetComments\" />
+    <Folder Include="Configurations\Commands\" />
     <Folder Include="Feedbacks\Queries\" />
     <Folder Include="Setup\Queries\" />
     <Folder Include="Workspaces\Commands\" />
