@@ -282,17 +282,17 @@ public class CitizenAccountController : ApiController
         {
             return BadRequest();
         }
-
     }
 
     [HttpGet("Captcha")]
-    public async Task<ActionResult<CaptchaResultDto>> GetCaptcha()
+    public async Task<ActionResult<string>> GetCaptcha()
     {
         var query = new CaptchaQuery();
         var result = await Sender.Send(query);
-        var mappedCaptcha = result.Adapt<CaptchaResultDto>();
-
-        return Ok(mappedCaptcha);
+        if (result is null)
+            throw new Exception();
+        Response.Headers.Append("Captcha-Key", result.Key.ToString());
+        return "data:image/jpg;base64," + Convert.ToBase64String(result.Data);
     }
 
     [HttpPost("LoginGov")]
