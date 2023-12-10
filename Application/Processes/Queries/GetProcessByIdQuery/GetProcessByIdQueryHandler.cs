@@ -1,10 +1,10 @@
 ﻿using Application.Common.Interfaces.Persistence;
-using Domain.Models.Relational.ProcessAggregate;
 using MediatR;
+using static Application.Processes.Queries.GetProcessByIdQuery.GetProcessByIdQueryHandler;
 
 namespace Application.Processes.Queries.GetProcessByIdQuery;
 
-internal class GetProcessByIdQueryHandler : IRequestHandler<GetProcessByIdQuery, Process>
+internal partial class GetProcessByIdQueryHandler : IRequestHandler<GetProcessByIdQuery, GetProcessByIdResponse>
 {
     private readonly IProcessRepository _processRepository;
 
@@ -13,11 +13,15 @@ internal class GetProcessByIdQueryHandler : IRequestHandler<GetProcessByIdQuery,
         _processRepository = processRepository;
     }
 
-    public async Task<Process> Handle(GetProcessByIdQuery request, CancellationToken cancellationToken)
+    public async Task<GetProcessByIdResponse> Handle(GetProcessByIdQuery request, CancellationToken cancellationToken)
     {
-        var result = await _processRepository.GetSingleAsync(p => p.Id == request.Id, false, "Actors");
+        var result = await _processRepository.GetSingleAsync(p => p.Id == request.Id, false, "Stages, Stages.Actors");
+        
         if (result is null)
             throw new Exception("Not found!");
-        return result;
+
+        var actorIds = result.Stages.Where(s => s.Name == "Executive").SingleOrDefault()!.Actors.Select(a => a.Id).ToList();
+
+        return new GetProcessByIdResponse(result.Id, result.Code, result.Title, actorIds);
     }
 }
