@@ -6,9 +6,11 @@ using Application.Common.Interfaces.Persistence;
 using Application.Users.Commands.CreateContractor;
 using Application.Users.Commands.CreateNewPassword;
 using Application.Users.Commands.CreateUser;
+using Application.Users.Commands.UpdateRegions;
 using Application.Users.Commands.UpdateRoles;
 using Application.Users.Commands.UpdateUserProfile;
 using Application.Users.Common;
+using Application.Users.Queries.GetRegions;
 using Application.Users.Queries.GetRoles;
 using Application.Users.Queries.GetUserById;
 using Application.Users.Queries.GetUsers;
@@ -73,7 +75,7 @@ public class AdminUserManagementController : ApiController
     }
 
     [Authorize(Roles = "Admin, Manager")]
-    [HttpPost("Roles/{id}")]
+    [HttpPut("Roles/{id}")]
     public async Task<IActionResult> SetRoles(string id, UpdateRolesDto updateRolesDto) 
     {
         var mappedRoles = updateRolesDto.Roles.Adapt<List<IsInRoleModel>>();
@@ -96,22 +98,27 @@ public class AdminUserManagementController : ApiController
     }
 
 
-    //................dtos & command....................
     [Authorize]
-    [HttpPost("Regions/{id}")]
-    public async Task<IActionResult> SetUserRegions(string id, SetRegionsDto setRegionsDto)
+    [HttpPut("Regions/{id}")]
+    public async Task<IActionResult> SetUserRegions(string id, List<IsInRegionDto> regions)
     {
-        await Task.CompletedTask;//............................
+        var instanceId = User.GetUserInstanceId();
+        var mappedRegions = regions.Adapt<List<IsInRegionModel>>();
+        var command = new UpdateRegionsCommand(instanceId, id, mappedRegions);
+        var result = await Sender.Send(command);
+        if(!result) return Problem();
         return Ok();
     }
 
-    //.................dtos and query.........................
     [Authorize]
     [HttpGet("Regions/{id}")]
-    public async Task<IActionResult> GetUserRegions(string id)
+    public async Task<ActionResult<List<IsInRegionDto>>> GetUserRegions(string id)
     {
-        await Task.CompletedTask;//...........................
-        return Ok();
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetUserRegionsQuery(instanceId, id);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List< IsInRegionDto >>();
+        return Ok(mappedResult);
     }
 
     

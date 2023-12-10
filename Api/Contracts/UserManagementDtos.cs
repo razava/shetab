@@ -19,6 +19,11 @@ public record RolesDto(
     string RoleTitle,
     bool IsIn);
 
+public record IsInRegionDto(
+    int RegionId,
+    string RegionName,
+    bool IsIn);
+
 public record UpdateUserDto(
     string? FirstName,
     string? LastName,
