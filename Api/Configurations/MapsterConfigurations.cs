@@ -1,4 +1,5 @@
 ﻿using Api.Contracts;
+using Application.Processes.Queries.GetExecutiveActorsQuery;
 using Application.Reports.Common;
 using Domain.Models.Relational.Common;
 using Mapster;
@@ -19,6 +20,8 @@ public class MapsterConfigurations
             .Map(dest => dest.Latitude, src => src.Location!.Y)
             .Map(dest => dest.Longitude, src => src.Location!.X);
 
+        TypeAdapterConfig<GetExecutiveActorsResponse, GetExecutiveListDto>.NewConfig()
+            .Map(dest => dest.DisplayName, src => $"{src.FirstName} {src.LastName}");
 
         /*
         TypeAdapterConfig<AddressInfo, Address>.NewConfig()
