@@ -46,7 +46,8 @@ public class StaffFaqController : ApiController
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
-        return CreatedAtAction("", result.Adapt<GetFaqsDto>());
+        //return CreatedAtAction("", result.Adapt<GetFaqsDto>());
+        return Ok();
     }
 
 
