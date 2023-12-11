@@ -159,21 +159,21 @@ public record GetNewsDto(
     bool IsDeleted);
 
 
-public record CreateNewsDto(
+public record SetNewsDto(
     string Title,
     string Description,
     string Url,
-    Guid ImageFileId,
-    DateTime Created);
-
-
-public record UpdateNewsDto(
-    string Title,
-    string Description,
-    string Url,
-    Guid ImageFileId,
-    DateTime Created,
+    IFormFile Image,
     bool IsDeleted);
+
+
+//public record UpdateNewsDto(
+//    string Title,
+//    string Description,
+//    string Url,
+//    Guid ImageFileId,
+//    DateTime Created,
+//    bool IsDeleted);
 
 
 public record GetProcessListDto(
