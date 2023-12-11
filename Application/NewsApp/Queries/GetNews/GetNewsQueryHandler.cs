@@ -3,7 +3,7 @@ using Domain.Models.Relational;
 using MediatR;
 using System.Linq.Expressions;
 
-namespace Application.NewsApp.Queries.UpdateNewsCommand;
+namespace Application.NewsApp.Queries.GetNews;
 
 internal class GetNewsQueryHandler : IRequestHandler<GetNewsQuery, List<News>>
 {
@@ -18,7 +18,7 @@ internal class GetNewsQueryHandler : IRequestHandler<GetNewsQuery, List<News>>
     {
         Expression<Func<News, bool>>? filter = q => q.IsDeleted != false;
 
-        
+
         var result = await _newsRepository.GetAsync(filter, false);
 
         return result.ToList();

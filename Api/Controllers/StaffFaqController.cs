@@ -4,7 +4,6 @@ using Api.ExtensionMethods;
 using Application.Faqs.Commands.AddFaqCommand;
 using Application.Faqs.Commands.UpdateFaqCommand;
 using Application.Faqs.Queries.GetFaqQuery;
-using Application.NewsApp.Queries.UpdateNewsCommand;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

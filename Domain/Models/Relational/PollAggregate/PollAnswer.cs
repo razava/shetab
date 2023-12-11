@@ -12,8 +12,21 @@ public class PollAnswer
     public string? Text { get; set; }
     public IEnumerable<PollChoice> Choices { get; set; } = new List<PollChoice>();
     public DateTime DateTime { get; set; }
+
+    private PollAnswer()
+    {
+        
+    }
+
+    public static PollAnswer Create(string userId, string? text, List<PollChoice> choices)
+    {
+        var answer = new PollAnswer()
+        {
+            UserId = userId,
+            Text = text,
+            Choices = choices
+        };
+
+        return answer;
+    }
 }
-
-
-
-

@@ -3,7 +3,7 @@ using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.NewsApp.Commands.AddNewsCommand;
 using Application.NewsApp.Commands.UpdateNewsCommand;
-using Application.NewsApp.Queries.UpdateNewsCommand;
+using Application.NewsApp.Queries.GetNews;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

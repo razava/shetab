@@ -75,6 +75,8 @@ public static class DependencyInjection
         services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<IReportLikesRepository, ReportLikesRepository>();
         services.AddScoped<IShahrbinInstanceRepository, ShahrbinInstanceRepository>();
+        services.AddScoped<INewsRepository, NewsRepository>();
+        services.AddScoped<IFaqRepository, FaqRepository>();
 
 
         return services;
