@@ -17,7 +17,7 @@ internal class GetQuickAccessesQueryHandler : IRequestHandler<GetQuickAccessesQu
 
     public async Task<List<QuickAccess>> Handle(GetQuickAccessesQuery request, CancellationToken cancellationToken)
     {
-        Expression<Func<QuickAccess, bool>>? filter = q => q.IsDeleted != false;
+        Expression<Func<QuickAccess, bool>>? filter = q => q.IsDeleted != true;
 
         if (request.RoleNames is not null &&  request.RoleNames.Contains(RoleNames.Admin)) 
         {

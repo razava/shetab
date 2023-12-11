@@ -16,7 +16,7 @@ internal class GetNewsQueryHandler : IRequestHandler<GetNewsQuery, List<News>>
 
     public async Task<List<News>> Handle(GetNewsQuery request, CancellationToken cancellationToken)
     {
-        Expression<Func<News, bool>>? filter = q => q.IsDeleted != false;
+        Expression<Func<News, bool>>? filter = q => q.IsDeleted != true;
 
 
         var result = await _newsRepository.GetAsync(filter, false);
