@@ -56,6 +56,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<ApplicationLink> ApplicationLink { get; set; }
     public DbSet<QuickAccess> QuickAccess { get; set; }
     public DbSet<Chart> Chart { get; set; }
+    public DbSet<Faq> Faq { get; set; }
 
     public DbSet<GovUserInfo> GovUserInfos { get; set; }
     public DbSet<ShahrbinInstance> ShahrbinInstance { get; set; }
