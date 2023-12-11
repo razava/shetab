@@ -81,13 +81,6 @@ public record GetUserRegionsDto(
     string Name,
     int CityId);
 
-/*
-public record GetRegionByName(
-    int Id,
-    string Name
-    //,string ParsimapCode //??
-    );
-*/
 
 public record GetRegionDto(
     int Id,
@@ -158,7 +151,6 @@ public record GetNewsDto(
     DateTime Created,
     bool IsDeleted);
 
-
 public record SetNewsDto(
     string Title,
     string Description,
@@ -167,25 +159,26 @@ public record SetNewsDto(
     bool IsDeleted);
 
 
-//public record UpdateNewsDto(
-//    string Title,
-//    string Description,
-//    string Url,
-//    Guid ImageFileId,
-//    DateTime Created,
-//    bool IsDeleted);
+public record GetFaqsDto(
+    int Id,
+    string Question,
+    string Answer,
+    bool IsDeleted);
+
+public record SetFaqDto(
+    string Question,
+    string Answer,
+    bool IsDeleted);
 
 
 public record GetProcessListDto(
     int Id,
     string Title);
 
-
 public record SetProcessDto(
     string Title,
     string Code,
     List<int> ActorIds);
-
 
 public record GetProcessDto(
     int Id,
