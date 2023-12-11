@@ -184,7 +184,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
         MethodCallExpression containsMethodExp;
         foreach (var propStr in props)
         {
-            prop = Expression.Property(item, propStr);
+            prop = Expression.Property(item, propStr.Trim());
             value = Expression.Constant(queryItem.Value);
             containsMethodExp = Expression.Call(prop, method, value);
             orExp = Expression.Or(orExp, containsMethodExp);
