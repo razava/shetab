@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations;
 namespace Api.Contracts;
 
 
-
 public class LocationDto
 {
     public double Latitude { get; set; }
@@ -19,7 +18,7 @@ public record GetEnum(
 
 
 public record QueryFilter(
-    [MaxLength(50)]
+    [MaxLength(64)]
     string? Query);
 
 
@@ -45,14 +44,15 @@ public class MediaDto
 
 public class AddressDto
 {
+    [Required]
     public int RegionId { get; set; }
 
     public string Street { get; set; } = string.Empty;
     public string Valley { get; set; } = string.Empty;
-    [MaxLength(500)]
+    [MaxLength(512)]
     public string Detail { get; set; } = string.Empty;//todo : nullable?
     public string Number { get; set; } = string.Empty;
-    [MaxLength(30)]
+    [MaxLength(32)]
     public string PostalCode { get; set; } = string.Empty;
     public double Latitude { get; set; }
     public double Longitude { get; set; }
@@ -110,14 +110,21 @@ public record AdminGetQuickAccess(
     bool IsDeleted);
 
 
-public record SetQuickAccessDto(
+public record CreateQuickAccessDto(
+    [Required]
     int CategoryId,
-    [MaxLength(50)]
+    [Required] [MaxLength(64)]
     string Title,
+    [Required]
     int Order,
     IFormFile Image);
 
-
+public record UpdateQuickAccessDto(
+    int? CategoryId,
+    [MaxLength(64)]
+    string? Title,
+    int? Order,
+    IFormFile? Image);
 
 public record EducationDto(
     int Id,
@@ -156,15 +163,25 @@ public record GetNewsDto(
     DateTime Created,
     bool IsDeleted);
 
-public record SetNewsDto(
-    [MaxLength(256)]
+public record CreateNewsDto(
+    [Required] [MaxLength(256)]
     string Title,
-    [MaxLength(2048)]
+    [Required] [MaxLength(2048)]
     string Description,
-    [MaxLength(512)]
+    [Required] [MaxLength(512)]
     string Url,
     IFormFile Image,
     bool IsDeleted);
+
+public record UpdateNewsDto(
+    [MaxLength(256)]
+    string? Title,
+    [MaxLength(2048)]
+    string? Description,
+    [MaxLength(512)]
+    string? Url,
+    IFormFile? Image,
+    bool? IsDeleted);
 
 
 public record GetFaqsDto(
@@ -173,20 +190,38 @@ public record GetFaqsDto(
     string Answer,
     bool IsDeleted);
 
-public record SetFaqDto(
+public record CreateFaqDto(
+    [Required] [MaxLength(512)]
     string Question,
+    [Required] [MaxLength(2048)]
     string Answer,
     bool IsDeleted);
+
+public record UpdateFaqDto(
+    [MaxLength(512)]
+    string? Question,
+    [MaxLength(2048)]
+    string? Answer,
+    bool? IsDeleted);
 
 
 public record GetProcessListDto(
     int Id,
     string Title);
 
-public record SetProcessDto(
+public record CreateProcessDto(
+    [Required] [MaxLength(32)]
     string Title,
+    [Required] [MaxLength(16)]
     string Code,
     List<int> ActorIds);
+
+public record UpdateProcessDto(
+    [MaxLength(32)]
+    string? Title,
+    [MaxLength(16)]
+    string? Code,
+    List<int>? ActorIds);
 
 public record GetProcessDto(
     int Id,

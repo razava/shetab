@@ -36,7 +36,7 @@ public class AdminProcessesController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<ActionResult> CreateProcesses(SetProcessDto setProcessDto)
+    public async Task<ActionResult> CreateProcesses(CreateProcessDto setProcessDto)
     {
         var InstanceId = User.GetUserInstanceId();
         var command = new AddProcessCommand(
@@ -65,7 +65,7 @@ public class AdminProcessesController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> EditProcesses(int id, SetProcessDto setProcessDto)
+    public async Task<ActionResult> EditProcesses(int id, UpdateProcessDto setProcessDto)
     {
         var command = new UpdateProcessCommand(
             id,
