@@ -79,6 +79,30 @@ public class TransitionLog
             isPublic);
     }
 
+    public static TransitionLog CreateMoveToStage(
+        Guid reportId,
+        string? comment,
+        List<Media>? attachments,
+        string message,
+        ActorType actorType,
+        string actorIdentifier,
+        double duration,
+        bool isPublic)
+    {
+        return new TransitionLog(
+            ReportLogType.MoveToStage,
+            reportId,
+            null,
+            comment,
+            attachments,
+            message,
+            actorType,
+            actorIdentifier,
+            null,
+            duration,
+            isPublic);
+    }
+
     public static TransitionLog CreateNewReport(
         Guid reportId,
         ActorType actorType,

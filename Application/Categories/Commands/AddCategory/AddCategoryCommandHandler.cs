@@ -18,9 +18,25 @@ internal sealed class AddCategoryCommandHandler : IRequestHandler<AddCategoryCom
     public async Task<Category> Handle(AddCategoryCommand request, CancellationToken cancellationToken)
     {
         //TODO: perform required operations
-        var category = request.Category;
+        var category = Category.Create(
+            request.Code,
+            request.Title,
+            request.Description,
+            request.Order,
+            request.ParentId,
+            request.Duration,
+            request.ResponseDuration,
+            request.ProcessId,
+            request.IsDeleted,
+            request.ObjectionAllowed,
+            request.EdittingAllowed,
+            request.HideMap,
+            request.AttachmentDescription,
+            request.FormElements);
+
         _categoryRepository.Insert(category);
         await _unitOfWork.SaveAsync();
+
         return category;
     }
 }

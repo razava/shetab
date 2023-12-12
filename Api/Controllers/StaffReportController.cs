@@ -9,6 +9,7 @@ using Application.Comments.Commands.UpdateComment;
 using Application.Common.Interfaces.Persistence;
 using Application.Reports.Commands.AcceptByOperator;
 using Application.Reports.Commands.CreateReportByOperator;
+using Application.Reports.Commands.InspectorTransition;
 using Application.Reports.Commands.MessageToCitizen;
 using Application.Reports.Commands.UpdateByOperator;
 using Application.Reports.Common;

@@ -18,8 +18,29 @@ internal sealed class UpdateCategoryCommandHandler : IRequestHandler<UpdateCateg
     public async Task<Category> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
     {
         //TODO: perform required operations
-        var category = request.Category;
-        _categoryRepository.Insert(category);
+        var category = await _categoryRepository.GetSingleAsync(c => c.Id == request.id);
+        if (category is  null)
+        {
+            throw new Exception("Not found!");
+        }
+        category.Update(
+            request.Code,
+            request.Title,
+            request.Description,
+            request.Order,
+            request.ParentId,
+            request.Duration,
+            request.ResponseDuration,
+            request.ProcessId,
+            request.IsDeleted,
+            request.ObjectionAllowed,
+            request.EdittingAllowed,
+            request.HideMap,
+            request.AttachmentDescription,
+            request.FormElements);
+
+        _categoryRepository.Update(category);
+
         await _unitOfWork.SaveAsync();
         return category;
     }
