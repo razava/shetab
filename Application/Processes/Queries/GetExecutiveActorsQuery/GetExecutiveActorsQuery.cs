@@ -2,5 +2,5 @@
 
 namespace Application.Processes.Queries.GetExecutiveActorsQuery;
 
-public record GetExecutiveActorsQuery() : IRequest<List<GetExecutiveActorsResponse>>;
+public record GetExecutiveActorsQuery(int InstanceId) : IRequest<List<GetExecutiveActorsResponse>>;
 

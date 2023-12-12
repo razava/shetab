@@ -83,7 +83,8 @@ public class AdminProcessesController : ApiController
     [HttpGet("Executives")]
     public async Task<ActionResult<List<GetExecutiveListDto>>> GetExecutives()
     {
-        var query = new GetExecutiveActorsQuery();
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetExecutiveActorsQuery(instanceId);
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<List<GetExecutiveListDto>>();
         return Ok(mappedResult);

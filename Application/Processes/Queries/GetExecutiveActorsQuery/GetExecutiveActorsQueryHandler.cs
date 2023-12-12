@@ -17,7 +17,8 @@ internal class GetExecutiveActorsQueryHandler : IRequestHandler<GetExecutiveActo
 
     public async Task<List<GetExecutiveActorsResponse>> Handle(GetExecutiveActorsQuery request, CancellationToken cancellationToken)
     {
-        var executives = await _userRepository.GetUsersInRole(RoleNames.Executive);
+        //TODO: Implement this in repository
+        var executives = (await _userRepository.GetUsersInRole(RoleNames.Executive)).Where(u => u.ShahrbinInstanceId == request.InstanceId).ToList();
         var executivesIds = executives.Select(executives => executives.Id);
         var executiveActors = (await _actorRepository.GetAsync(a => executivesIds.Contains(a.Identifier), false)).ToList();
 
