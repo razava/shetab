@@ -1,5 +1,6 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
+using Api.ExtensionMethods;
 using Application.Categories.Commands.AddCategory;
 using Application.Categories.Commands.UpdateCategory;
 using Application.Categories.Queries.GetCategory;
@@ -59,8 +60,25 @@ public class AdminCategoryController : ApiController
     [HttpPost]
     public async Task<ActionResult> CreateCategory(CategoryCreateDto categoryCreateDto)
     {
-        var category = categoryCreateDto.Adapt<Category>();
-        var command = new AddCategoryCommand(category);
+        var instanceId = User.GetUserInstanceId();
+
+        var command = new AddCategoryCommand(
+            instanceId,
+            categoryCreateDto.Code,
+            categoryCreateDto.Title,
+            categoryCreateDto.Description,
+            categoryCreateDto.Order,
+            categoryCreateDto.ParentId,
+            categoryCreateDto.Duration,
+            categoryCreateDto.ResponseDuration,
+            categoryCreateDto.ProcessId,
+            categoryCreateDto.IsDeleted,
+            categoryCreateDto.ObjectionAllowed,
+            categoryCreateDto.EditingAllowed,
+            categoryCreateDto.HideMap,
+            categoryCreateDto.AttachmentDescription,
+            categoryCreateDto.FormElements);
+
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
@@ -68,12 +86,26 @@ public class AdminCategoryController : ApiController
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpPut("{id:Guid}")]
-    public async Task<ActionResult> EditCategory(Guid id, CategoryCreateDto categoryCreateDto)
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult> EditCategory(int id, CategoryUpdateDto categoryUpdateDto)
     {
-        //todo : review
-        var category = categoryCreateDto.Adapt<Category>();
-        var command = new UpdateCategoryCommand(category);
+        var command = new UpdateCategoryCommand(
+            id,
+            categoryUpdateDto.Code,
+            categoryUpdateDto.Title,
+            categoryUpdateDto.Description,
+            categoryUpdateDto.Order,
+            categoryUpdateDto.ParentId,
+            categoryUpdateDto.Duration,
+            categoryUpdateDto.ResponseDuration,
+            categoryUpdateDto.ProcessId,
+            categoryUpdateDto.IsDeleted,
+            categoryUpdateDto.ObjectionAllowed,
+            categoryUpdateDto.EditingAllowed,
+            categoryUpdateDto.HideMap,
+            categoryUpdateDto.AttachmentDescription,
+            categoryUpdateDto.FormElements);
+
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
@@ -81,13 +113,13 @@ public class AdminCategoryController : ApiController
     }
 
 
-    //[Authorize(Roles = "Admin")]
-    //[HttpDelete("{id:Guid}")]
-    //public async Task<ActionResult> DeleteCategory(Guid id)
-    //{
-    //    await Task.CompletedTask;
-    //    return Ok();
-    //}
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("{id:Guid}")]
+    public async Task<ActionResult> DeleteCategory(Guid id)
+    {
+        await Task.CompletedTask;
+        return Ok();
+    }
 
 
 }

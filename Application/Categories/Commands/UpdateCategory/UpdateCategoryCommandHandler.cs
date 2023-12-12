@@ -18,7 +18,7 @@ internal sealed class UpdateCategoryCommandHandler : IRequestHandler<UpdateCateg
     public async Task<Category> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
     {
         //TODO: perform required operations
-        var category = await _categoryRepository.GetSingleAsync(c => c.Id == request.id);
+        var category = await _categoryRepository.GetSingleAsync(c => c.Id == request.Id);
         if (category is  null)
         {
             throw new Exception("Not found!");

@@ -62,21 +62,38 @@ public record FlattenShortCategoryDto(
 public class CategoryCreateDto
 {
     public int Order { get; set; }
-    public int? ParentId { get; set; }
+    public int ParentId { get; set; }
     public string Code { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public int? ProcessId { get; set; }
     public string Description { get; set; } = string.Empty;
     public string AttachmentDescription { get; set; } = string.Empty;
     public int Duration { get; set; }
-    public int? ResponseDuration { get; set; }
-    public ICollection<FormElement> FormElements { get; set; } = new List<FormElement>();
+    public int ResponseDuration { get; set; }
+    public bool IsDeleted { get; set; }
+    public List<FormElement> FormElements { get; set; } = new List<FormElement>();
     public bool ObjectionAllowed { get; set; }
     public bool EditingAllowed { get; set; } = true;
     public bool HideMap { get; set; }
 }
 
-
+public class CategoryUpdateDto
+{
+    public int? Order { get; set; }
+    public int? ParentId { get; set; }
+    public string Code { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public int? ProcessId { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public string AttachmentDescription { get; set; } = string.Empty;
+    public int? Duration { get; set; }
+    public int? ResponseDuration { get; set; }
+    public bool? IsDeleted { get; set; }
+    public List<FormElement>? FormElements { get; set; } = new List<FormElement>();
+    public bool? ObjectionAllowed { get; set; }
+    public bool? EditingAllowed { get; set; } = true;
+    public bool? HideMap { get; set; }
+}
 
 public record GetShortCategoryDto(
     int Id,
