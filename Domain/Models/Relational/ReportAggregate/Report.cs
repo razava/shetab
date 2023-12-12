@@ -325,7 +325,28 @@ public class Report : Entity
         bool isExecutive = false,
         bool isContractor = false)
     {
-        makeTransition(transitionId, reasonId, attachments, comment, actorType, actorIdentifier, toActorId, isExecutive, isContractor);
+        makeTransition(
+            transitionId,
+            reasonId,
+            attachments,
+            comment,
+            actorType,
+            actorIdentifier,
+            toActorId,
+            isExecutive,
+            isContractor);
+    }
+
+    public void MoveToStage(
+        bool isAccepted,
+        int stageId,
+        int toActorId,
+        string comment,
+        List<Media> attachments,
+        string inspectorId,
+        Visibility? visibility)
+    {
+        moveToStage(isAccepted, stageId, toActorId, comment, attachments, inspectorId, visibility);
     }
 
     public List<ProcessTransition> GetPossibleTransitions()
@@ -515,9 +536,87 @@ public class Report : Entity
 
         autoTransition();
     }
+
+
+    private void moveToStage(
+        bool isAccepted,
+        int stageId,
+        int toActorId,
+        string comment,
+        List<Media> attachments,
+        string inspectorId,
+        Visibility? visibility)
+    {
+        var now = DateTime.UtcNow;
+        var duration = now - LastStatusDateTime;
+
+        //set the inspector id
+        InspectorId = inspectorId;
+
+        if (!isAccepted)
+        {
+            ReportState = ReportState.Finished;
+        }
+        else
+        {
+            var stage = Process.Stages.Where(p => p.Id == stageId).SingleOrDefault();
+            if (stage is null)
+                throw new Exception();
+
+            //_report.Priority = transitionInfo.Priority != null ? transitionInfo.Priority.Value : _report.Priority;
+            Visibility = visibility ?? Visibility;
+            CurrentStageId = stage.Id;
+            LastStatus = "ارجاع به " + stage.Name;
+            ReportState = ReportState.Live;
+            LastStatusDateTime = now;
+            LastTransitionId = null;
+            LastReasonId = null;
+            CurrentActorId = toActorId;
+        }
+
+        TransitionLog.CreateMoveToStage(
+            Id,
+            comment,
+            attachments,
+            "",
+            ActorType.Person,
+            inspectorId,
+            duration.TotalSeconds,
+            true);
+
+        if (isAccepted)
+        {
+            autoTransition();
+        }
+
+        /*
+        await CommunicationServices.AddNotification(
+            new Message()
+            {
+                ShahrbinInstanceId = _report.ShahrbinInstanceId,
+                Title = "تغییر در وضعیت درخواست" + " - " + _report.TrackingNumber,
+                Content = log.Message,
+                DateTime = log.DateTime,
+                MessageType = MessageType.Report,
+                SubjectId = _report.Id,
+                Recepients = new List<MessageRecepient>()
+                {
+                        new MessageRecepient() { Type = RecepientType.Person, ToId = _report.CitizenId }
+                }
+            },
+            _context);
+
+        if (moveToStageModel.IsAccepted)
+        {
+            await autoTransition2();
+        }
+
+        await _hub.Clients.All.Update();
+        */
+    }
     #endregion
 
-    
+
 
     /*
      *

@@ -177,5 +177,6 @@ public enum ReportLogType
     Change,
     Feedback,
     Created,
-    Approved
+    Approved,
+    MoveToStage
 }

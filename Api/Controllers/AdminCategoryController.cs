@@ -69,10 +69,10 @@ public class AdminCategoryController : ApiController
     {
         var category = categoryCreateDto.Adapt<Category>();
         //todo : AddCategoryCommand  need to complete......
-        var command = new AddCategoryCommand(category);
-        var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
+        //var command = new AddCategoryCommand(category);
+        //var result = await Sender.Send(command);
+        //if (result == null)
+        //    return Problem();
         return Ok();
     }
 
