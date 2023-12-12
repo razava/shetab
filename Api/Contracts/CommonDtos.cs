@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ReportAggregate;
+using System.ComponentModel.DataAnnotations;
 
 namespace Api.Contracts;
 
@@ -18,6 +19,7 @@ public record GetEnum(
 
 
 public record QueryFilter(
+    [MaxLength(50)]
     string? Query);
 
 
@@ -47,8 +49,10 @@ public class AddressDto
 
     public string Street { get; set; } = string.Empty;
     public string Valley { get; set; } = string.Empty;
+    [MaxLength(500)]
     public string Detail { get; set; } = string.Empty;//todo : nullable?
     public string Number { get; set; } = string.Empty;
+    [MaxLength(30)]
     public string PostalCode { get; set; } = string.Empty;
     public double Latitude { get; set; }
     public double Longitude { get; set; }
@@ -108,6 +112,7 @@ public record AdminGetQuickAccess(
 
 public record SetQuickAccessDto(
     int CategoryId,
+    [MaxLength(50)]
     string Title,
     int Order,
     IFormFile Image);
@@ -152,8 +157,11 @@ public record GetNewsDto(
     bool IsDeleted);
 
 public record SetNewsDto(
+    [MaxLength(256)]
     string Title,
+    [MaxLength(2048)]
     string Description,
+    [MaxLength(512)]
     string Url,
     IFormFile Image,
     bool IsDeleted);

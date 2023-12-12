@@ -14,6 +14,7 @@ using Infrastructure.Communications.PushNotification;
 using Infrastructure.Persistence;
 using Domain.Models.Relational.IdentityAggregate;
 using Infrastructure.Map.ParsiMap;
+using Api.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -188,6 +189,7 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 //app.UseAccessControlMiddleware();
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseStaticFiles();
 app.MapControllers();
 //app.MapControllerRoute(name: "default", pattern: "api/{controller}/{instanceId?}/{action}/{id?}");
