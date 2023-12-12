@@ -19,6 +19,7 @@ internal sealed class AddCategoryCommandHandler : IRequestHandler<AddCategoryCom
     {
         //TODO: perform required operations
         var category = Category.Create(
+            request.InstanceId,
             request.Code,
             request.Title,
             request.Description,

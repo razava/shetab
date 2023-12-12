@@ -72,6 +72,7 @@ public class Category : BaseModel
     //}
 
     public static Category Create(
+        int instanceId,
         string code,
         string title,
         string description,
@@ -89,6 +90,7 @@ public class Category : BaseModel
     {
         var category = new Category()
         {
+            ShahrbinInstanceId = instanceId,
             Code = code,
             Title = title,
             Description = description,

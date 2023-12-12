@@ -5,6 +5,7 @@ using MediatR;
 namespace Application.Categories.Commands.AddCategory;
 
 public sealed record AddCategoryCommand(
+    int InstanceId,
     string Code,
     string Title,
     string Description,
