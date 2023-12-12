@@ -21,6 +21,8 @@ public class Poll : BaseModel
     private Poll() { }
 
     public static Poll Create(
+        int instanceId,
+        string authorId,
         string title,
         PollType pollType,
         string question,
@@ -30,6 +32,8 @@ public class Poll : BaseModel
     {
         var poll = new Poll()
         {
+            ShahrbinInstanceId = instanceId,
+            AuthorId = authorId,
             Title = title,
             PollType = pollType,
             Question = question,

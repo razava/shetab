@@ -24,6 +24,7 @@
     <Folder Include="Comments\Queries\GetComments\" />
     <Folder Include="Configurations\Commands\" />
     <Folder Include="Feedbacks\Queries\" />
+    <Folder Include="Polls\Queries\GetPollByIdQuery\" />
     <Folder Include="Setup\Queries\" />
     <Folder Include="Workspaces\Commands\" />
   </ItemGroup>
