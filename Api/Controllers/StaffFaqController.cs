@@ -35,7 +35,7 @@ public class StaffFaqController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<ActionResult> CreateFaq(SetFaqDto createFaqDto)
+    public async Task<ActionResult> CreateFaq(CreateFaqDto createFaqDto)
     {
         var instanceId = User.GetUserInstanceId();
         var command = new AddFaqCommand(
@@ -53,7 +53,7 @@ public class StaffFaqController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> UpdateFaq(int id, SetFaqDto updateFaqDto)
+    public async Task<ActionResult> UpdateFaq(int id, UpdateFaqDto updateFaqDto)
     {
         var command = new UpdateFaqCommand(
             id,

@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Relational.ReportAggregate;
+using System.ComponentModel.DataAnnotations;
 
 namespace Api.Contracts;
 
@@ -61,12 +62,18 @@ public record FlattenShortCategoryDto(
 
 public class CategoryCreateDto
 {
+    [Required]
     public int Order { get; set; }
+    [Required]
     public int ParentId { get; set; }
+    [Required] [MaxLength(8)]
     public string Code { get; set; } = string.Empty;
+    [Required] [MaxLength(32)]
     public string Title { get; set; } = string.Empty;
     public int? ProcessId { get; set; }
+    [MaxLength(1024)]
     public string Description { get; set; } = string.Empty;
+    [MaxLength(1024)]
     public string AttachmentDescription { get; set; } = string.Empty;
     public int Duration { get; set; }
     public int ResponseDuration { get; set; }
@@ -81,10 +88,14 @@ public class CategoryUpdateDto
 {
     public int? Order { get; set; }
     public int? ParentId { get; set; }
+    [MaxLength(8)]
     public string Code { get; set; } = string.Empty;
+    [MaxLength(32)]
     public string Title { get; set; } = string.Empty;
     public int? ProcessId { get; set; }
+    [MaxLength(1024)]
     public string Description { get; set; } = string.Empty;
+    [MaxLength(1024)]
     public string AttachmentDescription { get; set; } = string.Empty;
     public int? Duration { get; set; }
     public int? ResponseDuration { get; set; }

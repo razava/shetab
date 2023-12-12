@@ -34,7 +34,7 @@ public class AdminQuickAccessController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<ActionResult> CreateQuickAccess(int instanceId, SetQuickAccessDto setDto)
+    public async Task<ActionResult> CreateQuickAccess(int instanceId, CreateQuickAccessDto setDto)
     {
         var command = new AddQuickAccessCommand(
             instanceId,
@@ -52,7 +52,7 @@ public class AdminQuickAccessController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> EditQuickAccesses(int id, SetQuickAccessDto setDto)
+    public async Task<ActionResult> EditQuickAccesses(int id, UpdateQuickAccessDto setDto)
     {
         var command = new UpdateQuickAccessCommand(
             id,
