@@ -367,7 +367,7 @@ public class ProcessRepository : GenericRepository<Process>, IProcessRepository
         return process;
     }
 
-    public async Task<Process?> UpdateTypicalProcess(int id, string code, string title, List<int> actorIds)
+    public async Task<Process?> UpdateTypicalProcess(int id, string? code, string? title, List<int>? actorIds)
     {
         Process? process;
         ProcessStage? stageExecutive;
@@ -381,16 +381,18 @@ public class ProcessRepository : GenericRepository<Process>, IProcessRepository
             .SingleOrDefaultAsync();
         if (process is null)
             throw new Exception("Process cannot be null here.");
-        process.Title = title;
-        process.Code = code;
+        process.Title = title ?? process.Title;
+        process.Code = code ?? process.Code;
 
-        var actors = await context.Set<Actor>().Where(p => actorIds.Contains(p.Id)).ToListAsync();
+        if(actorIds is not null)
+        {
+            var actors = await context.Set<Actor>().Where(p => actorIds.Contains(p.Id)).ToListAsync();
 
-        stageExecutive = process.Stages.Where(p => p.Name == "Executive").FirstOrDefault();
-        if (stageExecutive is null)
-            throw new Exception("Stage cannot be null here.");
-        stageExecutive.Actors = actors;
-
+            stageExecutive = process.Stages.Where(p => p.Name == "Executive").FirstOrDefault();
+            if (stageExecutive is null)
+                throw new Exception("Stage cannot be null here.");
+            stageExecutive.Actors = actors;
+        }
 
         ///////////////////
         ///
