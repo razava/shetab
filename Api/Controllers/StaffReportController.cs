@@ -214,7 +214,7 @@ public class StaffReportController : ApiController
             return Unauthorized();
         }
 
-        var addressInfo = new AddressInfo(
+        var addressInfo = new AddressInfoRequest(
             model.Address.RegionId,
             model.Address.Street,
             model.Address.Valley,
@@ -263,10 +263,10 @@ public class StaffReportController : ApiController
             return Unauthorized();
         }
 
-        AddressInfo? addressInfo = null;
+        AddressInfoRequest? addressInfo = null;
         if (model.Address != null)
         {
-            addressInfo = new AddressInfo(
+            addressInfo = new AddressInfoRequest(
                 model.Address.RegionId,
                 model.Address.Street,
                 model.Address.Valley,
@@ -312,10 +312,10 @@ public class StaffReportController : ApiController
             return Unauthorized();
         }
 
-        AddressInfo? addressInfo = null;
+        AddressInfoRequest? addressInfo = null;
         if (model.Address != null)
         {
-            addressInfo = new AddressInfo(
+            addressInfo = new AddressInfoRequest(
                 model.Address.RegionId,
                 model.Address.Street,
                 model.Address.Valley,

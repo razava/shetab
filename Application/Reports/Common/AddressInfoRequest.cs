@@ -3,15 +3,15 @@ using NetTopologySuite.Geometries;
 
 namespace Application.Reports.Common;
 
-public record AddressInfo(
+public record AddressInfoRequest(
     int RegionId,
-    string Street,
-    string Valley,
-    string Detail,
-    string Number,
-    string PostalCode,
     double Latitude,
     double Longitude,
+    string PostalCode = "",
+    string Number = "",
+    string Street = "",
+    string Valley = "",
+    string Detail = "",
     double? Elevation = null)
 {
     public Point Location { get { return new Point(Longitude, Latitude) { SRID = 4326 }; } }

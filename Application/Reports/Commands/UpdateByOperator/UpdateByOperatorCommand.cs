@@ -9,7 +9,7 @@ public sealed record UpdateByOperatorCommand(
     string operatorId,
     int? CategoryId,
     string? Comments,
-    AddressInfo? Address,
+    AddressInfoRequest? Address,
     List<Guid>? Attachments,
     bool? IsPublic = true) : IRequest<Report>;
 

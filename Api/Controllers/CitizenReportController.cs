@@ -135,7 +135,7 @@ public class CitizenReportController : ApiController
         }
 
         var phoneNumber = username;
-        var addressInfo = new AddressInfo(
+        var addressInfo = new AddressInfoRequest(
             model.Address.RegionId,
             model.Address.Street,
             model.Address.Valley,

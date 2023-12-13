@@ -10,7 +10,7 @@ public sealed record CreateReportByCitizenCommand(
     string phoneNumber,
     int CategoryId,
     string Comments,
-    AddressInfo Address,
+    AddressInfoRequest Address,
     List<Guid> Attachments,
     bool IsIdentityVisible = true,
     bool IsPublic = true) : IRequest<Report>;

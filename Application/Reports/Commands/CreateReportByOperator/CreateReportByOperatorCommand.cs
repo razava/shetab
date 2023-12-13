@@ -12,7 +12,7 @@ public sealed record CreateReportByOperatorCommand(
     string lastName,
     int CategoryId,
     string Comments,
-    AddressInfo Address,
+    AddressInfoRequest Address,
     List<Guid> Attachments,
     bool IsIdentityVisible = true,
     bool IsPublic = true) : IRequest<Report>;
