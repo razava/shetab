@@ -216,13 +216,9 @@ public class StaffReportController : ApiController
 
         var addressInfo = new AddressInfoRequest(
             model.Address.RegionId,
-            model.Address.Street,
-            model.Address.Valley,
-            model.Address.Detail,
-            model.Address.Number,
-            model.Address.PostalCode,
             model.Address.Latitude,
-            model.Address.Longitude);
+            model.Address.Longitude,
+            model.Address.Detail);
 
         var command = new CreateReportByOperatorCommand(
             instanceId,
@@ -267,14 +263,10 @@ public class StaffReportController : ApiController
         if (model.Address != null)
         {
             addressInfo = new AddressInfoRequest(
-                model.Address.RegionId,
-                model.Address.Street,
-                model.Address.Valley,
-                model.Address.Detail,
-                model.Address.Number,
-                model.Address.PostalCode,
-                model.Address.Latitude,
-                model.Address.Longitude);
+            model.Address.RegionId,
+            model.Address.Latitude,
+            model.Address.Longitude,
+            model.Address.Detail);
 
         }
         //TODO: Visibility should be considerd
@@ -316,14 +308,10 @@ public class StaffReportController : ApiController
         if (model.Address != null)
         {
             addressInfo = new AddressInfoRequest(
-                model.Address.RegionId,
-                model.Address.Street,
-                model.Address.Valley,
-                model.Address.Detail,
-                model.Address.Number,
-                model.Address.PostalCode,
-                model.Address.Latitude,
-                model.Address.Longitude);
+            model.Address.RegionId,
+            model.Address.Latitude,
+            model.Address.Longitude,
+            model.Address.Detail);
 
         }
         //TODO: Visibility should be considerd

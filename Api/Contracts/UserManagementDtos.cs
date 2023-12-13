@@ -1,10 +1,12 @@
 ﻿using Api.Dtos;
 using Application.Users.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace Api.Contracts;
 
 
 public record NewPasswordDto(
+    [Required] [MinLength(6)] [MaxLength(512)]
     string NewPassword);
 
 public record SetRegionsDto(
@@ -15,18 +17,27 @@ public record UpdateRolesDto(
     List<RolesDto> Roles);
 //todo : no need for roleTitle(or display name) in roles list above
 public record RolesDto(
+    [Required] [MaxLength(32)]
     string RoleName,
+    [MaxLength(32)]
     string RoleTitle,
+    [Required]
     bool IsIn);
 
 public record IsInRegionDto(
+    [Required]
     int RegionId,
+    [MaxLength(64)]
     string RegionName,
+    [Required]
     bool IsIn);
 
 public record UpdateUserDto(
+    [MaxLength(32)]
     string? FirstName,
+    [MaxLength(32)]
     string? LastName,
+    [MaxLength(32)]
     string? Title);
 
 
@@ -54,18 +65,25 @@ public record FilterGetUsers(
     DateTime? SentToDate,
     List<string>? RoleNames,
     List<int>? RegionIds,
+    [MaxLength(64)]
     string? Query);
 
 
 public record CreateUserDto(
+        [Required] [MaxLength(32)]
         string Username,
+        [Required] [MinLength(6)] [MaxLength(512)]
         string Password,
+        [MaxLength(32)]
         string FirstName = "",
+        [MaxLength(32)]
         string LastName = "",
+        [MaxLength(32)]
         string Title = "");
 
 
 public record CreateContractorDto(
+       [Required] [MaxLength(11)] [Phone]
        string PhoneNumber,
        string Organization = "",
        string FirstName = "",
@@ -90,3 +108,4 @@ public record GetCitizenDto(
     MediaDto Avatar,
     string PhoneNumber,
     AddressDetailDto Address);
+

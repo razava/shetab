@@ -137,13 +137,9 @@ public class CitizenReportController : ApiController
         var phoneNumber = username;
         var addressInfo = new AddressInfoRequest(
             model.Address.RegionId,
-            model.Address.Street,
-            model.Address.Valley,
-            model.Address.Detail,
-            model.Address.Number,
-            model.Address.PostalCode,
             model.Address.Latitude,
-            model.Address.Longitude);
+            model.Address.Longitude,
+            model.Address.Detail);
 
         var command = new CreateReportByCitizenCommand(
             instanceId,

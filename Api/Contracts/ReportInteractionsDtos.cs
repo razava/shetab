@@ -1,33 +1,46 @@
 ﻿using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace Api.Contracts;
 
 public record CreateFeedbackDto(
+    [MaxLength(1024)]
     string token,
+    [Required]
     int rating);
 
 public record UpdateCommentDto(
+    [Required] [MaxLength(512)]
     string Comment,
     bool? IsSeen,         //..... ??
     bool? IsVerified);    //..... ??
 
 public record ReplyCommentDto(
+    [Required] [MaxLength(512)]
     string Comment);
 
 public record PutSatisfactionDto(
+    [Required]
     int Rating,
+    [Required] [MaxLength(512)]
     string Comment);
 
 public record CreateReportViolationDto(
+    [Required]
     Guid ReportId,
+    [Required]
     int ViolationTypeId,
+    [MaxLength(512)]
     string Description);
 
 
 public record CreateCommentViolationDto(
+    [Required]
     Guid CommentId,
+    [Required]
     int ViolationTypeId,
+    [MaxLength(512)]
     string Description);
 
 
@@ -52,6 +65,7 @@ public record ViolationPutDto(
     Guid Id,
     ViolationCheckResult? ViolationCheckResult,
     DateTime? ViolatoinCheckDateTime,
+    [MaxLength(512)]
     string Comments);
 
 
@@ -59,6 +73,7 @@ public record FilterGetCommentViolation(
     DateTime? SentFromDate,
     DateTime? SentToDate,
     List<int>? CategoryIds,
+    [MaxLength(64)]
     string? Query);
 
 

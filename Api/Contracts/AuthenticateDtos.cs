@@ -10,8 +10,9 @@ public record LoginStaffDto(
     [Required] [MinLength(6)] [MaxLength(512)]
     string Password);
 
+
 public record VerificationDto(
-    [Required] [MaxLength(32)]
+    [Required] [MaxLength(11)] [Phone]
     string Username,
     [Required] [MinLength(6)] [MaxLength(512)]
     string Password,
@@ -31,29 +32,30 @@ public record CaptchaValidateDto(
 
 
 public record LoginDto(
-    [Required] [MaxLength(32)]
+    [Required] [MaxLength(11)] [Phone]
     string Username,
     [Required] [MinLength(6)] [MaxLength(512)]
     string Password,
     CaptchaValidateDto Captcha);
 
 
+//[RegularExpression("^09[0-9]{9}$", ErrorMessage = "PhoneNumber Is in Invalid Format.")]
 public record LoginAppDto(
-    [Required] [MaxLength(32)]
+    [Required] [MaxLength(11)] [Phone]
     string Username,
     [Required] [MinLength(6)] [MaxLength(512)]
     string Password);
 
 
 public record RegisterDto(
-    [Required] [MaxLength(32)]
+    [Required] [MaxLength(11)] [Phone]
     string Username,
     [Required] [MinLength(6)] [MaxLength(512)]
     string Password,
     CaptchaValidateDto Captcha);
 
 public record RegisterAppDto(
-    [Required] [MaxLength(32)]
+    [Required] [MaxLength(11)] [Phone]
     string Username,
     [Required] [MinLength(6)] [MaxLength(512)]
     string Password);
@@ -67,7 +69,7 @@ public record UpdateCitizenProfileDto(
     Gender? Gender,
     Education? Education,
     DateTime? BirthDate,
-    [MaxLength(16)]
+    [MaxLength(11)]
     string? PhoneNumber2,
     //AddressDto Address,
     [MaxLength(16)]
@@ -79,7 +81,7 @@ public record UpdateStaffProfileDto(
     string? FirstName,
     [MaxLength(32)]
     string? LastName,
-    [MaxLength(16)]
+    [MaxLength(11)]
     string? PhoneNumber2,
     [MaxLength(32)]
     string? Title,
@@ -106,24 +108,24 @@ public record ChangePasswordAppDto(
 
 
 public record ForgotPasswordDto(
-    [Required] [MaxLength(16)]
+    [Required] [MaxLength(11)] [Phone]
     string PhoneNumber,
     CaptchaValidateDto Captcha);
 
 public record ForgotPasswordAppDto(
-    [Required] [MaxLength(16)]
+    [Required] [MaxLength(11)] [Phone]
     string PhoneNumber);
 
 
 public record RequestTokenDto(
-    [Required] [MaxLength(16)]
+    [Required] [MaxLength(11)] [Phone]
     string PhoneNumber,
     [Required] [MaxLength(8)]
     string VerificationCode);
 
 
 public record ResetPasswordDto(
-    [Required] [MaxLength(32)]
+    [Required] [MaxLength(11)] [Phone]
     string Username,
     [Required] [MaxLength(1024)]
     string ResetPasswordToken,
@@ -157,8 +159,7 @@ public record GetStaffProfileDto(
     MediaDto Avatar);
 
 
-
-
+//todo : review for annotations
 public record GovLoginDto(
     string Code,
     string State);

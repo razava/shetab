@@ -3,12 +3,15 @@ using Application.Reports.Common;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace Api.Contracts;
 
 
 public record CitizenCreateReportDto(
+    [Required]
     int CategoryId,
+    [MaxLength(1024)]
     string Comments,
     AddressDto Address,
     List<Guid>? Attachments,
@@ -58,10 +61,15 @@ public record CitizenGetReportDetailsDto(
 
 public class OperatorCreateReportDto
 {
+    [Required]
     public int CategoryId { get; set; }
+    [MaxLength(1024)]
     public string Comments { get; set; } = null!;
+    [Required] [MaxLength(16)]
     public string PhoneNumber { get; set; } = null!;
+    [MaxLength(32)]
     public string FirstName { get; set; } = string.Empty;
+    [MaxLength(32)]
     public string LastName { get; set; } = string.Empty;
     public bool IsIdentityVisible { get; set; }
     public AddressDto Address { get; set; } = null!;
@@ -91,6 +99,7 @@ public class UpdateReportDto
 {
     //public Guid Id { get; set; } 
     public int? CategoryId { get; set; }
+    [MaxLength(1024)]
     public string? Comments { get; set; }
     public bool? IsIdentityVisible { get; set; }
     public Visibility? Visibility { get; set; }
@@ -138,12 +147,14 @@ public record FilterGetReports(
     DateTime? SentFromDate,
     DateTime? SentToDate,
     List<ReportState>? CurrentStates,
+    [MaxLength(64)]
     string? Query);
 
 
 public record FilterGetAllReports(
     DateTime? SentFromDate,
     DateTime? SentToDate,
+    //todo : annotation for strings?
     List<string>? RoleNames,
     List<int>? CategoryIds,
     List<int>? RegionIds,
@@ -151,15 +162,20 @@ public record FilterGetAllReports(
     bool HasSatisfaction,  //??
     int MinSatisfaction,   //??
     int MaxSatisfaction,   //??
+    [MaxLength(64)]
     string? Query);
 
 
 
 public record MakeTransitionDto(
+    [Required]
     int TransitionId,
+    [Required]
     int ReasonId,
     List<Guid> Attachments,
+    [MaxLength(512)]
     string Comment,
+    [Required]
     int ToActorId)
 {
     public List<Guid> Attachments { get; init; } = Attachments ?? new List<Guid>();
@@ -221,11 +237,15 @@ public class ActorDto
     public List<ActorDto> Actors { get; set; } = new List<ActorDto>();
 }
 
-
+//todo : review annotations
 public record MoveToStageDto(
-bool IsAccepted,
-int StageId,
+    //todo : need annotation??
+    bool IsAccepted,
+    [Required]
+    int StageId,
+    //todo : need annotation??
     List<ActorDto> Actors,
+    [MaxLength(512)]
     string Comment,
     List<Guid> Attachments,
     ActorType? ActorType,
@@ -239,10 +259,13 @@ public record GetPossibleSourceDto(
     string RoleTitle);
 
 
+//todo : review annotations
 public record MessageToCitizenDto(
     List<Guid> Attachments,
+    [MaxLength(512)]
     string Comment,
     bool IsPublic,
+    [MaxLength(512)]
     string Message);
 
 
