@@ -7,11 +7,11 @@ public record AddressInfoRequest(
     int RegionId,
     double Latitude,
     double Longitude,
+    string Detail,
     string PostalCode = "",
     string Number = "",
     string Street = "",
     string Valley = "",
-    string Detail = "",
     double? Elevation = null)
 {
     public Point Location { get { return new Point(Longitude, Latitude) { SRID = 4326 }; } }
