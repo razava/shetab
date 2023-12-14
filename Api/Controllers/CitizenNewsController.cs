@@ -1,5 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
+using Application.NewsApp.Queries.GetNews;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +19,12 @@ public class CitizenNewsController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("News")]
-    public async Task<ActionResult<List<GetNewsDto>>> GetNews()
+    public async Task<ActionResult<List<GetNewsDto>>> GetNews(int instanceId)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var query = new GetNewsQuery(instanceId);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List<GetNewsDto>>();
+        return Ok(mappedResult);
     }
 
 

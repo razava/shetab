@@ -2,6 +2,8 @@
 using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Polls.Commands.AnswerPollCommand;
+using Application.Polls.Queries.GetPollsQuery;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,20 +22,23 @@ public class CitizenPollsController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Polls")]
-    public async Task<ActionResult> GetPolls(int instanceId)
+    public async Task<ActionResult<List<GetPollsDto>>> GetPolls(int instanceId)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var userId = User.GetUserId();
+        var query = new GetPollsQuery(instanceId, userId);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List<GetPollsDto>>();
+        return Ok(mappedResult);
     }
 
 
-    [Authorize(Roles = "Citizen")]
-    [HttpGet("Polls/{id:int}")]
-    public async Task<ActionResult> GetPollById(int id)
-    {
-        await Task.CompletedTask;
-        return Ok();
-    }
+    //[Authorize(Roles = "Citizen")]
+    //[HttpGet("Polls/{id:int}")]
+    //public async Task<ActionResult> GetPollById(int id)
+    //{
+    //    await Task.CompletedTask;
+    //    return Ok();
+    //}
 
     [Authorize(Roles = "Citizen")]
     [HttpPost("Polls/Answer/{id:int}")]

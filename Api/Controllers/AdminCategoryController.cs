@@ -4,8 +4,6 @@ using Api.ExtensionMethods;
 using Application.Categories.Commands.AddCategory;
 using Application.Categories.Commands.UpdateCategory;
 using Application.Categories.Queries.GetCategory;
-using Application.Common.Interfaces.Persistence;
-using Domain.Models.Relational;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -37,14 +35,17 @@ public class AdminCategoryController : ApiController
     //    return Ok();
     //}
 
-    //[Authorize]
-    //[HttpGet("All")]
-    //public async Task<ActionResult<List<FlattenCategoryDto>>> GetAllCategories([FromQuery] QueryFilter queryFilter)
-    //{
-    //    await Task.CompletedTask;
-    //    //Does GetCategoryQuery include categories list for this endpoint???
-    //    return Ok();
-    //}
+    [Authorize]
+    [HttpGet("All")]
+    public async Task<ActionResult<CategoryGetDto>> GetAllCategories([FromQuery] QueryFilter queryFilter)
+    {
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetCategoryQuery(instanceId, true);
+        var result = await Sender.Send(query);
+        var root = result.Where(r => r.ParentId == null).Single();
+
+        return root.Adapt<CategoryGetDto>();
+    }
 
     /*
     [Authorize]

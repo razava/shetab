@@ -26,7 +26,7 @@ public class StaffFaqController : ApiController
     public async Task<ActionResult<List<GetFaqsDto>>> GetFaqs()
     {
         var instanceId = User.GetUserInstanceId();
-        var query = new GetFaqQuery(instanceId);
+        var query = new GetFaqQuery(instanceId, true);
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<List<GetFaqsDto>>();
         return Ok(mappedResult);

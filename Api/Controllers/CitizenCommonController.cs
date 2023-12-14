@@ -1,14 +1,10 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.ExtensionMethods;
-using Application.AdministrativeDivisions.Queries.GetProvince;
 using Application.Categories.Queries.GetCategory;
-using Application.Categories.Queries.GetCategoryById;
 using Application.Configurations.Queries.ShahrbinInstanceManagement;
 using Application.Configurations.Queries.ViolationTypes;
-using AutoMapper.Execution;
 using Domain.Models.Relational.Common;
-using Domain.Models.Relational.ReportAggregate;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -61,7 +57,7 @@ public class CitizenCommonController : ApiController
         return Ok(mappedResult);
     }
 
-    [Authorize]
+    //[Authorize]
     [HttpGet("ShahrbinInstances")]
     public async Task<ActionResult<List<ShahrbinInstance>>> GetShahrbinInstances()
     {
