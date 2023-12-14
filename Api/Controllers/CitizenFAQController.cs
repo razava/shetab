@@ -14,7 +14,7 @@ namespace Api.Controllers;
 [ApiController]
 public class CitizenFAQController : ApiController
 {
-    protected CitizenFAQController(ISender sender) : base(sender)
+    public CitizenFAQController(ISender sender) : base(sender)
     {
     }
 
