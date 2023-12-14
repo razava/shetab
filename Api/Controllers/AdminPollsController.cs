@@ -65,13 +65,13 @@ public class AdminPollsController : ApiController
     }
 
 
-    [Authorize(Roles = "Admin")]
-    [HttpPost("Attach/{id:int}")]
-    public async Task<ActionResult> AttachToPoll(int id)
-    {
-        await Task.CompletedTask;
-        return Ok();
-    }
+    //[Authorize(Roles = "Admin")]
+    //[HttpPost("Attach/{id:int}")]
+    //public async Task<ActionResult> AttachToPoll(int id)
+    //{
+    //    await Task.CompletedTask;
+    //    return Ok();
+    //}
 
     [Authorize(Roles = "Admin")]
     [HttpPut("Edit/{id:int}")]
@@ -91,13 +91,13 @@ public class AdminPollsController : ApiController
     }
 
 
-    [Authorize(Roles = "Admin")]
-    [HttpPut("Status/{id:int}")]
-    public async Task<ActionResult> UpdatePollStatus(int id)
-    {
-        await Task.CompletedTask;
-        return Ok();
-    }
+    //[Authorize(Roles = "Admin")]
+    //[HttpPut("Status/{id:int}")]
+    //public async Task<ActionResult> UpdatePollStatus(int id)
+    //{
+    //    await Task.CompletedTask;
+    //    return Ok();
+    //}
     
 
 

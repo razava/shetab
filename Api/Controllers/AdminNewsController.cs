@@ -26,7 +26,7 @@ public class AdminNewsController : ApiController
     public async Task<ActionResult<List<GetNewsDto>>> GetNews()
     {
         var instanceId = User.GetUserInstanceId();
-        var query = new GetNewsQuery(instanceId);
+        var query = new GetNewsQuery(instanceId, true);
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<List<GetNewsDto>>();
         return Ok(mappedResult);

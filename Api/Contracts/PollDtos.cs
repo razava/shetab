@@ -1,5 +1,4 @@
-﻿using Application.Polls.Common;
-using Domain.Models.Relational.Common;
+﻿using Domain.Models.Relational.Common;
 
 namespace Api.Contracts;
 
