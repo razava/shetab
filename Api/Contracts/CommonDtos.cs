@@ -192,14 +192,14 @@ public record GetFaqsDto(
 public record CreateFaqDto(
     [Required] [MaxLength(512)]
     string Question,
-    [Required] [MaxLength(2048)]
+    [Required] [MaxLength(5120)]
     string Answer,
     bool IsDeleted);
 
 public record UpdateFaqDto(
     [MaxLength(512)]
     string? Question,
-    [MaxLength(2048)]
+    [MaxLength(5120)]
     string? Answer,
     bool? IsDeleted);
 

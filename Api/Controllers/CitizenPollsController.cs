@@ -1,4 +1,7 @@
 ﻿using Api.Abstractions;
+using Api.Contracts;
+using Api.ExtensionMethods;
+using Application.Polls.Commands.AnswerPollCommand;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,9 +37,17 @@ public class CitizenPollsController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpPost("Polls/Answer/{id:int}")]
-    public async Task<ActionResult> AnswerPoll(int id)
+    public async Task<ActionResult> AnswerPoll(int id, AnswerToPollDto answerDto)
     {
-        await Task.CompletedTask;
+        var userId = User.GetUserId();
+        var commad = new AnswerPollCommand(
+            userId,
+            id,
+            answerDto.Text,
+            answerDto.ChoicesIds);
+        var result = await Sender.Send(commad);
+        if (!result)
+            return Problem();
         return Ok();
     }
 

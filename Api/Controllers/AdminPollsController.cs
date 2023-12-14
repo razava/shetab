@@ -1,4 +1,11 @@
 ﻿using Api.Abstractions;
+using Api.Contracts;
+using Api.ExtensionMethods;
+using Application.Polls.Commands.AddPollCommand;
+using Application.Polls.Commands.UpdatePollCommand;
+using Application.Polls.Common;
+using Application.Polls.Queries.GetPollsQuery;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,19 +25,35 @@ public class AdminPollsController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<ActionResult> CreatePoll()
+    public async Task<ActionResult> CreatePoll(PollCreateDto createDto)
     {
-        await Task.CompletedTask;
+        var userId = User.GetUserId();
+        var instanceId = User.GetUserInstanceId();
+        var command = new AddPollCommand(
+            instanceId,
+            userId,
+            createDto.Title,
+            createDto.PollType,
+            createDto.Question,
+            createDto.Choices.Adapt<List<PollChoiceRequest>>(),
+            createDto.IsActive);
+        var result = await Sender.Send(command);
+        if (result == null)
+            return Problem();
         return Ok();
     }
 
 
     [Authorize(Roles = "Admin")]
     [HttpGet("All")]
-    public async Task<ActionResult> GetAllPolls()
+    public async Task<ActionResult<List<GetPollsDto>>> GetAllPolls()
     {
-        await Task.CompletedTask;
-        return Ok();
+        var userId = User.GetUserId();
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetPollsQuery(instanceId, userId);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List<GetPollsDto>>();
+        return Ok(mappedResult);
     }
 
     [Authorize(Roles = "Admin")]
@@ -52,10 +75,19 @@ public class AdminPollsController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPut("Edit/{id:int}")]
-    public async Task<ActionResult> EditPoll(int id)
+    public async Task<ActionResult> EditPoll(int id, PollUpdateDto updateDto)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var command = new UpdatePollCommand(
+            id,
+            updateDto.Title,
+            updateDto.PollType,
+            updateDto.Question,
+            updateDto.Choices.Adapt<List<PollChoiceRequest>>(),
+            updateDto.PollState);
+        var result = await Sender.Send(command);
+        if (result == null)
+            return Problem();
+        return NoContent();
     }
 
 
