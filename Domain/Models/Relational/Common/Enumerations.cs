@@ -88,8 +88,7 @@ public enum PollState
 {
     Active,
     Suspended,
-    Expired,
-    Deleted
+    Expired
 }
 
 public enum ViolationCheckResult

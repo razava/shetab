@@ -12,6 +12,7 @@ public class Poll : BaseModel
     public IEnumerable<PollChoice> Choices { get; set; } = new List<PollChoice>();
     public DateTime Created { get; set; }
     public DateTime? Expiration { get; set; }
+    public bool IsDeleted { get; set; }
     public PollState Status { get; set; }
     public List<PollAnswer> Answers { get; set; } = new List<PollAnswer>();
     //public List<Media> PollMedias { get; set; } = new List<Media>();
@@ -27,7 +28,7 @@ public class Poll : BaseModel
         PollType pollType,
         string question,
         List<PollChoice> choices,
-        bool isActive)
+        bool isDeleted)
     {
         var poll = new Poll()
         {
@@ -37,7 +38,7 @@ public class Poll : BaseModel
             PollType = pollType,
             Question = question,
             Choices = choices,
-            Status = isActive ? PollState.Active : PollState.Suspended,
+            IsDeleted = isDeleted
         };
 
         return poll;
@@ -48,13 +49,15 @@ public class Poll : BaseModel
         PollType? pollType,
         string? question,
         List<PollChoice>? choices,
-        PollState? status)
+        PollState? status,
+        bool? isDeleted = false)
     {
         Title = title ?? Title;
         PollType = pollType ?? PollType;
         Question = question ?? Question;
         Choices = choices ?? Choices;
         Status = status ?? Status;
+        IsDeleted = isDeleted ?? IsDeleted;
     }
 
     public void Answer(string userId, List<int> choices, string? text)
