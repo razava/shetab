@@ -16,15 +16,9 @@ internal class GetQuickAccessesQueryHandler : IRequestHandler<GetQuickAccessesQu
     }
 
     public async Task<List<QuickAccess>> Handle(GetQuickAccessesQuery request, CancellationToken cancellationToken)
-    {
-        Expression<Func<QuickAccess, bool>>? filter = q => q.IsDeleted != true;
-
-        if (request.RoleNames is not null &&  request.RoleNames.Contains(RoleNames.Admin)) 
-        {
-            filter = null;
-        }
-        
-        var result = await _quickAccessRepository.GetAsync(filter, false, o => o.OrderBy(q => q.Order));
+    {   
+        var result = await _quickAccessRepository
+            .GetAsync(q => (request.ReturnAll || q.IsDeleted == false), false, o => o.OrderBy(q => q.Order));
 
         return result.ToList();
     }

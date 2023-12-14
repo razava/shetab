@@ -24,8 +24,7 @@ public class AdminQuickAccessController : ApiController
     [HttpGet]
     public async Task<ActionResult<List<AdminGetQuickAccess>>> GetQuickAccesses(int instanceId, [FromQuery] QueryFilter queryFilter)
     {
-        var roles = User.GetUserRoles();
-        var query = new GetQuickAccessesQuery(instanceId, roles);
+        var query = new GetQuickAccessesQuery(instanceId, true);
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<AdminGetQuickAccess>();
         return Ok(mappedResult);

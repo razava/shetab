@@ -1,7 +1,6 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using MediatR;
-using System.Linq.Expressions;
 
 namespace Application.NewsApp.Queries.GetNews;
 
@@ -16,10 +15,7 @@ internal class GetNewsQueryHandler : IRequestHandler<GetNewsQuery, List<News>>
 
     public async Task<List<News>> Handle(GetNewsQuery request, CancellationToken cancellationToken)
     {
-        Expression<Func<News, bool>>? filter = q => q.IsDeleted != true;
-
-
-        var result = await _newsRepository.GetAsync(filter, false);
+        var result = await _newsRepository.GetAsync(n => (request.ReturnAll || n.IsDeleted == false), false);
 
         return result.ToList();
     }

@@ -16,10 +16,7 @@ internal class GetFaqQueryHandler : IRequestHandler<GetFaqQuery, List<Faq>>
 
     public async Task<List<Faq>> Handle(GetFaqQuery request, CancellationToken cancellationToken)
     {
-        Expression<Func<Faq, bool>>? filter = q => q.IsDeleted != true;
-
-
-        var result = await _faqRepository.GetAsync(filter, false);
+        var result = await _faqRepository.GetAsync(f => (request.ReturnAll || f.IsDeleted == false), false);
 
         return result.ToList();
     }
