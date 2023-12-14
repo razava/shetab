@@ -8,6 +8,6 @@ public class PollConfigurations : IEntityTypeConfiguration<Poll>
 {
     public void Configure(EntityTypeBuilder<Poll> builder)
     {
-        builder.OwnsMany(p => p.PollMedias);
+        
     }
 }

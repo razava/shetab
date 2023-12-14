@@ -39,7 +39,7 @@ internal class GetPollsQueryHandler : IRequestHandler<GetPollsQuery, List<GetPol
                 else
                     answerResponse = new PollAnswerResponse(poll.Answers.Single().Choices.Select(pac => pac.Id).ToList(), null);
             }
-            var pr = new GetPollsResponse(poll.Id, poll.Title, poll.PollType, poll.Question, poll.PollMedias, choices, answerResponse);
+            var pr = new GetPollsResponse(poll.Id, poll.Title, poll.PollType, poll.Question, choices, answerResponse);
             result.Add(pr);
         }
 

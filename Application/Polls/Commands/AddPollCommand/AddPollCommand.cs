@@ -13,5 +13,4 @@ public record AddPollCommand(
     PollType PollType,
     string Question,
     List<PollChoiceRequest> Choices,
-    bool IsActive,
-    List<IFormFile> Medias) : IRequest<Poll>;
+    bool IsActive) : IRequest<Poll>;

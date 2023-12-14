@@ -14,7 +14,7 @@ public class Poll : BaseModel
     public DateTime? Expiration { get; set; }
     public PollState Status { get; set; }
     public List<PollAnswer> Answers { get; set; } = new List<PollAnswer>();
-    public List<Media> PollMedias { get; set; } = new List<Media>();
+    //public List<Media> PollMedias { get; set; } = new List<Media>();
     public string AuthorId { get; set; } = null!;
     public ApplicationUser Author { get; set; } = null!;
 
@@ -27,8 +27,7 @@ public class Poll : BaseModel
         PollType pollType,
         string question,
         List<PollChoice> choices,
-        bool isActive,
-        List<Media> medias)
+        bool isActive)
     {
         var poll = new Poll()
         {
@@ -39,7 +38,6 @@ public class Poll : BaseModel
             Question = question,
             Choices = choices,
             Status = isActive ? PollState.Active : PollState.Suspended,
-            PollMedias = medias
         };
 
         return poll;
@@ -50,15 +48,13 @@ public class Poll : BaseModel
         PollType? pollType,
         string? question,
         List<PollChoice>? choices,
-        PollState? status,
-        List<Media>? medias)
+        PollState? status)
     {
         Title = title ?? Title;
         PollType = pollType ?? PollType;
         Question = question ?? Question;
         Choices = choices ?? Choices;
         Status = status ?? Status;
-        PollMedias = medias ?? PollMedias;
     }
 
     public void Answer(string userId, List<int> choices, string? text)
