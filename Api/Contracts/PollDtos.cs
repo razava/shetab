@@ -20,8 +20,8 @@ public record GetPollsDto(
     string Title,
     PollType PollType,
     string Question,
-    List<Media> Medias,
     List<PollChoiceDto> Choices,
+    PollState PollState,
     PollAnswerDto? Answer);
 
 public record PollChoiceDto(int Id, string ShortTitle, string Text, int Order);
