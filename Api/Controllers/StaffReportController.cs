@@ -8,6 +8,7 @@ using Application.Comments.Commands.UpdateComment;
 using Application.Common.Interfaces.Persistence;
 using Application.Reports.Commands.AcceptByOperator;
 using Application.Reports.Commands.CreateReportByOperator;
+using Application.Reports.Commands.InspectorTransition;
 using Application.Reports.Commands.MessageToCitizen;
 using Application.Reports.Commands.UpdateByOperator;
 using Application.Reports.Common;
@@ -137,9 +138,21 @@ public class StaffReportController : ApiController
 
     [Authorize(Roles = "Inspector")]
     [HttpPost("Review/{id:Guid}")]
-    public async Task<ActionResult> Review(Guid id, MoveToStageDto moveToStageDto)
+    public async Task<ActionResult> Review(Guid id, InspectorTransitionDto dto) 
     {
-        await Task.CompletedTask;//.........................................................
+        var userId = User.GetUserId();
+        var command = new InspectorTransitionCommand(
+            id,
+            dto.IsAccepted,
+            dto.Attachments,
+            dto.Comment,
+            userId,
+            dto.ToActorId,
+            dto.StageId,
+            dto.Visibility);
+        var result = await Sender.Send(command);
+        if (result == null)
+            return Problem();
         return Ok();
     }
 
