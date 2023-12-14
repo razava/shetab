@@ -1,5 +1,4 @@
 ﻿using Api.Abstractions;
-using Api.Authentication;
 using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Common.Interfaces.Persistence;
@@ -15,12 +14,10 @@ using Application.Users.Queries.GetRoles;
 using Application.Users.Queries.GetUserById;
 using Application.Users.Queries.GetUsers;
 using Domain.Models.Relational.IdentityAggregate;
-using ErrorOr;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
 namespace Api.Controllers;
@@ -74,6 +71,7 @@ public class AdminUserManagementController : ApiController
         //todo : set appropriate responses.
     }
 
+
     [Authorize(Roles = "Admin, Manager")]
     [HttpPut("Roles/{id}")]
     public async Task<IActionResult> SetRoles(string id, UpdateRolesDto updateRolesDto) 
@@ -86,6 +84,7 @@ public class AdminUserManagementController : ApiController
         //todo : handle result & set appropriate responses.
         return Ok();
     }
+
 
     [Authorize(Roles = "Admin, Manager")]
     [HttpGet("Roles/{id}")]
@@ -109,6 +108,7 @@ public class AdminUserManagementController : ApiController
         if(!result) return Problem();
         return Ok();
     }
+    
 
     [Authorize]
     [HttpGet("Regions/{id}")]

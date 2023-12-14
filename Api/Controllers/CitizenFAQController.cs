@@ -1,6 +1,5 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
-using Api.ExtensionMethods;
 using Application.Faqs.Queries.GetFaqQuery;
 using Mapster;
 using MediatR;

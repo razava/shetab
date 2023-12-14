@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
-using Microsoft.Extensions.Options;
 using Api.Abstractions;
 using Api.Dtos.ParsiMap;
 using Application.Maps.Queries.MapForwardQuery;

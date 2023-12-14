@@ -60,7 +60,7 @@ public class AdminPollsController : ApiController
     [HttpGet("Summary/{id:int}")]
     public async Task<ActionResult> GetSummary(int id)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//..........................
         return Ok();
     }
 

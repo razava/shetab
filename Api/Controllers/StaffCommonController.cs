@@ -3,13 +3,10 @@ using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.AdministrativeDivisions.Queries.GetProvince;
 using Application.Categories.Queries.GetCategory;
-using Application.Categories.Queries.GetCategoryById;
 using Application.Configurations.Queries.ShahrbinInstanceManagement;
 using Application.Configurations.Queries.ViolationTypes;
 using Application.Users.Queries.GetRegions;
-using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
-using Domain.Models.Relational.ReportAggregate;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -46,15 +43,6 @@ public class StaffCommonController : ApiController
         var query = new ShahrbinInstancesQuery();
         var result = await Sender.Send(query);
         var instanceResult = result.SingleOrDefault(result => result.Id == instanceId);
-        //ShahrbinInstance instanceResult;
-        //foreach (var instance in result)
-        //{
-        //    if (instance.Id == instanceId)
-        //    {
-        //        instanceResult = instance;
-        //        break;
-        //    }
-        //}
 
         if (instanceResult == null)
             return NotFound();
@@ -76,14 +64,6 @@ public class StaffCommonController : ApiController
         return root.Adapt<CategoryGetDto>();
     }
 
-    //[HttpGet("Categories/{id}")]
-    //public async Task<CategoryGetDto> GetCategory(int id)
-    //{
-    //    var query = new GetCategoryByIdQuery(id);
-    //    var result = await Sender.Send(query);
-    //    return result.Adapt<CategoryGetDto>();
-    //}
-
 
     [Authorize]
     [HttpGet("ViolationTypes")]
@@ -95,15 +75,6 @@ public class StaffCommonController : ApiController
         return Ok(mappedResult);
     }
 
-    /*
-    [Authorize]
-    [HttpGet("RegionsByName")]
-    public async Task<ActionResult<List<GetRegionByName>>> GetRegionsByName()
-    {
-        await Task.CompletedTask;
-        return Ok();
-    }*/
-    
 
     [Authorize]
     [HttpGet("Regions/{id}")]
@@ -129,15 +100,6 @@ public class StaffCommonController : ApiController
     }
 
 
-    [Authorize]
-    [HttpGet("TaradodReason")]
-    public async Task<ActionResult<List<TaradodReason>>> GetTaradodReason()
-    {
-        await Task.CompletedTask;
-        return Ok();
-    }
-
-
     //todo : define access policeis
     [Authorize]
     [HttpGet("Executives")]  //will use in reportFilters and ChartFilters, should be filter for current user
@@ -160,21 +122,3 @@ public class StaffCommonController : ApiController
 
 }
 
-//public class CategoryGetDto
-//{
-//    public int ShahrbinInstanceId { get; set; }
-//    public int Id { get; set; }
-//    public int Order { get; set; }
-//    public string Code { get; set; } = null!;
-//    public string Title { get; set; } = null!;
-//    public ICollection<CategoryGetDto> Categories { get; set; } = new List<CategoryGetDto>();
-//    public int? ProcessId { get; set; }
-//    public string Description { get; set; } = string.Empty;
-//    public string AttachmentDescription { get; set; } = string.Empty;
-//    public int Duration { get; set; }
-//    public int? ResponseDuration { get; set; }
-//    public CategoryType CategoryType { get; set; }
-//    public bool IsDeleted { get; set; }
-//    public ICollection<FormElement> FormElements { get; set; } = new List<FormElement>();
-//    public bool HideMap { get; set; }
-//}

@@ -22,7 +22,7 @@ public class MessagesController : ApiController
     [HttpGet]
     public async Task<ActionResult<List<GetMessageDto>>> GetMessages([FromQuery] PagingInfo pagingInfo)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//............
         return Ok();
     }
 
@@ -31,7 +31,7 @@ public class MessagesController : ApiController
     [HttpGet("Count")]
     public async Task<ActionResult<GetMessageCountDto>> GetMessagesCount([FromQuery] TimeFilter timeFilter)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//..............
         return Ok();
     }
     

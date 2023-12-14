@@ -26,7 +26,7 @@ public class ManagementController : ApiController
     [HttpGet("DeleteReport/{trackingNumbers}")]
     public async Task<ActionResult> DeleteReport(string trackingNumbers)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//.................
         return Ok();
     }
 
