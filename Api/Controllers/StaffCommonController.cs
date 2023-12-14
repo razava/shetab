@@ -140,7 +140,7 @@ public class StaffCommonController : ApiController
 
     //todo : define access policeis
     [Authorize]
-    [HttpGet("Executives")]  //will use in reportFilters and ChartFilters
+    [HttpGet("Executives")]  //will use in reportFilters and ChartFilters, should be filter for current user
     public async Task<ActionResult<List<GetExecutiveDto>>> GetExecutives()
     {
         await Task.CompletedTask;//..............
