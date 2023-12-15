@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Relational;
+using Domain.Models.Relational.ReportAggregate;
 
 namespace Application.Common.Interfaces.Persistence;
 
