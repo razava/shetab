@@ -29,8 +29,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<Upload> Upload { get; set; }
     public DbSet<Category> Category { get; set; }
     public DbSet<Process> Process { get; set; }
-    public DbSet<ProcessStage> Stage { get; set; }
-    public DbSet<ProcessTransition> Transition { get; set; }
+    public DbSet<ProcessStage> ProcessStage { get; set; }
+    public DbSet<ProcessTransition> ProcessTransition { get; set; }
     public DbSet<Report> Reports { get; set; }
     //public DbSet<Priority> Priority { get; set; }
     public DbSet<TransitionLog> TransitionLogs { get; set; }
@@ -43,10 +43,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<Region> Region { get; set; }
     public DbSet<Message> Message { get; set; }
     public DbSet<Poll> Poll { get; set; }
-    public DbSet<PollChoice> Choice { get; set; }
-    public DbSet<PollAnswer> Answer { get; set; }
+    public DbSet<PollChoice> PollChoice { get; set; }
+    public DbSet<PollAnswer> PollAnswer { get; set; }
     public DbSet<Feedback> Feedback { get; set; }
-    public DbSet<ProcessReason> Reason { get; set; }
+    public DbSet<ProcessReason> ProcessReason { get; set; }
     public DbSet<OrganizationalUnit> OrganizationalUnit { get; set; }
     public DbSet<Comment> Comment { get; set; }
     public DbSet<FormElement> FormElement { get; set; }
