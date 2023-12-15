@@ -238,18 +238,16 @@ public class ActorDto
 }
 
 //todo : review annotations
-public record MoveToStageDto(
-    //todo : need annotation??
+public record InspectorTransitionDto(
+    [Required]
     bool IsAccepted,
+    List<Guid> Attachments,
+    [Required][MaxLength(512)]
+    string Comment,
+    [Required]
+    int ToActorId,
     [Required]
     int StageId,
-    //todo : need annotation??
-    List<ActorDto> Actors,
-    [MaxLength(512)]
-    string Comment,
-    List<Guid> Attachments,
-    ActorType? ActorType,
-    string ActorIdentifier,
     Visibility? Visibility);
 
 

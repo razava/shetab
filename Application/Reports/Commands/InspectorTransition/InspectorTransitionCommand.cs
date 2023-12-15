@@ -11,6 +11,6 @@ public sealed record InspectorTransitionCommand(
     List<Guid> Attachments,
     string Comment,
     string InspectorId,
-    int ToActorId,
+    int ToActorId,  
     int StageId,
     Visibility? Visibility) : IRequest<Report>;

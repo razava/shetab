@@ -50,7 +50,7 @@ public class AdminPollsController : ApiController
     {
         var userId = User.GetUserId();
         var instanceId = User.GetUserInstanceId();
-        var query = new GetPollsQuery(instanceId, userId);
+        var query = new GetPollsQuery(instanceId, userId, true);
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<List<GetPollsDto>>();
         return Ok(mappedResult);
@@ -60,7 +60,7 @@ public class AdminPollsController : ApiController
     [HttpGet("Summary/{id:int}")]
     public async Task<ActionResult> GetSummary(int id)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask;//..........................
         return Ok();
     }
 

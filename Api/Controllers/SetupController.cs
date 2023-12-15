@@ -1,8 +1,6 @@
 ﻿using Api.Abstractions;
-using Api.Dtos;
 using Application.Setup.Commands;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;

@@ -1,6 +1,5 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
-using Application.Common.Interfaces.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

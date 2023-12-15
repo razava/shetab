@@ -21,7 +21,9 @@ public class MapsterConfigurations
             .Map(dest => dest.Longitude, src => src.Location!.X);
 
         TypeAdapterConfig<GetExecutiveActorsResponse, GetExecutiveListDto>.NewConfig()
-            .Map(dest => dest.DisplayName, src => $"{src.FirstName} {src.LastName}");
+            .Map(dest => dest.DisplayName, src => 
+            (src.FirstName == "" && src.LastName == "") ? 
+            $"{src.Title}" : $"{src.Title} ({src.FirstName} {src.LastName})");
 
         /*
         TypeAdapterConfig<AddressInfo, Address>.NewConfig()

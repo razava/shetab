@@ -2,19 +2,14 @@
 using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Authentication.Commands.LoginCommand;
-using Application.Authentication.Commands.RegisterCitizenCommand;
-using Application.Common.Interfaces.Security;
 using Application.Users.Commands.UpdateUserAvatar;
 using Application.Users.Commands.UpdateUserProfile;
 using Application.Users.Queries.GetUserProfile;
-using ErrorOr;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using static Api.Controllers.CitizenAccountController;
 
 namespace Api.Controllers;
 

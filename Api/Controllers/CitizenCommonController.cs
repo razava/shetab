@@ -127,14 +127,6 @@ public class CitizenCommonController : ApiController
     }
     */
 
-    [Authorize]
-    [HttpGet("TaradodReason")]
-    public async Task<ActionResult<List<TaradodReason>>> GetTaradodReason()
-    {
-        await Task.CompletedTask;
-        return Ok();
-    }
-
 
 }
 

@@ -1,5 +1,4 @@
 ﻿using Domain.Models.Relational.Common;
-using Domain.Models.Relational.ReportAggregate;
 using System.ComponentModel.DataAnnotations;
 
 namespace Api.Contracts;
@@ -206,7 +205,8 @@ public record UpdateFaqDto(
 
 public record GetProcessListDto(
     int Id,
-    string Title);
+    string Title,
+    string Code);
 
 public record CreateProcessDto(
     [Required] [MaxLength(32)]

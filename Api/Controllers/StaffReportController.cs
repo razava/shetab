@@ -1,6 +1,5 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
-using Api.Dtos;
 using Api.ExtensionMethods;
 using Api.Services.Authentication;
 using Application.Comments.Commands.DeleteComment;
@@ -19,14 +18,11 @@ using Application.Reports.Queries.GetReportById;
 using Application.Reports.Queries.GetReports;
 using Application.Users.Queries.GetUserById;
 using Application.Workspaces.Queries.GetPossibleSources;
-using DocumentFormat.OpenXml.Office2019.Word.Cid;
-using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System.Security.Claims;
 
 namespace Api.Controllers;
@@ -142,9 +138,21 @@ public class StaffReportController : ApiController
 
     [Authorize(Roles = "Inspector")]
     [HttpPost("Review/{id:Guid}")]
-    public async Task<ActionResult> Review(Guid id, MoveToStageDto moveToStageDto)
+    public async Task<ActionResult> Review(Guid id, InspectorTransitionDto dto) 
     {
-        await Task.CompletedTask;//.........................................................
+        var userId = User.GetUserId();
+        var command = new InspectorTransitionCommand(
+            id,
+            dto.IsAccepted,
+            dto.Attachments,
+            dto.Comment,
+            userId,
+            dto.ToActorId,
+            dto.StageId,
+            dto.Visibility);
+        var result = await Sender.Send(command);
+        if (result == null)
+            return Problem();
         return Ok();
     }
 

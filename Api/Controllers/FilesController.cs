@@ -17,16 +17,16 @@ public class FilesController : ApiController
     {
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<MediaDto>> GetFile(Guid id)
-    {
-        //var command = new GetMediaQuery(id);
-        //var media = await Sender.Send(command);
-        //var mappedMedia = media.Adapt<MediaDto>();
-        //return Ok(mappedMedia);
-        await Task.CompletedTask;
-        throw new NotImplementedException();
-    }
+    //[HttpGet("{id}")]
+    //public async Task<ActionResult<MediaDto>> GetFile(Guid id)
+    //{
+    //    //var command = new GetMediaQuery(id);
+    //    //var media = await Sender.Send(command);
+    //    //var mappedMedia = media.Adapt<MediaDto>();
+    //    //return Ok(mappedMedia);
+    //    await Task.CompletedTask;
+    //    throw new NotImplementedException();
+    //}
 
     [Authorize]
     [HttpPost]
