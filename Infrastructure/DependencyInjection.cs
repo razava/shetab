@@ -78,6 +78,7 @@ public static class DependencyInjection
         services.AddScoped<INewsRepository, NewsRepository>();
         services.AddScoped<IFaqRepository, FaqRepository>();
         services.AddScoped<IPollRepository, PollRepository>();
+        services.AddScoped<IOrganizationalUnitRepository, OrganizationalUnitRepository>();
 
 
         return services;
