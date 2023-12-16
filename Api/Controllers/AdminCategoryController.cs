@@ -42,6 +42,7 @@ public class AdminCategoryController : ApiController
         var instanceId = User.GetUserInstanceId();
         var query = new GetCategoryQuery(instanceId, true);
         var result = await Sender.Send(query);
+        result.ForEach(x => x.Categories = result.Where(c => c.ParentId == x.Id).ToList());
         var root = result.Where(r => r.ParentId == null).Single();
 
         return root.Adapt<CategoryGetDto>();

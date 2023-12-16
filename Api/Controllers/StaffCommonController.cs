@@ -59,6 +59,7 @@ public class StaffCommonController : ApiController
             return BadRequest();
         var query = new GetCategoryQuery(instanceId.Value);
         var result = await Sender.Send(query);
+        result.ForEach(x => x.Categories = result.Where(c => c.ParentId == x.Id).ToList());
         var root = result.Where(r => r.ParentId == null).Single();
 
         return root.Adapt<CategoryGetDto>();
