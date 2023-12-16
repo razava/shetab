@@ -53,6 +53,8 @@ public record AnswerToPollDto(
     List<int> ChoicesIds);
 
 
+public record PollChoiceResultDto(string ShortTitle, double Percentage);
+public record PollResultDto(long Count, List<PollChoiceResultDto> PollChoicesResults);
 
 
 

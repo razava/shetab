@@ -4,6 +4,7 @@ using Api.ExtensionMethods;
 using Application.Polls.Commands.AddPollCommand;
 using Application.Polls.Commands.UpdatePollCommand;
 using Application.Polls.Common;
+using Application.Polls.Queries.GetPollResultQuery;
 using Application.Polls.Queries.GetPollsQuery;
 using Mapster;
 using MediatR;
@@ -58,10 +59,13 @@ public class AdminPollsController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpGet("Summary/{id:int}")]
-    public async Task<ActionResult> GetSummary(int id)
+    public async Task<ActionResult<PollResultDto>> GetSummary(int id)
     {
-        await Task.CompletedTask;//..........................
-        return Ok();
+        var query = new GetPollResultQuery(id);
+        var result = await Sender.Send(query);
+        if (result == null) return Problem();
+        var mappedResult = result.Adapt<PollResultDto>();
+        return Ok(mappedResult);
     }
 
 

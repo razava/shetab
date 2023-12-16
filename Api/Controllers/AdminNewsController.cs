@@ -35,7 +35,7 @@ public class AdminNewsController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<ActionResult> CreateNews(CreateNewsDto createNewsDto)
+    public async Task<ActionResult> CreateNews([FromForm] CreateNewsDto createNewsDto)
     {
         var instanceId = User.GetUserInstanceId();
         var command = new AddNewsCommand(
@@ -55,7 +55,7 @@ public class AdminNewsController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> EditNews(int id, UpdateNewsDto setNewsDto)
+    public async Task<ActionResult> EditNews(int id, [FromForm] UpdateNewsDto setNewsDto)
     {
         var command = new UpdateNewsCommand(
             id,
