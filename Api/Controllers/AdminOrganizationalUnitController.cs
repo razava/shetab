@@ -1,5 +1,12 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
+using Api.ExtensionMethods;
+using Application.OrganizationalUnits.Commands.AddOrganizationalUnitCommand;
+using Application.OrganizationalUnits.Commands.UpdateOrganizationalUnitCommand;
+using Application.OrganizationalUnits.Queries.GetOrganizationalUnitByIdQuery;
+using Application.OrganizationalUnits.Queries.GetOrganizationalUnitByUserIdQuery;
+using Application.OrganizationalUnits.Queries.GetOrganizationalUnitsQuery;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,46 +28,71 @@ public class AdminOrganizationalUnitController : ApiController
     [HttpGet("All")]
     public async Task<ActionResult<List<GetOrganizationalUnitListDto>>> GetAllOrgaizationalUnits([FromQuery]QueryFilter queryFilter)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetOrganizationalUnitsQuery(instanceId);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List<GetOrganizationalUnitListDto>>();
+        return Ok(mappedResult);
     }
 
 
     //todo : can move to Authenticate (??) cause relate to current User.
-    //todo : ............check usage.............
-    [Authorize]
-    [HttpGet]
-    public async Task<ActionResult> GetOrgaizationalUnitsOfUser()
-    {
-        await Task.CompletedTask;
-        return Ok();
-    }
+    //todo : ............check usage........................................not used :))
+    //[Authorize]
+    //[HttpGet]
+    //public async Task<ActionResult> GetOrgaizationalUnitsOfUser()
+    //{
+    //    //...........todo : query shoul return a list?
+    //    var userId = User.GetUserId();
+    //    var query = new GetOrganizationalUnitByUserIdQuery(userId);
+    //    var result = await Sender.Send(query);
+    //    //var mappedResult = result.Adapt<>
+    //    return Ok();
+    //}
 
     [Authorize]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<GetOrganizationalUnitDto>> GetOrgaizationalUnitById(int id)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var query = new GetOrganizationalUnitByIdQuery(id);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<GetOrganizationalUnitDto>();
+        return Ok(mappedResult);
     }
+
 
     [Authorize(Roles ="Admin")]
     [HttpPost]
-    public async Task<ActionResult> CreateOrgaizationalUnit(OrganizationalUnitCreateDto organizationalUnitCreateDto)
+    public async Task<ActionResult> CreateOrgaizationalUnit(OrganizationalUnitCreateDto createDto)
     {
-        await Task.CompletedTask;
+        var instanceId = User.GetUserInstanceId();
+        var command = new AddOrganizationalUnitCommand(
+            instanceId,
+            createDto.Title,
+            createDto.Username,
+            createDto.Password,
+            createDto.ExecutiveActorsIds,
+            createDto.OrganizationalUnitsIds);
+        var result = await Sender.Send(command);
+        if (result == null)
+            return Problem();
         return Ok();
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> EditOrgaizationalUnit(int id, OrganizationalUnitUpdateDto organizationalUnitUpdateDto)
+    public async Task<ActionResult> EditOrgaizationalUnit(int id, OrganizationalUnitUpdateDto updateDto)
     {
-        await Task.CompletedTask;
-        return Ok();
+        var command = new UpdateOrganizationalUnitCommand(
+            id,
+            updateDto.Title,
+            updateDto.ExecutiveActorsIds,
+            updateDto.OrganizationalUnitsIds);
+        var result = await Sender.Send(command);
+        if (result == null)
+            return Problem();
+        return NoContent();
     }
 
-    //there was an Get/Actors endpoint in old version that returned Executives, that can replace by Get/Executives from
-    //Info Controller (if they be similar)
 
 }
