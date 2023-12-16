@@ -1,9 +1,10 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
+using Domain.Models.Relational.ReportAggregate;
 
 namespace Infrastructure.Persistence.Repositories;
 
-public class ReportRepository: GenericRepository<Report>, IReportRepository
+public class ReportRepository : GenericRepository<Report>, IReportRepository
 {
     private readonly ICategoryRepository _categoryRepository;
     private readonly IProcessRepository _processRepository;
