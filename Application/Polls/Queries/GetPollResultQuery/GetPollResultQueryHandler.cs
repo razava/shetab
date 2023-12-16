@@ -20,21 +20,19 @@ internal class GetPollResultQueryHandler : IRequestHandler<GetPollResultQuery, P
         var context = _unitOfWork.DbContext;
         var poll = await context.Set<Poll>()
             .Where(p => p.Id == request.PollId)
-            .Select(p => new { p.Choices, Count = p.Answers.LongCount() })
+            .Include(p => p.Choices)
+            .Select(p => new { Choices = p.Choices.ToList(), Count = p.Answers.LongCount() })
             .SingleOrDefaultAsync();
         if (poll is null)
             throw new Exception("Not found!");
 
         var choices = await context.Set<Poll>()
-            .Where(p => p.Id == request.PollId)
-            .SelectMany(p => p.Answers.SelectMany(pa => pa.Choices.GroupBy(pac => pac.Id)))
+            .Where(p=>p.Id == request.PollId)
+            .SelectMany(p => p.Answers.SelectMany(p => p.Choices))
+            .GroupBy(pc => pc.Id)
             .Select(pacg => new { Id = pacg.Key, Count = pacg.LongCount() })
             .ToListAsync();
-        //var choices = await context.Set<PollAnswer>()
-        //    .Where(pa => pa.PollId == request.PollId)
-        //    .SelectMany(pa => pa.Choices.GroupBy(pac => pac.Id)
-        //    .Select(pacg => new { Id = pacg.Key, Count = pacg.LongCount() }))
-        //    .ToListAsync();
+
 
         var total = choices.Sum(p => p.Count);
         var choiceCount = new List<PollChoiceResult>();
