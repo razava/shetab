@@ -2,6 +2,7 @@
 using Domain.Models.Relational.PollAggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Application.Polls.Queries.GetPollResultQuery;
 
@@ -24,11 +25,16 @@ internal class GetPollResultQueryHandler : IRequestHandler<GetPollResultQuery, P
         if (poll is null)
             throw new Exception("Not found!");
 
-        var choices = await context.Set<PollAnswer>()
-            .Where(pa => pa.PollId == request.PollId)
-            .SelectMany(pa => pa.Choices.GroupBy(pac => pac.Id)
-            .Select(pacg => new { Id = pacg.Key, Count = pacg.LongCount() }))
+        var choices = await context.Set<Poll>()
+            .Where(p => p.Id == request.PollId)
+            .SelectMany(p => p.Answers.SelectMany(pa => pa.Choices.GroupBy(pac => pac.Id)))
+            .Select(pacg => new { Id = pacg.Key, Count = pacg.LongCount() })
             .ToListAsync();
+        //var choices = await context.Set<PollAnswer>()
+        //    .Where(pa => pa.PollId == request.PollId)
+        //    .SelectMany(pa => pa.Choices.GroupBy(pac => pac.Id)
+        //    .Select(pacg => new { Id = pacg.Key, Count = pacg.LongCount() }))
+        //    .ToListAsync();
 
         var total = choices.Sum(p => p.Count);
         var choiceCount = new List<PollChoiceResult>();

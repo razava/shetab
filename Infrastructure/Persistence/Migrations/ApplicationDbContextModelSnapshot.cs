@@ -2437,19 +2437,15 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Models.Relational.PollAggregate.PollAnswer", b =>
                 {
-                    b.HasOne("Domain.Models.Relational.PollAggregate.Poll", "Poll")
+                    b.HasOne("Domain.Models.Relational.PollAggregate.Poll", null)
                         .WithMany("Answers")
                         .HasForeignKey("PollId")
-                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Poll");
 
                     b.Navigation("User");
                 });

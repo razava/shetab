@@ -5,7 +5,7 @@
 namespace Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class TablesRenamed : Migration
+    public partial class ConstraintToEliminateLoopOnPollAnswer : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -222,16 +222,14 @@ namespace Infrastructure.Persistence.Migrations
                 table: "PollAnswer",
                 column: "UserId",
                 principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_PollAnswer_Poll_PollId",
                 table: "PollAnswer",
                 column: "PollId",
                 principalTable: "Poll",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_PollAnswerPollChoice_PollAnswer_AnswersId",

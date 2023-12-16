@@ -8,6 +8,8 @@ public class PollAnswerConfigurations : IEntityTypeConfiguration<PollAnswer>
 {
     public void Configure(EntityTypeBuilder<PollAnswer> builder)
     {
-        builder.HasOne(p => p.Poll).WithMany(e => e.Answers).OnDelete(DeleteBehavior.NoAction);
+        builder.HasOne<Poll>().WithMany(p => p.Answers).OnDelete(DeleteBehavior.ClientSetNull);
+        builder.HasMany(pa => pa.Choices).WithMany(pc => pc.Answers);
+        builder.HasOne(pa => pa.User).WithMany().OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

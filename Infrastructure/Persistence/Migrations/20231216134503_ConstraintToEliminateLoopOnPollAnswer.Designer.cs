@@ -13,8 +13,8 @@ using NetTopologySuite.Geometries;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231215133858_TablesRenamed")]
-    partial class TablesRenamed
+    [Migration("20231216134503_ConstraintToEliminateLoopOnPollAnswer")]
+    partial class ConstraintToEliminateLoopOnPollAnswer
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2440,19 +2440,15 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Models.Relational.PollAggregate.PollAnswer", b =>
                 {
-                    b.HasOne("Domain.Models.Relational.PollAggregate.Poll", "Poll")
+                    b.HasOne("Domain.Models.Relational.PollAggregate.Poll", null)
                         .WithMany("Answers")
                         .HasForeignKey("PollId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Poll");
 
                     b.Navigation("User");
                 });
