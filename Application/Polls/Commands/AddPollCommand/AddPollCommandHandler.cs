@@ -27,7 +27,7 @@ internal class AddPollCommandHandler : IRequestHandler<AddPollCommand, Poll>
             request.PollType,
             request.Question,
             choices,
-            request.IsActive);
+            !request.IsActive);
 
         _pollRepository.Add(poll);
         await _unitOfWork.SaveAsync();
