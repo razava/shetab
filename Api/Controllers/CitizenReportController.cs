@@ -10,6 +10,7 @@ using Application.Reports.Commands.Like;
 using Application.Reports.Commands.ReportViolation;
 using Application.Reports.Common;
 using Application.Reports.Queries.GetCitizenReportById;
+using Application.Reports.Queries.GetComments;
 using Application.Reports.Queries.GetNearestReports;
 using Application.Reports.Queries.GetRecentReports;
 using Application.Reports.Queries.GetReportById;
@@ -208,10 +209,21 @@ public class CitizenReportController : ApiController
     
     [Authorize(Roles = "Citizen")]
     [HttpGet("Comments/{id:Guid}")]
-    public async Task<ActionResult<List<CitizenGetComments>>> GetComments(Guid id, [FromQuery] PagingInfo pagingInfo)
+    public async Task<ActionResult<List<GetReportComments>>> GetComments(Guid id, [FromQuery] PagingInfo pagingInfo)
     {
-        await Task.CompletedTask;//..............................
-        return Ok();
+        var userId = User.GetUserId();
+        var query = new GetCommentsQuery(id, pagingInfo);
+        var result = await Sender.Send(query);
+        Response.AddPaginationHeaders(result.Meta);
+
+        var mappedResult = new List<GetReportComments>();
+        foreach (var item in result)
+        {
+            var mapppedItem = item.Adapt<GetReportComments>();
+            mapppedItem.CanDelete = item.UserId == userId;
+            mappedResult.Add(mapppedItem);
+        }
+        return Ok(mappedResult);
     }
 
 

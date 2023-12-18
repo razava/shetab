@@ -44,14 +44,20 @@ public record CreateCommentViolationDto(
     string Description);
 
 
-public record CitizenGetComments(
+public record GetReportComments(
     Guid Id,
     string Text,
     DateTime DateTime,
     RestrictedUserDto User,
     Guid ReportId,
-    CitizenGetComments Reply,
-    bool CanDelete);
+    GetReportComments Reply,
+    bool CanDelete)
+{
+    public bool CanDelete { get; set; }
+}
+
+
+
 
 public record RestrictedUserDto(
     string FirstName,

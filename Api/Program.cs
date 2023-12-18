@@ -189,7 +189,7 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 //app.UseAccessControlMiddleware();
-app.UseMiddleware<ExceptionMiddleware>();
+//app.UseMiddleware<ExceptionMiddleware>();
 app.UseStaticFiles();
 app.MapControllers();
 //app.MapControllerRoute(name: "default", pattern: "api/{controller}/{instanceId?}/{action}/{id?}");

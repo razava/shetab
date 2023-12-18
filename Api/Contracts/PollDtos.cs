@@ -31,7 +31,8 @@ public record GetPollsDto(
     string Question,
     List<PollChoiceDto> Choices,
     PollState PollState,
-    PollAnswerDto? Answer);
+    PollAnswerDto? Answer,
+    bool IsDeleted);
 
 public record PollChoiceDto(int Id, string ShortTitle, string Text, int Order);
 public record PollAnswerDto(List<int>? Choices, string? Text);

@@ -13,11 +13,13 @@ using Application.Reports.Commands.MessageToCitizen;
 using Application.Reports.Commands.UpdateByOperator;
 using Application.Reports.Common;
 using Application.Reports.Queries.GetAllReports;
+using Application.Reports.Queries.GetComments;
 using Application.Reports.Queries.GetPossibleTransitions;
 using Application.Reports.Queries.GetReportById;
 using Application.Reports.Queries.GetReports;
 using Application.Users.Queries.GetUserById;
 using Application.Workspaces.Queries.GetPossibleSources;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Domain.Models.Relational.Common;
 using Mapster;
 using MediatR;
@@ -347,6 +349,25 @@ public class StaffReportController : ApiController
         return Ok();
     }
 
+
+    [Authorize(Roles = "Operator")]
+    [HttpGet("ReportComments/{ReportId:Guid}")]
+    public async Task<ActionResult<List<GetReportComments>>> GetReportComments(Guid ReportId, [FromQuery] PagingInfo pagingInfo)
+    {
+        var userId = User.GetUserId();
+        var query = new GetCommentsQuery(ReportId, pagingInfo);
+        var result = await Sender.Send(query);
+        Response.AddPaginationHeaders(result.Meta);
+        var mappedResult = new List<GetReportComments>();
+        foreach (var item in result)
+        {
+            var mapppedItem = item.Adapt<GetReportComments>();
+            mapppedItem.CanDelete = item.UserId == userId;
+            mappedResult.Add(mapppedItem);
+        }
+        return Ok(mappedResult);
+    }
+                                                
 
     [Authorize(Roles = "Operator")]
     [HttpPost("ReplyComment/{commentId:Guid}")]
