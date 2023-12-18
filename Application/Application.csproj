@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <Folder Include="Abstractions\Messaging\" />
-    <Folder Include="Comments\Queries\GetComments\" />
     <Folder Include="Configurations\Commands\" />
     <Folder Include="Feedbacks\Queries\" />
     <Folder Include="Setup\Queries\" />

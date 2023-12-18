@@ -26,15 +26,19 @@ internal class ReplyCommentCommandHandler : IRequestHandler<ReplyCommentCommand,
         {
             throw new Exception("This comment has a reply.");
         }
-        var reply = new Comment()
+        if (!string.IsNullOrEmpty(request.Content))
         {
-            ReportId = comment.ReportId,
-            UserId = request.UserId,
-            DateTime = DateTime.UtcNow,
-            ShahrbinInstanceId = comment.ShahrbinInstanceId,
-            Text = request.Content,
-        };
-        comment.Reply = reply;
+            comment.Reply = new Comment()
+            {
+                ReportId = comment.ReportId,
+                UserId = request.UserId,
+                DateTime = DateTime.UtcNow,
+                ShahrbinInstanceId = comment.ShahrbinInstanceId,
+                Text = request.Content,
+            };
+        }
+        
+        comment.IsSeen = true;
         _commentRepository.Update(comment);
         try
         {
