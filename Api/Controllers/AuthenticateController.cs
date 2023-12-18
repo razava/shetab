@@ -31,11 +31,15 @@ public class AuthenticateController : ApiController
     {
         var command = new LoginCommand(loginStaffDto.Username, loginStaffDto.Password);
         var result = await Sender.Send(command);
-        if (result == null)
+        if (result.UserNotConfirmed)
         {
-            return BadRequest();
+            return StatusCode(StatusCodes.Status428PreconditionRequired, "");
         }
-        return Ok(result);
+        else
+        {
+            //TODO: Consider converting token to base64
+            return Ok(result.JwtToken);
+        }
     }
 
 
