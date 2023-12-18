@@ -5,6 +5,7 @@ using Api.Services.Authentication;
 using Application.Comments.Commands.DeleteComment;
 using Application.Comments.Commands.ReplyComment;
 using Application.Comments.Commands.UpdateComment;
+using Application.Comments.Queries.GetAllCommentsQuery;
 using Application.Common.Interfaces.Persistence;
 using Application.Reports.Commands.AcceptByOperator;
 using Application.Reports.Commands.CreateReportByOperator;
@@ -47,9 +48,7 @@ public class StaffReportController : ApiController
     {
         //have FilterGetReports.........................................
 
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId is null)
-            return Unauthorized();
+        var userId = User.GetUserId();
         var instanceId = User.GetUserInstanceId();
         var roles = User.GetUserRoles();
         var query = new GetReportsQuery(pagingInfo, userId, roles, fromRoleId, instanceId);
@@ -65,8 +64,6 @@ public class StaffReportController : ApiController
     public async Task<ActionResult<StaffGetReportDetailsDto>> GetReportById(Guid id, int instanceId)
     {
         var userId = User.GetUserId();
-        if (userId == null)
-            return Unauthorized();
         var query = new GetReportByIdQuery(id, userId, instanceId);
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<StaffGetReportDetailsDto>();
@@ -82,8 +79,6 @@ public class StaffReportController : ApiController
         //have FilterGetAllReports (diffrent from FilterGetReports)
 
         var userId = User.GetUserId();
-        if (userId == null)
-            return Unauthorized();
         var userRoles = User.GetUserRoles();
         var instanceId = User.GetUserInstanceId();
         
@@ -101,9 +96,7 @@ public class StaffReportController : ApiController
     [HttpGet("PossibleTransitions/{id:Guid}")]
     public async Task<ActionResult<List<GetPossibleTransitionDto>>> GetPossibleTransitions(Guid id)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId is null)
-            return Unauthorized();
+        var userId = User.GetUserId();
         var instanceId = User.GetUserInstanceId();
         
         var query = new GetPossibleTransitionsQuery(id, userId, instanceId);
@@ -118,9 +111,7 @@ public class StaffReportController : ApiController
     [HttpPost("MakeTransition/{id:Guid}")]
     public async Task<ActionResult> MakeTransition(Guid id, MakeTransitionDto model)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId is null)
-            return Unauthorized();
+        var userId = User.GetUserId();
 
         MakeTransitionCommand command = new(
             id,
@@ -165,8 +156,6 @@ public class StaffReportController : ApiController
     public async Task<ActionResult<List<GetPossibleSourceDto>>> GetPossibleSources()
     {
         var userId = User.GetUserId();
-        if (userId == null)
-            return Unauthorized();
         var userRoles = User.GetUserRoles();
         var query = new GetPossibleSourcesQuery(userId, userRoles);
         var result = await Sender.Send(query);
@@ -183,8 +172,6 @@ public class StaffReportController : ApiController
     public async Task<ActionResult> MessageToCitizen(Guid id, MessageToCitizenDto messageToCitizenDto)
     {
         var userId = User.GetUserId();
-        if (userId == null)
-            return Unauthorized();
         var userRoles = User.GetUserRoles();
 
         var command = new MessageToCitizenCommand(
@@ -203,7 +190,7 @@ public class StaffReportController : ApiController
     }
 
 
-
+    //todo : review
     [Authorize(Roles = "Operator")]
     [HttpPost("RegisterByOperator")]
     public async Task<ActionResult<Guid>> CreateReportByOperator(OperatorCreateReportDto model)
@@ -249,6 +236,8 @@ public class StaffReportController : ApiController
         return Ok(report.Id);
     }
 
+
+    //todo : review
     [Authorize(Roles = "Operator")]
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateReportByOperator(Guid id, UpdateReportDto model)
@@ -294,6 +283,7 @@ public class StaffReportController : ApiController
     }
 
 
+    //todo : review
     [Authorize(Roles = "Operator")]
     [HttpPut("Accept/{id:Guid}")]
     public async Task<ActionResult> AcceptReportByOperator(Guid id, UpdateReportDto model)
@@ -345,8 +335,12 @@ public class StaffReportController : ApiController
     public async Task<ActionResult<List<GetCommentsDto>>> GetComments([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetCommentViolation filter)
     {
         //have FilterGetComments
-        await Task.CompletedTask;
-        return Ok();
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetAllCommentsQuery(pagingInfo, instanceId);
+        var result = await Sender.Send(query);
+        Response.AddPaginationHeaders(result.Meta);
+        var mappedResult = result.Adapt<List<GetCommentsDto>>();
+        return Ok(mappedResult);
     }
 
 
@@ -374,8 +368,6 @@ public class StaffReportController : ApiController
     public async Task<ActionResult> ReplyComment(Guid commentId, ReplyCommentDto replyCommentDto)
     {
         var userId = User.GetUserId();
-        if (userId == null)
-            return Unauthorized();
         var command = new ReplyCommentCommand(userId, commentId, replyCommentDto.Comment);
         var result = await Sender.Send(command);
         if (!result)
@@ -383,13 +375,12 @@ public class StaffReportController : ApiController
         return Ok();
     }
 
+
     [Authorize(Roles = "Operator")]
     [HttpPut("Comment/{commentId:Guid}")]
     public async Task<ActionResult> PutComment(Guid commentId, UpdateCommentDto updateCommentDto)
     {
         var userId = User.GetUserId();
-        if (userId == null)
-            return Unauthorized();
         var command = new UpdateCommentCommand(userId, commentId, updateCommentDto.Comment);
         var result = await Sender.Send(command);
         if (!result)
@@ -403,8 +394,6 @@ public class StaffReportController : ApiController
     public async Task<ActionResult> DeleteComment(Guid id)
     {
         var userId = User.GetUserId();
-        if (userId == null)
-            return Unauthorized();
         var command = new DeleteCommentCommand(id, userId, User.GetUserRoles());
         var result = await Sender.Send(command);
         if (!result)
