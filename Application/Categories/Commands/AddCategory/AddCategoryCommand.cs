@@ -10,7 +10,7 @@ public sealed record AddCategoryCommand(
     string Title,
     string Description,
     int Order,
-    int ParentId,
+    int? ParentId,
     int Duration,
     int ResponseDuration,
     int? ProcessId = null,
