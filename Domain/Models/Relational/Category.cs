@@ -77,7 +77,7 @@ public class Category : BaseModel
         string title,
         string description,
         int order,
-        int parentId,
+        int? parentId,
         int duration,
         int responseDuration,
         int? processId = null,
