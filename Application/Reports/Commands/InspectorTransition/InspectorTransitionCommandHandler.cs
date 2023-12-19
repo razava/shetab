@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Application.Reports.Commands.CreateReportByOperator;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
@@ -29,7 +30,7 @@ internal sealed class InspectorTransitionCommandHandler : IRequestHandler<Inspec
     {
         var report = await _reportRepository.GetByIDAsync(request.ReportId);
         if (report == null)
-            throw new Exception("Report not found");
+            throw new NotFoundException("Report");
 
         List<Media> medias = new List<Media>();
         if (request.Attachments is not null)
@@ -42,7 +43,7 @@ internal sealed class InspectorTransitionCommandHandler : IRequestHandler<Inspec
                 .ToList() ?? new List<Upload>();
                 if (request.Attachments.Count != attachments.Count)
                 {
-                    throw new Exception("Attachments failure.");
+                    throw new AttachmentsFailureException();
                 }
                 attachments.ForEach(a => a.IsUsed = true);
                 medias = attachments.Select(a => a.Media).ToList();

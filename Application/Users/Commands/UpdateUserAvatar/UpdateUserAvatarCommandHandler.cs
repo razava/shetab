@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.Common;
 using Infrastructure.Storage;
 using MediatR;
@@ -24,10 +25,10 @@ internal class UpdateUserAvatarCommandHandler : IRequestHandler<UpdateUserAvatar
     {
         var user = await _userRepository.GetSingleAsync(u => u.Id == request.UserId);
         if (user is null)
-            throw new Exception("Not found.");
+            throw new NotFoundException("User");
         var avatar = await _storageService.WriteFileAsync(request.Avatar, AttachmentType.Avatar);
         if (avatar is null)
-            throw new Exception("Avatar is null.");
+            throw new SaveImageFailedException();
         user.Avatar = avatar;
         _userRepository.Update(user);
         await _unitOfWork.SaveAsync();

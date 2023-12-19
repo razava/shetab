@@ -1,4 +1,5 @@
-﻿using Domain.Models.Relational.Common;
+﻿using Domain.Exceptions;
+using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 
 namespace Domain.Models.Relational.PollAggregate;
@@ -64,22 +65,25 @@ public class Poll : BaseModel
     {
         if (Answers.Any(a => a.UserId == userId))
         {
-            throw new Exception("User has participated in this poll before.");
+            throw new ParticipationMoreThanOnceException();
         }
         if (PollType == PollType.Descriptive)
         {
             if (text is null)
-                throw new Exception("Text cannot be null in descriptive polls.");
+                throw new NullAnswerTextException();
+                //throw new Exception("Text cannot be null in descriptive polls.");
             Answers.Add(PollAnswer.Create(userId, text, new List<PollChoice>()));
         }
         if (PollType == PollType.SingleChoice)
         {
             if (choices.Count != 1)
-                throw new Exception("Single choice polls must have exactly 1 answer.");
+                throw new OneChoiceAnswerLimitException();
+                //throw new Exception("Single choice polls must have exactly 1 answer.");
             var choice = Choices.Where(c => choices.Contains(c.Id)).ToList();
             if (choice is null || choice.Count != 1)
             {
-                throw new Exception("Invalid choice!");
+                throw new InvalidChoiceException();
+                //throw new Exception("Invalid choice!");
             }
             Answers.Add(PollAnswer.Create(userId, null, choice));
         }
@@ -88,7 +92,8 @@ public class Poll : BaseModel
             var choice = Choices.Where(c => choices.Contains(c.Id)).ToList();
             if (choice is null || choice.Count == 0)
             {
-                throw new Exception("Invalid choice!");
+                throw new InvalidChoiceException();
+                //throw new Exception("Invalid choice!");
             }
             Answers.Add(PollAnswer.Create(userId, null, choice));
         }

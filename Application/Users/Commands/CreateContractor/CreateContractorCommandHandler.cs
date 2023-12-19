@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
@@ -28,11 +29,11 @@ internal class CreateContractorCommandHandler : IRequestHandler<CreateContractor
 
         var executive = await _userRepository.GetSingleAsync(e => e.Id == request.ExecutiveId, true, "Contractors");
         if (executive is null)
-            throw new Exception("Not found.");
+            throw new NotFoundException("Executive");
 
         var isExecutive = await _userRepository.IsInRoleAsync(executive, "Executive");
         if (!isExecutive)
-            throw new Exception("Only executives can define and assign contractors.");
+            throw new AccessDeniedException("Only executives can define and assign contractors.");
         var contractor = await _userRepository.GetSingleAsync(u => u.UserName == "c-" + request.PhoneNumber);
         if (contractor is not null)
         {
@@ -58,14 +59,14 @@ internal class CreateContractorCommandHandler : IRequestHandler<CreateContractor
             var password = "aA@12345";
             var result = await _userRepository.CreateAsync(contractor, password);
             if (!result.Succeeded)
-                throw new Exception("User creation failed.");
+                throw new UserCreationFailedException();
 
             var result2 = await _userRepository.AddToRoleAsync(contractor, "Contractor");
 
             if (!result2.Succeeded)
             {
                 await _userRepository.DeleteAsync(contractor);
-                throw new Exception("User creation failed");
+                throw new UserCreationFailedException();
             }
             _actorRepository.Insert(
                 new Actor(){

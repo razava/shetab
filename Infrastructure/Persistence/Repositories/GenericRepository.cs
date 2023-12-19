@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Application.Common.Interfaces.Persistence;
+using Infrastructure.Exceptions;
 
 namespace Infrastructure.Persistence.Repositories;
 
@@ -179,7 +180,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
         if(method is null)
         {
             //TODO: Handle this error
-            throw new Exception();
+            throw new MethodNotFoundException();
         }
         MethodCallExpression containsMethodExp;
         foreach (var propStr in props)
@@ -215,7 +216,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
             if(pi is null)
             {
                 //TODO: Handle this error
-                throw new Exception();
+                throw new PropertyInfoNotFoundException();
             }
             expr = Expression.Property(expr, pi);
             type = pi.PropertyType;

@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using MediatR;
@@ -20,9 +21,9 @@ internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPo
     {
         var report = await _reportRepository.GetByIDAsync(request.reportId);
         if (report == null)
-            throw new Exception("Report not found");
+            throw new NotFoundException("Report");
         if (report.ShahrbinInstanceId != request.instanceId)
-            throw new UnauthorizedAccessException();
+            throw new AccessDeniedException();
 
         var possibleTransitions = report.GetPossibleTransitions();
 
@@ -78,7 +79,7 @@ internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPo
                 {
                     var role = (await _userRepository.GetRoles()).Find(p => p.Id == actorList[i].Identifier);
                     if (role is null)
-                        throw new Exception();
+                        throw new NullActorRolesException();
 
                     if (role.Name == "Citizen")
                     {

@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Communication;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Communication;
 using Application.Common.Interfaces.Security;
 using MediatR;
 
@@ -23,7 +24,7 @@ internal sealed class SendVerificationCodeCommandHandler : IRequestHandler<SendV
             var isCaptchaValid = _captchaProvider.Validate(request.CaptchaValidateModel);
             if (!isCaptchaValid)
             {
-                throw new Exception("Invalid captcha");
+                throw new InvalidCaptchaException();
             }
         }
         var verificationCode = await _authenticationService.GetVerificationCode(request.Username);
@@ -33,7 +34,7 @@ internal sealed class SendVerificationCodeCommandHandler : IRequestHandler<SendV
         }
         catch
         {
-            throw new Exception("There was a problem in sending sms.");
+            throw new SendSmsException();
         }
 
         return true;

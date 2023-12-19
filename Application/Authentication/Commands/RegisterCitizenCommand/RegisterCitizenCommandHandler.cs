@@ -48,7 +48,7 @@ internal class RegisterCitizenCommandHandler : IRequestHandler<RegisterCitizenCo
         }
         catch
         {
-            throw new Exception();
+            throw new RegisterCitizenException();
         }
 
         return result;

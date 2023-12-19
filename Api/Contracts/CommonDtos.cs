@@ -90,6 +90,11 @@ public record GetRegionDto(
     string ParsimapCode);
 
 
+public record GetRolesDto(
+    string RoleName,
+    string RoleTitle);
+
+
 
 public record CitizenGetQuickAccess(
     int Id,

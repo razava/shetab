@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.PollAggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ internal class GetPollResultQueryHandler : IRequestHandler<GetPollResultQuery, P
             .Select(p => new { Choices = p.Choices.ToList(), Count = p.Answers.LongCount() })
             .SingleOrDefaultAsync();
         if (poll is null)
-            throw new Exception("Not found!");
+            throw new NotFoundException("Poll");
 
         var choices = await context.Set<Poll>()
             .Where(p=>p.Id == request.PollId)

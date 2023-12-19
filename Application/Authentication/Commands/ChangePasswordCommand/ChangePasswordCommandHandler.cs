@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Security;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Security;
 using MediatR;
 
 namespace Application.Authentication.Commands.LoginCommand;
@@ -20,7 +21,7 @@ internal sealed class ChangePasswordCommandHandler : IRequestHandler<ChangePassw
             var isCaptchaValid = _captchaProvider.Validate(request.CaptchaValidateModel);
             if (!isCaptchaValid)
             {
-                throw new Exception("Invalid captcha");
+                throw new InvalidCaptchaException();
             }
         }
         return await _authenticationService.ChangePassword(request.Username, request.OldPassword, request.NewPassword);

@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.Common;
 using Infrastructure.Storage;
 using MediatR;
@@ -23,7 +24,7 @@ internal sealed class AddUploadCommandHandler : IRequestHandler<AddUploadCommand
         var media = await _storageService.WriteFileAsync(request.File, request.AttachmentType);
         if (media == null)
         {
-            throw new Exception();
+            throw new SaveImageFailedException();
         }
         var upload = new Upload()
         {

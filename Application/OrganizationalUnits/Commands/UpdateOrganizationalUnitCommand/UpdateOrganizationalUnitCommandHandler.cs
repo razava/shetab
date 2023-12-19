@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Application.OrganizationalUnits.Commands.AddOrganizationalUnitCommand;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
@@ -32,7 +33,7 @@ internal class UpdateOrganizationalUnitCommandHandler : IRequestHandler<UpdateOr
         var organizationalUnit = await _organizationalUnitRepository.GetSingleAsync(ou => ou.Id == request.OrganizationalUnitId);
         if(organizationalUnit is null)
         {
-            throw new Exception("Not found!");
+            throw new NotFoundException("Organizational Unit");
         }
 
         //Check for cycle
@@ -60,7 +61,7 @@ internal class UpdateOrganizationalUnitCommandHandler : IRequestHandler<UpdateOr
         }
         if (flattenOus.Any(p => p.Id == organizationalUnit.Id))
         {
-            throw new Exception("حلقه ای در ساختار سازمانی ایجاد شده است.");
+            throw new LoopMadeException("حلقه ای در ساختار سازمانی ایجاد شده است.");
         }
 
 
@@ -80,7 +81,7 @@ internal class UpdateOrganizationalUnitCommandHandler : IRequestHandler<UpdateOr
         {
             var executiveUser = executiveUsers.SingleOrDefault(eu => eu.Id == executiveActor.Identifier);
             if (executiveUser is null)
-                throw new Exception();
+                throw new NotFoundException("ExecutiveUser");
             newOus.Add(new OrganizationalUnit()
             {
                 ShahrbinInstanceId = organizationalUnit.ShahrbinInstanceId,

@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Domain.Models.Relational.ReportAggregate;
 using MediatR;
@@ -20,7 +21,7 @@ internal class DeleteCommentCommandHandler : IRequestHandler<DeleteCommentComman
     {
         var comment = await _commentRepository.GetSingleAsync(c => c.Id == request.CommentId);
         if (comment is null)
-            throw new Exception("Not found.");
+            throw new NotFoundException("Comment");
 
         if(!(comment.UserId == request.UserId || request.UserRoles.Contains(RoleNames.Operator)))
         {

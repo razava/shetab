@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.ReportAggregate;
 using MediatR;
 
@@ -20,11 +21,11 @@ internal class ReplyCommentCommandHandler : IRequestHandler<ReplyCommentCommand,
         var comment = await _commentRepository.GetSingleAsync(c => c.Id == request.CommentId, true, "Reply");
         if (comment is null)
         {
-            throw new Exception("Not found.");
+            throw new NotFoundException("Comment");
         }
         if (comment.Reply is not null)
         {
-            throw new Exception("This comment has a reply.");
+            throw new CommentHasReplyException();
         }
         if (!string.IsNullOrEmpty(request.Content))
         {

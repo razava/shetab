@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Security;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Security;
 using MediatR;
 
 namespace Application.Authentication.Commands.ResetPasswordCommand;
@@ -20,7 +21,7 @@ internal sealed class ResetPasswordCommandHandler : IRequestHandler<ResetPasswor
             var isCaptchaValid = _captchaProvider.Validate(request.CaptchaValidateModel);
             if (!isCaptchaValid)
             {
-                throw new Exception("Invalid captcha");
+                throw new InvalidCaptchaException();
             }
         }
         var isSucceeded = await _authenticationService.ResetPassword(request.Username, request.ResetPasswordToken, request.NewPassword);

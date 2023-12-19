@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using MediatR;
 
 namespace Application.Feedbacks.Commands;
@@ -26,12 +27,12 @@ internal sealed class StoreFeedbackCommandHandler : IRequestHandler<StoreFeedbac
             f => f.UserId == request.UserId && f.Token == request.Token && f.ReportId == request.ReportId);
         if ((feedback is null))
         {
-            throw new Exception("Not found.");
+            throw new NotFoundException("Feedback");
         }
         var report = await _reportRepository.GetSingleAsync(r => r.Id == request.ReportId);
         if (report is null)
         {
-            throw new Exception("Not found.");
+            throw new NotFoundException("Report");
         }
         report.UpdateFeedback(request.Rating);
 

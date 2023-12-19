@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Infrastructure.Storage;
 using MediatR;
@@ -25,7 +26,7 @@ internal sealed class AddNewsCommandHandler : IRequestHandler<AddNewsCommand, Ne
     {
         var media = await _storageService.WriteFileAsync(request.Image, AttachmentType.News);
         if (media is null)
-            throw new Exception("Image not found.");
+            throw new SaveImageFailedException();
 
         var news = News.Create(request.Title, request.Description, request.Url, media, request.IsDeleted);
 

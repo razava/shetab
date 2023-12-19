@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using MediatR;
 
 namespace Application.Categories.Commands.DeleteCategory;
@@ -20,7 +21,7 @@ internal sealed class DeleteCategoryCommandHandler : IRequestHandler<DeleteCateg
         var category = await _categoryRepository.GetSingleAsync(c => c.Id == request.Id);
         if (category is null)
         {
-            throw new Exception("Not found!");
+            throw new NotFoundException("Category");
         }
         category.Update(isDeleted: request.IsDeleted);
 

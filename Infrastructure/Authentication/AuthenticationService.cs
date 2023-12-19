@@ -1,7 +1,7 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Security;
 using Domain.Models.Relational.IdentityAggregate;
+using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -137,13 +137,13 @@ public class AuthenticationService : IAuthenticationService
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             if(token is null)
             {
-                throw new ResetPasswordTokenGenerationFailed();
+                throw new ResetPasswordTokenGenerationFailedException();
             }
             return token;
         }
         else
         {
-            throw new InvalidVerificationCode();
+            throw new InvalidVerificationCodeException();
         }
     }
 

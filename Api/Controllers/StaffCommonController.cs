@@ -36,7 +36,7 @@ public class StaffCommonController : ApiController
     //todo : Define Access policy
     [Authorize]
     [HttpGet("MyShahrbinInstance")]
-    public async Task<ActionResult<List<ShahrbinInstance>>> MyGetShahrbinInstance()
+    public async Task<ActionResult<List<ShahrbinInstance>>> GetMyShahrbinInstance()
     {
         var instanceId = User.GetUserInstanceId();
 
@@ -85,6 +85,15 @@ public class StaffCommonController : ApiController
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<List<GetRegionDto>>();
         return Ok(mappedResult);
+    }
+
+
+    [Authorize]
+    [HttpGet("Roles")]
+    public async Task<ActionResult<List<GetRolesDto>>> GetRoles()
+    {
+        await Task.CompletedTask;//.......................
+        return Ok();
     }
 
 

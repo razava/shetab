@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using MediatR;
 
@@ -21,7 +22,7 @@ internal sealed class UpdateCategoryCommandHandler : IRequestHandler<UpdateCateg
         var category = await _categoryRepository.GetSingleAsync(c => c.Id == request.Id);
         if (category is  null)
         {
-            throw new Exception("Not found!");
+            throw new NotFoundException("Category");
         }
         category.Update(
             request.Code,

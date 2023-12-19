@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using ClosedXML.Excel;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
@@ -83,7 +84,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
         var city = await _context.Set<City>().Where(p => p.Name == inputInfo.CityName).FirstOrDefaultAsync();
         if (city == null)
         {
-            throw new Exception($"Invalid city: {inputInfo.CityName}");
+            throw new InvalidCityException($"Invalid city: {inputInfo.CityName}");
         }
         var instance = new ShahrbinInstance()
         {
@@ -98,7 +99,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
 
         if (_context.Set<ShahrbinInstance>().Any(p => p.Name == instance.Name || p.CityId == city.Id))
         {
-            throw new Exception($"Duplicate instance: {instance.Name}, {city.Name}");
+            throw new DuplicateInstanceException($"Duplicate instance: {instance.Name}, {city.Name}");
         }
         _context.Set<ShahrbinInstance>().Add(instance);
         await _context.SaveChangesAsync();
@@ -127,7 +128,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             {
                 if(inputForCategory is null)
                 {
-                    throw new Exception("Parent category cannot be null.");
+                    throw new ForbidNullParentCategoryException();
                 }
                 inputForCategory.SubCategories.Add(new InputForCategory()
                 {
@@ -469,7 +470,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             {
                 var process = processes.Where(p => p.Code == childCat.ProcessTitle).FirstOrDefault();
                 if (process is null)
-                    throw new Exception("Process cannot be null here.");
+                    throw new ForbidNullProcessException();
 
                 category = new Category()
                 {
@@ -511,7 +512,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             || adminRole is null
             || managerRole is null
             || mayorRole is null)
-            throw new Exception("Roles cannot be null here.");
+            throw new ForbidNullRolesException();
 
         var chartCodes = await _context.Set<Chart>().Select(p => p.Code).ToListAsync();
         Chart chart;

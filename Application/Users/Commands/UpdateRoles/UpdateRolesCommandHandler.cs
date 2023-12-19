@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using MediatR;
 
 namespace Application.Users.Commands.UpdateRoles;
@@ -17,7 +18,7 @@ internal class UpdateRolesCommandHandler : IRequestHandler<UpdateRolesCommand, b
         var roles = request.Roles.Where(role => role.IsIn).Select(role => role.RoleName)
             .ToList();
         if(roles is null)
-            throw new Exception();
+            throw new NullAssignedRoleException();
         var result = await _userRepository.UpdateRolesAsync(request.UserId, roles);
         return result;
     }

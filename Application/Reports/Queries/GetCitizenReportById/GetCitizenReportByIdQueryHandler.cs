@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using MediatR;
 
@@ -19,10 +20,10 @@ internal sealed class GetCitizenReportByIdQueryHandler : IRequestHandler<GetCiti
             r => r.Id == request.id,
             false);
         if (report is null)
-            throw new Exception("Not found.");
-        if(report.CitizenId != request.UserId)
+            throw new NotFoundException("Report");
+        if (report.CitizenId != request.UserId)
         {
-            throw new Exception("Access denied.");
+            throw new AccessDeniedException();
         }
         return report;
     }
