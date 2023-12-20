@@ -93,7 +93,7 @@ public class StaffCommonController : ApiController
     public async Task<ActionResult<List<GetRolesDto>>> GetRoles()
     {
         await Task.CompletedTask;//.......................
-        return Ok();
+        return Ok("Not Implemented");
     }
 
 
@@ -116,7 +116,7 @@ public class StaffCommonController : ApiController
     public async Task<ActionResult<List<GetExecutiveDto>>> GetExecutives()
     {
         await Task.CompletedTask;//..............
-        return Ok();
+        return Ok("Not Implemented");
     }
 
     [Authorize]

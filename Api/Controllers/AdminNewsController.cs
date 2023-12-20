@@ -48,7 +48,7 @@ public class AdminNewsController : ApiController
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
-        return Ok();
+        return Created();
         //return CreatedAtAction("", result.Adapt<GetNewsDto>());
 
     }

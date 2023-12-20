@@ -47,7 +47,7 @@ public class AdminProcessesController : ApiController
         var result = await Sender.Send(command);
         if (!result)
             return Problem();
-        return Ok();
+        return Created();
     }
 
 
@@ -75,7 +75,7 @@ public class AdminProcessesController : ApiController
         var result = await Sender.Send(command);
         if (!result)
             return Problem();
-        return Ok();
+        return NoContent();
     }
 
     //TODO: Define access policies

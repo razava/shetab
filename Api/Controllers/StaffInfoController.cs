@@ -20,7 +20,7 @@ public class StaffInfoController : ApiController
     public async Task<ActionResult<List<ChartDto>>> GetListChart()
     {
         await Task.CompletedTask;
-        return Ok();
+        return Ok("Not Implemented");
     }
 
 
@@ -29,7 +29,7 @@ public class StaffInfoController : ApiController
     public async Task<ActionResult<InfoDto>> GetChartsById(int id/*, [FromQuery] PagingInfo pagingInfo*/)//time filter?
     {
         await Task.CompletedTask;
-        return Ok();
+        return Ok("Not Implemented");
     }
 
     /*
@@ -55,7 +55,7 @@ public class StaffInfoController : ApiController
     public async Task<ActionResult<List<LocationDto>>> GetLocations()
     {
         await Task.CompletedTask;
-        return Ok();
+        return Ok("Not Implemented");
     }
 
 
@@ -65,7 +65,7 @@ public class StaffInfoController : ApiController
     public async Task<ActionResult<InfoDto>> GetSummary()
     {
         await Task.CompletedTask;
-        return Ok();
+        return Ok("Not Implemented");
     }
 
     //............................................
@@ -75,7 +75,7 @@ public class StaffInfoController : ApiController
     public async Task<ActionResult> GetExcel()
     {
         await Task.CompletedTask;
-        return Ok();
+        return Ok("Not Implemented");
     }
 
 }

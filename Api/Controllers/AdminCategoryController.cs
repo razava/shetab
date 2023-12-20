@@ -84,7 +84,7 @@ public class AdminCategoryController : ApiController
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
-        return Ok();
+        return Created();
     }
 
     [Authorize(Roles = "Admin")]
@@ -111,7 +111,7 @@ public class AdminCategoryController : ApiController
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
-        return Ok();
+        return NoContent();
     }
 
 
@@ -120,7 +120,7 @@ public class AdminCategoryController : ApiController
     public async Task<ActionResult> DeleteCategory(Guid id)
     {
         await Task.CompletedTask;
-        return Ok();
+        return Ok("Not Implemented");
     }
 
 

@@ -23,7 +23,7 @@ public class MessagesController : ApiController
     public async Task<ActionResult<List<GetMessageDto>>> GetMessages([FromQuery] PagingInfo pagingInfo)
     {
         await Task.CompletedTask;//............
-        return Ok();
+        return Ok("Not Implemented");
     }
 
 
@@ -32,7 +32,7 @@ public class MessagesController : ApiController
     public async Task<ActionResult<GetMessageCountDto>> GetMessagesCount([FromQuery] TimeFilter timeFilter)
     {
         await Task.CompletedTask;//..............
-        return Ok();
+        return Ok("Not Implemented");
     }
     
 

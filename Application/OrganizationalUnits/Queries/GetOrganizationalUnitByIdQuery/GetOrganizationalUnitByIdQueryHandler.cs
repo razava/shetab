@@ -17,7 +17,7 @@ internal class GetOrganizationalUnitByIdQueryHandler : IRequestHandler<GetOrgani
     public async Task<OrganizationalUnit> Handle(GetOrganizationalUnitByIdQuery request, CancellationToken cancellationToken)
     {
         var result = await _organizationalUnitRepository.GetSingleAsync(
-            ou => ou.ShahrbinInstanceId == request.OrganizationalUnitId,
+            ou => ou.Id == request.OrganizationalUnitId,
             false);
         if (result is null)
             throw new NotFoundException("Organizational Unit");

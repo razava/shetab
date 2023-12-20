@@ -67,7 +67,7 @@ public class AdminUserManagementController : ApiController
         var result = await Sender.Send(command);
         if(!result)
             return StatusCode(StatusCodes.Status500InternalServerError);
-        return Ok();
+        return NoContent();
         //todo : set appropriate responses.
     }
 
@@ -82,7 +82,7 @@ public class AdminUserManagementController : ApiController
         if (!result)
             return Problem();
         //todo : handle result & set appropriate responses.
-        return Ok();
+        return NoContent();
     }
 
 
@@ -106,7 +106,7 @@ public class AdminUserManagementController : ApiController
         var command = new UpdateRegionsCommand(instanceId, id, mappedRegions);
         var result = await Sender.Send(command);
         if(!result) return Problem();
-        return Ok();
+        return NoContent();
     }
     
 
@@ -191,7 +191,7 @@ public class AdminUserManagementController : ApiController
         
         //TODO: Does executive have access to this endpoint?
         //todo: map returning contractor in below response
-        return CreatedAtAction(nameof(GetUserById), contractor.Id, contractor);
+        return CreatedAtAction(nameof(GetUserById), contractor.Id, contractor.Adapt<GetContractorsList>());
     }
 
     [Authorize(Roles = "Executive")]
