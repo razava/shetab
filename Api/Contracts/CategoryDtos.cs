@@ -64,7 +64,8 @@ public class CategoryCreateDto
 {
     [Required]
     public int Order { get; set; }
-    public int? ParentId { get; set; }
+    [Required]
+    public int ParentId { get; set; }
     [Required] [MaxLength(8)]
     public string Code { get; set; } = string.Empty;
     [Required] [MaxLength(32)]
