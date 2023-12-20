@@ -155,7 +155,6 @@ public class CitizenReportController : ApiController
         
         var routeValues = new {id = report.Id, instanceId = instanceId };
         return CreatedAtAction(nameof(GetMyReportById), routeValues, report.Adapt<CitizenGetReportDetailsDto>());
-        
 
     }
 

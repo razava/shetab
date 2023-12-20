@@ -26,7 +26,6 @@ public class CategoryGetDto
 }
 
 
-//todo : review this ..................................
 public class CategoryGetDetailDto
 {
     public int Id { get; set; }
@@ -44,6 +43,7 @@ public class CategoryGetDetailDto
     public bool ObjectionAllowed { get; set; }
     public bool EditingAllowed { get; set; } = true;
     public bool IsDeleted { get; set; }
+    public bool HideMap { get; set; }
 }
 
 

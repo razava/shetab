@@ -28,7 +28,7 @@ internal sealed class AddNewsCommandHandler : IRequestHandler<AddNewsCommand, Ne
         if (media is null)
             throw new SaveImageFailedException();
 
-        var news = News.Create(request.Title, request.Description, request.Url, media, request.IsDeleted);
+        var news = News.Create(request.InstanceId, request.Title, request.Description, request.Url, media, request.IsDeleted);
 
         _newsRepository.Insert(news);
         await _unitOfWork.SaveAsync();
