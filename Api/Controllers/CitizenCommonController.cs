@@ -26,15 +26,17 @@ public class CitizenCommonController : ApiController
 
     [Authorize]
     [HttpGet("Categories")]
-    public async Task<ActionResult<List<CategoryGetDto>>> GetCategories(int? instanceId)
+    public async Task<ActionResult<CategoryGetDto>> GetCategories(int? instanceId)
     {
         if (instanceId is null)
             return BadRequest();
         var query = new GetCategoryQuery(instanceId.Value);
         var result = await Sender.Send(query);
 
-        result.ForEach(c => c.Parent = result.SingleOrDefault(p => p.Id == c.ParentId));
-        return result.Adapt<List<CategoryGetDto>>();
+        //TODO: This can be improved
+        result.ForEach(c => c.Categories = result.Where(p => p.ParentId == c.Id).ToList());
+
+        return result.Where(c => c.ParentId == null).Single().Adapt<CategoryGetDto>();
     }
 
     //..........................is needed for citizen?........

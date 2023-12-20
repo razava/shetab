@@ -49,22 +49,18 @@ internal sealed class AcceptByOperatorCommandHandler : IRequestHandler<AcceptByO
             //address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
         }
 
-        List<Media>? medias = null;
-        if (request.Attachments is not null)
+        List<Media> medias = report.Medias.ToList();
+        if (request.Attachments is not null && report.Medias.Count > request.Attachments.Count)
         {
-            List<Upload> attachments = new List<Upload>();
-            if (request.Attachments.Count > 0)
-            {
-                attachments = (await _uploadRepository
-                    .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == report.CitizenId))
+            var deletedAttachments = report.Medias.Select(m => m.Id).ToList();
+            deletedAttachments.RemoveAll(request.Attachments.Contains);
+            
+                var attachments = (await _uploadRepository
+                    .GetAsync(u => deletedAttachments.Contains(u.Media.Id) && u.UserId == report.CitizenId))
                     .ToList() ?? new List<Upload>();
-                if (request.Attachments.Count != attachments.Count)
-                {
-                    throw new AttachmentsFailureException();
-                }
-                attachments.ForEach(a => a.IsUsed = true);
-                medias = attachments.Select(a => a.Media).ToList();
-            }
+                
+                attachments.ForEach(a => a.IsUsed = false);
+                medias = medias.Where(m => request.Attachments.Contains(m.Id)).ToList();
         }
 
         report.Accept(
