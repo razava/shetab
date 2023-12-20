@@ -325,7 +325,7 @@ public class StaffReportController : ApiController
             model.Visibility == Visibility.EveryOne);
         await Sender.Send(command);
 
-        return NoContent();
+        return Ok(id);
     }
 
 
