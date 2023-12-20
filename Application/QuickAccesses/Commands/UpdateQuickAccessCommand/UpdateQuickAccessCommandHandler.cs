@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Infrastructure.Storage;
@@ -29,13 +30,13 @@ internal sealed class UpdateQuickAccessCommandHandler : IRequestHandler<UpdateQu
         {
             media = await _storageService.WriteFileAsync(request.Image, AttachmentType.News);
             if (media is null)
-                throw new Exception("Image not found.");
+                throw new SaveImageFailedException();
         }
         
 
         var quickAccess = await _quickAccessRepository.GetSingleAsync(q => q.Id == request.Id);
         if (quickAccess is null)
-            throw new Exception("Not found.");
+            throw new NotFoundException("QuickAccess");
 
         quickAccess.CategoryId = request.CategoryId ?? quickAccess.CategoryId;
         quickAccess.Title = request.Title ?? quickAccess.Title;

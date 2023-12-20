@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Security;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Security;
 using MediatR;
 
 namespace Application.Authentication.Queries.GetResetPasswordTokenQuery;
@@ -20,7 +21,7 @@ internal sealed class GetResetPasswordTokenQueryHandler : IRequestHandler<GetRes
             var isCaptchaValid = _captchaProvider.Validate(request.CaptchaValidateModel);
             if (!isCaptchaValid)
             {
-                throw new Exception("Invalid captcha");
+                throw new InvalidCaptchaException();
             }
         }
         var resetPasswordToken = await _authenticationService.GetResetPasswordToken(request.Username, request.verificationCode);

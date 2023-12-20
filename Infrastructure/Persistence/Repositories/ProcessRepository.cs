@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ProcessAggregate;
+using Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
@@ -37,31 +38,31 @@ public class ProcessRepository : GenericRepository<Process>, IProcessRepository
         Actor? actorInspectorRole;
 
         var roleId = (await _userRepository.FindRoleByNameAsync("Citizen"))?.Id;
-        if (roleId is null) throw new Exception("Role cannot be null here.");
+        if (roleId is null) throw new ForbidNullRoleException();
         actorCitizenRole = await context.Set<Actor>()
             .Where(p => p.Type == ActorType.Role && p.Identifier == roleId)
             .FirstOrDefaultAsync();
 
         roleId = (await _userRepository.FindRoleByNameAsync("Operator"))?.Id;
-        if (roleId is null) throw new Exception("Role cannot be null here.");
+        if (roleId is null) throw new ForbidNullRoleException();
         actorOperatorRole = await context.Set<Actor>()
             .Where(p => p.Type == ActorType.Role && p.Identifier == roleId)
             .FirstOrDefaultAsync();
 
         roleId = (await _userRepository.FindRoleByNameAsync("Executive"))?.Id;
-        if (roleId is null) throw new Exception("Role cannot be null here.");
+        if (roleId is null) throw new ForbidNullRoleException();
         actorExecutiveRole = await context.Set<Actor>()
             .Where(p => p.Type == ActorType.Role && p.Identifier == roleId)
             .FirstOrDefaultAsync();
 
         roleId = (await _userRepository.FindRoleByNameAsync("Contractor"))?.Id;
-        if (roleId is null) throw new Exception("Role cannot be null here.");
+        if (roleId is null) throw new ForbidNullRoleException();
         actorContractorRole = await context.Set<Actor>()
             .Where(p => p.Type == ActorType.Role && p.Identifier == roleId)
             .FirstOrDefaultAsync();
 
         roleId = (await _userRepository.FindRoleByNameAsync("Inspector"))?.Id;
-        if (roleId is null) throw new Exception("Role cannot be null here.");
+        if (roleId is null) throw new ForbidNullRoleException();
         actorInspectorRole = await context.Set<Actor>()
             .Where(p => p.Type == ActorType.Role && p.Identifier == roleId)
             .FirstOrDefaultAsync();
@@ -71,7 +72,7 @@ public class ProcessRepository : GenericRepository<Process>, IProcessRepository
             || actorExecutiveRole is null
             || actorContractorRole is null
             || actorInspectorRole is null)
-            throw new Exception("");
+            throw new NullActorException();
 
         //Create process related to an executive
         process = new Process()
@@ -380,7 +381,7 @@ public class ProcessRepository : GenericRepository<Process>, IProcessRepository
             .ThenInclude(p => p.Actors)
             .SingleOrDefaultAsync();
         if (process is null)
-            throw new Exception("Process cannot be null here.");
+            throw new ForbidNullProcessException();
         process.Title = title ?? process.Title;
         process.Code = code ?? process.Code;
 
@@ -390,7 +391,7 @@ public class ProcessRepository : GenericRepository<Process>, IProcessRepository
 
             stageExecutive = process.Stages.Where(p => p.Name == "Executive").FirstOrDefault();
             if (stageExecutive is null)
-                throw new Exception("Stage cannot be null here.");
+                throw new ForbidNullStageException();
             stageExecutive.Actors = actors;
         }
 

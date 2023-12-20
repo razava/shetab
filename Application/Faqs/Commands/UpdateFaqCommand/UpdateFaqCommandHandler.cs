@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Application.NewsApp.Commands.UpdateNewsCommand;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
@@ -24,7 +25,7 @@ internal sealed class UpdateFaqCommandHandler : IRequestHandler<UpdateFaqCommand
     {
         var faq = await _faqRepository.GetSingleAsync(q => q.Id == request.Id);
         if (faq is null)
-            throw new Exception("Not found.");
+            throw new NotFoundException("FAQ");
 
         faq.Update(request.Question, request.Answer, request.IsDeleted);
 

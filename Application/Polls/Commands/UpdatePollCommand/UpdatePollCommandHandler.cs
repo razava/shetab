@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.PollAggregate;
 using MediatR;
 
@@ -19,7 +20,7 @@ internal class UpdatePollCommandHandler : IRequestHandler<UpdatePollCommand, Pol
     {
         var poll = await _pollRepository.GetById(request.Id);
         if (poll is null)
-            throw new Exception("Poll not found!");
+            throw new NotFoundException("Poll");
 
 
         List<PollChoice>? choices = new();

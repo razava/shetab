@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using MediatR;
 
@@ -20,7 +21,7 @@ internal sealed class GetReportByIdQueryHandler : IRequestHandler<GetReportByIdQ
             r => r.Id == request.id,
             false);
         if (report is null)
-            throw new Exception("Not found.");
+            throw new NotFoundException("Report");
         return report;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Domain.Exceptions;
 using Domain.Messages;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
@@ -104,8 +105,8 @@ public class Report : Entity
         ShahrbinInstanceId = category.ShahrbinInstanceId;
         CitizenId = citizenId;
         CategoryId = category.Id;
-        ProcessId = category.ProcessId ?? throw new Exception("Category should have a process assigned to.");
-        Process = category.Process ?? throw new Exception("Process is not loaded.");
+        ProcessId = category.ProcessId ?? throw new CategoryHaveNoAssignedProcess();
+        Process = category.Process ?? throw new NotLoadedProcessException();
         Comments = comments;
         Medias = attachments;
         IsIdentityVisible = isIdentityVisible;
@@ -415,7 +416,7 @@ public class Report : Entity
 
         var currentStage = Process.Stages.FirstOrDefault(p => p.Id == CurrentStageId);
         if (currentStage == null)
-            throw new Exception();
+            throw new NullCurrentStageException();
 
 
         var autoActors = currentStage.Actors.Where(p => p.Type == ActorType.Auto).ToList();
@@ -424,7 +425,7 @@ public class Report : Entity
             //Revise this
             var bot = autoActor.BotActor;
             if (bot == null)
-                throw new Exception("Bot not found.");
+                throw new BotNotFoundException();
 
             if (bot.ReasonMeaning == null || LastReason != null && LastReason.ReasonMeaning == bot.ReasonMeaning)
             {
@@ -456,7 +457,7 @@ public class Report : Entity
 
         var transition = Process.Transitions.SingleOrDefault(p => p.Id == transitionId);
         if (transition == null)
-            throw new Exception("Transition cannot be null here.");
+            throw new ForbidNullTransitionException();
 
         if (CurrentStageId != transition.FromId)
             throw new InvalidOperationException();
@@ -561,7 +562,7 @@ public class Report : Entity
         {
             var stage = Process.Stages.Where(p => p.Id == stageId).SingleOrDefault();
             if (stage is null)
-                throw new Exception();
+                throw new NullStageException();
 
             //_report.Priority = transitionInfo.Priority != null ? transitionInfo.Priority.Value : _report.Priority;
             Visibility = visibility ?? Visibility;

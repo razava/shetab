@@ -6,6 +6,7 @@ using Domain.Models.Relational.IdentityAggregate;
 using Infrastructure.Authentication;
 using Infrastructure.Captcha;
 using Infrastructure.Communications;
+using Infrastructure.Exceptions;
 using Infrastructure.Map;
 using Infrastructure.Map.ParsiMap;
 using Infrastructure.Persistence;
@@ -39,7 +40,7 @@ public static class DependencyInjection
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         if (connectionString is null)
-            throw new Exception("Connection string cannot be null.");
+            throw new NullConnectionStringException();
         var assembly = typeof(DependencyInjection).Assembly;
 
         services.AddDbContext<ApplicationDbContext>(options =>
@@ -87,9 +88,9 @@ public static class DependencyInjection
     public static IServiceCollection AddSecurity(this IServiceCollection services, IConfiguration configuration)
     {
         var jwtInfo = new JwtInfo(
-            configuration["JWT:Secret"] ?? throw new Exception(),
-            configuration["JWT:ValidIssuer"] ?? throw new Exception(),
-            configuration["JWT:ValidAudience"] ?? throw new Exception(),
+            configuration["JWT:Secret"] ?? throw new NullJwtSecretException(),
+            configuration["JWT:ValidIssuer"] ?? throw new NullJwtValidIssuerException(),
+            configuration["JWT:ValidAudience"] ?? throw new NullJwtValidAudienceException(),
             new TimeSpan(24, 0, 0));
 
         services.AddScoped<IAuthenticationService>(x => new AuthenticationService(
@@ -113,9 +114,9 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        string host = configuration["MessageBroker:Host"] ?? throw new Exception("Message broker configurations not found");
-        string username = configuration["MessageBroker:Username"]! ?? throw new Exception("Message broker configurations not found");
-        string password = configuration["MessageBroker:Password"]! ?? throw new Exception("Message broker configurations not found");
+        string host = configuration["MessageBroker:Host"] ?? throw new MessageBrokerConfigurationsNotFoundException();
+        string username = configuration["MessageBroker:Username"]! ?? throw new MessageBrokerConfigurationsNotFoundException();
+        string password = configuration["MessageBroker:Password"]! ?? throw new MessageBrokerConfigurationsNotFoundException();
         // Add MassTransit as a service
         services.AddMassTransit(busConfigurator =>
         {

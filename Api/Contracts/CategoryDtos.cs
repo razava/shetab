@@ -26,7 +26,6 @@ public class CategoryGetDto
 }
 
 
-//todo : review this ..................................
 public class CategoryGetDetailDto
 {
     public int Id { get; set; }
@@ -44,6 +43,7 @@ public class CategoryGetDetailDto
     public bool ObjectionAllowed { get; set; }
     public bool EditingAllowed { get; set; } = true;
     public bool IsDeleted { get; set; }
+    public bool HideMap { get; set; }
 }
 
 
@@ -64,7 +64,8 @@ public class CategoryCreateDto
 {
     [Required]
     public int Order { get; set; }
-    public int? ParentId { get; set; }
+    [Required]
+    public int ParentId { get; set; }
     [Required] [MaxLength(8)]
     public string Code { get; set; } = string.Empty;
     [Required] [MaxLength(32)]

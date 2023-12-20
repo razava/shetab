@@ -78,7 +78,7 @@ public class CitizenReportController : ApiController
     public async Task<ActionResult> GetLocations()
     {
         await Task.CompletedTask;//.......................
-        return Ok();
+        return Ok("Not Implemented");
     }
 
     //todo : check usage
@@ -88,7 +88,7 @@ public class CitizenReportController : ApiController
     public async Task<ActionResult> GetLocationsById(Guid id)
     {
         await Task.CompletedTask;
-        return Ok();
+        return Ok("Not Implemented");
     }
 
 
@@ -155,7 +155,6 @@ public class CitizenReportController : ApiController
         
         var routeValues = new {id = report.Id, instanceId = instanceId };
         return CreatedAtAction(nameof(GetMyReportById), routeValues, report.Adapt<CitizenGetReportDetailsDto>());
-        
 
     }
 
@@ -184,7 +183,7 @@ public class CitizenReportController : ApiController
         var result = await Sender.Send(command);
         if (!result)
             return Problem();
-        return Ok();
+        return NoContent();
     }
 
      
@@ -203,7 +202,7 @@ public class CitizenReportController : ApiController
         {
             return Problem();
         }
-        return Ok();
+        return Created();
     }
     
     
@@ -241,7 +240,7 @@ public class CitizenReportController : ApiController
         {
             return Problem();
         }
-        return Ok();
+        return NoContent();
     }
 
 
@@ -251,7 +250,7 @@ public class CitizenReportController : ApiController
     {
         //need userId, ReportId, token, rating..........................................
         await Task.CompletedTask;
-        return Ok();
+        return Ok("Not Implemented");
     }
 
 
@@ -266,7 +265,7 @@ public class CitizenReportController : ApiController
         var result = await Sender.Send(command);
         if(result == null)
             return Problem();
-        return Ok();
+        return Created();
     }
 
 
@@ -275,7 +274,7 @@ public class CitizenReportController : ApiController
     public async Task<ActionResult> CreateCommentViolation(Guid id, CreateCommentViolationDto createViolationDto)
     {
         await Task.CompletedTask;//............................................
-        return Ok();
+        return Ok("Not Implemented");
     }
 
 }

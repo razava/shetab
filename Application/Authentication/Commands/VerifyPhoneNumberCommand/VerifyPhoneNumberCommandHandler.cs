@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Security;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Security;
 using MediatR;
 
 namespace Application.Authentication.Commands.VerifyPhoneNumberCommand;
@@ -20,7 +21,7 @@ internal sealed class VerifyPhoneNumberCommandHandler : IRequestHandler<VerifyPh
             var isCaptchaValid = _captchaProvider.Validate(request.CaptchaValidateModel);
             if (!isCaptchaValid)
             {
-                throw new Exception("Invalid captcha");
+                throw new InvalidCaptchaException();
             }
         }
         var isVerified = await _authenticationService.VerifyPhoneNumber(request.Username, request.verificationCode);

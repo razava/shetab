@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using MediatR;
@@ -33,7 +34,7 @@ internal sealed class CreateReportByOperatorCommandHandler : IRequestHandler<Cre
         if (category is null)
         {
             //TODO: Handle this error
-            throw new Exception();
+            throw new NotFoundException("Category");
         }
         var address = request.Address.GetAddress();
         //address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
@@ -50,7 +51,7 @@ internal sealed class CreateReportByOperatorCommandHandler : IRequestHandler<Cre
                 .ToList() ?? new List<Upload>();
                 if (request.Attachments.Count != attachments.Count)
                 {
-                    throw new Exception("Attachments failure.");
+                    throw new AttachmentsFailureException();
                 }
                 attachments.ForEach(a => a.IsUsed = true);
                 medias = attachments.Select(a => a.Media).ToList();

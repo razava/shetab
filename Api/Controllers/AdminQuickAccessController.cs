@@ -45,7 +45,7 @@ public class AdminQuickAccessController : ApiController
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
-        return Ok();
+        return Created("",result.Id);
     }
 
 
@@ -63,7 +63,7 @@ public class AdminQuickAccessController : ApiController
         var result = await Sender.Send(command);
         if(result == null)
             return Problem();
-        return Ok();
+        return NoContent();
     }
 
 
@@ -75,7 +75,7 @@ public class AdminQuickAccessController : ApiController
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
-        return Ok();
+        return NoContent();
     }
     
 

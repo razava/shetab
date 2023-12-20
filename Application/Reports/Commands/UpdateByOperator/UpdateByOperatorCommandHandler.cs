@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using MediatR;
@@ -28,7 +29,7 @@ internal sealed class UpdateByOperatorCommandHandler : IRequestHandler<UpdateByO
     {
         var report = await _reportRepository.GetByIDAsync(request.reportId);
         if (report == null)
-            throw new Exception("Report not found");
+            throw new NotFoundException("Report");
 
         Category? category = null;
         if (request.CategoryId is not null)
@@ -37,7 +38,7 @@ internal sealed class UpdateByOperatorCommandHandler : IRequestHandler<UpdateByO
             if (category is null)
             {
                 //TODO: Handle this error
-                throw new Exception();
+                throw new NotFoundException("Category");
             }
 
         }
@@ -59,7 +60,7 @@ internal sealed class UpdateByOperatorCommandHandler : IRequestHandler<UpdateByO
                 .ToList() ?? new List<Upload>();
                 if (request.Attachments.Count != attachments.Count)
                 {
-                    throw new Exception("Attachments failure.");
+                    throw new AttachmentsFailureException();
                 }
                 attachments.ForEach(a => a.IsUsed = true);
                 medias = attachments.Select(a => a.Media).ToList();

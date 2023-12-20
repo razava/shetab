@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Communication;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Communication;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Domain.Models.Relational;
@@ -33,16 +34,16 @@ internal sealed class MessageToCitizenCommandHandler : IRequestHandler<MessageTo
     {
         if (!request.UserRoles.Contains(RoleNames.Executive))
         {
-            throw new Exception("User must be an executive to be able to send message to citizen.");
+            throw new ExecutiveOnlyLimitException();
         }
         var actor = await _actorRepository.GetSingleAsync(a => a.Identifier == request.UserId);
         if (actor == null)
         {
-            throw new Exception("Actor not found.");
+            throw new NotFoundException("Actor");
         }
         var report = await _reportRepository.GetByIDAsync(request.reportId);
         if (report == null)
-            throw new Exception("Report not found");
+            throw new NotFoundException("Report");
 
         List<Media> medias = new List<Media>();
         if (request.Attachments is not null)
@@ -55,7 +56,7 @@ internal sealed class MessageToCitizenCommandHandler : IRequestHandler<MessageTo
                 .ToList() ?? new List<Upload>();
                 if (request.Attachments.Count != attachments.Count)
                 {
-                    throw new Exception("Attachments failure.");
+                    throw new AttachmentsFailureException();
                 }
                 attachments.ForEach(a => a.IsUsed = true);
                 medias = attachments.Select(a => a.Media).ToList();

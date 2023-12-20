@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.IdentityAggregate;
 using MediatR;
 
@@ -18,7 +19,7 @@ internal class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery,
         var result = await _userRepository.GetSingleAsync(u => u.Id == request.UserId);
         if (result == null)
         {
-            throw new Exception("Not found.");
+            throw new NotFoundException("User");
         }
 
         return result;

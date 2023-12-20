@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.PollAggregate;
 using Infrastructure.Storage;
@@ -21,7 +22,7 @@ internal class AnswerPollCommandHandler : IRequestHandler<AnswerPollCommand, boo
     {
         var poll = await _pollRepository.GetById(request.Id, request.UserId);
         if (poll is null)
-            throw new Exception("Poll not found!");
+            throw new NotFoundException("Poll");
 
         poll.Answer(request.UserId, request.ChoicesIds, request.Text);
         

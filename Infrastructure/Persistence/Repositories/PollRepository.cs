@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml.Office2010.Excel;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.PollAggregate;
 using Domain.Models.Relational.ProcessAggregate;
+using Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
@@ -30,7 +31,7 @@ public class PollRepository : IPollRepository
             .Include(p => p.Answers.Where(pa => pa.UserId == userId))
             .SingleOrDefaultAsync();
         if (result is null)
-            throw new Exception("Not Found!");
+            throw new PollNotFoundException();
         return result;
     }
 
@@ -41,7 +42,7 @@ public class PollRepository : IPollRepository
             .Include(p => p.Choices)
             .SingleOrDefaultAsync();
         if (result is null)
-            throw new Exception("Not Found!");
+            throw new PollNotFoundException();
         return result;
     }
 

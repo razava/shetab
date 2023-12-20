@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Infrastructure.Storage;
@@ -29,13 +30,13 @@ internal sealed class UpdateNewsCommandHandler : IRequestHandler<UpdateNewsComma
         {
             media = await _storageService.WriteFileAsync(request.Image, AttachmentType.News);
             if (media is null)
-                throw new Exception("Image not found.");
+                throw new SaveImageFailedException();
         }
 
 
         var news = await _newsRepository.GetSingleAsync(q => q.Id == request.Id);
         if (news is null)
-            throw new Exception("Not found.");
+            throw new NotFoundException("News");
 
         news.Update(request.Title, request.Description, request.Url, media, request.IsDeleted);
 

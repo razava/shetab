@@ -4,6 +4,7 @@ using Api.ExtensionMethods;
 using Application.NewsApp.Commands.AddNewsCommand;
 using Application.NewsApp.Commands.UpdateNewsCommand;
 using Application.NewsApp.Queries.GetNews;
+using Application.NewsApp.Queries.GetNewsById;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -33,6 +34,19 @@ public class AdminNewsController : ApiController
     }
 
 
+    [Authorize]
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<GetNewsDto>> GetNewsById(int id)
+    {
+        var query = new GetNewsByIdQuery(id);
+        var result = await Sender.Send(query);
+        if (result == null)
+            return Problem();
+        var mappedResult = result.Adapt<GetNewsDto>();
+        return Ok(mappedResult);
+    }
+
+
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult> CreateNews([FromForm] CreateNewsDto createNewsDto)
@@ -48,7 +62,7 @@ public class AdminNewsController : ApiController
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
-        return Ok();
+        return Created();
         //return CreatedAtAction("", result.Adapt<GetNewsDto>());
 
     }

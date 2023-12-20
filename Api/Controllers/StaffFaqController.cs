@@ -47,7 +47,7 @@ public class StaffFaqController : ApiController
         if (result == null)
             return Problem();
         //return CreatedAtAction("", result.Adapt<GetFaqsDto>());
-        return Ok();
+        return Created();
     }
 
 

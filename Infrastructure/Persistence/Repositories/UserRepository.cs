@@ -2,6 +2,7 @@
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
+using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,14 +39,14 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
             var password = "aA@12345";
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
-                throw new Exception("User creation failed.", null);
+                throw new UserCreationFailedException();
 
             var result2 = await _userManager.AddToRoleAsync(user, "Citizen");
 
             if (!result2.Succeeded)
             {
                 await _userManager.DeleteAsync(user);
-                throw new Exception("Role assignment failed.", null);
+                throw new RoleAssignmentFailedException();
             }
 
             //TODO: Send the user its credentials
@@ -175,7 +176,7 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
-            throw new Exception("User not found.");
+            throw new UserNotFoundException();
         var result = await _userManager.RemovePasswordAsync(user);
         if (result is null || !result.Succeeded)
             return false;
@@ -189,7 +190,7 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
-            throw new Exception("User not found");
+            throw new UserNotFoundException();
         var currentRoles = await _userManager.GetRolesAsync(user);
         var inRoles = roles.Where(r => !currentRoles.Contains(r)).ToList();
         var outRoles = currentRoles.Where(r => !roles.Contains(r)).ToList();
@@ -212,10 +213,10 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
-            throw new Exception("User not found.");
+            throw new UserNotFoundException();
         var roles = await _userManager.GetRolesAsync(user);
         if (roles is null)
-            throw new Exception("Unknown problem!");
+            throw new NullUserRolesException();
         return roles.ToList();
     }
 

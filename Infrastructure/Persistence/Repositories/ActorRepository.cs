@@ -2,6 +2,7 @@
 using Application.Users.Common;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ProcessAggregate;
+using Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
@@ -20,7 +21,7 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
             .AsNoTracking()
             .SingleOrDefaultAsync();
         if (instance is null)
-            throw new Exception("Instance not found!");
+            throw new InstanceNotFoundException();
         var regions = await context.Set<Region>()
             .Where(r => r.CityId == instance.CityId)
             .AsNoTracking()
@@ -32,7 +33,7 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
             .AsNoTracking()
             .SingleOrDefaultAsync();
         if (actor is null)
-            throw new Exception("Actor not found!");
+            throw new ActorNotFoundException();
 
         var result = new List<IsInRegionModel>();
         foreach (var region in regions)
@@ -57,7 +58,7 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
             .AsNoTracking()
             .SingleOrDefaultAsync();
         if (instance is null)
-            throw new Exception("Instance not found!");
+            throw new InstanceNotFoundException();
         var regions = await context.Set<Region>()
             .Where(r => r.CityId == instance.CityId)
             .AsNoTracking()
@@ -68,7 +69,7 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
             .Include(a => a.Regions)
             .SingleOrDefaultAsync();
         if (actor is null)
-            throw new Exception("Actor not found!");
+            throw new ActorNotFoundException();
 
         actor.Regions.Clear();
         foreach (var userRegion in userRegions)

@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
@@ -44,7 +45,7 @@ internal class AddOrganizationalUnitCommandHandler : IRequestHandler<AddOrganiza
         {
             var executiveUser = executiveUsers.SingleOrDefault(eu => eu.Id == executiveActor.Identifier);
             if (executiveUser is null)
-                throw new Exception();
+                throw new NotFoundException("ExecutiveUser");
             newOus.Add(new OrganizationalUnit()
             {
                 ShahrbinInstanceId = request.InstanceId,

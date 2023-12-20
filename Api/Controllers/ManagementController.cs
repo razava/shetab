@@ -18,7 +18,7 @@ public class ManagementController : ApiController
     public async Task<ActionResult> SendNowFeedback()
     {
         await Task.CompletedTask;
-        return Ok();
+        return Ok("Not Implemented");
     }
 
 
@@ -27,7 +27,7 @@ public class ManagementController : ApiController
     public async Task<ActionResult> DeleteReport(string trackingNumbers)
     {
         await Task.CompletedTask;//.................
-        return Ok();
+        return Ok("Not Implemented");
     }
 
 

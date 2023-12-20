@@ -21,8 +21,6 @@ internal class GetContractorsQueryHandler : IRequestHandler<GetContractorsQuery,
             .Select(ec => ec.Contractor);
 
         var result = await PagedList<ApplicationUser>.ToPagedList(query, request.PagingInfo.PageNumber, request.PagingInfo.PageSize);
-        if (result is null)
-            throw new Exception();
         return result;
     }
 }

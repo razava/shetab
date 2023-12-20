@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using MediatR;
 
@@ -16,10 +17,10 @@ internal class GetOrganizationalUnitByIdQueryHandler : IRequestHandler<GetOrgani
     public async Task<OrganizationalUnit> Handle(GetOrganizationalUnitByIdQuery request, CancellationToken cancellationToken)
     {
         var result = await _organizationalUnitRepository.GetSingleAsync(
-            ou => ou.ShahrbinInstanceId == request.OrganizationalUnitId,
+            ou => ou.Id == request.OrganizationalUnitId,
             false);
         if (result is null)
-            throw new Exception("Not found!");
+            throw new NotFoundException("Organizational Unit");
         return result;
     }
 }

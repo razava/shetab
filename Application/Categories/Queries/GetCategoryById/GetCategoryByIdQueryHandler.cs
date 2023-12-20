@@ -1,4 +1,5 @@
 ﻿using Application.Categories.Queries.GetCategory;
+using Application.Common.Exceptions;
 using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using MediatR;
@@ -20,7 +21,7 @@ internal sealed class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryB
         var result = await _categoryRepository.GetByIDAsync(request.Id);
 
         if (result is null)
-            throw new Exception("Doesn't exist.");
+            throw new NotFoundException("Category");
 
         return result;
     }

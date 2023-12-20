@@ -1,4 +1,5 @@
 ﻿using Application.Comments.Commands.ReplyComment;
+using Application.Common.Exceptions;
 using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.ReportAggregate;
 using MediatR;
@@ -21,7 +22,7 @@ internal class UpdateCommentCommandHandler : IRequestHandler<UpdateCommentComman
         var comment = await _commentRepository.GetSingleAsync(c => c.Id == request.CommentId);
         if (comment is null)
         {
-            throw new Exception("Not found.");
+            throw new NotFoundException("Comment");
         }
         comment.Text = request.Content;
         _commentRepository.Update(comment);

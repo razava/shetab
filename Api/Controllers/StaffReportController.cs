@@ -190,26 +190,12 @@ public class StaffReportController : ApiController
     }
 
 
-    //todo : review
     [Authorize(Roles = "Operator")]
     [HttpPost("RegisterByOperator")]
     public async Task<ActionResult<Guid>> CreateReportByOperator(OperatorCreateReportDto model)
     {
-        var instanceIdStr = User.FindFirstValue(AppClaimTypes.InstanceId);
-        if (instanceIdStr == null)
-        {
-            return BadRequest();
-        }
-        var instanceId = int.Parse(instanceIdStr);
-        if (instanceId <= 0)
-        {
-            return BadRequest();
-        }
-        var operatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (operatorId == null)
-        {
-            return Unauthorized();
-        }
+        var instanceId = User.GetUserInstanceId();
+        var operatorId = User.GetUserId();
 
         var addressInfo = new AddressInfoRequest(
             model.Address.RegionId,
@@ -230,33 +216,21 @@ public class StaffReportController : ApiController
             model.IsIdentityVisible,
             model.Visibility == Visibility.EveryOne);
 
-
         var report = await Sender.Send(command);
-        //todo : handle result
-        return Ok(report.Id);
+        if (report == null)
+            return Problem();
+
+        var routeValues = new { id = report.Id, instanceId = instanceId };
+        return CreatedAtAction(nameof(GetReportById), routeValues, report.Adapt<StaffGetReportDetailsDto>());
     }
 
 
-    //todo : review
     [Authorize(Roles = "Operator")]
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateReportByOperator(Guid id, UpdateReportDto model)
     {
-        var instanceIdStr = User.FindFirstValue(AppClaimTypes.InstanceId);
-        if (instanceIdStr == null)
-        {
-            return BadRequest();
-        }
-        var instanceId = int.Parse(instanceIdStr);
-        if (instanceId <= 0)
-        {
-            return BadRequest();
-        }
-        var operatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (operatorId == null)
-        {
-            return Unauthorized();
-        }
+        var instanceId = User.GetUserInstanceId();
+        var operatorId = User.GetUserId();
 
         AddressInfoRequest? addressInfo = null;
         if (model.Address != null)
@@ -283,26 +257,12 @@ public class StaffReportController : ApiController
     }
 
 
-    //todo : review
     [Authorize(Roles = "Operator")]
     [HttpPut("Accept/{id:Guid}")]
     public async Task<ActionResult> AcceptReportByOperator(Guid id, UpdateReportDto model)
     {
-        var instanceIdStr = User.FindFirstValue(AppClaimTypes.InstanceId);
-        if (instanceIdStr == null)
-        {
-            return BadRequest();
-        }
-        var instanceId = int.Parse(instanceIdStr);
-        if (instanceId <= 0)
-        {
-            return BadRequest();
-        }
-        var operatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (operatorId == null)
-        {
-            return Unauthorized();
-        }
+        var instanceId = User.GetUserInstanceId();
+        var operatorId = User.GetUserId();
 
         AddressInfoRequest? addressInfo = null;
         if (model.Address != null)

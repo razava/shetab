@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using MediatR;
 
@@ -19,7 +20,7 @@ internal class GetOrganizationalUnitByUserIdQueryHandler : IRequestHandler<GetOr
             ou => ou.UserId == request.UserId,
             false);
         if (result is null)
-            throw new Exception("Not found!");
+            throw new NotFoundException("Organizational Unit");
         return result;
     }
 }

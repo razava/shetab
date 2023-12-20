@@ -4,6 +4,7 @@ using Api.ExtensionMethods;
 using Application.Categories.Commands.AddCategory;
 using Application.Categories.Commands.UpdateCategory;
 using Application.Categories.Queries.GetCategory;
+using Application.Categories.Queries.GetCategoryById;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -48,6 +49,21 @@ public class AdminCategoryController : ApiController
         return root.Adapt<CategoryGetDto>();
     }
 
+
+    [Authorize]
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<CategoryGetDetailDto>> GetCategoryById(int id)
+    {
+        var query = new GetCategoryByIdQuery(id);
+        var result = await Sender.Send(query);
+        if (result == null)
+            return Problem();
+        var mappedResult = result.Adapt<CategoryGetDetailDto>();
+        return Ok(mappedResult);
+    }
+
+
+
     /*
     [Authorize]
     [HttpGet("Processes")]
@@ -84,7 +100,9 @@ public class AdminCategoryController : ApiController
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
-        return Ok();
+        //return Created();
+        var routeValues = new { id = result.Id, instanceId = instanceId };
+        return CreatedAtAction(nameof(GetCategoryById), routeValues, result.Adapt<CategoryGetDetailDto>());
     }
 
     [Authorize(Roles = "Admin")]
@@ -111,7 +129,7 @@ public class AdminCategoryController : ApiController
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
-        return Ok();
+        return NoContent();
     }
 
 
@@ -120,7 +138,7 @@ public class AdminCategoryController : ApiController
     public async Task<ActionResult> DeleteCategory(Guid id)
     {
         await Task.CompletedTask;
-        return Ok();
+        return Ok("Not Implemented");
     }
 
 

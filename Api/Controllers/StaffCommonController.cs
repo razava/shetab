@@ -36,7 +36,7 @@ public class StaffCommonController : ApiController
     //todo : Define Access policy
     [Authorize]
     [HttpGet("MyShahrbinInstance")]
-    public async Task<ActionResult<List<ShahrbinInstance>>> MyGetShahrbinInstance()
+    public async Task<ActionResult<List<ShahrbinInstance>>> GetMyShahrbinInstance()
     {
         var instanceId = User.GetUserInstanceId();
 
@@ -89,6 +89,15 @@ public class StaffCommonController : ApiController
 
 
     [Authorize]
+    [HttpGet("Roles")]
+    public async Task<ActionResult<List<GetRolesDto>>> GetRoles()
+    {
+        await Task.CompletedTask;//.......................
+        return Ok("Not Implemented");
+    }
+
+
+    [Authorize]
     [HttpGet("Educations")]
     public ActionResult<List<EducationDto>> GetEducations()
     {
@@ -107,7 +116,7 @@ public class StaffCommonController : ApiController
     public async Task<ActionResult<List<GetExecutiveDto>>> GetExecutives()
     {
         await Task.CompletedTask;//..............
-        return Ok();
+        return Ok("Not Implemented");
     }
 
     [Authorize]

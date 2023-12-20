@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.IdentityAggregate;
 using MediatR;
 
@@ -24,7 +25,7 @@ internal class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, App
         };
         var result = await _userRepository.CreateAsync(user, request.Password);
         if (!result.Succeeded)
-            throw new Exception();
+            throw new UserCreationFailedException();
         return user;
     }
 }

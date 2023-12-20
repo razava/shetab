@@ -17,10 +17,11 @@ public class News : BaseModel
         
     }
 
-    public static News Create(string title, string description, string url, Media? image, bool isDeleted)
+    public static News Create(int InstanceId, string title, string description, string url, Media? image, bool isDeleted)
     {
         var news = new News()
         {
+            ShahrbinInstanceId = InstanceId,
             Title = title,
             Description = description,
             Url = url,
