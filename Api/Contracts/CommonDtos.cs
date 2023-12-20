@@ -30,6 +30,7 @@ public record TimeFilter(
 //todo: Review this
 public class MediaDto
 {
+    public Guid Id { get; set; }
     public string Url { get; set; } = string.Empty;
     public string Url2 { get; set; } = string.Empty;
     public string Url3 { get; set; } = string.Empty;
