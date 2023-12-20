@@ -55,8 +55,8 @@ internal sealed class AcceptByOperatorCommandHandler : IRequestHandler<AcceptByO
             if (request.Attachments.Count > 0)
             {
                 attachments = (await _uploadRepository
-                .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == request.operatorId))
-                .ToList() ?? new List<Upload>();
+                    .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == report.CitizenId))
+                    .ToList() ?? new List<Upload>();
                 if (request.Attachments.Count != attachments.Count)
                 {
                     throw new Exception("Attachments failure.");

@@ -33,6 +33,7 @@ public class CitizenCommonController : ApiController
         var query = new GetCategoryQuery(instanceId.Value);
         var result = await Sender.Send(query);
 
+        result.ForEach(c => c.Parent = result.SingleOrDefault(p => p.Id == c.ParentId));
         return result.Adapt<List<CategoryGetDto>>();
     }
 
