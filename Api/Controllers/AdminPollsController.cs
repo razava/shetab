@@ -5,6 +5,7 @@ using Application.Polls.Commands.AddPollCommand;
 using Application.Polls.Commands.UpdatePollCommand;
 using Application.Polls.Common;
 using Application.Polls.Queries.GetPollResultQuery;
+using Application.Polls.Queries.GetPollsByIdQuery;
 using Application.Polls.Queries.GetPollsQuery;
 using Mapster;
 using MediatR;
@@ -41,7 +42,9 @@ public class AdminPollsController : ApiController
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
-        return Created();
+        //return Created();
+        var routeValues = new { id = result.Id, instanceId = instanceId };
+        return CreatedAtAction(nameof(GetPollById), routeValues, result.Adapt<GetPollsDto>());
     }
 
 
@@ -56,6 +59,22 @@ public class AdminPollsController : ApiController
         var mappedResult = result.Adapt<List<GetPollsDto>>();
         return Ok(mappedResult);
     }
+
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<GetPollsDto>> GetPollById(int id)
+    {
+        var userId = User.GetUserId();
+        var query = new GetPollsByIdQuery(id, userId);
+        var result = await Sender.Send(query);
+        if(result == null) 
+            return Problem();
+        var mappedResult = result.Adapt<GetPollsDto>();
+        return Ok(mappedResult);
+    }
+
+
 
     [Authorize(Roles = "Admin")]
     [HttpGet("Summary/{id:int}")]

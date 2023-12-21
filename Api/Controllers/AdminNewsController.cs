@@ -62,9 +62,8 @@ public class AdminNewsController : ApiController
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
-        return Created();
-        //return CreatedAtAction("", result.Adapt<GetNewsDto>());
-
+        var routeValues = new { id = result.Id, instanceId = instanceId };
+        return CreatedAtAction(nameof(GetNewsById), routeValues, result.Adapt<GetNewsDto>());
     }
 
     [Authorize(Roles = "Admin")]

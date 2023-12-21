@@ -2,6 +2,7 @@
 using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Polls.Commands.AnswerPollCommand;
+using Application.Polls.Queries.GetPollsByIdQuery;
 using Application.Polls.Queries.GetPollsQuery;
 using Mapster;
 using MediatR;
@@ -31,6 +32,18 @@ public class CitizenPollsController : ApiController
         return Ok(mappedResult);
     }
 
+    [Authorize(Roles = "Citizen")]
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<GetPollsDto>> GetPollById(int id)
+    {
+        var userId = User.GetUserId();
+        var query = new GetPollsByIdQuery(id, userId);
+        var result = await Sender.Send(query);
+        if (result == null)
+            return Problem();
+        var mappedResult = result.Adapt<GetPollsDto>();
+        return Ok(mappedResult);
+    }
 
     //[Authorize(Roles = "Citizen")]
     //[HttpGet("Polls/{id:int}")]

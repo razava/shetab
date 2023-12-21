@@ -1,7 +1,6 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.ExtensionMethods;
-using Api.Services.Authentication;
 using Application.Comments.Commands.DeleteComment;
 using Application.Comments.Commands.ReplyComment;
 using Application.Comments.Commands.UpdateComment;
@@ -20,13 +19,11 @@ using Application.Reports.Queries.GetReportById;
 using Application.Reports.Queries.GetReports;
 using Application.Users.Queries.GetUserById;
 using Application.Workspaces.Queries.GetPossibleSources;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Domain.Models.Relational.Common;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Api.Controllers;
 
