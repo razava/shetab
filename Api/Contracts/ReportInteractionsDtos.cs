@@ -87,6 +87,7 @@ public record FilterGetCommentViolation(
 
 
 public record GetCommentsDto(
+    Guid Id,
     GetShortUserDto User,
     string Text,
     Guid? ReportId);
