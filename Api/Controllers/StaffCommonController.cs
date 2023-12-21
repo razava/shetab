@@ -62,7 +62,7 @@ public class StaffCommonController : ApiController
         result.ForEach(x => x.Categories = result.Where(c => c.ParentId == x.Id).ToList());
         var root = result.Where(r => r.ParentId == null).Single();
 
-        return root.Adapt<CategoryGetDto>();
+        return Ok(root.Adapt<CategoryGetDto>());
     }
 
 

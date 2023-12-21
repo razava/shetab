@@ -36,7 +36,7 @@ public class CitizenCommonController : ApiController
         //TODO: This can be improved
         result.ForEach(c => c.Categories = result.Where(p => p.ParentId == c.Id).ToList());
 
-        return result.Where(c => c.ParentId == null).Single().Adapt<CategoryGetDto>();
+        return Ok(result.Where(c => c.ParentId == null).Single().Adapt<CategoryGetDto>());
     }
 
     //..........................is needed for citizen?........

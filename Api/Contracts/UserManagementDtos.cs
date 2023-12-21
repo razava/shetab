@@ -1,5 +1,6 @@
 ﻿using Api.Dtos;
 using Application.Users.Common;
+using Domain.Models.Relational.Common;
 using System.ComponentModel.DataAnnotations;
 
 namespace Api.Contracts;
@@ -58,6 +59,23 @@ public record AdminGetUserList(
            DateTime? BirthDate,
            AddressDto Address
             */);
+
+
+public record AdminGetUserDetailsDto(
+    string Id,
+    string UserName,
+    string FirstName,
+    string LastName,
+    string Title,
+    MediaDto Avatar,
+    string PhoneNumber,
+    string Organization,
+    string PhoneNumber2,
+    string NationalId,
+    Gender Gender,
+    Education Education,
+    DateTime? BirthDate,
+    AddressDto Address);
 
 
 public record FilterGetUsers(

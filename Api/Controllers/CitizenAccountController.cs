@@ -292,7 +292,7 @@ public class CitizenAccountController : ApiController
         if (result is null)
             throw new Exception();
         Response.Headers.Append("Captcha-Key", result.Key.ToString());
-        return "data:image/jpg;base64," + Convert.ToBase64String(result.Data);
+        return Ok("data:image/jpg;base64," + Convert.ToBase64String(result.Data));
     }
 
     [HttpPost("LoginGov")]

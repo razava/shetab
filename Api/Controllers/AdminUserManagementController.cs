@@ -141,14 +141,13 @@ public class AdminUserManagementController : ApiController
     //.....................not used ??????
     [Authorize]
     [HttpGet("User/{id}")]
-    public async Task<IActionResult> GetUserById(string id)
+    public async Task<ActionResult<AdminGetUserDetailsDto>> GetUserById(string id)
     {
         var query = new GetUserByIdQuery(id);
         var result = await Sender.Send(query);
         if (result == null)
             return NotFound();
-        //todo: map to appropriate dto
-        return Ok(result);
+        return Ok(result.Adapt<AdminGetUserDetailsDto>());
     }
 
     //We won't use this, admin should create the user and after successful creation, assign desired roles
@@ -166,11 +165,14 @@ public class AdminUserManagementController : ApiController
     [HttpPost]
     public async Task<ActionResult<ApplicationUser>> CreateUser(CreateUserDto model)
     {
+        var instanceId = User.GetUserInstanceId();
         var command = new CreateUserCommand(model.Username, model.Password, model.FirstName, model.LastName, model.Title);
         var user = await Sender.Send(command);
-
-        return CreatedAtAction(nameof(GetUserById), user.Id, user);
+        var routeValues = new { id = user.Id, instanceId = instanceId };
+        return CreatedAtAction(nameof(GetUserById), routeValues, user.Adapt<AdminGetUserDetailsDto>());
     }
+
+
 
     //This endpoint is accessible by executives only
     [Authorize(Roles = "Executive")]
@@ -193,6 +195,7 @@ public class AdminUserManagementController : ApiController
         //todo: map returning contractor in below response
         return CreatedAtAction(nameof(GetUserById), contractor.Id, contractor.Adapt<GetContractorsList>());
     }
+
 
     [Authorize(Roles = "Executive")]
     [HttpGet("GetContractors")]

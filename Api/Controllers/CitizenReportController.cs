@@ -202,7 +202,7 @@ public class CitizenReportController : ApiController
         {
             return Problem();
         }
-        return Created();
+        return Ok();
     }
     
     
@@ -265,7 +265,7 @@ public class CitizenReportController : ApiController
         var result = await Sender.Send(command);
         if(result == null)
             return Problem();
-        return Created();
+        return Ok();
     }
 
 

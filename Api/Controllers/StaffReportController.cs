@@ -342,7 +342,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(command);
         if (!result)
             return Problem();
-        return Ok();
+        return NoContent();
     }
 
 
@@ -357,7 +357,7 @@ public class StaffReportController : ApiController
         {
             return Problem();
         }
-        return Ok();
+        return NoContent();
     }
 
 
@@ -367,7 +367,7 @@ public class StaffReportController : ApiController
     public async Task<ActionResult> PutSatisfaction(Guid id, PutSatisfactionDto putSatisfactionDto)
     {
         await Task.CompletedTask;//....................................
-        return Ok();
+        return NoContent();
     }
 
     [Authorize(Roles = "Operator")]
@@ -384,7 +384,7 @@ public class StaffReportController : ApiController
     public async Task<ActionResult> PutViolation(Guid id, ViolationPutDto violationPutDto)
     {
         await Task.CompletedTask;//.......................................
-        return Ok();
+        return NoContent();
     }
 
     //todo : define Access Policy
