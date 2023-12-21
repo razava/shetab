@@ -8,6 +8,14 @@ public class NotFoundException : Exception
     }
 }
 
+public class CreationFailedException : Exception
+{
+    public CreationFailedException(string objectName) : base($"{objectName} Not Found!")
+    {
+
+    }
+}
+ 
 public class CommentHasReplyException : Exception { }  //"This comment has a reply."
 public class SaveImageFailedException : Exception { }  
 public class LoopMadeException : Exception      //"حلقه ای در ساختار سازمانی ایجاد شده است."

@@ -76,7 +76,9 @@ public class AdminOrganizationalUnitController : ApiController
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
-        return Created();
+        //return Created();
+        var routeValues = new { id = result.Id, instanceId = instanceId };
+        return CreatedAtAction(nameof(GetOrgaizationalUnitById), routeValues, result.Adapt<GetOrganizationalUnitDto>());
     }
 
     [Authorize(Roles = "Admin")]

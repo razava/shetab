@@ -189,14 +189,14 @@ public class CitizenReportController : ApiController
      
     [Authorize(Roles = "Citizen")]
     [HttpPost("Comment/{id:Guid}")]
-    public async Task<ActionResult> CreateComment(int instanceId, Guid id, string comment)
+    public async Task<ActionResult> CreateComment(int instanceId, Guid id, CreateCommentDto commentDto)
     {
         var userId = User.GetUserId();
         if (userId == null)
         {
             return Unauthorized();
         }
-        var command = new CreateCommentCommand(instanceId, userId, id, comment);
+        var command = new CreateCommentCommand(instanceId, userId, id, commentDto.Comment);
         var result = await Sender.Send(command);
         if (!result)
         {

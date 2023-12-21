@@ -57,6 +57,9 @@ public record GetReportComments(
 }
 
 
+public record CreateCommentDto(
+    [Required] [MaxLength(1024)]
+    string Comment);
 
 
 public record RestrictedUserDto(

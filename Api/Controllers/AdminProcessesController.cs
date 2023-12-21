@@ -45,9 +45,11 @@ public class AdminProcessesController : ApiController
             setProcessDto.Title,
             setProcessDto.ActorIds);
         var result = await Sender.Send(command);
-        if (!result)
+        if (result == null)
             return Problem();
-        return Created();
+        //return Created();
+        var routeValues = new { id = result.Id, instanceId = InstanceId };
+        return CreatedAtAction(nameof(GetProcessById), routeValues, result.Adapt<GetProcessDto>());
     }
 
 
