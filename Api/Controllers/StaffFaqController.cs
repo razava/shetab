@@ -3,6 +3,7 @@ using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Faqs.Commands.AddFaqCommand;
 using Application.Faqs.Commands.UpdateFaqCommand;
+using Application.Faqs.Queries.GetFaqByIdQuery;
 using Application.Faqs.Queries.GetFaqQuery;
 using Mapster;
 using MediatR;
@@ -31,6 +32,19 @@ public class StaffFaqController : ApiController
         var mappedResult = result.Adapt<List<GetFaqsDto>>();
         return Ok(mappedResult);
     }
+    
+
+    [Authorize]
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<GetFaqsDto>> GetFaqById(int id)
+    {
+        var query = new GetFaqByIdQuery(id);
+        var result = await Sender.Send(query);
+        if (result == null)
+            return Problem();
+        var mappedResult = result.Adapt<GetFaqsDto>();
+        return Ok(mappedResult);
+    }
 
 
     [Authorize(Roles = "Admin")]
@@ -47,7 +61,8 @@ public class StaffFaqController : ApiController
         if (result == null)
             return Problem();
         //return CreatedAtAction("", result.Adapt<GetFaqsDto>());
-        return Created();
+        var routeValues = new { id = result.Id, instanceId = instanceId };
+        return CreatedAtAction(nameof(GetFaqById), routeValues, result.Adapt<GetFaqsDto>());
     }
 
 

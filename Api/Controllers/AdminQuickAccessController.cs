@@ -1,8 +1,8 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
-using Api.ExtensionMethods;
 using Application.QuickAccesses.Commands.AddQuickAccessCommand;
 using Application.QuickAccesses.Commands.UpdateQuickAccessCommand;
+using Application.QuickAccesses.Queries.GetQuickAccessByIdQuery;
 using Application.QuickAccesses.Queries.GetQuickAccesses;
 using Mapster;
 using MediatR;
@@ -26,6 +26,19 @@ public class AdminQuickAccessController : ApiController
     {
         var query = new GetQuickAccessesQuery(instanceId, true);
         var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List<AdminGetQuickAccess>>();
+        return Ok(mappedResult);
+    }
+
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<AdminGetQuickAccess>> GetQuickAccessById(int id)
+    {
+        var query = new GetQuickAccessByIdQuery(id);
+        var result = await Sender.Send(query);
+        if (result == null)
+            return Problem();
         var mappedResult = result.Adapt<AdminGetQuickAccess>();
         return Ok(mappedResult);
     }
@@ -45,7 +58,9 @@ public class AdminQuickAccessController : ApiController
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
-        return Created("",result.Id);
+        //return Created("",result.Id);
+        var routeValues = new { id = result.Id, instanceId = instanceId };
+        return CreatedAtAction(nameof(GetQuickAccessById), routeValues, result.Adapt<AdminGetQuickAccess>());
     }
 
 
