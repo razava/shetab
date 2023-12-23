@@ -72,14 +72,17 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
         actor.Regions.Clear();
         foreach (var userRegion in userRegions)
         {
-            var region = regions.Where(r => r.Id == userRegion.RegionId).SingleOrDefault();
-            if (region is not null)
+            if (userRegion.IsIn)
             {
-                actor.Regions.Add(region);
-            }
-            else
-            {
-                //region is invalid, ignore!
+                var region = regions.Where(r => r.Id == userRegion.RegionId).SingleOrDefault();
+                if (region is not null)
+                {
+                    actor.Regions.Add(region);
+                }
+                else
+                {
+                    //region is invalid, ignore!
+                }
             }
         }
 
