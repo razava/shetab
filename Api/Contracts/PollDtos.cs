@@ -45,7 +45,8 @@ public record PollUpdateDto(
     [MaxLength(5120)]
     string? Question,
     List<PollChoiceCreateDto>? Choices,
-    PollState? PollState);
+    PollState? PollState,
+    bool? isDeleted = false);
 
 
 public record AnswerToPollDto(

@@ -18,7 +18,8 @@ internal class GetOrganizationalUnitByIdQueryHandler : IRequestHandler<GetOrgani
     {
         var result = await _organizationalUnitRepository.GetSingleAsync(
             ou => ou.Id == request.OrganizationalUnitId,
-            false);
+            false,
+            "OrganizationalUnits");
         if (result is null)
             throw new NotFoundException("Organizational Unit");
         return result;

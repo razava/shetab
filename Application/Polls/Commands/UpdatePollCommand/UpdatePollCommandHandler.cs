@@ -29,7 +29,7 @@ internal class UpdatePollCommandHandler : IRequestHandler<UpdatePollCommand, Pol
         else
             choices = null;
 
-        poll.Update(request.Title, request.PollType, request.Question, choices, request.PollState);
+        poll.Update(request.Title, request.PollType, request.Question, choices, request.PollState, request.isDeleted);
         _pollRepository.Update(poll);
 
         await _unitOfWork.SaveAsync();

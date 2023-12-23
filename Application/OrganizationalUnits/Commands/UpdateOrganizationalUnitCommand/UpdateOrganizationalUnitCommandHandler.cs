@@ -30,7 +30,7 @@ internal class UpdateOrganizationalUnitCommandHandler : IRequestHandler<UpdateOr
     public async Task<OrganizationalUnit> Handle(UpdateOrganizationalUnitCommand request, CancellationToken cancellationToken)
     {
         //TODO: CHECK AND REVISE ORGANIZATIONAL UNIT COMMANDS ASAP!
-        var organizationalUnit = await _organizationalUnitRepository.GetSingleAsync(ou => ou.Id == request.OrganizationalUnitId);
+        var organizationalUnit = await _organizationalUnitRepository.GetSingleAsync(ou => ou.Id == request.OrganizationalUnitId, true, "OrganizationalUnits");
         if(organizationalUnit is null)
         {
             throw new NotFoundException("Organizational Unit");
@@ -96,6 +96,7 @@ internal class UpdateOrganizationalUnitCommandHandler : IRequestHandler<UpdateOr
         organizationalUnit.OrganizationalUnits.AddRange(newOus);
         organizationalUnit.OrganizationalUnits.AddRange(existingExecutiveOUs);
         organizationalUnit.OrganizationalUnits.AddRange(containedOus);
+        organizationalUnit.Title = request.Title;
 
         _organizationalUnitRepository.Update(organizationalUnit);
         await _unitOfWork.SaveAsync();

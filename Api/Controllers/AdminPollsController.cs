@@ -106,7 +106,8 @@ public class AdminPollsController : ApiController
             updateDto.PollType,
             updateDto.Question,
             updateDto.Choices.Adapt<List<PollChoiceRequest>>(),
-            updateDto.PollState);
+            updateDto.PollState,
+            updateDto.isDeleted);
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
