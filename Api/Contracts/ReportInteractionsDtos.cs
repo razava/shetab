@@ -53,7 +53,7 @@ public record GetReportComments(
     GetReportComments Reply,
     bool CanDelete)
 {
-    public bool CanDelete { get; set; }
+    public bool CanDelete { get; set; } = CanDelete;
 }
 
 

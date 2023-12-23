@@ -74,7 +74,7 @@ public class AdminQuickAccessController : ApiController
             setDto.Title,
             setDto.Image,
             setDto.Order,
-            false);
+            setDto.IsDeleted);
         var result = await Sender.Send(command);
         if(result == null)
             return Problem();
@@ -82,16 +82,16 @@ public class AdminQuickAccessController : ApiController
     }
 
 
-    [Authorize(Roles = "Admin")]
-    [HttpDelete("{id:int}")]
-    public async Task<ActionResult> DeleteQuickAccesses(int id)
-    {
-        var command = new UpdateQuickAccessCommand(id, null, null, null, null, true);
-        var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
-        return NoContent();
-    }
+    //[Authorize(Roles = "Admin")]
+    //[HttpDelete("{id:int}")]
+    //public async Task<ActionResult> DeleteQuickAccesses(int id)
+    //{
+    //    var command = new UpdateQuickAccessCommand(id, null, null, null, null, true);
+    //    var result = await Sender.Send(command);
+    //    if (result == null)
+    //        return Problem();
+    //    return NoContent();
+    //}
     
 
 }

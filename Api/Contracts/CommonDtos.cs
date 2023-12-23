@@ -128,7 +128,8 @@ public record UpdateQuickAccessDto(
     [MaxLength(64)]
     string? Title,
     int? Order,
-    IFormFile? Image);
+    IFormFile? Image,
+    bool? IsDeleted = false);
 
 public record EducationDto(
     int Id,

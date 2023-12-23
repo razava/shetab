@@ -130,7 +130,8 @@ public class AdminUserManagementController : ApiController
         //have FilterGetUsers
         //todo : query shuold get instanceId for returning this instance's staffs
         var t = filter;
-        var query = new GetUsersQuery(pagingInfo);
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetUsersQuery(pagingInfo, instanceId);
         var result = await Sender.Send(query);
         Response.AddPaginationHeaders(result.Meta);
         var mappedResult = result.Adapt<List<AdminGetUserList>>();
