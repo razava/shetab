@@ -61,7 +61,6 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
             throw new InstanceNotFoundException();
         var regions = await context.Set<Region>()
             .Where(r => r.CityId == instance.CityId)
-            .AsNoTracking()
             .ToListAsync();
 
         var actor = await context.Set<Actor>()
