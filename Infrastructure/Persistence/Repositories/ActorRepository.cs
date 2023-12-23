@@ -27,18 +27,17 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
             .AsNoTracking()
             .ToListAsync();
 
-        var actor = await context.Set<Actor>()
+        var actorRegionIds = await context.Set<Actor>()
             .Where(a => a.Identifier == userId)
-            .Include(a => a.Regions)
-            .AsNoTracking()
+            .Select(a => a.Regions.Select(r => r.Id))
             .SingleOrDefaultAsync();
-        if (actor is null)
+        if (actorRegionIds is null)
             throw new ActorNotFoundException();
 
         var result = new List<IsInRegionModel>();
         foreach (var region in regions)
         {
-            if (actor.Regions.Contains(region))
+            if (actorRegionIds.Contains(region.Id))
             {
                 result.Add(new IsInRegionModel(region.Id, region.Name, true));
             }
