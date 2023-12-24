@@ -3,6 +3,7 @@ using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.AdministrativeDivisions.Queries.GetProvince;
 using Application.Categories.Queries.GetCategory;
+using Application.Configurations.Queries.Roles;
 using Application.Configurations.Queries.ShahrbinInstanceManagement;
 using Application.Configurations.Queries.ViolationTypes;
 using Application.Users.Queries.GetRegions;
@@ -92,8 +93,10 @@ public class StaffCommonController : ApiController
     [HttpGet("Roles")]
     public async Task<ActionResult<List<GetRolesDto>>> GetRoles()
     {
-        await Task.CompletedTask;//.......................
-        return Ok("Not Implemented");
+        var query = new GetRolesQuery();
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List<GetRolesDto>>();
+        return Ok(mappedResult);
     }
 
 
@@ -120,13 +123,14 @@ public class StaffCommonController : ApiController
     }
 
     [Authorize]
-    [HttpGet("UserRegions/{id}")]
-    public async Task<ActionResult<List<IsInRegionDto>>> GetUserRegions(string id)
+    [HttpGet("UserRegions")]
+    public async Task<ActionResult<List<GetUserRegionsDto>>> GetUserRegions()
     {
         var instanceId = User.GetUserInstanceId();
-        var query = new GetUserRegionsQuery(instanceId, id);
+        var userId = User.GetUserId();
+        var query = new GetUserRegionsQuery(instanceId, userId);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<IsInRegionDto>>();
+        var mappedResult = result.Adapt<List<GetUserRegionsDto>>();
         return Ok(mappedResult);
     }
 

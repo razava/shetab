@@ -79,10 +79,8 @@ public record RegionName(
 
 
 public record GetUserRegionsDto(
-    int Id,
-    int Code,
-    string Name,
-    int CityId);
+    int RegionId,
+    string RegionName);
 
 
 public record GetRegionDto(
