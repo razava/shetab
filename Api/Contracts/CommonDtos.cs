@@ -16,17 +16,6 @@ public record GetEnum(
     string Title);
 
 
-public record QueryFilter(
-    [MaxLength(64)]
-    string? Query);
-
-
-public record TimeFilter(
-    DateTime? SentFromDate,
-    DateTime? SentToDate);
-
-
-
 //todo: Review this
 public class MediaDto
 {

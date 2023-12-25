@@ -78,14 +78,6 @@ public record ViolationPutDto(
     string Comments);
 
 
-public record FilterGetCommentViolation(
-    DateTime? SentFromDate,
-    DateTime? SentToDate,
-    List<int>? CategoryIds,
-    [MaxLength(64)]
-    string? Query);
-
-
 public record GetCommentsDto(
     Guid Id,
     GetShortUserDto User,

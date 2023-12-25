@@ -143,29 +143,6 @@ public record StaffGetReportDetailsDto(
     );
 
 
-public record FilterGetReports(
-    DateTime? SentFromDate,
-    DateTime? SentToDate,
-    List<ReportState>? CurrentStates,
-    [MaxLength(64)]
-    string? Query);
-
-
-public record FilterGetAllReports(
-    DateTime? SentFromDate,
-    DateTime? SentToDate,
-    //todo : annotation for strings?
-    List<string>? RoleNames,
-    List<int>? CategoryIds,
-    List<int>? RegionIds,
-    List<ReportState>? CurrentStates,
-    bool HasSatisfaction,  //??
-    int MinSatisfaction,   //??
-    int MaxSatisfaction,   //??
-    [MaxLength(64)]
-    string? Query);
-
-
 
 public record MakeTransitionDto(
     [Required]

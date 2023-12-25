@@ -18,7 +18,10 @@ internal class GetQuickAccessesQueryHandler : IRequestHandler<GetQuickAccessesQu
     public async Task<List<QuickAccess>> Handle(GetQuickAccessesQuery request, CancellationToken cancellationToken)
     {   
         var result = await _quickAccessRepository
-            .GetAsync(q => (request.ReturnAll || q.IsDeleted == false), false, o => o.OrderBy(q => q.Order));
+            .GetAsync(q => (request.ReturnAll || q.IsDeleted == false)
+            && ((request.FilterModel == null || request.FilterModel.Query == null) || q.Title.Contains(request.FilterModel.Query))
+            , false
+            , o => o.OrderBy(q => q.Order));
 
         return result.ToList();
     }

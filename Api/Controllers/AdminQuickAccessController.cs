@@ -1,5 +1,6 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
+using Application.Common.FilterModels;
 using Application.QuickAccesses.Commands.AddQuickAccessCommand;
 using Application.QuickAccesses.Commands.UpdateQuickAccessCommand;
 using Application.QuickAccesses.Queries.GetQuickAccessByIdQuery;
@@ -24,7 +25,7 @@ public class AdminQuickAccessController : ApiController
     [HttpGet]
     public async Task<ActionResult<List<AdminGetQuickAccess>>> GetQuickAccesses(int instanceId, [FromQuery] QueryFilter queryFilter)
     {
-        var query = new GetQuickAccessesQuery(instanceId, true);
+        var query = new GetQuickAccessesQuery(instanceId, queryFilter.Adapt<QueryFilterModel>(), true);
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<List<AdminGetQuickAccess>>();
         return Ok(mappedResult);
