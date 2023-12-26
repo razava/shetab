@@ -19,7 +19,8 @@ public record FilterGetReports(
     DateTime? SentFromDate,
     DateTime? SentToDate,
     List<ReportState>? CurrentStates,
-    [MaxLength(64)]
+    //[MaxLength(64)] this query is for searching TrackingNumbers
+    [MinLength(3)] [MaxLength(16)]
     string? Query);
 
 

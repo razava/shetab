@@ -49,10 +49,10 @@ public class AdminCategoryController : ApiController
         if (queryFilter.Query != null)
         {
             var filtered = tempResult.Where(r => r.Title.Contains(queryFilter.Query)).ToList();
-            var parentIds = filtered.Select(r => r.ParentId).ToList();
+            var parentIds = filtered.Select(r => r.ParentId).Distinct().ToList();
             filtered.AddRange(tempResult.Where(t => parentIds.Contains(t.Id)).ToList());
             filtered.Add(tempResult.Where(t => t.ParentId == null).Single());
-            result = filtered;
+            result = filtered.Distinct().ToList();
         }
         result.ForEach(x => x.Categories = result.Where(c => c.ParentId == x.Id).ToList());
         

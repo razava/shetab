@@ -5,6 +5,7 @@ using Application.Comments.Commands.DeleteComment;
 using Application.Comments.Commands.ReplyComment;
 using Application.Comments.Commands.UpdateComment;
 using Application.Comments.Queries.GetAllCommentsQuery;
+using Application.Common.FilterModels;
 using Application.Common.Interfaces.Persistence;
 using Application.Reports.Commands.AcceptByOperator;
 using Application.Reports.Commands.CreateReportByOperator;
@@ -43,12 +44,11 @@ public class StaffReportController : ApiController
     [HttpGet]
     public async Task<ActionResult<List<StaffGetReportListDto>>> GetTasks( string? fromRoleId, [FromQuery]PagingInfo pagingInfo, [FromQuery]FilterGetReports filterGetReports)
     {
-        //have FilterGetReports.........................................
-
         var userId = User.GetUserId();
         var instanceId = User.GetUserInstanceId();
         var roles = User.GetUserRoles();
-        var query = new GetReportsQuery(pagingInfo, userId, roles, fromRoleId, instanceId);
+        var mappedFilter = filterGetReports.Adapt<FilterGetReportsModel>();
+        var query = new GetReportsQuery(pagingInfo, userId, roles, fromRoleId, instanceId, mappedFilter);
         var result = await Sender.Send(query);
         Response.AddPaginationHeaders(result.Meta);
         var mappedResult = result.Adapt<List<StaffGetReportListDto>>();
