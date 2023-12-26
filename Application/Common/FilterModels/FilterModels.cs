@@ -26,9 +26,9 @@ public record FilterGetAllReportsModel(
     List<int>? CategoryIds,
     List<int>? RegionIds,
     List<ReportState>? CurrentStates,
-    bool? HasSatisfaction,  //?
-    int? MinSatisfaction,   //?
-    int? MaxSatisfaction,  //?
+    bool? HasSatisfaction,  //?........todo : report model haven't satisfaction field
+    int? MinSatisfaction,   //?...........
+    int? MaxSatisfaction,  //?.............
     [MaxLength(64)]
     string? Query);
 

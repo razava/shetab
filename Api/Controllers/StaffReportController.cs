@@ -78,8 +78,8 @@ public class StaffReportController : ApiController
         var userId = User.GetUserId();
         var userRoles = User.GetUserRoles();
         var instanceId = User.GetUserInstanceId();
-        
-        var query = new GetAllReportsQuery(pagingInfo, instanceId, userId, userRoles);
+        var mappedFilter = filterGetAllReports.Adapt<FilterGetAllReportsModel>();
+        var query = new GetAllReportsQuery(pagingInfo, instanceId, userId, userRoles, mappedFilter);
         var result = await Sender.Send(query);
         Response.AddPaginationHeaders(result.Meta);
         var mappedResult = result.Adapt<List<StaffGetReportListDto>>();
@@ -293,7 +293,8 @@ public class StaffReportController : ApiController
     {
         //have FilterGetComments
         var instanceId = User.GetUserInstanceId();
-        var query = new GetAllCommentsQuery(pagingInfo, instanceId);
+        var mappedFilter = filter.Adapt<FilterGetCommentViolationModel>();
+        var query = new GetAllCommentsQuery(pagingInfo, instanceId, mappedFilter);
         var result = await Sender.Send(query);
         Response.AddPaginationHeaders(result.Meta);
         var mappedResult = result.Adapt<List<GetCommentsDto>>();
