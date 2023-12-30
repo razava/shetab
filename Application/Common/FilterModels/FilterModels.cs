@@ -41,8 +41,6 @@ public record FilterGetCommentViolationModel(
 
 
 public record FilterGetUsersModel(
-    DateTime? SentFromDate,
-    DateTime? SentToDate,
     List<string>? RoleNames,
     List<int>? RegionIds,
     string? Query);

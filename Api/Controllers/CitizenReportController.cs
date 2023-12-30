@@ -38,7 +38,8 @@ public class CitizenReportController : ApiController
     [HttpGet]
     public async Task<ActionResult<List<CitizenGetReportListDto>>> GetReports(int instanceId, [FromQuery] PagingInfo pagingInfo)
     {
-        var query = new GetRecentReportsQuery(pagingInfo, instanceId);
+        var userId = User.GetUserId();
+        var query = new GetRecentReportsQuery(pagingInfo, instanceId, userId);
         //todo : handle user profile data
         var result = await Sender.Send(query);
         Response.AddPaginationHeaders(result.Meta);
@@ -181,8 +182,8 @@ public class CitizenReportController : ApiController
             return Unauthorized();
         var command = new LikeCommand(userId, id, isLiked);
         var result = await Sender.Send(command);
-        if (!result)
-            return Problem();
+        //if (!result)
+        //    return Problem();
         return NoContent();
     }
 

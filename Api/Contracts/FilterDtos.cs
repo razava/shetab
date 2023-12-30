@@ -35,7 +35,7 @@ public record FilterGetAllReports(
     bool? HasSatisfaction,  //?........todo : report model haven't satisfaction field
     int? MinSatisfaction,   //?...........
     int? MaxSatisfaction,  //?.............
-    [MaxLength(64)]
+    [MinLength(3)] [MaxLength(16)]
     string? Query);
 
 
@@ -44,13 +44,11 @@ public record FilterGetCommentViolation(
     DateTime? SentFromDate,
     DateTime? SentToDate,
     List<int>? CategoryIds,
-    [MaxLength(64)]
+    [MinLength(3)] [MaxLength(16)]
     string? Query);
 
 
 public record FilterGetUsers(
-    DateTime? SentFromDate,
-    DateTime? SentToDate,
     List<string>? RoleNames,
     List<int>? RegionIds,
     [MaxLength(64)]
