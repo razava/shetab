@@ -1,6 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.ExtensionMethods;
+using Application.Common.FilterModels;
 using Application.OrganizationalUnits.Commands.AddOrganizationalUnitCommand;
 using Application.OrganizationalUnits.Commands.UpdateOrganizationalUnitCommand;
 using Application.OrganizationalUnits.Queries.GetOrganizationalUnitByIdQuery;
@@ -29,7 +30,7 @@ public class AdminOrganizationalUnitController : ApiController
     public async Task<ActionResult<List<GetOrganizationalUnitListDto>>> GetAllOrgaizationalUnits([FromQuery]QueryFilter queryFilter)
     {
         var instanceId = User.GetUserInstanceId();
-        var query = new GetOrganizationalUnitsQuery(instanceId);
+        var query = new GetOrganizationalUnitsQuery(instanceId, queryFilter.Adapt<QueryFilterModel>());
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<List<GetOrganizationalUnitListDto>>();
         return Ok(mappedResult);

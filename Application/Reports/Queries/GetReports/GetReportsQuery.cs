@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.FilterModels;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using MediatR;
 
@@ -9,5 +10,6 @@ public sealed record GetReportsQuery(
     string UserId,
     List<string> Roles,
     string? FromRoleId,
-    int InstanceId) : IRequest<PagedList<Report>>;
+    int InstanceId,
+    FilterGetReportsModel? FilterGetReports = default!) : IRequest<PagedList<Report>>;
 

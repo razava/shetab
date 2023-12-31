@@ -1,6 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.ExtensionMethods;
+using Application.Common.FilterModels;
 using Application.Processes.Commands.AddProcessCommand;
 using Application.Processes.Commands.UpdateProcessCommand;
 using Application.Processes.Queries.GetExecutiveActorsQuery;
@@ -27,7 +28,7 @@ public class AdminProcessesController : ApiController
     [HttpGet]
     public async Task<ActionResult<List<GetProcessListDto>>> GetProcesses([FromQuery]QueryFilter queryFilter)
     {
-        var query = new GetProcessesQuery();
+        var query = new GetProcessesQuery(queryFilter.Adapt<QueryFilterModel>());
         var result = await Sender.Send(query);
         var mappedResult = result.Adapt<List<GetProcessListDto>>();
         return Ok(mappedResult);

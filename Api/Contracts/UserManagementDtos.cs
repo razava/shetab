@@ -78,15 +78,6 @@ public record AdminGetUserDetailsDto(
     AddressDto Address);
 
 
-public record FilterGetUsers(
-    DateTime? SentFromDate,
-    DateTime? SentToDate,
-    List<string>? RoleNames,
-    List<int>? RegionIds,
-    [MaxLength(64)]
-    string? Query);
-
-
 public record CreateUserDto(
         [Required] [MaxLength(32)]
         string Username,

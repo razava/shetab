@@ -16,17 +16,6 @@ public record GetEnum(
     string Title);
 
 
-public record QueryFilter(
-    [MaxLength(64)]
-    string? Query);
-
-
-public record TimeFilter(
-    DateTime? SentFromDate,
-    DateTime? SentToDate);
-
-
-
 //todo: Review this
 public class MediaDto
 {
@@ -79,10 +68,8 @@ public record RegionName(
 
 
 public record GetUserRegionsDto(
-    int Id,
-    int Code,
-    string Name,
-    int CityId);
+    int RegionId,
+    string RegionName);
 
 
 public record GetRegionDto(
