@@ -205,11 +205,11 @@ public class Report : Entity
 
         report.RegistrantId = operatorId;
 
-        report.InitProcess();
-
         var log = TransitionLog.CreateNewReport(report.Id, ActorType.Person, operatorId);
         
         report.TransitionLogs.Add(log);
+        
+        report.InitProcess();
 
         var message =
             new Message()
