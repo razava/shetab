@@ -15,6 +15,8 @@ using Infrastructure.Persistence;
 using Domain.Models.Relational.IdentityAggregate;
 using Infrastructure.Map.ParsiMap;
 using Api.Middlewares;
+using Api.Services.Filters;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
 .AddApplication()
     .AddInfrastructure(builder.Configuration, builder.Environment);
+
+//inject Logging filter for controllers (Global DI)
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<LoggingFilter>();
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -159,7 +167,9 @@ builder.Services.AddMemoryCache();
 //builder.Services.AddMediatR();
 
 
-
+//Logging
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 
 
@@ -184,12 +194,15 @@ app.UseSwaggerUI();
 
 //app.UseHttpsRedirection();
 
+//logging http requests
+app.UseSerilogRequestLogging();
+
 builder.WebHost.UseUrls("http://0.0.0.0:80", "https://0.0.0.0:443");
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 //app.UseAccessControlMiddleware();
-//app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseStaticFiles();
 app.MapControllers();
 //app.MapControllerRoute(name: "default", pattern: "api/{controller}/{instanceId?}/{action}/{id?}");
