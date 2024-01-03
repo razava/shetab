@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Application.Common.Interfaces.Persistence;
 using Infrastructure.Exceptions;
+using Application.Common.Exceptions;
 
 namespace Infrastructure.Persistence.Repositories;
 
@@ -180,7 +181,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
         if(method is null)
         {
             //TODO: Handle this error
-            throw new MethodNotFoundException();
+            throw new ServerNotFoundException("خطایی رخ داد.", new MethodNotFoundException());
         }
         MethodCallExpression containsMethodExp;
         foreach (var propStr in props)
@@ -216,7 +217,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
             if(pi is null)
             {
                 //TODO: Handle this error
-                throw new PropertyInfoNotFoundException();
+                throw new ServerNotFoundException("خطایی رخ داد.", new PropertyInfoNotFoundException());
             }
             expr = Expression.Property(expr, pi);
             type = pi.PropertyType;

@@ -20,7 +20,7 @@ internal sealed class GetCitizenReportByIdQueryHandler : IRequestHandler<GetCiti
             r => r.Id == request.id,
             false);
         if (report is null)
-            throw new NotFoundException("Report");
+            throw new NotFoundException("گزارش");
         if (report.CitizenId != request.UserId)
         {
             throw new AccessDeniedException();

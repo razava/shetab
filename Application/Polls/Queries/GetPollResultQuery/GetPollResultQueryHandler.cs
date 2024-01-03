@@ -25,7 +25,7 @@ internal class GetPollResultQueryHandler : IRequestHandler<GetPollResultQuery, P
             .Select(p => new { Choices = p.Choices.ToList(), Count = p.Answers.LongCount() })
             .SingleOrDefaultAsync();
         if (poll is null)
-            throw new NotFoundException("Poll");
+            throw new NotFoundException("نظرسنجی");
 
         var choices = await context.Set<Poll>()
             .Where(p=>p.Id == request.PollId)

@@ -36,7 +36,7 @@ internal sealed class UpdateQuickAccessCommandHandler : IRequestHandler<UpdateQu
 
         var quickAccess = await _quickAccessRepository.GetSingleAsync(q => q.Id == request.Id);
         if (quickAccess is null)
-            throw new NotFoundException("QuickAccess");
+            throw new NotFoundException("دسترسی سریع");
 
         quickAccess.CategoryId = request.CategoryId ?? quickAccess.CategoryId;
         quickAccess.Title = request.Title ?? quickAccess.Title;

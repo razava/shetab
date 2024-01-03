@@ -16,7 +16,7 @@ internal sealed class GetNewsByIdQueryHandler : IRequestHandler<GetNewsByIdQuery
     {
         var result = await _newsRepository.GetSingleAsync(n => n.Id == request.Id, false);
         if (result is null)
-            throw new NotFoundException("News");
+            throw new NotFoundException("خبر");
 
         return result;
     }

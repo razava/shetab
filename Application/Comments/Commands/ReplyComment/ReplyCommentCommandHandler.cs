@@ -21,7 +21,7 @@ internal class ReplyCommentCommandHandler : IRequestHandler<ReplyCommentCommand,
         var comment = await _commentRepository.GetSingleAsync(c => c.Id == request.CommentId, true, "Reply");
         if (comment is null)
         {
-            throw new NotFoundException("Comment");
+            throw new NotFoundException("نظر");
         }
         if (comment.Reply is not null)
         {

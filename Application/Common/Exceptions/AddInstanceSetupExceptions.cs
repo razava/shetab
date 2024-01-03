@@ -2,22 +2,25 @@
 
 public class InvalidCityException : Exception
 {
-    public InvalidCityException(string message) : base(message)
-    {
-        
-    }
+    public InvalidCityException(string message) : base(message) { }
 }
+
 
 public class DuplicateInstanceException : Exception
 {
-    public DuplicateInstanceException(string message) : base(message)
-    {
-
-    }
+    public DuplicateInstanceException(string message) : base(message) { }
 }
+
  
-public class ForbidNullParentCategoryException : Exception { }   //"Parent category cannot be null."
-public class ForbidNullProcessException : Exception { }   //"Process cannot be null here."
-public class ForbidNullRolesException : Exception { }   //"Roles cannot be null here."
+public class ForbidNullParentCategoryException : Exception
+{
+    public ForbidNullParentCategoryException() : base("پدر دسته بندی نباید خالی باشد.") { }
+}   
+
+
+public class ForbidNullRolesException : Exception
+{
+    public ForbidNullRolesException() : base("نقش ها نباید خالی باشد.") { }
+} 
 
 

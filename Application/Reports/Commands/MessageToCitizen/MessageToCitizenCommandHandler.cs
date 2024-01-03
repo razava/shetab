@@ -39,11 +39,11 @@ internal sealed class MessageToCitizenCommandHandler : IRequestHandler<MessageTo
         var actor = await _actorRepository.GetSingleAsync(a => a.Identifier == request.UserId);
         if (actor == null)
         {
-            throw new NotFoundException("Actor");
+            throw new AccessDeniedException("کاربر جاری Actor نیست.");
         }
         var report = await _reportRepository.GetByIDAsync(request.reportId);
         if (report == null)
-            throw new NotFoundException("Report");
+            throw new NotFoundException("گزارش");
 
         List<Media> medias = new List<Media>();
         if (request.Attachments is not null)

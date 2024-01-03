@@ -25,7 +25,7 @@ internal class UpdateUserAvatarCommandHandler : IRequestHandler<UpdateUserAvatar
     {
         var user = await _userRepository.GetSingleAsync(u => u.Id == request.UserId);
         if (user is null)
-            throw new NotFoundException("User");
+            throw new NotFoundException("کاربر");
         var avatar = await _storageService.WriteFileAsync(request.Avatar, AttachmentType.Avatar);
         if (avatar is null)
             throw new SaveImageFailedException();

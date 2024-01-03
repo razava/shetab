@@ -21,7 +21,7 @@ internal sealed class GetReportByIdQueryHandler : IRequestHandler<GetReportByIdQ
             r => r.Id == request.id,
             false);
         if (report is null)
-            throw new NotFoundException("Report");
+            throw new NotFoundException("گزارش");
         return report;
     }
 }

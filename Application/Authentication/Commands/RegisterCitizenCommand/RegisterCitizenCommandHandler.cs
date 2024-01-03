@@ -48,7 +48,7 @@ internal class RegisterCitizenCommandHandler : IRequestHandler<RegisterCitizenCo
         }
         catch
         {
-            throw new RegisterCitizenException();
+            throw new CreationFailedException("کاربر");
         }
 
         return result;

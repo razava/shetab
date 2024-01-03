@@ -19,7 +19,7 @@ internal class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery,
         var result = await _userRepository.GetSingleAsync(u => u.Id == request.UserId);
         if (result == null)
         {
-            throw new NotFoundException("User");
+            throw new NotFoundException("کاربر");
         }
 
         return result;

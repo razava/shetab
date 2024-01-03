@@ -18,7 +18,7 @@ internal partial class GetProcessByIdQueryHandler : IRequestHandler<GetProcessBy
         var result = await _processRepository.GetSingleAsync(p => p.Id == request.Id, false, "Stages,Stages.Actors");
         
         if (result is null)
-            throw new NotFoundException("Process");
+            throw new NotFoundException("فرایند");
 
         var actorIds = result.Stages.Where(s => s.Name == "Executive").SingleOrDefault()!.Actors.Select(a => a.Id).ToList();
 

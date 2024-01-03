@@ -19,7 +19,7 @@ internal class UpdateUserProfileCommandHandler : IRequestHandler<UpdateUserProfi
     {
         var user = await _userRepository.GetSingleAsync(u => u.Id == request.UserId);
         if (user is null)
-            throw new NotFoundException("User");
+            throw new NotFoundException("کاربر");
         user.FirstName = request.FirstName ?? user.FirstName;
         user.LastName = request.LastName ?? user.LastName;
         user.Title = request.Title ?? user.Title;

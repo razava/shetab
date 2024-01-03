@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Application.Users.Common;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Domain.Models.Relational.Common;
@@ -31,7 +32,7 @@ public class PollRepository : IPollRepository
             .Include(p => p.Answers.Where(pa => pa.UserId == userId))
             .SingleOrDefaultAsync();
         if (result is null)
-            throw new PollNotFoundException();
+            throw new NotFoundException("نظرسنجی");
         return result;
     }
 
@@ -42,7 +43,7 @@ public class PollRepository : IPollRepository
             .Include(p => p.Choices)
             .SingleOrDefaultAsync();
         if (result is null)
-            throw new PollNotFoundException();
+            throw new NotFoundException("نظرسنجی");
         return result;
     }
 

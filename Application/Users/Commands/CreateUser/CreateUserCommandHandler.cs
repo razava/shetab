@@ -25,7 +25,7 @@ internal class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, App
         };
         var result = await _userRepository.CreateAsync(user, request.Password);
         if (!result.Succeeded)
-            throw new UserCreationFailedException();
+            throw new CreationFailedException("کاربر");
         return user;
     }
 }

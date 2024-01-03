@@ -20,7 +20,7 @@ internal class GetOrganizationalUnitByUserIdQueryHandler : IRequestHandler<GetOr
             ou => ou.UserId == request.UserId,
             false);
         if (result is null)
-            throw new NotFoundException("Organizational Unit");
+            throw new NotFoundException("واحد سازمانی");
         return result;
     }
 }

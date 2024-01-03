@@ -21,7 +21,7 @@ internal class AddProcessCommandHandler : IRequestHandler<AddProcessCommand, Pro
         var process = await _processRepository.AddTypicalProcess(request.InstanceId, request.Code, request.Title, request.ActorIds);
         await _unitOfWork.SaveAsync();
         if (process == null)
-            throw new CreationFailedException("Process");
+            throw new CreationFailedException("فرایند");
         return process;
     }
 }

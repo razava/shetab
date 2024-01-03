@@ -1,20 +1,23 @@
 ﻿namespace Infrastructure.Exceptions;
 
-public class PhoneNumberNotConfirmedException : Exception
+public class ResetPasswordTokenGenerationFailedException : Exception
 {
-    public PhoneNumberNotConfirmedException(string? message) : base(message)
-    {
-
-    }
+    public ResetPasswordTokenGenerationFailedException() : base("ایجاد توکن بازیابی رمز عبور ناموفق بود.") { }
 }
 
-public class InvalidLoginException : Exception { }
-public class InvalidUsernameException : Exception { }
-public class UserAlreadyExsistsException : Exception { }
-public class UserRegisterException : Exception { }
-public class UserNotExistException : Exception { }
-public class ResetPasswordTokenGenerationFailedException : Exception { }
-public class InvalidVerificationCodeException : Exception { } 
+
+public class InvalidVerificationCodeException : Exception
+{
+    public InvalidVerificationCodeException() : base("کد تایید نامعتبر است.") { }
+}
+
+
+
+//public class InvalidLoginException : Exception { }
+//public class InvalidUsernameException : Exception { }
+//public class UserAlreadyExsistsException : Exception { }
+//public class UserRegisterException : Exception { }
+//public class UserNotExistException : Exception { }
 
 
 

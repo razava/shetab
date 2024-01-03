@@ -29,7 +29,7 @@ internal sealed class UpdateByOperatorCommandHandler : IRequestHandler<UpdateByO
     {
         var report = await _reportRepository.GetByIDAsync(request.reportId);
         if (report == null)
-            throw new NotFoundException("Report");
+            throw new NotFoundException("گزارش");
 
         Category? category = null;
         if (request.CategoryId is not null)
@@ -38,7 +38,7 @@ internal sealed class UpdateByOperatorCommandHandler : IRequestHandler<UpdateByO
             if (category is null)
             {
                 //TODO: Handle this error
-                throw new NotFoundException("Category");
+                throw new NotFoundException("دسته بندی");
             }
 
         }

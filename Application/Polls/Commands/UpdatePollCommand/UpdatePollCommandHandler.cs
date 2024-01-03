@@ -20,7 +20,7 @@ internal class UpdatePollCommandHandler : IRequestHandler<UpdatePollCommand, Pol
     {
         var poll = await _pollRepository.GetById(request.Id);
         if (poll is null)
-            throw new NotFoundException("Poll");
+            throw new NotFoundException("نظرسنجی");
 
 
         List<PollChoice>? choices = new();

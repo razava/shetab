@@ -1,5 +1,9 @@
-﻿using FluentValidation;
+﻿using Application.Common.Exceptions;
+using Domain.Exceptions;
+using FluentValidation;
+using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.Metrics;
 using System.Text.Json;
 
 namespace Api.Middlewares;
@@ -53,17 +57,75 @@ public class ExceptionMiddleware
         {
 
             context.Response.ContentType = "application/problem+json";
+            var problemDetails = new ProblemDetails();
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
-            var problemDetails = new ProblemDetails()
-            {
-                Status = context.Response.StatusCode,
-                Detail = ex.Message,
-                Instance = "",
-                Title = "Internal server Error - Something went wrong",
-                Type = "Error"
-            };
+            problemDetails.Detail = ex.Message;
+            problemDetails.Instance = "";
+            problemDetails.Type = "Error";
+            problemDetails.Title = ex.GetType().Name;
 
+            switch (ex)
+            {
+                case ServerNotFoundException:
+                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    problemDetails.Title = ex.InnerException!.GetType().Name;
+                    break;
+                case InvalidCaptchaException:
+                case NullAssignedRoleException:
+                case InvalidUsernameException:
+                case UserAlreadyExsistsException:
+                case InvalidLoginException:
+                case AccessDeniedException:
+                case CommentHasReplyException:
+                case LoopMadeException:
+                case ExecutiveOnlyLimitException:
+                case InvalidVerificationCodeException:
+                case ForbidNullProcessException:
+                case CategoryHaveNoAssignedProcess:
+                case ParticipationMoreThanOnceException:
+                case NullAnswerTextException:
+                case OneChoiceAnswerLimitException:
+                case InvalidChoiceException:
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    break;
+                case NotFoundException:
+                case NullUserRolesException:
+                    context.Response.StatusCode = StatusCodes.Status404NotFound;
+                    break;
+                case CreationFailedException:
+                case SaveImageFailedException:
+                case AttachmentsFailureException:
+                case SendSmsException:
+                case ResetPasswordTokenGenerationFailedException:
+                case InvalidCityException:
+                case DuplicateInstanceException:
+                case ForbidNullParentCategoryException:
+                case ForbidNullRolesException:
+                case NullConnectionStringException:
+                case NullJwtSecretException:
+                case NullJwtValidIssuerException:
+                case NullJwtValidAudienceException:
+                case MessageBrokerConfigurationsNotFoundException:
+                case ForbidNullRoleException:
+                case NullActorException:
+                case ForbidNullStageException:
+                case RoleAssignmentFailedException:
+                case NotLoadedProcessException:
+                case NullCurrentStageException:
+                case NullStageException:
+                case BotNotFoundException:
+                case ForbidNullTransitionException:
+                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    break;
+                default:
+                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    problemDetails.Title = "Internal server Error - Something went wrong";
+                    break;
+            }
+
+            problemDetails.Status = context.Response.StatusCode;
+            
             var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
             await context.Response.WriteAsync(problemDetailsJson);
 

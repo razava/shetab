@@ -18,7 +18,7 @@ internal sealed class GetQuickAccessByIdQueryHandler : IRequestHandler<GetQuickA
         var result = await _quickAccessRepository
             .GetSingleAsync(q => q.Id == request.id, false);
         if (result == null)
-            throw new NotFoundException("QuickAccess");
+            throw new NotFoundException("دسترسی سریع");
         return result;
     }
 }

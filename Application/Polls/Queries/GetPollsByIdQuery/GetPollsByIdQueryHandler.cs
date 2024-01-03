@@ -28,7 +28,7 @@ internal sealed class GetPollsByIdQueryHandler : IRequestHandler<GetPollsByIdQue
             .SingleOrDefaultAsync();
 
         if (poll == null)
-            throw new NotFoundException("Poll");
+            throw new NotFoundException("نظرسنجی");
 
         //var result = new List<GetPollsResponse>();
         var choices = new List<PollChoiceResponse>();

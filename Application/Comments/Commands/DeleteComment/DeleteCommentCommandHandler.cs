@@ -21,7 +21,7 @@ internal class DeleteCommentCommandHandler : IRequestHandler<DeleteCommentComman
     {
         var comment = await _commentRepository.GetSingleAsync(c => c.Id == request.CommentId);
         if (comment is null)
-            throw new NotFoundException("Comment");
+            throw new NotFoundException("نظر");
 
         if(!(comment.UserId == request.UserId || request.UserRoles.Contains(RoleNames.Operator)))
         {

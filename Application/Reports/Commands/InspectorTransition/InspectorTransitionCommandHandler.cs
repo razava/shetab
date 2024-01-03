@@ -30,7 +30,7 @@ internal sealed class InspectorTransitionCommandHandler : IRequestHandler<Inspec
     {
         var report = await _reportRepository.GetByIDAsync(request.ReportId);
         if (report == null)
-            throw new NotFoundException("Report");
+            throw new NotFoundException("گزارش");
 
         List<Media> medias = new List<Media>();
         if (request.Attachments is not null)

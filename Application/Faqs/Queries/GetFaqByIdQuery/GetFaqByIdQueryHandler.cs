@@ -17,7 +17,7 @@ internal class GetFaqByIdQueryHandler : IRequestHandler<GetFaqByIdQuery, Faq>
     {
         var result = await _faqRepository.GetSingleAsync(f => f.Id == request.Id, false);
         if (result == null)
-            throw new NotFoundException("FAQ");
+            throw new NotFoundException("سوال متداول");
         return result;
 
     }

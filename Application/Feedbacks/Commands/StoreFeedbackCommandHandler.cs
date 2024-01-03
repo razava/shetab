@@ -27,12 +27,12 @@ internal sealed class StoreFeedbackCommandHandler : IRequestHandler<StoreFeedbac
             f => f.UserId == request.UserId && f.Token == request.Token && f.ReportId == request.ReportId);
         if ((feedback is null))
         {
-            throw new NotFoundException("Feedback");
+            throw new ServerNotFoundException("خطایی رخ داد.", new FeedbackNotFoundException());
         }
         var report = await _reportRepository.GetSingleAsync(r => r.Id == request.ReportId);
         if (report is null)
         {
-            throw new NotFoundException("Report");
+            throw new NotFoundException("گزارش");
         }
         report.UpdateFeedback(request.Rating);
 

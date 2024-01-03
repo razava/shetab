@@ -22,7 +22,7 @@ internal sealed class UpdateCategoryCommandHandler : IRequestHandler<UpdateCateg
         var category = await _categoryRepository.GetSingleAsync(c => c.Id == request.Id);
         if (category is  null)
         {
-            throw new NotFoundException("Category");
+            throw new NotFoundException("دسته بندی");
         }
         category.Update(
             request.Code,

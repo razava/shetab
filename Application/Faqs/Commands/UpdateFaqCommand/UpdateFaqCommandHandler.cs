@@ -25,7 +25,7 @@ internal sealed class UpdateFaqCommandHandler : IRequestHandler<UpdateFaqCommand
     {
         var faq = await _faqRepository.GetSingleAsync(q => q.Id == request.Id);
         if (faq is null)
-            throw new NotFoundException("FAQ");
+            throw new NotFoundException("سوال متداول");
 
         faq.Update(request.Question, request.Answer, request.IsDeleted);
 

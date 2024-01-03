@@ -21,7 +21,7 @@ internal class GetOrganizationalUnitByIdQueryHandler : IRequestHandler<GetOrgani
             false,
             "OrganizationalUnits");
         if (result is null)
-            throw new NotFoundException("Organizational Unit");
+            throw new NotFoundException("واحد سازمانی");
         return result;
     }
 }

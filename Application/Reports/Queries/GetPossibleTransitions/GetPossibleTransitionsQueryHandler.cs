@@ -21,7 +21,7 @@ internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPo
     {
         var report = await _reportRepository.GetByIDAsync(request.reportId);
         if (report == null)
-            throw new NotFoundException("Report");
+            throw new NotFoundException("گزارش");
         if (report.ShahrbinInstanceId != request.instanceId)
             throw new AccessDeniedException();
 
@@ -79,7 +79,7 @@ internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPo
                 {
                     var role = (await _userRepository.GetRoles()).Find(p => p.Id == actorList[i].Identifier);
                     if (role is null)
-                        throw new NullActorRolesException();
+                        throw new ServerNotFoundException("خطایی رخ داد.", new NullActorRolesException());
 
                     if (role.Name == "Citizen")
                     {

@@ -36,7 +36,7 @@ internal sealed class UpdateNewsCommandHandler : IRequestHandler<UpdateNewsComma
 
         var news = await _newsRepository.GetSingleAsync(q => q.Id == request.Id);
         if (news is null)
-            throw new NotFoundException("News");
+            throw new NotFoundException("خبر");
 
         news.Update(request.Title, request.Description, request.Url, media, request.IsDeleted);
 

@@ -2,44 +2,57 @@
 
 public class NotFoundException : Exception
 {
-    public NotFoundException(string objectName) : base($"{objectName} Not Found!")
-    {
-        
-    }
+    public NotFoundException(string objectName) : base($"{objectName} یافت نشد.") { }
 }
+
 
 public class CreationFailedException : Exception
 {
-    public CreationFailedException(string objectName) : base($"{objectName} Not Found!")
-    {
-
-    }
-}
- 
-public class CommentHasReplyException : Exception { }  //"This comment has a reply."
-public class SaveImageFailedException : Exception { }  
-public class LoopMadeException : Exception      //"حلقه ای در ساختار سازمانی ایجاد شده است."
-{
-    public LoopMadeException(string message) : base(message)
-    {
-        
-    }
+    public CreationFailedException(string objectName) : base($"ایجاد {objectName} ناموفق بود.") { }
 }
 
-public class AccessDeniedException : Exception      
+
+public class AccessDeniedException : Exception
 {
     public AccessDeniedException() : base() { }
-    public AccessDeniedException(string message) : base(message)
-    {
-
-    }
+    public AccessDeniedException(string message) : base(message) { }
 }
 
 
-public class AttachmentsFailureException() : Exception { }
-public class ExecutiveOnlyLimitException() : Exception { } //"User must be an executive to be able to send message to citizen."
-
+public class FeedbackNotFoundException : Exception { }
+public class ExecutiveUserNotFoundException : Exception { }
 public class NullActorRolesException : Exception { }
+
+
+public class CommentHasReplyException : Exception
+{
+    public CommentHasReplyException() : base("این کامنت یک ریپلای دارد.") { }
+} 
+
+
+public class SaveImageFailedException : Exception
+{
+    public SaveImageFailedException() : base("ذخیره عکس ناموفق بود.") { }
+}  
+
+
+public class LoopMadeException : Exception    
+{
+    public LoopMadeException() : base("حلقه ای در ساختار سازمانی ایجاد شده است.") { }
+}
+
+
+public class AttachmentsFailureException : Exception
+{
+    public AttachmentsFailureException() : base("خطای پیوست فایل!") { }
+}
+
+
+public class ExecutiveOnlyLimitException : Exception
+{
+    public ExecutiveOnlyLimitException() : base("کاربر برای ارسال پیام به شهروند باید نقش واحد اجرایی داشته باشد.") { }
+} 
+
  
 
 

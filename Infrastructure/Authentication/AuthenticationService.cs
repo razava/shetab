@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Security;
 using Domain.Models.Relational.IdentityAggregate;
 using Infrastructure.Exceptions;
@@ -31,7 +32,7 @@ public class AuthenticationService : IAuthenticationService
         {
             if(verificationCode is null)
             {
-                throw new PhoneNumberNotConfirmedException("Confirm the phone number first.");
+                throw new PhoneNumberNotConfirmedException();
             }
             else
             {
@@ -81,14 +82,14 @@ public class AuthenticationService : IAuthenticationService
         };
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
-            new UserRegisterException();
+            throw new CreationFailedException("کاربر");
 
         var result2 = await _userManager.AddToRoleAsync(user, "Citizen");
 
         if (!result2.Succeeded)
         {
             await _userManager.DeleteAsync(user);
-            new UserRegisterException();
+            throw new CreationFailedException("کاربر");
         }
 
         return true;
@@ -165,7 +166,7 @@ public class AuthenticationService : IAuthenticationService
         var user = await _userManager.FindByNameAsync(username);
         if (user == null)
         {
-            throw new UserNotExistException();
+            throw new NotFoundException("کاربر");
         }
 
         return user;

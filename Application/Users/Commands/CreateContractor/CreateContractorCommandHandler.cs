@@ -29,11 +29,11 @@ internal class CreateContractorCommandHandler : IRequestHandler<CreateContractor
 
         var executive = await _userRepository.GetSingleAsync(e => e.Id == request.ExecutiveId, true, "Contractors");
         if (executive is null)
-            throw new NotFoundException("Executive");
+            throw new NotFoundException("واحد اجرایی");
 
         var isExecutive = await _userRepository.IsInRoleAsync(executive, "Executive");
         if (!isExecutive)
-            throw new AccessDeniedException("Only executives can define and assign contractors.");
+            throw new AccessDeniedException("فقط واحد اجرایی می تواند پیمانکار تعریف کند.");
         var contractor = await _userRepository.GetSingleAsync(u => u.UserName == "c-" + request.PhoneNumber);
         if (contractor is not null)
         {
@@ -59,14 +59,14 @@ internal class CreateContractorCommandHandler : IRequestHandler<CreateContractor
             var password = "aA@12345";
             var result = await _userRepository.CreateAsync(contractor, password);
             if (!result.Succeeded)
-                throw new UserCreationFailedException();
+                throw new CreationFailedException("کاربر");
 
             var result2 = await _userRepository.AddToRoleAsync(contractor, "Contractor");
 
             if (!result2.Succeeded)
             {
                 await _userRepository.DeleteAsync(contractor);
-                throw new UserCreationFailedException();
+                throw new CreationFailedException("کاربر");
             }
             _actorRepository.Insert(
                 new Actor(){

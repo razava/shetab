@@ -21,7 +21,7 @@ internal sealed class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryB
         var result = await _categoryRepository.GetByIDAsync(request.Id);
 
         if (result is null)
-            throw new NotFoundException("Category");
+            throw new NotFoundException("دسته بندی");
 
         return result;
     }

@@ -31,7 +31,7 @@ internal sealed class CreateReportByCitizenCommandHandler : IRequestHandler<Crea
         if(category is null)
         {
             //TODO: Handle this error
-            throw new NotFoundException("Category");
+            throw new NotFoundException("دسته بندی");
         }
         var address = request.Address.GetAddress();
         //address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);

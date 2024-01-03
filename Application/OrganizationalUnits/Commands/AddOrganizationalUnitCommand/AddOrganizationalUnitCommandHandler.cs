@@ -45,7 +45,7 @@ internal class AddOrganizationalUnitCommandHandler : IRequestHandler<AddOrganiza
         {
             var executiveUser = executiveUsers.SingleOrDefault(eu => eu.Id == executiveActor.Identifier);
             if (executiveUser is null)
-                throw new NotFoundException("ExecutiveUser");
+                throw new ServerNotFoundException("خطایی رخ داد.", new ExecutiveUserNotFoundException());
             newOus.Add(new OrganizationalUnit()
             {
                 ShahrbinInstanceId = request.InstanceId,

@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Application.Users.Common;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ProcessAggregate;
@@ -21,7 +22,7 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
             .AsNoTracking()
             .SingleOrDefaultAsync();
         if (instance is null)
-            throw new InstanceNotFoundException();
+            throw new ServerNotFoundException("خطایی رخ داد.", new InstanceNotFoundException());
         var regions = await context.Set<Region>()
             .Where(r => r.CityId == instance.CityId)
             .AsNoTracking()
@@ -32,7 +33,7 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
             .Select(a => a.Regions.Select(r => r.Id))
             .SingleOrDefaultAsync();
         if (actorRegionIds is null)
-            throw new ActorNotFoundException();
+            throw new ServerNotFoundException("خطایی رخ داد.", new ActorNotFoundException());
 
         var result = new List<IsInRegionModel>();
         foreach (var region in regions)
@@ -57,7 +58,7 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
             .AsNoTracking()
             .SingleOrDefaultAsync();
         if (instance is null)
-            throw new InstanceNotFoundException();
+            throw new ServerNotFoundException("خطایی رخ داد.", new InstanceNotFoundException());
         var regions = await context.Set<Region>()
             .Where(r => r.CityId == instance.CityId)
             .ToListAsync();
@@ -67,7 +68,7 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
             .Include(a => a.Regions)
             .SingleOrDefaultAsync();
         if (actor is null)
-            throw new ActorNotFoundException();
+            throw new ServerNotFoundException("خطایی رخ داد.", new ActorNotFoundException());
 
         actor.Regions.Clear();
         foreach (var userRegion in userRegions)

@@ -22,7 +22,7 @@ internal class UpdateCommentCommandHandler : IRequestHandler<UpdateCommentComman
         var comment = await _commentRepository.GetSingleAsync(c => c.Id == request.CommentId);
         if (comment is null)
         {
-            throw new NotFoundException("Comment");
+            throw new NotFoundException("نظر");
         }
         comment.Text = request.Content;
         _commentRepository.Update(comment);

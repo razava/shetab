@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
@@ -39,7 +40,7 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
             var password = "aA@12345";
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
-                throw new UserCreationFailedException();
+                throw new CreationFailedException("کاربر");
 
             var result2 = await _userManager.AddToRoleAsync(user, "Citizen");
 
@@ -176,7 +177,7 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
-            throw new UserNotFoundException();
+            throw new NotFoundException("کاربر");
         var result = await _userManager.RemovePasswordAsync(user);
         if (result is null || !result.Succeeded)
             return false;
@@ -190,7 +191,7 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
-            throw new UserNotFoundException();
+            throw new NotFoundException("کاربر");
         var currentRoles = await _userManager.GetRolesAsync(user);
         var inRoles = roles.Where(r => !currentRoles.Contains(r)).ToList();
         var outRoles = currentRoles.Where(r => !roles.Contains(r)).ToList();
@@ -213,7 +214,7 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
-            throw new UserNotFoundException();
+            throw new NotFoundException("کاربر");
         var roles = await _userManager.GetRolesAsync(user);
         if (roles is null)
             throw new NullUserRolesException();

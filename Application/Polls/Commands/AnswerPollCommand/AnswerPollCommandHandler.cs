@@ -22,7 +22,7 @@ internal class AnswerPollCommandHandler : IRequestHandler<AnswerPollCommand, boo
     {
         var poll = await _pollRepository.GetById(request.Id, request.UserId);
         if (poll is null)
-            throw new NotFoundException("Poll");
+            throw new NotFoundException("نظرسنجی");
 
         poll.Answer(request.UserId, request.ChoicesIds, request.Text);
         
