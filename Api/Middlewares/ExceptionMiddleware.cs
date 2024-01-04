@@ -3,7 +3,6 @@ using Domain.Exceptions;
 using FluentValidation;
 using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics.Metrics;
 using System.Text.Json;
 
 namespace Api.Middlewares;
@@ -11,10 +10,12 @@ namespace Api.Middlewares;
 public class ExceptionMiddleware
 {
     private RequestDelegate Next { get; }
+    private readonly ILogger<ExceptionMiddleware> _logger;
 
-    public ExceptionMiddleware(RequestDelegate next)
+    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
     {
         Next = next;
+        _logger = logger;
     }
 
     public async Task Invoke(HttpContext context)
@@ -25,6 +26,10 @@ public class ExceptionMiddleware
         }
         catch (ValidationException ex)
         {
+            _logger.LogError(ex, "Exception occurred : Validation error : {Message} {@Errors} ",
+                ex.Message,
+                ex.Errors);
+
             context.Response.ContentType = "application/problem+json";
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
 
@@ -55,6 +60,7 @@ public class ExceptionMiddleware
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Exception occurred : {Message}", ex.Message);
 
             context.Response.ContentType = "application/problem+json";
             var problemDetails = new ProblemDetails();
