@@ -16,7 +16,7 @@ public class OrganizationalUnit : BaseModel
     public int? ActorId { get; set; }
     public Actor Actor { get; set; } = null!;
     public string Title { get; set; } = null!;
-
+    
     [InverseProperty("ParentOrganizationalUnits")]
     public List<OrganizationalUnit> OrganizationalUnits { get; set; } = new List<OrganizationalUnit>();
     [InverseProperty("OrganizationalUnits")]

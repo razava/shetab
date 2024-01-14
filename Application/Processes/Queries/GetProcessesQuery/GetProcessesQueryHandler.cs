@@ -15,7 +15,7 @@ internal class GetProcessesQueryHandler : IRequestHandler<GetProcessesQuery, Lis
 
     public async Task<List<Process>> Handle(GetProcessesQuery request, CancellationToken cancellationToken)
     {
-        var result = await _processRepository.GetAsync(p =>
+        var result = await _processRepository.GetAsync(p => p.IsDeleted == false &&
         ((request.FilterModel == null || request.FilterModel.Query == null) || p.Title.Contains(request.FilterModel.Query))
         , false);
         if (result is null)

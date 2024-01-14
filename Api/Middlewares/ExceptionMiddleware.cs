@@ -93,6 +93,7 @@ public class ExceptionMiddleware
                 case NullAnswerTextException:
                 case OneChoiceAnswerLimitException:
                 case InvalidChoiceException:
+                case BadRequestException:
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     break;
                 case NotFoundException:

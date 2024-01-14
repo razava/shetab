@@ -3,6 +3,7 @@ using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Common.FilterModels;
 using Application.OrganizationalUnits.Commands.AddOrganizationalUnitCommand;
+using Application.OrganizationalUnits.Commands.DeleteOrganizationalUnitCommand;
 using Application.OrganizationalUnits.Commands.UpdateOrganizationalUnitCommand;
 using Application.OrganizationalUnits.Queries.GetOrganizationalUnitByIdQuery;
 using Application.OrganizationalUnits.Queries.GetOrganizationalUnitByUserIdQuery;
@@ -94,6 +95,21 @@ public class AdminOrganizationalUnitController : ApiController
         var result = await Sender.Send(command);
         if (result == null)
             return Problem();
+        return NoContent();
+    }
+
+
+
+    [Authorize(Roles = "Admin")]
+    [HttpDelete]
+    public async Task<ActionResult> DeleteOrganizationalUnit(int id)
+    {
+        var command = new DeleteOrganizationalUnitCommand(id);
+        var result = await Sender.Send(command);
+
+        if(!result)
+            return Problem();
+
         return NoContent();
     }
 

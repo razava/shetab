@@ -401,4 +401,24 @@ public class ProcessRepository : GenericRepository<Process>, IProcessRepository
         //await context.SaveChangesAsync();
         return process;
     }
+    
+    public async Task<bool> LogicalDelete(int id)
+    {
+        var process = await context.Process.Where(p => p.Id == id).SingleOrDefaultAsync();
+        if (process == null) throw new NotFoundException("فرایند");
+        if (process.IsDeleted) throw new NotFoundException("فرایند");
+
+        var hasCategoryDependency = await context.Category.AnyAsync(c => c.ProcessId == id);
+        if (hasCategoryDependency) throw new BadRequestException("فرایند، دسته بندی وابسته دارد.");
+
+        var hasReportDependency = await context.Reports.AnyAsync(r => r.ProcessId == id);
+        if (hasReportDependency) throw new BadRequestException("فرایند، گزارش وابسته دارد.");
+
+        process.IsDeleted = true;
+        context.Entry(process).State = EntityState.Modified;
+
+        //context.Process.Remove(process);
+
+        return true;
+    }
 }

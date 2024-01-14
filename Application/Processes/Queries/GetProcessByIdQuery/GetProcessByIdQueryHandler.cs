@@ -15,7 +15,7 @@ internal partial class GetProcessByIdQueryHandler : IRequestHandler<GetProcessBy
 
     public async Task<GetProcessByIdResponse> Handle(GetProcessByIdQuery request, CancellationToken cancellationToken)
     {
-        var result = await _processRepository.GetSingleAsync(p => p.Id == request.Id, false, "Stages,Stages.Actors");
+        var result = await _processRepository.GetSingleAsync(p => p.Id == request.Id && p.IsDeleted == false , false, "Stages,Stages.Actors");
         
         if (result is null)
             throw new NotFoundException("فرایند");

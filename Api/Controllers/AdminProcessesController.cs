@@ -3,6 +3,7 @@ using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Common.FilterModels;
 using Application.Processes.Commands.AddProcessCommand;
+using Application.Processes.Commands.DeleteProcessCommand;
 using Application.Processes.Commands.UpdateProcessCommand;
 using Application.Processes.Queries.GetExecutiveActorsQuery;
 using Application.Processes.Queries.GetProcessByIdQuery;
@@ -92,7 +93,16 @@ public class AdminProcessesController : ApiController
         var mappedResult = result.Adapt<List<GetExecutiveListDto>>();
         return Ok(mappedResult);
     }
-    
 
+    [Authorize]
+    [HttpDelete]
+    public async Task<ActionResult> DeleteProcess(int id)
+    {
+        var command = new DeleteProcessCommand(id);
+        var result = await Sender.Send(command);
+        if (!result)
+            return Problem();
+        return NoContent();
+    }
 
 }

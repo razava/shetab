@@ -5,6 +5,11 @@ public class NotFoundException : Exception
     public NotFoundException(string objectName) : base($"{objectName} یافت نشد.") { }
 }
 
+public class BadRequestException : Exception
+{
+    public BadRequestException(string message) : base(message) { }
+}
+
 
 public class CreationFailedException : Exception
 {
