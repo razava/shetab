@@ -42,7 +42,10 @@ internal sealed class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, 
         (request.FilterGetReports.SentFromDate == null || r.Sent >= request.FilterGetReports.SentFromDate)
         && (request.FilterGetReports.SentToDate == null || r.Sent <= request.FilterGetReports.SentToDate)
         && (request.FilterGetReports.CurrentStates == null || request.FilterGetReports.CurrentStates.Contains(r.ReportState)) 
-        && (request.FilterGetReports.Query == null || r.TrackingNumber.Contains(request.FilterGetReports.Query)));
+        && (request.FilterGetReports.Query == null || r.TrackingNumber.Contains(request.FilterGetReports.Query))
+        && (request.FilterGetReports.PhoneNumber == null ||
+        (r.Citizen.PhoneNumber.Contains(request.FilterGetReports.PhoneNumber)) ||
+        (r.Citizen.PhoneNumber2.Contains(request.FilterGetReports.PhoneNumber)) ));
 
 
         //var reports = await _reportRepository.GetPagedAsync(

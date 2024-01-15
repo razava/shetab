@@ -21,7 +21,9 @@ public record FilterGetReports(
     List<ReportState>? CurrentStates,
     //[MaxLength(64)] this query is for searching TrackingNumbers
     [MinLength(3)] [MaxLength(16)]
-    string? Query);
+    string? Query,
+    [MaxLength(11)] [Phone]
+    string? PhoneNumber);
 
 
 public record FilterGetAllReports(
@@ -36,7 +38,9 @@ public record FilterGetAllReports(
     int? MinSatisfaction,   //?...........
     int? MaxSatisfaction,  //?.............
     [MinLength(3)] [MaxLength(16)]
-    string? Query);
+    string? Query,
+    [MaxLength(11)] [Phone]
+    string? PhoneNumber);
 
 
 

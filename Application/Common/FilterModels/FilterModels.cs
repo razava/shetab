@@ -16,7 +16,8 @@ public record FilterGetReportsModel(
     DateTime? SentFromDate,
     DateTime? SentToDate,
     List<ReportState>? CurrentStates,
-    string? Query);
+    string? Query,
+    string? PhoneNumber);
 
 
 public record FilterGetAllReportsModel(
@@ -30,7 +31,8 @@ public record FilterGetAllReportsModel(
     int? MinSatisfaction,   //?...........
     int? MaxSatisfaction,  //?.............
     [MaxLength(64)]
-    string? Query);
+    string? Query,
+    string? PhoneNumber);
 
 
 public record FilterGetCommentViolationModel(

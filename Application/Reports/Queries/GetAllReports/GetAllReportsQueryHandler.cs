@@ -36,7 +36,10 @@ internal sealed class GetAllReportsQueryHandler : IRequestHandler<GetAllReportsQ
         && (request.FilterModel.CategoryIds == null || request.FilterModel.CategoryIds.Contains(r.CategoryId))
         && (request.FilterModel.RegionIds == null || request.FilterModel.RegionIds.Contains((int)r.Address.RegionId!))
         && (request.FilterModel.CurrentStates == null || request.FilterModel.CurrentStates.Contains(r.ReportState))
-        && (request.FilterModel.Query == null || r.TrackingNumber.Contains(request.FilterModel.Query)) );
+        && (request.FilterModel.Query == null || r.TrackingNumber.Contains(request.FilterModel.Query))
+        && (request.FilterModel.PhoneNumber == null ||
+        (r.Citizen.PhoneNumber.Contains(request.FilterModel.PhoneNumber)) ||
+        (r.Citizen.PhoneNumber2.Contains(request.FilterModel.PhoneNumber))));
 
         var context = _unitOfWork.DbContext;
         var query = context.Set<Report>()
