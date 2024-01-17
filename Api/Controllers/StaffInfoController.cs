@@ -1,5 +1,9 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
+using Api.ExtensionMethods;
+using Application.Info.Queries.GetInfoQuery;
+using Application.Info.Queries.GetListChartQuery;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,8 +23,12 @@ public class StaffInfoController : ApiController
     [HttpGet("ListChart")]
     public async Task<ActionResult<List<ChartDto>>> GetListChart()
     {
-        await Task.CompletedTask;
-        return Ok("Not Implemented");
+        var userRoles = User.GetUserRoles();
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetListChartQuery(instanceId, userRoles);
+        var result = await Sender.Send(query);
+        var mappedResult = result.Adapt<List<ChartDto>>();
+        return Ok(mappedResult);
     }
 
 
@@ -28,8 +36,10 @@ public class StaffInfoController : ApiController
     [HttpGet("Charts/{id}")]
     public async Task<ActionResult<InfoDto>> GetChartsById(int id/*, [FromQuery] PagingInfo pagingInfo*/)//time filter?
     {
-        await Task.CompletedTask;
-        return Ok("Not Implemented");
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetInfoQuery(id, instanceId);
+        var result = await Sender.Send(query);
+        return Ok(result);
     }
 
     /*
