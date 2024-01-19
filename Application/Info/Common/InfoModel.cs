@@ -33,6 +33,16 @@ public record InfoChart(string ChartTitle, string ChartIcon, bool IsStacked, boo
         return this;
     }
 
+    public InfoChart Sort()
+    {
+        if (Series.Count == 0)
+            return this;
+
+        Series = Series.OrderByDescending(s => long.Parse(s.Values[0].Value)).ToList();
+        return this;
+    }
+
+    /*
     public InfoChart Sort(int serieIndex = 0)
     {
         if (Series.Count < serieIndex)
@@ -49,6 +59,7 @@ public record InfoChart(string ChartTitle, string ChartIcon, bool IsStacked, boo
         }
         return this;
     }
+    */
 }
 
 public record InfoSerie(string Title, string Icon)
