@@ -37,7 +37,8 @@ public class StaffInfoController : ApiController
     public async Task<ActionResult<InfoDto>> GetChartsById(int id/*, [FromQuery] PagingInfo pagingInfo*/)//time filter?
     {
         var instanceId = User.GetUserInstanceId();
-        var query = new GetInfoQuery(id, instanceId);
+        var userId = User.GetUserId();
+        var query = new GetInfoQuery(id, instanceId, userId);
         var result = await Sender.Send(query);
         return Ok(result);
     }

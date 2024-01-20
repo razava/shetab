@@ -38,7 +38,7 @@ public record InfoChart(string ChartTitle, string ChartIcon, bool IsStacked, boo
         if (Series.Count == 0)
             return this;
 
-        Series = Series.OrderByDescending(s => long.Parse(s.Values[0].Value)).ToList();
+        Series = Series.OrderByDescending(s => double.Parse(s.Values[0].Value)).ToList();
         return this;
     }
 

@@ -1,5 +1,9 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Extentions;
+using Application.Common.Interfaces.Persistence;
+using Application.Common.Statics;
 using Application.Info.Common;
+using Application.Processes.Queries.GetExecutiveActorsQuery;
+using Azure.Core;
 using DocumentFormat.OpenXml.InkML;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
@@ -7,15 +11,23 @@ using Domain.Models.Relational.IdentityAggregate;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Linq.Expressions;
+using static Application.Info.Queries.GetInfoQuery.GetInfoQueryHandler;
 
 namespace Application.Info.Queries.GetInfoQuery;
 
 internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
 {
     private readonly IUnitOfWork _unitOfWork;
-    public GetInfoQueryHandler(IUnitOfWork unitOfWork)
+    private readonly IUserRepository _userRepository;
+    private readonly IActorRepository _actorRepository;
+
+    public GetInfoQueryHandler(IUnitOfWork unitOfWork, IUserRepository userRepository, IActorRepository actorRepository)
     {
         _unitOfWork = unitOfWork;
+        _userRepository = userRepository;
+        _actorRepository = actorRepository;
     }
 
 
@@ -40,6 +52,12 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
             case 102:
                 result = await GetReportsStatusByCategory(request.InstanceId);
                 break;
+            case 203:
+                result = await GetRepportsTimeByExecutive(request.InstanceId);
+                break;
+            case 204:
+                result = await GetRepportsTimeByRegion(request.InstanceId);
+                break;
             default:
                 break;
         }
@@ -49,7 +67,7 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
         return result;
     }
 
-
+    
 
     private async Task<InfoModel> GetUsersStatistics(int instanceId)
     {
@@ -333,6 +351,146 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
     }
 
 
+
+    private async Task<InfoModel> GetRepportsTimeByRegion(int instanceId)
+    {
+        var query = _unitOfWork.DbContext.Set<Report>()
+        .AsNoTracking()
+        .Where(r => r.ShahrbinInstanceId == instanceId)
+        .Include(r => r.Address);
+
+        var cityId = await _unitOfWork.DbContext.Set<ShahrbinInstance>()
+            .AsNoTracking().Where(s => s.Id == instanceId).
+            Select(s => s.CityId).SingleOrDefaultAsync();
+
+        var bins = await _unitOfWork.DbContext.Set<Region>()
+            .AsNoTracking()
+            .Where(r => r.CityId == cityId)
+            .Select(e => new Bin<int>(e.Id, e.Name))
+            .ToListAsync();
+
+        //Expression<Func<Report, int>> filter = z => (int)z.Address.RegionId ;
+
+        var result = await GetReportsTimeHistogram<Report, int>(
+            "متوسط زمان رسیدگی به تفکیک منطقه",
+            bins,
+            query,
+            z => (int)z.Address.RegionId);
+
+        return result;
+    }
+
+
+
+    private async Task<InfoModel> GetRepportsTimeByExecutive(int instanceId)
+    {
+        
+        var query = _unitOfWork.DbContext.Set<Report>()
+        .AsNoTracking()
+        .Where(r => r.ShahrbinInstanceId == instanceId);
+
+        var executives = (await _userRepository.GetUsersInRole(RoleNames.Executive)).Where(u => u.ShahrbinInstanceId == instanceId).ToList();
+        var executivesIds = executives.Select(executives => executives.Id);
+        var executiveActors = (await _actorRepository.GetAsync(a => executivesIds.Contains(a.Identifier), false)).ToList();
+
+        var bins = new List<Bin<string>>();
+
+        foreach (var actor in executiveActors)
+        {
+            var user = executives.Where(e => e.Id == actor.Identifier).Single();
+            bins.Add(new Bin<string>(actor.Identifier, user.Title));
+        }
+
+        //Expression<Func<Report, int>> filter = z => (int)z.Address.RegionId ;
+        
+        var result = await GetReportsTimeHistogram<Report, string>(
+            "متوسط زمان رسیدگی به تفکیک واحد اجرایی",
+            bins,
+            query,
+            z => z.ExecutiveId);
+        
+        if(result == null)
+            result = new InfoModel();
+
+        return result;
+    }
+
+
+
+
+    private async Task<InfoModel> GetReportsTimeHistogram<T, Key>(
+        string title,
+        List<Bin<Key>> bins,
+        IQueryable<Report> query,
+        Expression<Func<Report, Key>> groupBy/*,
+        Expression<Func<TimeStatus<Key>, bool>> filter*/)
+    {
+        var result = new InfoModel();
+        var infoChart = new InfoChart(title, "", false, false);
+
+        var groupedQuery = await query
+            .Where(r => r.Duration != null)
+            .GroupBy(groupBy)
+            //.Select(p => new TimeStatus<Key>(
+            //    p.Key,
+            //    p.Average(r => r.Duration),
+            //    p.Average(r => r.ResponseDuration)))
+            .Select(p => new
+            {
+                Id = p.Key,
+                Duration = p.Average(r => r.Duration),
+                ResponseDuration = p.Average(r => r.ResponseDuration)
+            })
+            .ToListAsync();
+
+        foreach (var bin in bins)
+        {
+            var serie = new InfoSerie(bin.Title, "");
+
+            var duration = groupedQuery
+                .Where(g => EqualityComparer<Key>.Default.Equals(g.Id, bin.Id))
+                .Select(g => g.Duration)
+                .SingleOrDefault();
+
+            var responseDuration = groupedQuery
+                .Where(g => EqualityComparer<Key>.Default.Equals(g.Id, bin.Id))
+                .Select(g => g.ResponseDuration)
+                .SingleOrDefault();
+
+            duration = duration ??= 0;
+            var durationTimeSpan = new TimeSpan(0, 0, (int)duration);
+
+            responseDuration = responseDuration ??= 0;
+            var responseDurationTimeSpan = new TimeSpan(0, 0, (int)responseDuration);
+
+            serie.Add(new DataItem(
+                "متوسط زمان انجام",
+                durationTimeSpan.ToHoursValue(),
+                durationTimeSpan.ToPersianString()));
+
+            serie.Add(new DataItem(
+                "متوسط زمان پاسخ",
+                responseDurationTimeSpan.ToHoursValue(),
+                responseDurationTimeSpan.ToPersianString()));
+
+            infoChart.Add(serie);
+        }
+
+        result.Add(infoChart.Sort());
+        return result;
+    }
+
+
+    private record Bin<Key>(Key Id, string Title);
+    private static List<Bin<T>> GetBins<T>() where T : Enum
+    {
+        var values = (T[])Enum.GetValues(typeof(T));
+        var bins = new List<Bin<T>>();
+        values.ToList().ForEach(bin => { bins.Add(new Bin<T>(bin, bin.GetDescription() ?? "")); });
+        return bins;
+    }
+
+    //public record TimeStatus<Key>(Key Id, double? Duration, double? ResponseDuration);
 
     private string GetPercent(long value, long total)
     {
