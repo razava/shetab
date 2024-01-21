@@ -3,6 +3,7 @@ using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
+using Domain.Models.Relational.ProcessAggregate;
 using MediatR;
 
 namespace Application.OrganizationalUnits.Commands.AddOrganizationalUnitCommand;
@@ -27,8 +28,22 @@ internal class AddOrganizationalUnitCommandHandler : IRequestHandler<AddOrganiza
 
     public async Task<OrganizationalUnit> Handle(AddOrganizationalUnitCommand request, CancellationToken cancellationToken)
     {
-        var user = new ApplicationUser() { UserName = request.Username, ShahrbinInstanceId = request.InstanceId };
+        var user = new ApplicationUser() { 
+            UserName = request.Username, 
+            ShahrbinInstanceId = request.InstanceId,
+            Title = request.Title,
+            PhoneNumberConfirmed = true };
+
         await _userRepository.CreateAsync(user, request.Password);
+        await _userRepository.AddToRoleAsync(user, "Manager");
+
+        var actor = new Actor()
+        {
+            Identifier = user.Id,
+            Type = ActorType.Person
+        };
+
+        _unitOfWork.DbContext.Set<Actor>().Add(actor);
 
         var containedOus = await _organizationalUnitRepository.GetAsync(ou => request.OrganizationalUnitsIds.Contains(ou.Id));
 

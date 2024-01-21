@@ -30,7 +30,7 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
         var code = request.Code % 100000;
         InfoModel result = new InfoModel();
 
-        //todo : .............. query shoud be pri processed for relate to current user *********
+        //todo : .............. query shoud be pre processed for relate to current user *********
 
         switch (code)
         {
