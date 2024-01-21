@@ -2,18 +2,12 @@
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Application.Info.Common;
-using Application.Processes.Queries.GetExecutiveActorsQuery;
-using Azure.Core;
-using DocumentFormat.OpenXml.InkML;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Linq.Expressions;
-using static Application.Info.Queries.GetInfoQuery.GetInfoQueryHandler;
 
 namespace Application.Info.Queries.GetInfoQuery;
 
@@ -50,7 +44,10 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
                 result = await GetTimeStatistics(request.InstanceId);
                 break;
             case 102:
-                result = await GetReportsStatusByCategory(request.InstanceId);
+                result = await GetReportsStatusPerCategory(request.InstanceId);
+                break;
+            case 104:
+                result = await GetReportsStatusPerRegion(request.InstanceId);
                 break;
             case 203:
                 result = await GetRepportsTimeByExecutive(request.InstanceId);
@@ -253,7 +250,7 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
     }
 
 
-    private async Task<InfoModel> GetReportsStatusByCategory(int instanceId)
+    private async Task<InfoModel> GetReportsStatusPerCategory(int instanceId)
     {
         var result = new InfoModel();
 
@@ -280,7 +277,7 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
 
         foreach (var category in categories)
         {
-            var seri = new InfoSerie(category.Title, "");
+            var serie = new InfoSerie(category.Title, "");
             var catDescendant = category.Siblings;
 
             var finished = groupedQuery.Where(g => catDescendant.Contains(g.Key.CategoryId) && 
@@ -308,42 +305,137 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
             g.Key.IsObjectioned == true)
                 .Sum(g => g.Count);
 
-            seri.Add(new DataItem(
+            serie.Add(new DataItem(
                 "کل",
                 total.ToString(),
                 total.ToString()));
 
-            seri.Add(new DataItem(
+            serie.Add(new DataItem(
                 "در حال رسیدگی",
                 live.ToString(),
                 GetPercent(live, total)));
 
-            seri.Add(new DataItem(
+            serie.Add(new DataItem(
                 "رسیدگی شده",
                 finished.ToString(),
                 GetPercent(finished, total)));
 
-            seri.Add(new DataItem(
+            serie.Add(new DataItem(
                 "در انتظار تایید",
                 needAcceptance.ToString(),
                 GetPercent(needAcceptance, total)));
 
-            seri.Add(new DataItem(
+            serie.Add(new DataItem(
                 "بازخورد شهروند",
                 feedbacked.ToString(),
                 GetPercent(feedbacked, total)));
 
-            seri.Add(new DataItem(
+            serie.Add(new DataItem(
                 "اعتراض شهروند",
                 objectioned.ToString(),
                 GetPercent(objectioned, total)));
 
-            infoChart.Add(seri);
+            infoChart.Add(serie);
 
             //temp.Add(finished);
         }
 
         //infoChart.Series = infoChart.Series.OrderByDescending(s => long.Parse(s.Values[0].Value)).ToList();
+
+        result.Add(infoChart.Sort());
+
+        return result;
+    }
+
+
+    private async Task<InfoModel> GetReportsStatusPerRegion(int instanceId)
+    {
+        var result = new InfoModel();
+
+        var infoChart = new InfoChart("وضعیت درخواست ها به تفکیک منطقه", "", false, false);
+
+        //todo : should not be filtered by regions related to user?
+        var query = _unitOfWork.DbContext.Set<Report>()
+            .AsNoTracking()
+            .Where(r => r.ShahrbinInstanceId == instanceId);
+
+        var groupedQuery = await query
+            .GroupBy(q => new { q.Address.RegionId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
+            .Select(q => new { Key = q.Key, Count = q.LongCount() })
+            .ToListAsync();
+
+        var cityId = await _unitOfWork.DbContext.Set<ShahrbinInstance>()
+            .AsNoTracking().Where(s => s.Id == instanceId).
+            Select(s => s.CityId).SingleOrDefaultAsync();
+
+        var regions = await _unitOfWork.DbContext.Set<Region>()
+            .AsNoTracking()
+            .Where(r => r.CityId == cityId)
+            .Select(e => new Bin<int>(e.Id, e.Name))
+            .ToListAsync();
+
+        foreach (var region in regions)
+        {
+            var serie = new InfoSerie(region.Title, "");
+
+            var finished = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
+            (g.Key.ReportState == ReportState.Finished || g.Key.ReportState == ReportState.Accepted))
+                .Sum(g => g.Count);
+
+            var live = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
+            (g.Key.ReportState == ReportState.Live || g.Key.ReportState == ReportState.Review))
+                .Sum(g => g.Count);
+
+            var needAcceptance = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
+            g.Key.ReportState == ReportState.NeedAcceptance)
+                .Sum(g => g.Count);
+
+            var total = finished + live + needAcceptance;
+
+            if (total == 0)
+                continue;
+
+            var feedbacked = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
+            g.Key.IsFeedbacked == true)
+                .Sum(g => g.Count);
+
+            var objectioned = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
+            g.Key.IsObjectioned == true)
+                .Sum(g => g.Count);
+
+            serie.Add(new DataItem(
+                "کل",
+                total.ToString(),
+                total.ToString()));
+
+            serie.Add(new DataItem(
+                "در حال رسیدگی",
+                live.ToString(),
+                GetPercent(live, total)));
+
+            serie.Add(new DataItem(
+                "رسیدگی شده",
+                finished.ToString(),
+                GetPercent(finished, total)));
+
+            serie.Add(new DataItem(
+                "در انتظار تایید",
+                needAcceptance.ToString(),
+                GetPercent(needAcceptance, total)));
+
+            serie.Add(new DataItem(
+                "بازخورد شهروند",
+                feedbacked.ToString(),
+                GetPercent(feedbacked, total)));
+
+            serie.Add(new DataItem(
+                "اعتراض شهروند",
+                objectioned.ToString(),
+                GetPercent(objectioned, total)));
+
+            infoChart.Add(serie);
+
+        }
 
         result.Add(infoChart.Sort());
 
@@ -422,8 +514,7 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
         string title,
         List<Bin<Key>> bins,
         IQueryable<Report> query,
-        Expression<Func<Report, Key>> groupBy/*,
-        Expression<Func<TimeStatus<Key>, bool>> filter*/)
+        Expression<Func<Report, Key>> groupBy)
     {
         var result = new InfoModel();
         var infoChart = new InfoChart(title, "", false, false);
@@ -431,10 +522,6 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
         var groupedQuery = await query
             .Where(r => r.Duration != null)
             .GroupBy(groupBy)
-            //.Select(p => new TimeStatus<Key>(
-            //    p.Key,
-            //    p.Average(r => r.Duration),
-            //    p.Average(r => r.ResponseDuration)))
             .Select(p => new
             {
                 Id = p.Key,
