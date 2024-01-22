@@ -10,4 +10,4 @@ public sealed record UpdateNewsCommand(
     string? Description,
     string? Url,
     IFormFile? Image,
-    bool? IsDeleted) : IRequest<News>;
+    bool? IsDeleted) : IRequest<Result<News>>;

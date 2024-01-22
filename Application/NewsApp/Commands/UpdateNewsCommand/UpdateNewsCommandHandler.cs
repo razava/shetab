@@ -7,41 +7,31 @@ using MediatR;
 
 namespace Application.NewsApp.Commands.UpdateNewsCommand;
 
-internal sealed class UpdateNewsCommandHandler : IRequestHandler<UpdateNewsCommand, News>
+internal sealed class UpdateNewsCommandHandler(
+    INewsRepository newsRepository,
+    IUnitOfWork unitOfWork,
+    IStorageService storageService) : IRequestHandler<UpdateNewsCommand, Result<News>>
 {
-    private readonly INewsRepository _newsRepository;
-    private readonly IStorageService _storageService;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public UpdateNewsCommandHandler(
-        INewsRepository newsRepository,
-        IUnitOfWork unitOfWork,
-        IStorageService storageService)
-    {
-        _newsRepository = newsRepository;
-        _unitOfWork = unitOfWork;
-        _storageService = storageService;
-    }
-
-    public async Task<News> Handle(UpdateNewsCommand request, CancellationToken cancellationToken)
+    
+    public async Task<Result<News>> Handle(UpdateNewsCommand request, CancellationToken cancellationToken)
     {
         Media? media = null;
         if (request.Image is not null)
         {
-            media = await _storageService.WriteFileAsync(request.Image, AttachmentType.News);
+            media = await storageService.WriteFileAsync(request.Image, AttachmentType.News);
             if (media is null)
-                throw new SaveImageFailedException();
+                return AttachmentErrors.SaveImageFailed;
         }
 
 
-        var news = await _newsRepository.GetSingleAsync(q => q.Id == request.Id);
+        var news = await newsRepository.GetSingleAsync(q => q.Id == request.Id);
         if (news is null)
-            throw new NotFoundException("خبر");
+            return NotFoundErrors.News;
 
         news.Update(request.Title, request.Description, request.Url, media, request.IsDeleted);
 
-        _newsRepository.Update(news);
-        await _unitOfWork.SaveAsync();
+        newsRepository.Update(news);
+        await unitOfWork.SaveAsync();
 
         return news;
     }

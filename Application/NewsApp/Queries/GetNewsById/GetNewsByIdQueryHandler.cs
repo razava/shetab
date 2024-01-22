@@ -5,18 +5,14 @@ using MediatR;
 
 namespace Application.NewsApp.Queries.GetNewsById;
 
-internal sealed class GetNewsByIdQueryHandler : IRequestHandler<GetNewsByIdQuery, News>
+internal sealed class GetNewsByIdQueryHandler(INewsRepository newsRepository) : IRequestHandler<GetNewsByIdQuery, Result<News>>
 {
-    private readonly INewsRepository _newsRepository;
-    public GetNewsByIdQueryHandler(INewsRepository newsRepository)
+
+    public async Task<Result<News>> Handle(GetNewsByIdQuery request, CancellationToken cancellationToken)
     {
-        _newsRepository = newsRepository;
-    }
-    public async Task<News> Handle(GetNewsByIdQuery request, CancellationToken cancellationToken)
-    {
-        var result = await _newsRepository.GetSingleAsync(n => n.Id == request.Id, false);
+        var result = await newsRepository.GetSingleAsync(n => n.Id == request.Id, false);
         if (result is null)
-            throw new NotFoundException("خبر");
+            return NotFoundErrors.News;
 
         return result;
     }

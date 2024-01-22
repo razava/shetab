@@ -29,8 +29,11 @@ public class AdminNewsController : ApiController
         var instanceId = User.GetUserInstanceId();
         var query = new GetNewsQuery(instanceId, true);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<GetNewsDto>>();
-        return Ok(mappedResult);
+        return result.Match(
+            s => Ok(s.Adapt<List<GetNewsDto>>()),
+            f => Problem(f));
+        //var mappedResult = result.Adapt<List<GetNewsDto>>();
+        //return Ok(mappedResult);
     }
 
 
@@ -40,10 +43,13 @@ public class AdminNewsController : ApiController
     {
         var query = new GetNewsByIdQuery(id);
         var result = await Sender.Send(query);
-        if (result == null)
-            return Problem();
-        var mappedResult = result.Adapt<GetNewsDto>();
-        return Ok(mappedResult);
+        //if (result == null)
+        //    return Problem();
+        //var mappedResult = result.Adapt<GetNewsDto>();
+        //return Ok(mappedResult);
+        return result.Match(
+            s => Ok(s.Adapt<GetNewsDto>()),
+            f => Problem(f));
     }
 
 
@@ -60,10 +66,14 @@ public class AdminNewsController : ApiController
             createNewsDto.Image,
             createNewsDto.IsDeleted);
         var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
-        var routeValues = new { id = result.Id, instanceId = instanceId };
-        return CreatedAtAction(nameof(GetNewsById), routeValues, result.Adapt<GetNewsDto>());
+        return result.Match(
+            s => CreatedAtAction(nameof(GetNewsById), new { id = s.Id, instanceId = instanceId }, s.Adapt<GetNewsDto>()),
+            f => Problem(f));
+
+        //if (result == null)
+        //    return Problem();
+        //var routeValues = new { id = result.Id, instanceId = instanceId };
+        //return CreatedAtAction(nameof(GetNewsById), routeValues, result.Adapt<GetNewsDto>());
     }
 
     [Authorize(Roles = "Admin")]
@@ -78,9 +88,12 @@ public class AdminNewsController : ApiController
             setNewsDto.Image,
             setNewsDto.IsDeleted);
         var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
-        return NoContent();
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
+        //if (result == null)
+        //    return Problem();
+        //return NoContent();
     }
 
 

@@ -6,32 +6,21 @@ using MediatR;
 
 namespace Application.NewsApp.Commands.AddNewsCommand;
 
-internal sealed class AddNewsCommandHandler : IRequestHandler<AddNewsCommand, News>
+internal sealed class AddNewsCommandHandler(
+    INewsRepository newsRepository,
+    IUnitOfWork unitOfWork,
+    IStorageService storageService) : IRequestHandler<AddNewsCommand, Result<News>>
 {
-    private readonly INewsRepository _newsRepository;
-    private readonly IStorageService _storageService;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public AddNewsCommandHandler(
-        INewsRepository newsRepository,
-        IUnitOfWork unitOfWork,
-        IStorageService storageService)
+    public async Task<Result<News>> Handle(AddNewsCommand request, CancellationToken cancellationToken)
     {
-        _newsRepository = newsRepository;
-        _unitOfWork = unitOfWork;
-        _storageService = storageService;
-    }
-
-    public async Task<News> Handle(AddNewsCommand request, CancellationToken cancellationToken)
-    {
-        var media = await _storageService.WriteFileAsync(request.Image, AttachmentType.News);
+        var media = await storageService.WriteFileAsync(request.Image, AttachmentType.News);
         if (media is null)
-            throw new SaveImageFailedException();
+            return AttachmentErrors.SaveImageFailed;
 
         var news = News.Create(request.InstanceId, request.Title, request.Description, request.Url, media, request.IsDeleted);
 
-        _newsRepository.Insert(news);
-        await _unitOfWork.SaveAsync();
+        newsRepository.Insert(news);
+        await unitOfWork.SaveAsync();
 
         return news;
     }

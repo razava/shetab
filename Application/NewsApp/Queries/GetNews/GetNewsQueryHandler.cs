@@ -4,18 +4,12 @@ using MediatR;
 
 namespace Application.NewsApp.Queries.GetNews;
 
-internal class GetNewsQueryHandler : IRequestHandler<GetNewsQuery, List<News>>
+internal class GetNewsQueryHandler(INewsRepository newsRepository) : IRequestHandler<GetNewsQuery, Result<List<News>>>
 {
-    private readonly INewsRepository _newsRepository;
 
-    public GetNewsQueryHandler(INewsRepository newsRepository)
+    public async Task<Result<List<News>>> Handle(GetNewsQuery request, CancellationToken cancellationToken)
     {
-        _newsRepository = newsRepository;
-    }
-
-    public async Task<List<News>> Handle(GetNewsQuery request, CancellationToken cancellationToken)
-    {
-        var result = await _newsRepository.GetAsync(n => (request.ReturnAll || n.IsDeleted == false), false);
+        var result = await newsRepository.GetAsync(n => (request.ReturnAll || n.IsDeleted == false), false);
 
         return result.ToList();
     }
