@@ -5,21 +5,13 @@ using MediatR;
 
 namespace Application.Categories.Commands.UpdateCategory;
 
-internal sealed class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand, Result<Category>>
+internal sealed class UpdateCategoryCommandHandler(IUnitOfWork unitOfWork, ICategoryRepository categoryRepository) : IRequestHandler<UpdateCategoryCommand, Result<Category>>
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ICategoryRepository _categoryRepository;
-
-    public UpdateCategoryCommandHandler(IUnitOfWork unitOfWork, ICategoryRepository categoryRepository)
-    {
-        _unitOfWork = unitOfWork;
-        _categoryRepository = categoryRepository;
-    }
-
+    
     public async Task<Result<Category>> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
     {
         //TODO: perform required operations
-        var category = await _categoryRepository.GetSingleAsync(c => c.Id == request.Id);
+        var category = await categoryRepository.GetSingleAsync(c => c.Id == request.Id);
         if (category is null)
             return NotFoundErrors.Category;
         
@@ -39,9 +31,9 @@ internal sealed class UpdateCategoryCommandHandler : IRequestHandler<UpdateCateg
             request.AttachmentDescription,
             request.FormElements);
 
-        _categoryRepository.Update(category);
+        categoryRepository.Update(category);
 
-        await _unitOfWork.SaveAsync();
+        await unitOfWork.SaveAsync();
         return category;
     }
 }
