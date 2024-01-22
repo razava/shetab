@@ -6,22 +6,16 @@ using MediatR;
 
 namespace Application.Categories.Queries.GetCategoryById;
 
-internal sealed class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery, Category>
+internal sealed class GetCategoryByIdQueryHandler(ICategoryRepository categoryRepository) : IRequestHandler<GetCategoryByIdQuery, Result<Category>>
 {
-    private readonly ICategoryRepository _categoryRepository;
 
-    public GetCategoryByIdQueryHandler(ICategoryRepository categoryRepository)
-    {
-        _categoryRepository = categoryRepository;
-    }
-
-    public async Task<Category> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<Category>> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
     {
         //TODO: perform required filtering
-        var result = await _categoryRepository.GetByIDAsync(request.Id);
+        var result = await categoryRepository.GetByIDAsync(request.Id);
 
         if (result is null)
-            throw new NotFoundException("دسته بندی");
+            return NotFoundErrors.Category;
 
         return result;
     }

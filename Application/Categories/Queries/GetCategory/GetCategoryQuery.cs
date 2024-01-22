@@ -4,5 +4,8 @@ using MediatR;
 
 namespace Application.Categories.Queries.GetCategory;
 
-public sealed record GetCategoryQuery(int InstanceId, QueryFilterModel? FilterModel = default!, bool ReturnAll = false) : IRequest<List<Category>>;
+public sealed record GetCategoryQuery(
+    int InstanceId,
+    QueryFilterModel? FilterModel = default!,
+    bool ReturnAll = false) : IRequest<Result<List<Category>>>;
 

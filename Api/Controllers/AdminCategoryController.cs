@@ -2,6 +2,7 @@
 using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Categories.Commands.AddCategory;
+using Application.Categories.Commands.DeleteCategory;
 using Application.Categories.Commands.UpdateCategory;
 using Application.Categories.Queries.GetCategory;
 using Application.Categories.Queries.GetCategoryById;
@@ -41,22 +42,28 @@ public class AdminCategoryController : ApiController
     [HttpGet("All")]
     public async Task<ActionResult<CategoryGetDto>> GetAllCategories([FromQuery] QueryFilter queryFilter)
     {
+        //todo : review for result codes and clear if possible
         var instanceId = User.GetUserInstanceId();
         var mappedFilter = queryFilter.Adapt<QueryFilterModel>();
         var query = new GetCategoryQuery(instanceId, mappedFilter, true);
         var result = await Sender.Send(query);
-        var tempResult = result;
+        if(result.IsFailed)
+        {
+            return Problem(result.ToResult());
+        }
+        var resultValue = result.Value;
+        var tempResult = resultValue;
         if (queryFilter.Query != null)
         {
             var filtered = tempResult.Where(r => r.Title.Contains(queryFilter.Query)).ToList();
             var parentIds = filtered.Select(r => r.ParentId).Distinct().ToList();
             filtered.AddRange(tempResult.Where(t => parentIds.Contains(t.Id)).ToList());
             filtered.Add(tempResult.Where(t => t.ParentId == null).Single());
-            result = filtered.Distinct().ToList();
+            resultValue = filtered.Distinct().ToList();
         }
-        result.ForEach(x => x.Categories = result.Where(c => c.ParentId == x.Id).ToList());
+        resultValue.ForEach(x => x.Categories = resultValue.Where(c => c.ParentId == x.Id).ToList());
         
-        var root = result.Where(r => r.ParentId == null).Single();
+        var root = resultValue.Where(r => r.ParentId == null).Single();
 
         return Ok(root.Adapt<CategoryGetDto>());
     }
@@ -68,11 +75,12 @@ public class AdminCategoryController : ApiController
     {
         var query = new GetCategoryByIdQuery(id);
         var result = await Sender.Send(query);
-        if (result == null)
-            return Problem();
-        var mappedResult = result.Adapt<CategoryGetDetailDto>();
-        return Ok(mappedResult);
+        
+        return result.Match(
+            s => Ok(s.Adapt<CategoryGetDetailDto>()),
+            f => Problem(f));
     }
+
 
 
 
@@ -110,12 +118,21 @@ public class AdminCategoryController : ApiController
             categoryCreateDto.FormElements);
 
         var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
+        //if (result == null)
+        //    return Problem();
         //return Created();
-        var routeValues = new { id = result.Id, instanceId = instanceId };
-        return CreatedAtAction(nameof(GetCategoryById), routeValues, result.Adapt<CategoryGetDetailDto>());
+        //var routeValues = new { id = result.Id, instanceId = instanceId };
+        //return CreatedAtAction(nameof(GetCategoryById), routeValues, result.Adapt<CategoryGetDetailDto>());
+
+        return result.Match(
+            s => CreatedAtAction(
+                nameof(GetCategoryById),
+                new { id = s.Id, instanceId = instanceId },
+                s.Adapt<CategoryGetDetailDto>()),
+            f => Problem(f));
     }
+
+
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
@@ -139,18 +156,25 @@ public class AdminCategoryController : ApiController
             categoryUpdateDto.FormElements);
 
         var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
-        return NoContent();
+        //if (result == null)
+        //    return Problem();
+        //return NoContent();
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete("{id:Guid}")]
-    public async Task<ActionResult> DeleteCategory(Guid id)
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> DeleteCategory(int id)
     {
-        await Task.CompletedTask;
-        return Ok("Not Implemented");
+        var command = new DeleteCategoryCommand(id, true);
+        var result = await Sender.Send(command);
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
 

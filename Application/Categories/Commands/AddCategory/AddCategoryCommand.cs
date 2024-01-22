@@ -19,5 +19,5 @@ public sealed record AddCategoryCommand(
     bool EdittingAllowed = true,
     bool HideMap = false,
     string AttachmentDescription = "",
-    List<FormElement>? FormElements = null) : IRequest<Category>;
+    List<FormElement>? FormElements = null) : IRequest<Result<Category>>;
 

@@ -32,11 +32,15 @@ public class CitizenCommonController : ApiController
             return BadRequest();
         var query = new GetCategoryQuery(instanceId.Value);
         var result = await Sender.Send(query);
-
+        if (result.IsFailed)
+        {
+            return Problem(result.ToResult());
+        }
+        var resultValue = result.Value;
         //TODO: This can be improved
-        result.ForEach(c => c.Categories = result.Where(p => p.ParentId == c.Id).ToList());
+        resultValue.ForEach(c => c.Categories = resultValue.Where(p => p.ParentId == c.Id).ToList());
 
-        return Ok(result.Where(c => c.ParentId == null).Single().Adapt<CategoryGetDto>());
+        return Ok(resultValue.Where(c => c.ParentId == null).Single().Adapt<CategoryGetDto>());
     }
 
     //..........................is needed for citizen?........

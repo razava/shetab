@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace Application.Categories.Queries.GetCategory;
 
-internal sealed class GetCategoryQueryHandler : IRequestHandler<GetCategoryQuery, List<Category>>
+internal sealed class GetCategoryQueryHandler : IRequestHandler<GetCategoryQuery, Result<List<Category>>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICategoryRepository _categoryRepository;
@@ -18,7 +18,7 @@ internal sealed class GetCategoryQueryHandler : IRequestHandler<GetCategoryQuery
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<List<Category>> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<Category>>> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
     {
         //TODO: perform required filtering
         var result = await _categoryRepository.GetAsync(p => p.ShahrbinInstanceId == request.InstanceId

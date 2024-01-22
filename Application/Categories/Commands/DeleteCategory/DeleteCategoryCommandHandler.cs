@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Categories.Commands.DeleteCategory;
 
-internal sealed class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, bool>
+internal sealed class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, Result<bool>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICategoryRepository _categoryRepository;
@@ -15,14 +15,13 @@ internal sealed class DeleteCategoryCommandHandler : IRequestHandler<DeleteCateg
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<bool> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
     {
         //TODO: perform required operations
         var category = await _categoryRepository.GetSingleAsync(c => c.Id == request.Id);
         if (category is null)
-        {
-            throw new NotFoundException("دسته بندی");
-        }
+            return NotFoundErrors.Category;
+        
         category.Update(isDeleted: request.IsDeleted);
 
         _categoryRepository.Update(category);

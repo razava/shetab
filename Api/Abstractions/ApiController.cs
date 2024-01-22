@@ -12,4 +12,11 @@ public class ApiController : ControllerBase
     {
         Sender = sender;
     }
+
+    protected ActionResult Problem(Result result)
+    {
+        return Problem(
+            String.Join("\r\n", result.Errors.Select(e => e.Message).ToList()),
+            statusCode: StatusCodes.Status500InternalServerError);
+    }
 }

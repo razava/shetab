@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Categories.Commands.UpdateCategory;
 
-internal sealed class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand, Category>
+internal sealed class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand, Result<Category>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICategoryRepository _categoryRepository;
@@ -16,14 +16,13 @@ internal sealed class UpdateCategoryCommandHandler : IRequestHandler<UpdateCateg
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<Category> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Category>> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
     {
         //TODO: perform required operations
         var category = await _categoryRepository.GetSingleAsync(c => c.Id == request.Id);
-        if (category is  null)
-        {
-            throw new NotFoundException("دسته بندی");
-        }
+        if (category is null)
+            return NotFoundErrors.Category;
+        
         category.Update(
             request.Code,
             request.Title,

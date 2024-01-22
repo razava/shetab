@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Categories.Queries.GetCategoryById;
 
-public sealed record GetCategoryByIdQuery(int Id) : IRequest<Category>;
+public sealed record GetCategoryByIdQuery(int Id) : IRequest<Result<Category>>;
 

@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Categories.Commands.AddCategory;
 
-internal sealed class AddCategoryCommandHandler : IRequestHandler<AddCategoryCommand, Category>
+internal sealed class AddCategoryCommandHandler : IRequestHandler<AddCategoryCommand, Result<Category>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICategoryRepository _categoryRepository;
@@ -16,7 +16,7 @@ internal sealed class AddCategoryCommandHandler : IRequestHandler<AddCategoryCom
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<Category> Handle(AddCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Category>> Handle(AddCategoryCommand request, CancellationToken cancellationToken)
     {
         //TODO: perform required operations
         var category = Category.Create(
