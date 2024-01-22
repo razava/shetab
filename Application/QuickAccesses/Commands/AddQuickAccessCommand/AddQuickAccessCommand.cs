@@ -10,4 +10,4 @@ public sealed record AddQuickAccessCommand(
     string Title,
     IFormFile Image,
     int Order,
-    bool IsDeleted) : IRequest<QuickAccess>;
+    bool IsDeleted) : IRequest<Result<QuickAccess>>;

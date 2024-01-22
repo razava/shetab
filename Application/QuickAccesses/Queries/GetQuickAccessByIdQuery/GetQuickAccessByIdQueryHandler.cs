@@ -5,20 +5,15 @@ using MediatR;
 
 namespace Application.QuickAccesses.Queries.GetQuickAccessByIdQuery;
 
-internal sealed class GetQuickAccessByIdQueryHandler : IRequestHandler<GetQuickAccessByIdQuery, QuickAccess>
+internal sealed class GetQuickAccessByIdQueryHandler(IQuickAccessRepository quickAccessRepository) : IRequestHandler<GetQuickAccessByIdQuery, Result<QuickAccess>>
 {
-    private readonly IQuickAccessRepository _quickAccessRepository;
-    
-    public GetQuickAccessByIdQueryHandler(IQuickAccessRepository quickAccessRepository)
+
+    public async Task<Result<QuickAccess>> Handle(GetQuickAccessByIdQuery request, CancellationToken cancellationToken)
     {
-        _quickAccessRepository = quickAccessRepository;
-    }
-    public async Task<QuickAccess> Handle(GetQuickAccessByIdQuery request, CancellationToken cancellationToken)
-    {
-        var result = await _quickAccessRepository
+        var result = await quickAccessRepository
             .GetSingleAsync(q => q.Id == request.id, false);
         if (result == null)
-            throw new NotFoundException("دسترسی سریع");
+            return NotFoundErrors.QuickAccess;
         return result;
     }
 }

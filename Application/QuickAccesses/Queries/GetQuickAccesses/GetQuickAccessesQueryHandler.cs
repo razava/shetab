@@ -6,18 +6,12 @@ using System.Linq.Expressions;
 
 namespace Application.QuickAccesses.Queries.GetQuickAccesses;
 
-internal class GetQuickAccessesQueryHandler : IRequestHandler<GetQuickAccessesQuery, List<QuickAccess>>
+internal class GetQuickAccessesQueryHandler(IQuickAccessRepository quickAccessRepository) : IRequestHandler<GetQuickAccessesQuery, Result<List<QuickAccess>>>
 {
-    private readonly IQuickAccessRepository _quickAccessRepository;
 
-    public GetQuickAccessesQueryHandler(IQuickAccessRepository quickAccessRepository)
-    {
-        _quickAccessRepository = quickAccessRepository;
-    }
-
-    public async Task<List<QuickAccess>> Handle(GetQuickAccessesQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<QuickAccess>>> Handle(GetQuickAccessesQuery request, CancellationToken cancellationToken)
     {   
-        var result = await _quickAccessRepository
+        var result = await quickAccessRepository
             .GetAsync(q => (request.ReturnAll || q.IsDeleted == false)
             && ((request.FilterModel == null || request.FilterModel.Query == null) || q.Title.Contains(request.FilterModel.Query))
             , false

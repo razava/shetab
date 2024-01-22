@@ -6,27 +6,17 @@ using MediatR;
 
 namespace Application.QuickAccesses.Commands.AddQuickAccessCommand;
 
-internal sealed class AddQuickAccessCommandHandler : IRequestHandler<AddQuickAccessCommand, QuickAccess>
+internal sealed class AddQuickAccessCommandHandler(
+    IQuickAccessRepository quickAccessRepository,
+    IUnitOfWork unitOfWork,
+    IStorageService storageService) : IRequestHandler<AddQuickAccessCommand, Result<QuickAccess>>
 {
-    private readonly IQuickAccessRepository _quickAccessRepository;
-    private readonly IStorageService _storageService;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public AddQuickAccessCommandHandler(
-        IQuickAccessRepository quickAccessRepository,
-        IUnitOfWork unitOfWork,
-        IStorageService storageService)
+    
+    public async Task<Result<QuickAccess>> Handle(AddQuickAccessCommand request, CancellationToken cancellationToken)
     {
-        _quickAccessRepository = quickAccessRepository;
-        _unitOfWork = unitOfWork;
-        _storageService = storageService;
-    }
-
-    public async Task<QuickAccess> Handle(AddQuickAccessCommand request, CancellationToken cancellationToken)
-    {
-        var media = await _storageService.WriteFileAsync(request.Image, AttachmentType.News);
+        var media = await storageService.WriteFileAsync(request.Image, AttachmentType.News);
         if (media is null)
-            throw new SaveImageFailedException();
+            return AttachmentErrors.SaveImageFailed;
 
         var quickAccess = new QuickAccess()
         {
@@ -38,8 +28,8 @@ internal sealed class AddQuickAccessCommandHandler : IRequestHandler<AddQuickAcc
             IsDeleted = request.IsDeleted,
         };
 
-        _quickAccessRepository.Insert(quickAccess);
-        await _unitOfWork.SaveAsync();
+        quickAccessRepository.Insert(quickAccess);
+        await unitOfWork.SaveAsync();
 
         return quickAccess;
     }

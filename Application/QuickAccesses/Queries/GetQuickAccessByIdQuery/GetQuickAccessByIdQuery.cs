@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.QuickAccesses.Queries.GetQuickAccessByIdQuery;
 
-public record GetQuickAccessByIdQuery(int id) : IRequest<QuickAccess>;
+public record GetQuickAccessByIdQuery(int id) : IRequest<Result<QuickAccess>>;
 

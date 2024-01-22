@@ -7,36 +7,26 @@ using MediatR;
 
 namespace Application.QuickAccesses.Commands.UpdateQuickAccessCommand;
 
-internal sealed class UpdateQuickAccessCommandHandler : IRequestHandler<UpdateQuickAccessCommand, QuickAccess>
+internal sealed class UpdateQuickAccessCommandHandler(
+    IQuickAccessRepository quickAccessRepository,
+    IUnitOfWork unitOfWork,
+    IStorageService storageService) : IRequestHandler<UpdateQuickAccessCommand, Result<QuickAccess>>
 {
-    private readonly IQuickAccessRepository _quickAccessRepository;
-    private readonly IStorageService _storageService;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public UpdateQuickAccessCommandHandler(
-        IQuickAccessRepository quickAccessRepository,
-        IUnitOfWork unitOfWork,
-        IStorageService storageService)
-    {
-        _quickAccessRepository = quickAccessRepository;
-        _unitOfWork = unitOfWork;
-        _storageService = storageService;
-    }
-
-    public async Task<QuickAccess> Handle(UpdateQuickAccessCommand request, CancellationToken cancellationToken)
+    
+    public async Task<Result<QuickAccess>> Handle(UpdateQuickAccessCommand request, CancellationToken cancellationToken)
     {
         Media? media = null;
         if(request.Image is not null)
         {
-            media = await _storageService.WriteFileAsync(request.Image, AttachmentType.News);
+            media = await storageService.WriteFileAsync(request.Image, AttachmentType.News);
             if (media is null)
-                throw new SaveImageFailedException();
+                return AttachmentErrors.SaveImageFailed;
         }
         
 
-        var quickAccess = await _quickAccessRepository.GetSingleAsync(q => q.Id == request.Id);
+        var quickAccess = await quickAccessRepository.GetSingleAsync(q => q.Id == request.Id);
         if (quickAccess is null)
-            throw new NotFoundException("دسترسی سریع");
+            return NotFoundErrors.QuickAccess;
 
         quickAccess.CategoryId = request.CategoryId ?? quickAccess.CategoryId;
         quickAccess.Title = request.Title ?? quickAccess.Title;
@@ -44,8 +34,8 @@ internal sealed class UpdateQuickAccessCommandHandler : IRequestHandler<UpdateQu
         quickAccess.Order = request.Order ?? quickAccess.Order;
         quickAccess.IsDeleted = request.IsDeleted ?? quickAccess.IsDeleted;
 
-        _quickAccessRepository.Update(quickAccess);
-        await _unitOfWork.SaveAsync();
+        quickAccessRepository.Update(quickAccess);
+        await unitOfWork.SaveAsync();
 
         return quickAccess;
     }
