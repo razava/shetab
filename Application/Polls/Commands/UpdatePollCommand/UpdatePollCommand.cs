@@ -12,4 +12,4 @@ public record UpdatePollCommand(
     string? Question,
     List<PollChoiceRequest>? Choices,
     PollState? PollState,
-    bool? isDeleted = false) : IRequest<Poll>;
+    bool? isDeleted = false) : IRequest<Result<Poll>>;

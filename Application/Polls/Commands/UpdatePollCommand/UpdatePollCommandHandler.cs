@@ -1,26 +1,17 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.PollAggregate;
 using MediatR;
 
 namespace Application.Polls.Commands.UpdatePollCommand;
 
-internal class UpdatePollCommandHandler : IRequestHandler<UpdatePollCommand, Poll>
+internal class UpdatePollCommandHandler(IPollRepository pollRepository, IUnitOfWork unitOfWork) : IRequestHandler<UpdatePollCommand, Result<Poll>>
 {
-    private readonly IPollRepository _pollRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public UpdatePollCommandHandler(IPollRepository pollRepository, IUnitOfWork unitOfWork)
+    
+    public async Task<Result<Poll>> Handle(UpdatePollCommand request, CancellationToken cancellationToken)
     {
-        _pollRepository = pollRepository;
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<Poll> Handle(UpdatePollCommand request, CancellationToken cancellationToken)
-    {
-        var poll = await _pollRepository.GetById(request.Id);
+        var poll = await pollRepository.GetById(request.Id);
         if (poll is null)
-            throw new NotFoundException("نظرسنجی");
+            return NotFoundErrors.Poll;
 
 
         List<PollChoice>? choices = new();
@@ -30,9 +21,9 @@ internal class UpdatePollCommandHandler : IRequestHandler<UpdatePollCommand, Pol
             choices = null;
 
         poll.Update(request.Title, request.PollType, request.Question, choices, request.PollState, request.isDeleted);
-        _pollRepository.Update(poll);
+        pollRepository.Update(poll);
 
-        await _unitOfWork.SaveAsync();
+        await unitOfWork.SaveAsync();
 
         return poll;
     }

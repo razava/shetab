@@ -31,8 +31,10 @@ public class AdminProcessesController : ApiController
     {
         var query = new GetProcessesQuery(queryFilter.Adapt<QueryFilterModel>());
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<GetProcessListDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<GetProcessListDto>>()),
+            f => Problem(f));
     }
 
 
@@ -47,11 +49,10 @@ public class AdminProcessesController : ApiController
             setProcessDto.Title,
             setProcessDto.ActorIds);
         var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
-        //return Created();
-        var routeValues = new { id = result.Id, instanceId = InstanceId };
-        return CreatedAtAction(nameof(GetProcessById), routeValues, result.Adapt<GetProcessDto>());
+
+        return result.Match(
+            s => CreatedAtAction(nameof(GetProcessById), new { id = s.Id, instanceId = InstanceId }, s.Adapt<GetProcessDto>()),
+            f => Problem(f));
     }
 
 
@@ -61,9 +62,10 @@ public class AdminProcessesController : ApiController
     {
         var query = new GetProcessByIdQuery(id);
         var result = await Sender.Send(query);
-        if(result == null) return Problem();
-        var mappedResult = result.Adapt<GetProcessDto>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<GetProcessDto>()),
+            f => Problem(f));
     }
 
 
@@ -77,9 +79,10 @@ public class AdminProcessesController : ApiController
             setProcessDto.Title,
             setProcessDto.ActorIds);
         var result = await Sender.Send(command);
-        if (!result)
-            return Problem();
-        return NoContent();
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
     //TODO: Define access policies
@@ -90,8 +93,10 @@ public class AdminProcessesController : ApiController
         var instanceId = User.GetUserInstanceId();
         var query = new GetExecutiveActorsQuery(instanceId);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<GetExecutiveListDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<GetExecutiveListDto>>()),
+            f => Problem(f));
     }
 
     [Authorize]
@@ -100,9 +105,10 @@ public class AdminProcessesController : ApiController
     {
         var command = new DeleteProcessCommand(id);
         var result = await Sender.Send(command);
-        if (!result)
-            return Problem();
-        return NoContent();
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
 }

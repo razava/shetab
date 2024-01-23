@@ -6,18 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Polls.Queries.GetPollsQuery;
 
-internal class GetPollsQueryHandler : IRequestHandler<GetPollsQuery, List<GetPollsResponse>>
+internal class GetPollsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetPollsQuery, Result<List<GetPollsResponse>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
 
-    public GetPollsQueryHandler(IUnitOfWork unitOfWork)
+    public async Task<Result<List<GetPollsResponse>>> Handle(GetPollsQuery request, CancellationToken cancellationToken)
     {
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<List<GetPollsResponse>> Handle(GetPollsQuery request, CancellationToken cancellationToken)
-    {
-        var context = _unitOfWork.DbContext;
+        var context = unitOfWork.DbContext;
 
         var polls = await context.Set<Poll>()
             .Where(p => request.ReturnAll || p.IsDeleted == false)

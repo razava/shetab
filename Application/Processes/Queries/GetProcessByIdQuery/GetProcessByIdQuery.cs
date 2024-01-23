@@ -4,4 +4,4 @@ using static Application.Processes.Queries.GetProcessByIdQuery.GetProcessByIdQue
 
 namespace Application.Processes.Queries.GetProcessByIdQuery;
 
-public record GetProcessByIdQuery(int Id) : IRequest<GetProcessByIdResponse>;
+public record GetProcessByIdQuery(int Id) : IRequest<Result<GetProcessByIdResponse>>;

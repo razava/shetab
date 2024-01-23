@@ -22,8 +22,6 @@ public class AdminPollsController : ApiController
     {
     }
 
-    //todo : Define & Set Dtos
-
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
@@ -40,11 +38,10 @@ public class AdminPollsController : ApiController
             createDto.Choices.Adapt<List<PollChoiceRequest>>(),
             createDto.IsActive);
         var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
-        //return Created();
-        var routeValues = new { id = result.Id, instanceId = instanceId };
-        return CreatedAtAction(nameof(GetPollById), routeValues, result.Adapt<GetPollsDto>());
+
+        return result.Match(
+            s => CreatedAtAction(nameof(GetPollById), new { id = s.Id, instanceId = instanceId }, s.Adapt<GetPollsDto>()),
+            f => Problem(f));
     }
 
 
@@ -56,8 +53,10 @@ public class AdminPollsController : ApiController
         var instanceId = User.GetUserInstanceId();
         var query = new GetPollsQuery(instanceId, userId, true);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<GetPollsDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<GetPollsDto>>()),
+            f => Problem(f));
     }
 
 
@@ -68,10 +67,10 @@ public class AdminPollsController : ApiController
         var userId = User.GetUserId();
         var query = new GetPollsByIdQuery(id, userId);
         var result = await Sender.Send(query);
-        if(result == null) 
-            return Problem();
-        var mappedResult = result.Adapt<GetPollsDto>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<GetPollsDto>()),
+            f => Problem(f));
     }
 
 
@@ -82,20 +81,14 @@ public class AdminPollsController : ApiController
     {
         var query = new GetPollResultQuery(id);
         var result = await Sender.Send(query);
-        if (result == null) return Problem();
-        var mappedResult = result.Adapt<PollResultDto>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<PollResultDto>()),
+            f => Problem(f));
     }
 
 
-    //[Authorize(Roles = "Admin")]
-    //[HttpPost("Attach/{id:int}")]
-    //public async Task<ActionResult> AttachToPoll(int id)
-    //{
-    //    await Task.CompletedTask;
-    //    return Ok();
-    //}
-
+    
     [Authorize(Roles = "Admin")]
     [HttpPut("Edit/{id:int}")]
     public async Task<ActionResult> EditPoll(int id, PollUpdateDto updateDto)
@@ -109,20 +102,12 @@ public class AdminPollsController : ApiController
             updateDto.PollState,
             updateDto.isDeleted);
         var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
-        return NoContent();
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
 
-    //[Authorize(Roles = "Admin")]
-    //[HttpPut("Status/{id:int}")]
-    //public async Task<ActionResult> UpdatePollStatus(int id)
-    //{
-    //    await Task.CompletedTask;
-    //    return Ok();
-    //}
     
-
-
 }

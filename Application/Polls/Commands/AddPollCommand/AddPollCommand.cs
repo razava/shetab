@@ -13,4 +13,4 @@ public record AddPollCommand(
     PollType PollType,
     string Question,
     List<PollChoiceRequest> Choices,
-    bool IsActive) : IRequest<Poll>;
+    bool IsActive) : IRequest<Result<Poll>>;

@@ -4,21 +4,15 @@ using MediatR;
 
 namespace Application.Processes.Queries.GetProcessByIdQuery;
 
-internal partial class GetProcessByIdQueryHandler : IRequestHandler<GetProcessByIdQuery, GetProcessByIdResponse>
+internal partial class GetProcessByIdQueryHandler(IProcessRepository processRepository) : IRequestHandler<GetProcessByIdQuery, Result<GetProcessByIdResponse>>
 {
-    private readonly IProcessRepository _processRepository;
 
-    public GetProcessByIdQueryHandler(IProcessRepository processRepository)
+    public async Task<Result<GetProcessByIdResponse>> Handle(GetProcessByIdQuery request, CancellationToken cancellationToken)
     {
-        _processRepository = processRepository;
-    }
+        var result = await processRepository.GetSingleAsync(p => p.Id == request.Id && p.IsDeleted == false , false, "Stages,Stages.Actors");
 
-    public async Task<GetProcessByIdResponse> Handle(GetProcessByIdQuery request, CancellationToken cancellationToken)
-    {
-        var result = await _processRepository.GetSingleAsync(p => p.Id == request.Id && p.IsDeleted == false , false, "Stages,Stages.Actors");
-        
         if (result is null)
-            throw new NotFoundException("فرایند");
+            return NotFoundErrors.Process;
 
         var actorIds = result.Stages.Where(s => s.Name == "Executive").SingleOrDefault()!.Actors.Select(a => a.Id).ToList();
 

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Polls.Queries.GetPollsQuery;
 
-public record GetPollsQuery(int InstanceId, string UserId, bool ReturnAll = false) : IRequest<List<GetPollsResponse>>;
+public record GetPollsQuery(int InstanceId, string UserId, bool ReturnAll = false) : IRequest<Result<List<GetPollsResponse>>>;
 public record GetPollsResponse(
     int Id,
     string Title,

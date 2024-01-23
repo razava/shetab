@@ -7,25 +7,19 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Application.Polls.Queries.GetPollResultQuery;
 
-internal class GetPollResultQueryHandler : IRequestHandler<GetPollResultQuery, PollResultResponce>
+internal class GetPollResultQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetPollResultQuery, Result<PollResultResponce>>
 {
-    private readonly IUnitOfWork _unitOfWork;
 
-    public GetPollResultQueryHandler(IUnitOfWork unitOfWork)
+    public async Task<Result<PollResultResponce>> Handle(GetPollResultQuery request, CancellationToken cancellationToken)
     {
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<PollResultResponce> Handle(GetPollResultQuery request, CancellationToken cancellationToken)
-    {
-        var context = _unitOfWork.DbContext;
+        var context = unitOfWork.DbContext;
         var poll = await context.Set<Poll>()
             .Where(p => p.Id == request.PollId)
             .Include(p => p.Choices)
             .Select(p => new { Choices = p.Choices.ToList(), Count = p.Answers.LongCount() })
             .SingleOrDefaultAsync();
         if (poll is null)
-            throw new NotFoundException("نظرسنجی");
+            return NotFoundErrors.Poll;
 
         var choices = await context.Set<Poll>()
             .Where(p=>p.Id == request.PollId)

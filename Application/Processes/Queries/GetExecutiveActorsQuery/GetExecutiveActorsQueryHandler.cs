@@ -4,23 +4,15 @@ using MediatR;
 
 namespace Application.Processes.Queries.GetExecutiveActorsQuery;
 
-internal class GetExecutiveActorsQueryHandler : IRequestHandler<GetExecutiveActorsQuery, List<GetExecutiveActorsResponse>>
+internal class GetExecutiveActorsQueryHandler(IUserRepository userRepository, IActorRepository actorRepository) : IRequestHandler<GetExecutiveActorsQuery, Result<List<GetExecutiveActorsResponse>>>
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IActorRepository _actorRepository;
-
-    public GetExecutiveActorsQueryHandler(IUserRepository userRepository, IActorRepository actorRepository)
-    {
-        _userRepository = userRepository;
-        _actorRepository = actorRepository;
-    }
-
-    public async Task<List<GetExecutiveActorsResponse>> Handle(GetExecutiveActorsQuery request, CancellationToken cancellationToken)
+    
+    public async Task<Result<List<GetExecutiveActorsResponse>>> Handle(GetExecutiveActorsQuery request, CancellationToken cancellationToken)
     {
         //TODO: Implement this in repository
-        var executives = (await _userRepository.GetUsersInRole(RoleNames.Executive)).Where(u => u.ShahrbinInstanceId == request.InstanceId).ToList();
+        var executives = (await userRepository.GetUsersInRole(RoleNames.Executive)).Where(u => u.ShahrbinInstanceId == request.InstanceId).ToList();
         var executivesIds = executives.Select(executives => executives.Id);
-        var executiveActors = (await _actorRepository.GetAsync(a => executivesIds.Contains(a.Identifier), false)).ToList();
+        var executiveActors = (await actorRepository.GetAsync(a => executivesIds.Contains(a.Identifier), false)).ToList();
 
         var result = new List<GetExecutiveActorsResponse>();
         foreach(var actor in executiveActors)

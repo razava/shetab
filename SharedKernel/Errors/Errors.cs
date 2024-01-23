@@ -83,7 +83,7 @@ public static class BadRequestErrors
 
 public static class CreationFailedErrors
 {
-
+    public static readonly Error Process = new Error("ایجاد فرایند ناموفق بود.");
 }
 
 public static class AccessDeniedErrors

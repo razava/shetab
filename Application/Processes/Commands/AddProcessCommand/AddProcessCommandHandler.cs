@@ -5,23 +5,15 @@ using MediatR;
 
 namespace Application.Processes.Commands.AddProcessCommand;
 
-internal class AddProcessCommandHandler : IRequestHandler<AddProcessCommand, Process>
+internal class AddProcessCommandHandler(IProcessRepository processRepository, IUnitOfWork unitOfWork) : IRequestHandler<AddProcessCommand, Result<Process>>
 {
-    private readonly IProcessRepository _processRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public AddProcessCommandHandler(IProcessRepository processRepository, IUnitOfWork unitOfWork)
+    public async Task<Result<Process>> Handle(AddProcessCommand request, CancellationToken cancellationToken)
     {
-        _processRepository = processRepository;
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<Process> Handle(AddProcessCommand request, CancellationToken cancellationToken)
-    {
-        var process = await _processRepository.AddTypicalProcess(request.InstanceId, request.Code, request.Title, request.ActorIds);
-        await _unitOfWork.SaveAsync();
+        var process = await processRepository.AddTypicalProcess(request.InstanceId, request.Code, request.Title, request.ActorIds);
+        await unitOfWork.SaveAsync();
         if (process == null)
-            throw new CreationFailedException("فرایند");
+            return CreationFailedErrors.Process;
+
         return process;
     }
 }

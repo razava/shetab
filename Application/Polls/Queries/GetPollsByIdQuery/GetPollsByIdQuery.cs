@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Application.Polls.Queries.GetPollsByIdQuery;
 
-public record GetPollsByIdQuery(int Id, string userId) : IRequest<GetPollsResponse>;
+public record GetPollsByIdQuery(int Id, string userId) : IRequest<Result<GetPollsResponse>>;
