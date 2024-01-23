@@ -77,6 +77,12 @@ public class ExceptionMiddleware
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                     problemDetails.Title = ex.InnerException!.GetType().Name;
                     break;
+                case UserCreationFailedException:
+                case RoleAssignmentFailedException:
+                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    var errorDetails = JsonSerializer.Serialize(ex.Data["Errors"]);
+                    _logger.LogError(ex, "User Creation Failed, errors: {Errors}", errorDetails);
+                    break;
                 case InvalidCaptchaException:
                 case NullAssignedRoleException:
                 case InvalidUsernameException:
@@ -117,7 +123,6 @@ public class ExceptionMiddleware
                 case ForbidNullRoleException:
                 case NullActorException:
                 case ForbidNullStageException:
-                case RoleAssignmentFailedException:
                 case NotLoadedProcessException:
                 case NullCurrentStageException:
                 case NullStageException:

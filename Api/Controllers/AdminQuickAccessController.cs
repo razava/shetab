@@ -28,8 +28,7 @@ public class AdminQuickAccessController : ApiController
     {
         var query = new GetQuickAccessesQuery(instanceId, queryFilter.Adapt<QueryFilterModel>(), true);
         var result = await Sender.Send(query);
-        //var mappedResult = result.Adapt<List<AdminGetQuickAccess>>();
-        //return Ok(mappedResult);
+        
         return result.Match(
             s => Ok(s.Adapt<List<AdminGetQuickAccess>>()),
             f => Problem(f));
@@ -42,13 +41,10 @@ public class AdminQuickAccessController : ApiController
     {
         var query = new GetQuickAccessByIdQuery(id);
         var result = await Sender.Send(query);
+
         return result.Match(
             s => Ok(s.Adapt<AdminGetQuickAccess>()),
             f => Problem(f));
-        //if (result == null)
-        //    return Problem();
-        //var mappedResult = result.Adapt<AdminGetQuickAccess>();
-        //return Ok(mappedResult);
     }
 
 
@@ -64,14 +60,10 @@ public class AdminQuickAccessController : ApiController
             setDto.Order,
             false);
         var result = await Sender.Send(command);
+
         return result.Match(
             s => CreatedAtAction(nameof(GetQuickAccessById), new { id = s.Id, instanceId = instanceId }, s.Adapt<AdminGetQuickAccess>()),
             f => Problem(f));
-        //if (result == null)
-        //    return Problem();
-        ////return Created("",result.Id);
-        //var routeValues = new { id = result.Id, instanceId = instanceId };
-        //return CreatedAtAction(nameof(GetQuickAccessById), routeValues, result.Adapt<AdminGetQuickAccess>());
     }
 
 
@@ -87,25 +79,11 @@ public class AdminQuickAccessController : ApiController
             setDto.Order,
             setDto.IsDeleted);
         var result = await Sender.Send(command);
+
         return result.Match(
             s => NoContent(),
             f => Problem(f));
-        //if(result == null)
-        //    return Problem();
-        //return NoContent();
     }
 
-
-    //[Authorize(Roles = "Admin")]
-    //[HttpDelete("{id:int}")]
-    //public async Task<ActionResult> DeleteQuickAccesses(int id)
-    //{
-    //    var command = new UpdateQuickAccessCommand(id, null, null, null, null, true);
-    //    var result = await Sender.Send(command);
-    //    if (result == null)
-    //        return Problem();
-    //    return NoContent();
-    //}
-    
 
 }

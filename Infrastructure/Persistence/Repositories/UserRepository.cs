@@ -47,7 +47,7 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
             if (!result2.Succeeded)
             {
                 await _userManager.DeleteAsync(user);
-                throw new RoleAssignmentFailedException();
+                throw new RoleAssignmentFailedException((result2.Errors.Any()) ? result2.Errors.ToList() : null);
             }
 
             //TODO: Send the user its credentials
@@ -122,6 +122,11 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
     public async Task<IdentityResult> CreateAsync(ApplicationUser user, string password)
     {
         var result = await _userManager.CreateAsync(user, password);
+        if (!result.Succeeded)
+        {
+            throw new UserCreationFailedException(result.Errors.ToList());
+        }
+            
         return result;
     }
 
@@ -134,6 +139,8 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
     public async Task<IdentityResult> AddToRoleAsync(ApplicationUser user, string role)
     {
         var result = await _userManager.AddToRoleAsync(user, role);
+        if (!result.Succeeded)
+            throw new RoleAssignmentFailedException(result.Errors.ToList());
         return result;
     }
 

@@ -1,4 +1,6 @@
-﻿namespace Application.Common.Exceptions;
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace Application.Common.Exceptions;
 
 
 public class ServerNotFoundException : Exception
@@ -55,9 +57,10 @@ public class ForbidNullStageException : Exception
 //User Repository
 public class RoleAssignmentFailedException : Exception
 {
-    public RoleAssignmentFailedException() : base("تخصیص نقش ناموفق بود.")
+    public RoleAssignmentFailedException(List<IdentityError>? errors) : base("خطای سرور.")
     {
-        
+        if(errors != null)
+            Data.Add("Errors", errors);
     }
 }
 

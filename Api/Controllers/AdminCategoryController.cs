@@ -83,17 +83,6 @@ public class AdminCategoryController : ApiController
 
 
 
-
-    /*
-    [Authorize]
-    [HttpGet("Processes")]
-    public async Task<ActionResult<List<GetProcessListDto>>> GetProcesses()
-    {
-        await Task.CompletedTask;
-        return Ok();
-    }
-    */
-
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult> CreateCategory(CategoryCreateDto categoryCreateDto)
@@ -118,12 +107,7 @@ public class AdminCategoryController : ApiController
             categoryCreateDto.FormElements);
 
         var result = await Sender.Send(command);
-        //if (result == null)
-        //    return Problem();
-        //return Created();
-        //var routeValues = new { id = result.Id, instanceId = instanceId };
-        //return CreatedAtAction(nameof(GetCategoryById), routeValues, result.Adapt<CategoryGetDetailDto>());
-
+        
         return result.Match(
             s => CreatedAtAction(
                 nameof(GetCategoryById),
@@ -156,9 +140,7 @@ public class AdminCategoryController : ApiController
             categoryUpdateDto.FormElements);
 
         var result = await Sender.Send(command);
-        //if (result == null)
-        //    return Problem();
-        //return NoContent();
+        
         return result.Match(
             s => NoContent(),
             f => Problem(f));

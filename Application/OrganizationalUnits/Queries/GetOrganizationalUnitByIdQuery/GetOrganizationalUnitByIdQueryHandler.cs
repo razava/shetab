@@ -1,27 +1,20 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using MediatR;
 
 namespace Application.OrganizationalUnits.Queries.GetOrganizationalUnitByIdQuery;
 
-internal class GetOrganizationalUnitByIdQueryHandler : IRequestHandler<GetOrganizationalUnitByIdQuery, OrganizationalUnit>
+internal class GetOrganizationalUnitByIdQueryHandler(IOrganizationalUnitRepository organizationalUnitRepository) : IRequestHandler<GetOrganizationalUnitByIdQuery, Result<OrganizationalUnit>>
 {
-    private readonly IOrganizationalUnitRepository _organizationalUnitRepository;
 
-    public GetOrganizationalUnitByIdQueryHandler(IOrganizationalUnitRepository organizationalUnitRepository)
+    public async Task<Result<OrganizationalUnit>> Handle(GetOrganizationalUnitByIdQuery request, CancellationToken cancellationToken)
     {
-        _organizationalUnitRepository = organizationalUnitRepository;
-    }
-
-    public async Task<OrganizationalUnit> Handle(GetOrganizationalUnitByIdQuery request, CancellationToken cancellationToken)
-    {
-        var result = await _organizationalUnitRepository.GetSingleAsync(
+        var result = await organizationalUnitRepository.GetSingleAsync(
             ou => ou.Id == request.OrganizationalUnitId,
             false,
             "OrganizationalUnits");
         if (result is null)
-            throw new NotFoundException("واحد سازمانی");
+            return NotFoundErrors.OrganizationalUnit;
         return result;
     }
 }

@@ -4,18 +4,18 @@
 
 public static class NotFoundErrors
 {
-    public static readonly Error User = new Error("");
-    public static readonly Error Report = new Error("");
+    public static readonly Error User = new Error("کاربر یافت نشد.");
+    public static readonly Error Report = new Error("گزارش یافت نشد.");
     public static readonly Error Category = new Error("دسته بندی یافت نشد.");
-    public static readonly Error OrganizationalUnit = new Error("");
-    public static readonly Error Executive = new Error("");
-    public static readonly Error Comment = new Error("");
-    public static readonly Error Feedback = new Error("");
-    public static readonly Error FAQ = new Error("");
-    public static readonly Error News = new Error("");
-    public static readonly Error Poll = new Error("");
-    public static readonly Error Process = new Error("");
-    public static readonly Error QuickAccess = new Error("");
+    public static readonly Error OrganizationalUnit = new Error("واحد سازمانی یافت نشد.");
+    public static readonly Error Executive = new Error("واحد اجرایی یافت نشد.");
+    public static readonly Error Comment = new Error("نظر یافت نشد.");
+    public static readonly Error Feedback = new Error("بازخورد یافت نشد.");
+    public static readonly Error FAQ = new Error("سوال متداول یافت نشد.");
+    public static readonly Error News = new Error("خبر یافت نشد.");
+    public static readonly Error Poll = new Error("نظر سنجی یافت نشد.");
+    public static readonly Error Process = new Error("فرایند یافت نشد.");
+    public static readonly Error QuickAccess = new Error("دسترسی سریع یافت نشد.");
     
 }
 
@@ -33,7 +33,7 @@ public static class AuthenticateErrors
 
 }
 
-public static class CommenErrors
+public static class OperationErrors
 {
     public static readonly Error CommentHasReply = new Error("این کامنت یک ریپلای دارد.");
     public static readonly Error LoopMade = new Error("حلقه ای در ساختار سازمانی ایجاد شده است.");

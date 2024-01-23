@@ -1,4 +1,6 @@
-﻿namespace Application.Common.Exceptions;
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace Application.Common.Exceptions;
 
 public class PhoneNumberNotConfirmedException : Exception
 {
@@ -33,6 +35,16 @@ public class InvalidLoginException : Exception
 {
     public InvalidLoginException() : base("ورود نامعتبر") { }
 }
+ 
+public class UserCreationFailedException : Exception
+{
+    public UserCreationFailedException(List<IdentityError> errors) : base("خطای سرور.")
+    {
+        Data.Add("Errors", errors);
+    }
+}
+
+
 
 //public class ResetPasswordTokenGenerationFailed : Exception { }
 //public class InvalidVerificationCode : Exception { }

@@ -4,4 +4,5 @@ using MediatR;
 
 namespace Application.OrganizationalUnits.Queries.GetOrganizationalUnitsQuery;
 
-public record GetOrganizationalUnitsQuery(int InstanceId, QueryFilterModel? FilterModel = default!) : IRequest<List<OrganizationalUnit>>;
+public record GetOrganizationalUnitsQuery(int InstanceId
+    , QueryFilterModel? FilterModel = default!) : IRequest<Result<List<OrganizationalUnit>>>;

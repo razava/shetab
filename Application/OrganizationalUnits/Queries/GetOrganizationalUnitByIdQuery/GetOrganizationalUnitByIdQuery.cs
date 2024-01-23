@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Application.OrganizationalUnits.Queries.GetOrganizationalUnitByIdQuery;
 
-public record GetOrganizationalUnitByIdQuery(int OrganizationalUnitId) : IRequest<OrganizationalUnit>;
+public record GetOrganizationalUnitByIdQuery(int OrganizationalUnitId) : IRequest<Result<OrganizationalUnit>>;

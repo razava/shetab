@@ -8,36 +8,24 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.OrganizationalUnits.Commands.UpdateOrganizationalUnitCommand;
-internal class UpdateOrganizationalUnitCommandHandler : IRequestHandler<UpdateOrganizationalUnitCommand, OrganizationalUnit>
+internal class UpdateOrganizationalUnitCommandHandler(
+    IUserRepository userRepository,
+    IOrganizationalUnitRepository organizationalUnitRepository,
+    IActorRepository actorRepository,
+    IUnitOfWork unitOfWork) : IRequestHandler<UpdateOrganizationalUnitCommand, Result<OrganizationalUnit>>
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IOrganizationalUnitRepository _organizationalUnitRepository;
-    private readonly IActorRepository _actorRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public UpdateOrganizationalUnitCommandHandler(
-        IUserRepository userRepository,
-        IOrganizationalUnitRepository organizationalUnitRepository,
-        IActorRepository actorRepository,
-        IUnitOfWork unitOfWork)
-    {
-        _userRepository = userRepository;
-        _organizationalUnitRepository = organizationalUnitRepository;
-        _actorRepository = actorRepository;
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<OrganizationalUnit> Handle(UpdateOrganizationalUnitCommand request, CancellationToken cancellationToken)
+    
+    public async Task<Result<OrganizationalUnit>> Handle(UpdateOrganizationalUnitCommand request, CancellationToken cancellationToken)
     {
         //TODO: CHECK AND REVISE ORGANIZATIONAL UNIT COMMANDS ASAP!
-        var organizationalUnit = await _organizationalUnitRepository.GetSingleAsync(ou => ou.Id == request.OrganizationalUnitId, true, "OrganizationalUnits");
+        var organizationalUnit = await organizationalUnitRepository.GetSingleAsync(ou => ou.Id == request.OrganizationalUnitId, true, "OrganizationalUnits");
         if(organizationalUnit is null)
         {
-            throw new NotFoundException("واحد سازمانی");
+            return NotFoundErrors.OrganizationalUnit;
         }
 
         //Check for cycle
-        var ous = await _organizationalUnitRepository
+        var ous = await organizationalUnitRepository
             .GetAsync(p => request.OrganizationalUnitsIds.Contains(p.Id));
 
         var flattenOus = new List<OrganizationalUnit>(ous);
@@ -47,7 +35,7 @@ internal class UpdateOrganizationalUnitCommandHandler : IRequestHandler<UpdateOr
         {
             var t = queue.Dequeue();
             flattenOus.Add(t);
-            var childOus = await _unitOfWork.DbContext.Set<OrganizationalUnit>()
+            var childOus = await unitOfWork.DbContext.Set<OrganizationalUnit>()
                 .Where(p => p.Id == t.Id)
                 .Select(p => p.OrganizationalUnits.Where(q => q.Type == OrganizationalUnitType.OrganizationalUnit))
                 .AsSingleQuery()
@@ -61,27 +49,27 @@ internal class UpdateOrganizationalUnitCommandHandler : IRequestHandler<UpdateOr
         }
         if (flattenOus.Any(p => p.Id == organizationalUnit.Id))
         {
-            throw new LoopMadeException();
+            return OperationErrors.LoopMade;
         }
 
 
 
-        var containedOus = await _organizationalUnitRepository.GetAsync(ou => request.OrganizationalUnitsIds.Contains(ou.Id));
+        var containedOus = await organizationalUnitRepository.GetAsync(ou => request.OrganizationalUnitsIds.Contains(ou.Id));
 
-        var executiveActors = await _actorRepository.GetAsync(a => request.ExecutiveActorsIds.Contains(a.Id));
-        var existingExecutiveOUs = await _organizationalUnitRepository.GetAsync(ou => ou.ActorId != null
+        var executiveActors = await actorRepository.GetAsync(a => request.ExecutiveActorsIds.Contains(a.Id));
+        var existingExecutiveOUs = await organizationalUnitRepository.GetAsync(ou => ou.ActorId != null
             && request.ExecutiveActorsIds.Contains(ou.ActorId.Value));
 
         var executiveActoresNotOuAlready = executiveActors
             .Where(ea => !existingExecutiveOUs.Any(eou => eou.ActorId == ea.Id)).ToList();
         var executiveIdentifiers = executiveActoresNotOuAlready.Select(ea => ea.Identifier).ToList();
-        var executiveUsers = await _userRepository.GetAsync(u => executiveIdentifiers.Contains(u.Id));
+        var executiveUsers = await userRepository.GetAsync(u => executiveIdentifiers.Contains(u.Id));
         var newOus = new List<OrganizationalUnit>();
         foreach (var executiveActor in executiveActoresNotOuAlready)
         {
             var executiveUser = executiveUsers.SingleOrDefault(eu => eu.Id == executiveActor.Identifier);
             if (executiveUser is null)
-                throw new ServerNotFoundException("خطایی رخ داد.", new ExecutiveUserNotFoundException());
+                return ServerNotFoundErrors.ExecutiveUser;
             newOus.Add(new OrganizationalUnit()
             {
                 ShahrbinInstanceId = organizationalUnit.ShahrbinInstanceId,
@@ -98,8 +86,8 @@ internal class UpdateOrganizationalUnitCommandHandler : IRequestHandler<UpdateOr
         organizationalUnit.OrganizationalUnits.AddRange(containedOus);
         organizationalUnit.Title = request.Title;
 
-        _organizationalUnitRepository.Update(organizationalUnit);
-        await _unitOfWork.SaveAsync();
+        organizationalUnitRepository.Update(organizationalUnit);
+        await unitOfWork.SaveAsync();
 
         return organizationalUnit;
     }

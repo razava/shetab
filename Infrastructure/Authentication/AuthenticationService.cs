@@ -82,14 +82,14 @@ public class AuthenticationService : IAuthenticationService
         };
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
-            throw new CreationFailedException("کاربر");
+            throw new UserCreationFailedException(result.Errors.ToList());
 
         var result2 = await _userManager.AddToRoleAsync(user, "Citizen");
 
         if (!result2.Succeeded)
         {
             await _userManager.DeleteAsync(user);
-            throw new CreationFailedException("کاربر");
+            throw new UserCreationFailedException(result2.Errors.ToList());
         }
 
         return true;

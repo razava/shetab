@@ -7,4 +7,4 @@ public record UpdateOrganizationalUnitCommand(
     int OrganizationalUnitId,
     string Title,
     List<int> ExecutiveActorsIds,
-    List<int> OrganizationalUnitsIds) : IRequest<OrganizationalUnit>;
+    List<int> OrganizationalUnitsIds) : IRequest<Result<OrganizationalUnit>>;

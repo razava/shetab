@@ -6,7 +6,6 @@ using Application.OrganizationalUnits.Commands.AddOrganizationalUnitCommand;
 using Application.OrganizationalUnits.Commands.DeleteOrganizationalUnitCommand;
 using Application.OrganizationalUnits.Commands.UpdateOrganizationalUnitCommand;
 using Application.OrganizationalUnits.Queries.GetOrganizationalUnitByIdQuery;
-using Application.OrganizationalUnits.Queries.GetOrganizationalUnitByUserIdQuery;
 using Application.OrganizationalUnits.Queries.GetOrganizationalUnitsQuery;
 using Mapster;
 using MediatR;
@@ -33,8 +32,10 @@ public class AdminOrganizationalUnitController : ApiController
         var instanceId = User.GetUserInstanceId();
         var query = new GetOrganizationalUnitsQuery(instanceId, queryFilter.Adapt<QueryFilterModel>());
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<GetOrganizationalUnitListDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<GetOrganizationalUnitListDto>>()),
+            f => Problem(f));
     }
 
 
@@ -58,8 +59,10 @@ public class AdminOrganizationalUnitController : ApiController
     {
         var query = new GetOrganizationalUnitByIdQuery(id);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<GetOrganizationalUnitDto>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<GetOrganizationalUnitDto>()),
+            f => Problem(f));
     }
 
 
@@ -76,11 +79,10 @@ public class AdminOrganizationalUnitController : ApiController
             createDto.ExecutiveActorsIds,
             createDto.OrganizationalUnitsIds);
         var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
-        //return Created();
-        var routeValues = new { id = result.Id, instanceId = instanceId };
-        return CreatedAtAction(nameof(GetOrgaizationalUnitById), routeValues, result.Adapt<GetOrganizationalUnitDto>());
+
+        return result.Match(
+            s => CreatedAtAction(nameof(GetOrgaizationalUnitById), new { id = s.Id, instanceId = instanceId }, s.Adapt<GetOrganizationalUnitDto>()),
+            f => Problem(f));
     }
 
     [Authorize(Roles = "Admin")]
@@ -93,9 +95,10 @@ public class AdminOrganizationalUnitController : ApiController
             updateDto.ExecutiveActorsIds,
             updateDto.OrganizationalUnitsIds);
         var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
-        return NoContent();
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
 
@@ -107,10 +110,9 @@ public class AdminOrganizationalUnitController : ApiController
         var command = new DeleteOrganizationalUnitCommand(id);
         var result = await Sender.Send(command);
 
-        if(!result)
-            return Problem();
-
-        return NoContent();
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
 

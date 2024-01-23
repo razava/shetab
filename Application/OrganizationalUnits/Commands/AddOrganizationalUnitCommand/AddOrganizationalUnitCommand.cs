@@ -9,4 +9,4 @@ public record AddOrganizationalUnitCommand(
     string Username,
     string Password,
     List<int> ExecutiveActorsIds,
-    List<int> OrganizationalUnitsIds) : IRequest<OrganizationalUnit>;
+    List<int> OrganizationalUnitsIds) : IRequest<Result<OrganizationalUnit>>;

@@ -5,18 +5,12 @@ using MediatR;
 
 namespace Application.OrganizationalUnits.Queries.GetOrganizationalUnitsQuery;
 
-internal class GetOrganizationalUnitsQueryHandler : IRequestHandler<GetOrganizationalUnitsQuery, List<OrganizationalUnit>>
+internal class GetOrganizationalUnitsQueryHandler(IOrganizationalUnitRepository organizationalUnitRepository) : IRequestHandler<GetOrganizationalUnitsQuery, Result<List<OrganizationalUnit>>>
 {
-    private readonly IOrganizationalUnitRepository _organizationalUnitRepository;
 
-    public GetOrganizationalUnitsQueryHandler(IOrganizationalUnitRepository organizationalUnitRepository)
+    public async Task<Result<List<OrganizationalUnit>>> Handle(GetOrganizationalUnitsQuery request, CancellationToken cancellationToken)
     {
-        _organizationalUnitRepository = organizationalUnitRepository;
-    }
-
-    public async Task<List<OrganizationalUnit>> Handle(GetOrganizationalUnitsQuery request, CancellationToken cancellationToken)
-    {
-        var result = await _organizationalUnitRepository.GetAsync(
+        var result = await organizationalUnitRepository.GetAsync(
             ou => 
             ou.ShahrbinInstanceId == request.InstanceId 
             && ou.Type == OrganizationalUnitType.OrganizationalUnit
