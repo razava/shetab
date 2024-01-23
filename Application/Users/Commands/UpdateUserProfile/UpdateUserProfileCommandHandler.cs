@@ -5,21 +5,14 @@ using MediatR;
 
 namespace Application.Users.Commands.UpdateUserProfile;
 
-internal class UpdateUserProfileCommandHandler : IRequestHandler<UpdateUserProfileCommand, ApplicationUser>
+internal class UpdateUserProfileCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork) : IRequestHandler<UpdateUserProfileCommand, Result<ApplicationUser>>
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IUnitOfWork _unitOfWork;
-    public UpdateUserProfileCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
+    
+    public async Task<Result<ApplicationUser>> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
     {
-        _userRepository = userRepository;
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<ApplicationUser> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
-    {
-        var user = await _userRepository.GetSingleAsync(u => u.Id == request.UserId);
+        var user = await userRepository.GetSingleAsync(u => u.Id == request.UserId);
         if (user is null)
-            throw new NotFoundException("کاربر");
+            return NotFoundErrors.User;
         user.FirstName = request.FirstName ?? user.FirstName;
         user.LastName = request.LastName ?? user.LastName;
         user.Title = request.Title ?? user.Title;
@@ -30,8 +23,8 @@ internal class UpdateUserProfileCommandHandler : IRequestHandler<UpdateUserProfi
         user.BirthDate = request.BirthDate ?? user.BirthDate;
         user.PhoneNumber2 = request.PhoneNumber2 ?? user.PhoneNumber2;
 
-        _userRepository.Update(user);
-        await _unitOfWork.SaveAsync();
+        userRepository.Update(user);
+        await unitOfWork.SaveAsync();
 
         return user;
     }

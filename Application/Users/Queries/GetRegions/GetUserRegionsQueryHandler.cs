@@ -8,18 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Users.Queries.GetRegions;
 
-internal class GetUserRegionsQueryHandler : IRequestHandler<GetUserRegionsQuery, List<IsInRegionModel>>
+internal class GetUserRegionsQueryHandler(IActorRepository actorRepository) : IRequestHandler<GetUserRegionsQuery, Result<List<IsInRegionModel>>>
 {
-    private readonly IActorRepository _actorRepository;
-
-    public GetUserRegionsQueryHandler(IActorRepository actorRepository)
+    public async Task<Result<List<IsInRegionModel>>> Handle(GetUserRegionsQuery request, CancellationToken cancellationToken)
     {
-        _actorRepository = actorRepository;
-    }
-
-    public async Task<List<IsInRegionModel>> Handle(GetUserRegionsQuery request, CancellationToken cancellationToken)
-    {
-        var result = await _actorRepository.GetUserRegionsAsync(request.InstanceId, request.UserId);
+        var result = await actorRepository.GetUserRegionsAsync(request.InstanceId, request.UserId);
         return result;
     }
 }

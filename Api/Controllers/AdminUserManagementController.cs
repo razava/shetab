@@ -51,10 +51,14 @@ public class AdminUserManagementController : ApiController
             null);
 
         var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
 
-        return NoContent();
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
+        //if (result == null)
+        //    return Problem();
+
+        //return NoContent();
     }
 
 
@@ -65,9 +69,13 @@ public class AdminUserManagementController : ApiController
     {
         var command = new CreateNewPasswordCommand(id, newPasswordDto.NewPassword);
         var result = await Sender.Send(command);
-        if(!result)
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        return NoContent();
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
+        //if(!result)
+        //    return StatusCode(StatusCodes.Status500InternalServerError);
+        //return NoContent();
         //todo : set appropriate responses.
     }
 
@@ -79,10 +87,14 @@ public class AdminUserManagementController : ApiController
         var mappedRoles = updateRolesDto.Roles.Adapt<List<IsInRoleModel>>();
         var commond = new UpdateRolesCommand(id, mappedRoles);
         var result = await Sender.Send(commond);
-        if (!result)
-            return Problem();
-        //todo : handle result & set appropriate responses.
-        return NoContent();
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
+        //if (!result)
+        //    return Problem();
+        ////todo : handle result & set appropriate responses.
+        //return NoContent();
     }
 
 
@@ -92,8 +104,12 @@ public class AdminUserManagementController : ApiController
     {
         var query = new GetUserRolesQuery(id);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<RolesDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<RolesDto>>()),
+            f => Problem(f));
+        //var mappedResult = result.Adapt<List<RolesDto>>();
+        //return Ok(mappedResult);
     }
 
 
@@ -105,8 +121,12 @@ public class AdminUserManagementController : ApiController
         var mappedRegions = regions.Adapt<List<IsInRegionModel>>();
         var command = new UpdateRegionsCommand(instanceId, id, mappedRegions);
         var result = await Sender.Send(command);
-        if(!result) return Problem();
-        return NoContent();
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
+        //if(!result) return Problem();
+        //return NoContent();
     }
     
 
@@ -117,8 +137,12 @@ public class AdminUserManagementController : ApiController
         var instanceId = User.GetUserInstanceId();
         var query = new GetUserRegionsQuery(instanceId, id);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List< IsInRegionDto >>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<IsInRegionDto>>()),
+            f => Problem(f));
+        //var mappedResult = result.Adapt<List< IsInRegionDto >>();
+        //return Ok(mappedResult);
     }
 
     
@@ -133,9 +157,23 @@ public class AdminUserManagementController : ApiController
         var instanceId = User.GetUserInstanceId();
         var query = new GetUsersQuery(pagingInfo, instanceId);
         var result = await Sender.Send(query);
-        Response.AddPaginationHeaders(result.Meta);
-        var mappedResult = result.Adapt<List<AdminGetUserList>>();
-        return Ok(mappedResult);
+        /*
+        if (result.IsFailed)
+        {
+
+        }
+        result.Match(
+            s =>
+            {
+                Response.AddPaginationHeaders(s.Meta);
+                return Ok(s.Adapt<List<AdminGetUserList>>());
+            },
+            f => Problem(f));
+        */
+        return Ok();
+        //Response.AddPaginationHeaders(result.Meta);
+        //var mappedResult = result.Adapt<List<AdminGetUserList>>();
+        //return Ok(mappedResult);
     }
 
 

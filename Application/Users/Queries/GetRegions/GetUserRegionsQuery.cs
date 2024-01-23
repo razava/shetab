@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Application.Users.Queries.GetRegions;
 
-public record GetUserRegionsQuery(int InstanceId, string UserId) : IRequest<List<IsInRegionModel>>;
+public record GetUserRegionsQuery(int InstanceId, string UserId) : IRequest<Result<List<IsInRegionModel>>>;

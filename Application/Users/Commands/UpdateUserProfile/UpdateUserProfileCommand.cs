@@ -15,4 +15,4 @@ public record UpdateUserProfileCommand(
     Education? Education = null,
     DateTime? BirthDate = null,
     string? PhoneNumber2 = null
-    ) : IRequest<ApplicationUser>;
+    ) : IRequest<Result<ApplicationUser>>;

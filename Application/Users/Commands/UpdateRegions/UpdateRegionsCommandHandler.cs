@@ -4,21 +4,12 @@ using MediatR;
 
 namespace Application.Users.Commands.UpdateRegions;
 
-internal class UpdateRegionsCommandHandler : IRequestHandler<UpdateRegionsCommand, bool>
+internal class UpdateRegionsCommandHandler(IUnitOfWork unitOfWork, IActorRepository actorRepository) : IRequestHandler<UpdateRegionsCommand, Result<bool>>
 {
-    IActorRepository _actorRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public UpdateRegionsCommandHandler(IUnitOfWork unitOfWork, IActorRepository actorRepository)
+    public async Task<Result<bool>> Handle(UpdateRegionsCommand request, CancellationToken cancellationToken)
     {
-        _unitOfWork = unitOfWork;
-        _actorRepository = actorRepository;
-    }
-
-    public async Task<bool> Handle(UpdateRegionsCommand request, CancellationToken cancellationToken)
-    {
-        var result = await _actorRepository.UpdateUserRegionsAsync(request.InstanceId, request.UserId, request.Regions);
-        await _unitOfWork.SaveAsync();
+        var result = await actorRepository.UpdateUserRegionsAsync(request.InstanceId, request.UserId, request.Regions);
+        await unitOfWork.SaveAsync();
         return result;
     }
 }
