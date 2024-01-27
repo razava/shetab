@@ -9,4 +9,4 @@ public record CreateContractorCommand(
     string Organization = "",
     string FirstName = "",
     string LastName = "",
-    string Title = ""):IRequest<ApplicationUser>;
+    string Title = ""):IRequest<Result<ApplicationUser>>;

@@ -7,37 +7,28 @@ using MediatR;
 
 namespace Application.Users.Commands.CreateContractor;
 
-internal class CreateContractorCommandHandler : IRequestHandler<CreateContractorCommand, ApplicationUser>
+internal class CreateContractorCommandHandler(
+    IUserRepository userRepository,
+    IActorRepository actorRepository,
+    IUnitOfWork unitOfWork) : IRequestHandler<CreateContractorCommand, Result<ApplicationUser>>
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IActorRepository _actorRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public CreateContractorCommandHandler(
-        IUserRepository userRepository,
-        IActorRepository actorRepository,
-        IUnitOfWork unitOfWork)
+    
+    public async Task<Result<ApplicationUser>> Handle(CreateContractorCommand request, CancellationToken cancellationToken)
     {
-        _userRepository = userRepository;
-        _actorRepository = actorRepository;
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<ApplicationUser> Handle(CreateContractorCommand request, CancellationToken cancellationToken)
-    {
+        //todo
         var successMessage = "کاربر با موفقیت ایجاد شد.";
 
-        var executive = await _userRepository.GetSingleAsync(e => e.Id == request.ExecutiveId, true, "Contractors");
+        var executive = await userRepository.GetSingleAsync(e => e.Id == request.ExecutiveId, true, "Contractors");
         if (executive is null)
-            throw new NotFoundException("واحد اجرایی");
+            return NotFoundErrors.Executive;
 
-        var isExecutive = await _userRepository.IsInRoleAsync(executive, "Executive");
+        var isExecutive = await userRepository.IsInRoleAsync(executive, "Executive");
         if (!isExecutive)
-            throw new AccessDeniedException("فقط واحد اجرایی می تواند پیمانکار تعریف کند.");
-        var contractor = await _userRepository.GetSingleAsync(u => u.UserName == "c-" + request.PhoneNumber);
+            return AccessDeniedErrors.Executive;
+        var contractor = await userRepository.GetSingleAsync(u => u.UserName == "c-" + request.PhoneNumber);
         if (contractor is not null)
         {
-            var isAlreadyAContractor = await _userRepository.IsInRoleAsync(contractor, "Contractor");
+            var isAlreadyAContractor = await userRepository.IsInRoleAsync(contractor, "Contractor");
             if (isAlreadyAContractor)
             {
                 successMessage = $"کاربر با شماره {contractor.UserName} به نام {contractor.FirstName + " " + contractor.LastName} پیش از این ثبت نام شده و به لیست پیمانکاران شما افزوده شد.";
@@ -52,23 +43,26 @@ internal class CreateContractorCommandHandler : IRequestHandler<CreateContractor
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Organization = request.Organization,
+                Title = request.Title,
                 PhoneNumberConfirmed = true,
                 SecurityStamp = Guid.NewGuid().ToString(),
             };
 
             var password = "aA@12345";
-            var result = await _userRepository.CreateAsync(contractor, password);
-            if (!result.Succeeded)
-                throw new CreationFailedException("کاربر");
+            await userRepository.RegisterWithRoleAsync(contractor, password, "Contractor");
 
-            var result2 = await _userRepository.AddToRoleAsync(contractor, "Contractor");
+            /*
+            var result = await userRepository.CreateAsync(contractor, password);
+            //todo : review this for returning result from repository & exception throwing.
+            var result2 = await userRepository.AddToRoleAsync(contractor, "Contractor");
 
             if (!result2.Succeeded)
             {
-                await _userRepository.DeleteAsync(contractor);
+                await userRepository.DeleteAsync(contractor);
                 throw new CreationFailedException("کاربر");
             }
-            _actorRepository.Insert(
+            */
+            actorRepository.Insert(
                 new Actor(){
                     Identifier = contractor.Id,
                     Type = ActorType.Person,
@@ -79,9 +73,9 @@ internal class CreateContractorCommandHandler : IRequestHandler<CreateContractor
         }
 
         executive.Contractors.Add(contractor);
-        _userRepository.Update(executive);
+        userRepository.Update(executive);
         
-        await _unitOfWork.SaveAsync();
+        await unitOfWork.SaveAsync();
 
         return contractor;
     }

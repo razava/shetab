@@ -3,20 +3,14 @@ using Domain.Models.Relational.IdentityAggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Users.Queries.GetUsers;
+namespace Application.Users.Queries.GetContractors;
 
-internal class GetContractorsQueryHandler : IRequestHandler<GetContractorsQuery, PagedList<ApplicationUser>>
+internal class GetContractorsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetContractorsQuery, Result<PagedList<ApplicationUser>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
 
-    public GetContractorsQueryHandler(IUnitOfWork unitOfWork)
+    public async Task<Result<PagedList<ApplicationUser>>> Handle(GetContractorsQuery request, CancellationToken cancellationToken)
     {
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<PagedList<ApplicationUser>> Handle(GetContractorsQuery request, CancellationToken cancellationToken)
-    {
-        var context = _unitOfWork.DbContext;
+        var context = unitOfWork.DbContext;
         var query = context.Set<ExecutiveContractor>().Where(ec => ec.ExecutiveId == request.ExecutiveId)
             .Select(ec => ec.Contractor);
 

@@ -21,9 +21,7 @@ internal class AddOrganizationalUnitCommandHandler(
             Title = request.Title,
             PhoneNumberConfirmed = true };
 
-        await userRepository.CreateAsync(user, request.Password);
-        
-        await userRepository.AddToRoleAsync(user, "Manager");
+        await userRepository.RegisterWithRoleAsync(user, request.Password, "Manager");
 
         var actor = new Actor()
         {

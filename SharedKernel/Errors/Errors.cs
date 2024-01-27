@@ -88,7 +88,7 @@ public static class CreationFailedErrors
 
 public static class AccessDeniedErrors
 {
-    
+    public static readonly Error Executive = new Error("فقط واحد اجرایی می تواند پیمانکار تعریف کند.");
 }
 
 public static class CommunicationErrors

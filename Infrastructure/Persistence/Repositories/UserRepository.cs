@@ -239,4 +239,23 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
         var result = await _userManager.DeleteAsync(user);
         return result;
     }
+
+    public async Task<IdentityResult> RegisterWithRoleAsync(ApplicationUser user, string password, string role)
+    {
+        var createResult = await _userManager.CreateAsync(user, password);
+        if (!createResult.Succeeded)
+        {
+            throw new UserCreationFailedException(createResult.Errors.ToList());
+        }
+
+        var assignRoleResult = await _userManager.AddToRoleAsync(user, role);
+        if (!assignRoleResult.Succeeded)
+        {
+            await _userManager.DeleteAsync(user);
+            throw new RoleAssignmentFailedException(assignRoleResult.Errors.ToList());
+        }
+            
+
+        return createResult;
+    }
 }

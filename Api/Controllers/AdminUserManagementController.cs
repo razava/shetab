@@ -9,6 +9,7 @@ using Application.Users.Commands.UpdateRegions;
 using Application.Users.Commands.UpdateRoles;
 using Application.Users.Commands.UpdateUserProfile;
 using Application.Users.Common;
+using Application.Users.Queries.GetContractors;
 using Application.Users.Queries.GetRegions;
 using Application.Users.Queries.GetRoles;
 using Application.Users.Queries.GetUserById;
@@ -55,10 +56,6 @@ public class AdminUserManagementController : ApiController
         return result.Match(
             s => NoContent(),
             f => Problem(f));
-        //if (result == null)
-        //    return Problem();
-
-        //return NoContent();
     }
 
 
@@ -73,10 +70,6 @@ public class AdminUserManagementController : ApiController
         return result.Match(
             s => NoContent(),
             f => Problem(f));
-        //if(!result)
-        //    return StatusCode(StatusCodes.Status500InternalServerError);
-        //return NoContent();
-        //todo : set appropriate responses.
     }
 
 
@@ -91,10 +84,6 @@ public class AdminUserManagementController : ApiController
         return result.Match(
             s => NoContent(),
             f => Problem(f));
-        //if (!result)
-        //    return Problem();
-        ////todo : handle result & set appropriate responses.
-        //return NoContent();
     }
 
 
@@ -108,8 +97,6 @@ public class AdminUserManagementController : ApiController
         return result.Match(
             s => Ok(s.Adapt<List<RolesDto>>()),
             f => Problem(f));
-        //var mappedResult = result.Adapt<List<RolesDto>>();
-        //return Ok(mappedResult);
     }
 
 
@@ -125,8 +112,6 @@ public class AdminUserManagementController : ApiController
         return result.Match(
             s => NoContent(),
             f => Problem(f));
-        //if(!result) return Problem();
-        //return NoContent();
     }
     
 
@@ -141,8 +126,6 @@ public class AdminUserManagementController : ApiController
         return result.Match(
             s => Ok(s.Adapt<List<IsInRegionDto>>()),
             f => Problem(f));
-        //var mappedResult = result.Adapt<List< IsInRegionDto >>();
-        //return Ok(mappedResult);
     }
 
     
@@ -152,28 +135,17 @@ public class AdminUserManagementController : ApiController
     public async Task<ActionResult<List<AdminGetUserList>>> GetAllUsers([FromQuery]PagingInfo pagingInfo, [FromQuery] FilterGetUsers filter)
     {
         //have FilterGetUsers
-        //todo : query shuold get instanceId for returning this instance's staffs
         var t = filter;
         var instanceId = User.GetUserInstanceId();
         var query = new GetUsersQuery(pagingInfo, instanceId);
         var result = await Sender.Send(query);
-        /*
-        if (result.IsFailed)
-        {
 
-        }
-        result.Match(
-            s =>
-            {
-                Response.AddPaginationHeaders(s.Meta);
-                return Ok(s.Adapt<List<AdminGetUserList>>());
-            },
-            f => Problem(f));
-        */
-        return Ok();
-        //Response.AddPaginationHeaders(result.Meta);
-        //var mappedResult = result.Adapt<List<AdminGetUserList>>();
-        //return Ok(mappedResult);
+        if (result.IsFailed)
+            return Problem(result.ToResult());
+        var resultValue = result.Value;
+        Response.AddPaginationHeaders(resultValue.Meta);
+
+        return Ok(resultValue.Adapt<List<AdminGetUserList>>());
     }
 
 
@@ -184,19 +156,11 @@ public class AdminUserManagementController : ApiController
     {
         var query = new GetUserByIdQuery(id);
         var result = await Sender.Send(query);
-        if (result == null)
-            return NotFound();
-        return Ok(result.Adapt<AdminGetUserDetailsDto>());
-    }
 
-    //We won't use this, admin should create the user and after successful creation, assign desired roles
-    //[Authorize(Roles = "Admin, Manager")]
-    //[HttpPost("RegisterWithRoles")]
-    //public async Task<IActionResult> RegisterWithRoles()
-    //{
-    //    await Task.CompletedTask;
-    //    return Ok();
-    //}
+        return result.Match(
+            s => Ok(s.Adapt<AdminGetUserDetailsDto>()),
+            f => Problem(f));
+    }
 
 
     //todo : review returning response and dto.......
@@ -207,8 +171,10 @@ public class AdminUserManagementController : ApiController
         var instanceId = User.GetUserInstanceId();
         var command = new CreateUserCommand(model.Username, model.Password, model.FirstName, model.LastName, model.Title);
         var user = await Sender.Send(command);
-        var routeValues = new { id = user.Id, instanceId = instanceId };
-        return CreatedAtAction(nameof(GetUserById), routeValues, user.Adapt<AdminGetUserDetailsDto>());
+
+        return user.Match(
+            s => CreatedAtAction(nameof(GetUserById), new { id = s.Id, instanceId = instanceId }, s.Adapt<AdminGetUserDetailsDto>()),
+            f => Problem(f));
     }
 
 
@@ -216,7 +182,7 @@ public class AdminUserManagementController : ApiController
     //This endpoint is accessible by executives only
     [Authorize(Roles = "Executive")]
     [HttpPost("RegisterContractor")]
-    public async Task<IActionResult> RegisterContractor(CreateContractorDto model)
+    public async Task<IActionResult> RegisterContractor(int instanceId, CreateContractorDto model)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if(userId is null)
@@ -229,10 +195,11 @@ public class AdminUserManagementController : ApiController
             model.LastName,
             model.Title);
         var contractor = await Sender.Send(command);
-        
+
+        return contractor.Match(
+            s => CreatedAtAction(nameof(GetUserById), new { id = s.Id, instanceId = instanceId }, s.Adapt<GetContractorsList>()),
+            f => Problem(f));
         //TODO: Does executive have access to this endpoint?
-        //todo: map returning contractor in below response
-        return CreatedAtAction(nameof(GetUserById), contractor.Id, contractor.Adapt<GetContractorsList>());
     }
 
 
@@ -245,13 +212,15 @@ public class AdminUserManagementController : ApiController
             return Unauthorized();
         var query = new GetContractorsQuery(userId, pagingInfo);
         var result = await Sender.Send(query);
-        Response.AddPaginationHeaders(result.Meta);
-        var mappedResult = result.Adapt<GetContractorsList>();
-        return Ok(mappedResult);
+        if (result.IsFailed)
+            return Problem(result.ToResult());
+
+        var resultValue = result.Value;
+        Response.AddPaginationHeaders(resultValue.Meta);
+        return Ok(resultValue.Adapt<List<GetContractorsList>>());
     }
 
-    //todo : how about register Mayor[admin], Executive[admin, manager], Manager(organizationalUnit)
-    //These are handled by UpdateRoles
+    
 
     
 }

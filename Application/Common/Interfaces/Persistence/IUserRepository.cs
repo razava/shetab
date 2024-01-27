@@ -28,4 +28,5 @@ public interface IUserRepository : IGenericRepository<ApplicationUser>
     public Task<bool> RoleExistsAsync(string roleName);
     public Task<List<Actor>> GetActorsAsync(string userId);
     public Task<bool> CreateNewPasswordAsync(string userId, string password);
+    public Task<IdentityResult> RegisterWithRoleAsync(ApplicationUser user, string password, string role);
 }
