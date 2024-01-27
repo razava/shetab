@@ -5,44 +5,35 @@ using MediatR;
 
 namespace Application.Authentication.Commands.LoginCommand;
 
-internal sealed class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResultModel>
+internal sealed class LoginCommandHandler(IAuthenticationService authenticationService, ICaptchaProvider captchaProvider, ICommunicationService communicationService) : IRequestHandler<LoginCommand, Result<LoginResultModel>>
 {
-    private readonly IAuthenticationService _authenticationService;
-    private readonly ICaptchaProvider _captchaProvider;
-    private readonly ICommunicationService _communicationService;
-
-    public LoginCommandHandler(IAuthenticationService authenticationService, ICaptchaProvider captchaProvider, ICommunicationService communicationService)
-    {
-        _authenticationService = authenticationService;
-        _captchaProvider = captchaProvider;
-        _communicationService = communicationService;
-    }
-    public async Task<LoginResultModel> Handle(LoginCommand request, CancellationToken cancellationToken)
+    
+    public async Task<Result<LoginResultModel>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         if(request.CaptchaValidateModel is not null)
         {
-            var isCaptchaValid = _captchaProvider.Validate(request.CaptchaValidateModel);
+            var isCaptchaValid = captchaProvider.Validate(request.CaptchaValidateModel);
             if (!isCaptchaValid)
             {
-                throw new InvalidCaptchaException();
+                return AuthenticateErrors.InvalidCaptcha;
             }
         }
 
         LoginResultModel? result;
         try
         {
-            result = await _authenticationService.Login(request.Username, request.Password, request.VerificationCode);
+            result = await authenticationService.Login(request.Username, request.Password, request.VerificationCode);
         }
         catch (PhoneNumberNotConfirmedException)
         {
-            var verificationCode = await _authenticationService.GetVerificationCode(request.Username);
+            var verificationCode = await authenticationService.GetVerificationCode(request.Username);
             try
             {
-                await _communicationService.SendVerificationAsync(request.Username, verificationCode);
+                await communicationService.SendVerificationAsync(request.Username, verificationCode);
             }
             catch
             {
-                throw new SendSmsException();
+                return CommunicationErrors.SendSms;
             }
             result = new LoginResultModel("", true);
         }

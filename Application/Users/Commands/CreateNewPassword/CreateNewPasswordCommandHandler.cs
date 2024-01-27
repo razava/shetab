@@ -8,6 +8,9 @@ internal class CreateNewPasswordCommandHandler(IUserRepository userRepository) :
     public async Task<Result<bool>> Handle(CreateNewPasswordCommand request, CancellationToken cancellationToken)
     {
         var result = await userRepository.CreateNewPasswordAsync(request.UserId, request.Password);
+        if (!result)
+            return AuthenticateErrors.ChangePasswordFailed;
+
         return result;
     }
 }

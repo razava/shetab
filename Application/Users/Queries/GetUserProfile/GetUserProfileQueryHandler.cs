@@ -5,21 +5,15 @@ using MediatR;
 
 namespace Application.Users.Queries.GetUserProfile;
 
-internal class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, ApplicationUser>
+internal class GetUserProfileQueryHandler(IUserRepository userRepository) : IRequestHandler<GetUserProfileQuery, Result<ApplicationUser>>
 {
-    private readonly IUserRepository _userRepository;
 
-    public GetUserProfileQueryHandler(IUserRepository userRepository)
+    public async Task<Result<ApplicationUser>> Handle(GetUserProfileQuery request, CancellationToken cancellationToken)
     {
-        _userRepository = userRepository;
-    }
-
-    public async Task<ApplicationUser> Handle(GetUserProfileQuery request, CancellationToken cancellationToken)
-    {
-        var result = await _userRepository.GetSingleAsync(u => u.Id == request.UserId);
+        var result = await userRepository.GetSingleAsync(u => u.Id == request.UserId);
         if (result == null)
         {
-            throw new NotFoundException("کاربر");
+            return NotFoundErrors.User;
         }
 
         return result;

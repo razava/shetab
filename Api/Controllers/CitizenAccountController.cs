@@ -2,6 +2,7 @@
 using Api.Authentication;
 using Api.Contracts;
 using Api.ExtensionMethods;
+using Application.Authentication.Commands.ChangePasswordCommand;
 using Application.Authentication.Commands.LoginCommand;
 using Application.Authentication.Commands.RegisterCitizenCommand;
 using Application.Authentication.Commands.ResetPasswordCommand;
@@ -40,14 +41,18 @@ public class CitizenAccountController : ApiController
 
         var command = new LoginCommand(loginDto.Username, loginDto.Password, mappedCaptcha);
         var result = await Sender.Send(command);
-        if (result.UserNotConfirmed)
+
+        if (result.IsFailed)
+            return Problem(result.ToResult());
+
+        if (result.Value.UserNotConfirmed)
         {
             return StatusCode(StatusCodes.Status428PreconditionRequired, "");
         }
         else
         {
             //TODO: Consider converting token to base64
-            return Ok(result.JwtToken);
+            return Ok(result.Value.JwtToken);
         }
     }
 
@@ -56,14 +61,18 @@ public class CitizenAccountController : ApiController
     {
         var command = new LoginCommand(loginAppDto.Username, loginAppDto.Password);
         var result = await Sender.Send(command);
-        if (result.UserNotConfirmed)
+        
+        if (result.IsFailed)
+            return Problem(result.ToResult());
+        
+        if (result.Value.UserNotConfirmed)
         {
             return StatusCode(StatusCodes.Status428PreconditionRequired, "");
         }
         else
         {
             //TODO: Consider converting token to base64
-            return Ok(result.JwtToken);
+            return Ok(result.Value.JwtToken);
         }
     }
 
@@ -109,13 +118,17 @@ public class CitizenAccountController : ApiController
         {
             var loginCommand = new LoginCommand(verificationDto.Username, verificationDto.Password);
             var loginResult = await Sender.Send(loginCommand);
-            if (loginResult.UserNotConfirmed)
+
+            if(loginResult.IsFailed)
+                return Problem(loginResult.ToResult());
+
+            if (loginResult.Value.UserNotConfirmed)
             {
                 return Unauthorized();
             }
             else
             {
-                return Ok(loginResult.JwtToken);
+                return Ok(loginResult.Value.JwtToken);
             }
         }
         else
@@ -134,8 +147,10 @@ public class CitizenAccountController : ApiController
             return Unauthorized();
         var query = new GetUserProfileQuery(userId);
         var result = await Sender.Send(query);
-        var mappedUser = result.Adapt<GetCitizenProfileDto>();
-        return Ok(mappedUser);
+
+        return result.Match(
+            s => Ok(s.Adapt<GetCitizenProfileDto>()),
+            f => Problem(f));
     }
 
     [Authorize(Roles = "Citizen")]
@@ -195,14 +210,10 @@ public class CitizenAccountController : ApiController
         var mappedCaptcha = changePasswordDto.Captcha.Adapt<CaptchaValidateModel>();
         var command = new ChangePasswordCommand(userName, changePasswordDto.OldPassword, changePasswordDto.NewPassword, mappedCaptcha);
         var result = await Sender.Send(command);
-        if (result)
-        {
-            return NoContent();
-        }
-        else
-        {
-            return Problem();
-        }
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
     [Authorize(Roles = "Citizen")]
@@ -216,14 +227,10 @@ public class CitizenAccountController : ApiController
         }
         var command = new ChangePasswordCommand(userName, changePasswordAppDto.OldPassword, changePasswordAppDto.NewPassword);
         var result = await Sender.Send(command);
-        if (result)
-        {
-            return NoContent();
-        }
-        else
-        {
-            return Problem();
-        }
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
     [HttpPost("ForgotPassword")]

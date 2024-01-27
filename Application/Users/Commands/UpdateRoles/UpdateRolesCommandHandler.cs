@@ -13,6 +13,9 @@ internal class UpdateRolesCommandHandler(IUserRepository userRepository) : IRequ
         if (roles is null)
             return AuthenticateErrors.NullAssignedRole;
         var result = await userRepository.UpdateRolesAsync(request.UserId, roles);
+        if (!result)
+            return AuthenticateErrors.RoleAssignmentFailed;
+
         return result;
     }
 }

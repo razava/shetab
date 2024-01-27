@@ -6,32 +6,23 @@ using MediatR;
 
 namespace Application.Users.Commands.UpdateUserAvatar;
 
-internal class UpdateUserAvatarCommandHandler : IRequestHandler<UpdateUserAvatarCommand, Media>
+internal class UpdateUserAvatarCommandHandler(
+    IUserRepository userRepository,
+    IUnitOfWork unitOfWork,
+    IStorageService storageService) : IRequestHandler<UpdateUserAvatarCommand, Result<Media>>
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IStorageService _storageService;
-    public UpdateUserAvatarCommandHandler(
-        IUserRepository userRepository,
-        IUnitOfWork unitOfWork,
-        IStorageService storageService)
+    
+    public async Task<Result<Media>> Handle(UpdateUserAvatarCommand request, CancellationToken cancellationToken)
     {
-        _userRepository = userRepository;
-        _unitOfWork = unitOfWork;
-        _storageService = storageService;
-    }
-
-    public async Task<Media> Handle(UpdateUserAvatarCommand request, CancellationToken cancellationToken)
-    {
-        var user = await _userRepository.GetSingleAsync(u => u.Id == request.UserId);
+        var user = await userRepository.GetSingleAsync(u => u.Id == request.UserId);
         if (user is null)
-            throw new NotFoundException("کاربر");
-        var avatar = await _storageService.WriteFileAsync(request.Avatar, AttachmentType.Avatar);
+            return NotFoundErrors.User;
+        var avatar = await storageService.WriteFileAsync(request.Avatar, AttachmentType.Avatar);
         if (avatar is null)
-            throw new SaveImageFailedException();
+            return AttachmentErrors.SaveImageFailed;
         user.Avatar = avatar;
-        _userRepository.Update(user);
-        await _unitOfWork.SaveAsync();
+        userRepository.Update(user);
+        await unitOfWork.SaveAsync();
 
         return avatar;
     }

@@ -30,6 +30,8 @@ public static class AuthenticateErrors
     public static readonly Error InvalidUsername = new Error("نام کاربری نامعتبر است.");
     public static readonly Error UserAlreadyExsists = new Error("کاربری با این مشخصات وجود دارد.");
     public static readonly Error InvalidLogin = new Error("ورود نامعتبر");
+    public static readonly Error ChangePasswordFailed = new Error("خطای تغییر رمز");
+    public static readonly Error RoleAssignmentFailed = new Error("تخصیص نقش ناموفق بود.");
 
 }
 

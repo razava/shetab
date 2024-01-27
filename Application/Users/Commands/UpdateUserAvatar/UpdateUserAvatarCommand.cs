@@ -7,4 +7,4 @@ namespace Application.Users.Commands.UpdateUserAvatar;
 public record UpdateUserAvatarCommand(
     string UserId,
     IFormFile Avatar
-    ) : IRequest<Media>;
+    ) : IRequest<Result<Media>>;

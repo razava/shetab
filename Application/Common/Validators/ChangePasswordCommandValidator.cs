@@ -1,4 +1,4 @@
-﻿using Application.Authentication.Commands.LoginCommand;
+﻿using Application.Authentication.Commands.ChangePasswordCommand;
 using FluentValidation;
 
 namespace Application.Common.Validators;

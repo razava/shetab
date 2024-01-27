@@ -1,6 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.ExtensionMethods;
+using Application.Authentication.Commands.ChangePasswordCommand;
 using Application.Authentication.Commands.LoginCommand;
 using Application.Users.Commands.UpdateUserAvatar;
 using Application.Users.Commands.UpdateUserProfile;
@@ -31,14 +32,18 @@ public class AuthenticateController : ApiController
     {
         var command = new LoginCommand(loginStaffDto.Username, loginStaffDto.Password);
         var result = await Sender.Send(command);
-        if (result.UserNotConfirmed)
+
+        if (result.IsFailed)
+            return Problem(result.ToResult());
+        
+        if (result.Value.UserNotConfirmed)
         {
             return StatusCode(StatusCodes.Status428PreconditionRequired, "");
         }
         else
         {
             //TODO: Consider converting token to base64
-            return Ok(result.JwtToken);
+            return Ok(result.Value.JwtToken);
         }
     }
 
@@ -54,14 +59,10 @@ public class AuthenticateController : ApiController
         }
         var command = new ChangePasswordCommand(userName, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
         var result = await Sender.Send(command);
-        if (result)
-        {
-            return NoContent();
-        }
-        else
-        {
-            return Problem();
-        }
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
 
@@ -76,9 +77,12 @@ public class AuthenticateController : ApiController
         }
         var query = new GetUserProfileQuery(userId);
         var result = await Sender.Send(query);
-        var mappedUser = result.Adapt<GetStaffProfileDto>();
-        return Ok(mappedUser);
+
+        return result.Match(
+            s => Ok(s.Adapt<GetStaffProfileDto>()),
+            f => Problem(f));
     }
+
 
     [Authorize]
     [HttpPut("Profile")]
@@ -101,13 +105,13 @@ public class AuthenticateController : ApiController
             updateDto.PhoneNumber2);
 
         var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
 
-        return NoContent();
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
-    //todo : Define Access Policy
+    
     [Authorize]
     [HttpPut("Avatar")]
     public async Task<ActionResult> UpdateAvatar([FromForm]UploadDto avatar)
@@ -119,21 +123,12 @@ public class AuthenticateController : ApiController
         }
         var command = new UpdateUserAvatarCommand(userId, avatar.File);
         var result = await Sender.Send(command);
-        //todo : no need to handle result??
-        return NoContent();
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
     
-
-    //Probably remove and instead use of Get/Regions/{id} from UserManagementController
-    /*
-    [Authorize]
-    [HttpGet("Regions")] //{instanceId}
-    public async Task<ActionResult<GetUserRegionsDto>> GetRegions()
-    {
-        await Task.CompletedTask;   //........................................  
-        return Ok();
-    }
-    */
 
 }
 
