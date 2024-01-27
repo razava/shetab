@@ -4,18 +4,11 @@ using MediatR;
 
 namespace Application.Configurations.Queries.ShahrbinInstanceManagement;
 
-internal sealed class ShahrbinInstancesQueryHandler : IRequestHandler<ShahrbinInstancesQuery, List<ShahrbinInstance>>
+internal sealed class ShahrbinInstancesQueryHandler(IShahrbinInstanceRepository shahrbinInstanceRepository) : IRequestHandler<ShahrbinInstancesQuery, Result<List<ShahrbinInstance>>>
 {
-    private readonly IShahrbinInstanceRepository _shahrbinInstanceRepository;
-
-    public ShahrbinInstancesQueryHandler(IShahrbinInstanceRepository shahrbinInstanceRepository)
+    public async Task<Result<List<ShahrbinInstance>>> Handle(ShahrbinInstancesQuery request, CancellationToken cancellationToken)
     {
-        _shahrbinInstanceRepository = shahrbinInstanceRepository;
-    }
-
-    public async Task<List<ShahrbinInstance>> Handle(ShahrbinInstancesQuery request, CancellationToken cancellationToken)
-    {
-        var result = await _shahrbinInstanceRepository.GetAsync(null, false, o => o.OrderBy(q => q.Id));
+        var result = await shahrbinInstanceRepository.GetAsync(null, false, o => o.OrderBy(q => q.Id));
         return result.ToList();
     }
 }

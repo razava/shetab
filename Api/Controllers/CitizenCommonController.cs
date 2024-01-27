@@ -43,26 +43,19 @@ public class CitizenCommonController : ApiController
         return Ok(resultValue.Where(c => c.ParentId == null).Single().Adapt<CategoryGetDto>());
     }
 
-    //..........................is needed for citizen?........
-    //........... review dto.................
-    //[HttpGet("Categories/{id}")]
-    //public async Task<CategoryGetDto> GetCategory(int id)
-    //{
-    //    var query = new GetCategoryByIdQuery(id);
-    //    var result = await Sender.Send(query);
-    //    return result.Adapt<CategoryGetDto>();
-    //}
-
-
+    
     [Authorize]
     [HttpGet("ViolationTypes")]
     public async Task<ActionResult<List<ViolationTypeDto>>> GetViolationTypes()
     {
         var query = new ViolationTypesQuery();
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<ViolationTypeDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<ViolationTypeDto>>()),
+            f => Problem(f));
     }
+
 
     //[Authorize]
     [HttpGet("ShahrbinInstances")]
@@ -70,21 +63,11 @@ public class CitizenCommonController : ApiController
     {
         var query = new ShahrbinInstancesQuery();
         var result = await Sender.Send(query);
-        return Ok(result);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
-
-
-
-
-    //[Authorize]
-    //[HttpGet("Regions/{id}")]
-    //public async Task<ActionResult<List<GetRegionDto>>> GetRegionsByCityId(int id)
-    //{
-    //    var query = new GetRegionQuery(id);
-    //    var result = await Sender.Send(query);
-    //    var mappedResult = result.Adapt<List<GetRegionDto>>();
-    //    return Ok(mappedResult);
-    //}
 
 
     [Authorize]

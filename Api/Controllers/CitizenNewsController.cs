@@ -1,5 +1,6 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
+using Api.ExtensionMethods;
 using Application.NewsApp.Queries.GetNews;
 using Mapster;
 using MediatR;
@@ -23,8 +24,10 @@ public class CitizenNewsController : ApiController
     {
         var query = new GetNewsQuery(instanceId);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<GetNewsDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<GetNewsDto>>()),
+            f => Problem(f));
     }
 
 

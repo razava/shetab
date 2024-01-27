@@ -43,7 +43,11 @@ public class StaffCommonController : ApiController
 
         var query = new ShahrbinInstancesQuery();
         var result = await Sender.Send(query);
-        var instanceResult = result.SingleOrDefault(result => result.Id == instanceId);
+        if(result.IsFailed)   //todo : needed?
+            return Problem(result.ToResult());
+
+        var resultValue = result.Value;
+        var instanceResult = resultValue.SingleOrDefault(result => result.Id == instanceId);
 
         if (instanceResult == null)
             return NotFound();

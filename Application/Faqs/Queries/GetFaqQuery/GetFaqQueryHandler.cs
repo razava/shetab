@@ -5,18 +5,11 @@ using System.Linq.Expressions;
 
 namespace Application.Faqs.Queries.GetFaqQuery;
 
-internal class GetFaqQueryHandler : IRequestHandler<GetFaqQuery, List<Faq>>
+internal class GetFaqQueryHandler(IFaqRepository faqRepository) : IRequestHandler<GetFaqQuery, Result<List<Faq>>>
 {
-    private readonly IFaqRepository _faqRepository;
-
-    public GetFaqQueryHandler(IFaqRepository faqRepository)
+    public async Task<Result<List<Faq>>> Handle(GetFaqQuery request, CancellationToken cancellationToken)
     {
-        _faqRepository = faqRepository;
-    }
-
-    public async Task<List<Faq>> Handle(GetFaqQuery request, CancellationToken cancellationToken)
-    {
-        var result = await _faqRepository.GetAsync(f => (request.ReturnAll || f.IsDeleted == false), false);
+        var result = await faqRepository.GetAsync(f => (request.ReturnAll || f.IsDeleted == false), false);
 
         return result.ToList();
     }

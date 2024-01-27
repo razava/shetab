@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Application.Faqs.Queries.GetFaqQuery;
 
-public record GetFaqQuery(int InstanceId, bool ReturnAll = false) : IRequest<List<Faq>>;
+public record GetFaqQuery(int InstanceId, bool ReturnAll = false) : IRequest<Result<List<Faq>>>;

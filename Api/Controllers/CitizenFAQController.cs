@@ -1,5 +1,6 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
+using Api.ExtensionMethods;
 using Application.Faqs.Queries.GetFaqQuery;
 using Mapster;
 using MediatR;
@@ -23,8 +24,10 @@ public class CitizenFAQController : ApiController
     {
         var query = new GetFaqQuery(instanceId);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<GetFaqsDto>>();
-        return Ok(mappedResult);
+        
+        return result.Match(
+            s => Ok(s.Adapt<List<GetFaqsDto>>()),
+            f => Problem(f));
     }
 
 
