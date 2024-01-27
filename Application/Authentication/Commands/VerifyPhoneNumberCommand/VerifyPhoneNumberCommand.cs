@@ -3,4 +3,7 @@ using MediatR;
 
 namespace Application.Authentication.Commands.VerifyPhoneNumberCommand;
 
-public sealed record VerifyPhoneNumberCommand(string Username, string verificationCode, CaptchaValidateModel? CaptchaValidateModel = null) : IRequest<bool>;
+public sealed record VerifyPhoneNumberCommand(
+    string Username,
+    string verificationCode,
+    CaptchaValidateModel? CaptchaValidateModel = null) : IRequest<Result<bool>>;

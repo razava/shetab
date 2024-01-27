@@ -4,27 +4,22 @@ using MediatR;
 
 namespace Application.Authentication.Commands.VerifyPhoneNumberCommand;
 
-internal sealed class VerifyPhoneNumberCommandHandler : IRequestHandler<VerifyPhoneNumberCommand, bool>
+internal sealed class VerifyPhoneNumberCommandHandler(IAuthenticationService authenticationService, ICaptchaProvider captchaProvider) : IRequestHandler<VerifyPhoneNumberCommand, Result<bool>>
 {
-    private readonly IAuthenticationService _authenticationService;
-    private readonly ICaptchaProvider _captchaProvider;
-
-    public VerifyPhoneNumberCommandHandler(IAuthenticationService authenticationService, ICaptchaProvider captchaProvider)
-    {
-        _authenticationService = authenticationService;
-        _captchaProvider = captchaProvider;
-    }
-    public async Task<bool> Handle(VerifyPhoneNumberCommand request, CancellationToken cancellationToken)
+    
+    public async Task<Result<bool>> Handle(VerifyPhoneNumberCommand request, CancellationToken cancellationToken)
     {
         if (request.CaptchaValidateModel is not null)
         {
-            var isCaptchaValid = _captchaProvider.Validate(request.CaptchaValidateModel);
+            var isCaptchaValid = captchaProvider.Validate(request.CaptchaValidateModel);
             if (!isCaptchaValid)
             {
-                throw new InvalidCaptchaException();
+                return AuthenticateErrors.InvalidCaptcha;
             }
         }
-        var isVerified = await _authenticationService.VerifyPhoneNumber(request.Username, request.verificationCode);
+        var isVerified = await authenticationService.VerifyPhoneNumber(request.Username, request.verificationCode);
+        if (!isVerified)
+            return AuthenticateErrors.VerificationFailed;
 
         return isVerified;
     }

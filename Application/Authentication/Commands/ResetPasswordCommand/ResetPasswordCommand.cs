@@ -3,4 +3,8 @@ using MediatR;
 
 namespace Application.Authentication.Commands.ResetPasswordCommand;
 
-public sealed record ResetPasswordCommand(string Username, string ResetPasswordToken, string NewPassword, CaptchaValidateModel? CaptchaValidateModel = null) : IRequest<bool>;
+public sealed record ResetPasswordCommand(
+    string Username,
+    string ResetPasswordToken,
+    string NewPassword,
+    CaptchaValidateModel? CaptchaValidateModel = null) : IRequest<Result<bool>>;

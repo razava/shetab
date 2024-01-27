@@ -4,27 +4,20 @@ using MediatR;
 
 namespace Application.Authentication.Queries.GetResetPasswordTokenQuery;
 
-internal sealed class GetResetPasswordTokenQueryHandler : IRequestHandler<GetResetPasswordTokenQuery, string>
+internal sealed class GetResetPasswordTokenQueryHandler(IAuthenticationService authenticationService, ICaptchaProvider captchaProvider) : IRequestHandler<GetResetPasswordTokenQuery, Result<string>>
 {
-    private readonly IAuthenticationService _authenticationService;
-    private readonly ICaptchaProvider _captchaProvider;
-
-    public GetResetPasswordTokenQueryHandler(IAuthenticationService authenticationService, ICaptchaProvider captchaProvider)
-    {
-        _authenticationService = authenticationService;
-        _captchaProvider = captchaProvider;
-    }
-    public async Task<string> Handle(GetResetPasswordTokenQuery request, CancellationToken cancellationToken)
+    
+    public async Task<Result<string>> Handle(GetResetPasswordTokenQuery request, CancellationToken cancellationToken)
     {
         if (request.CaptchaValidateModel is not null)
         {
-            var isCaptchaValid = _captchaProvider.Validate(request.CaptchaValidateModel);
+            var isCaptchaValid = captchaProvider.Validate(request.CaptchaValidateModel);
             if (!isCaptchaValid)
             {
-                throw new InvalidCaptchaException();
+                return AuthenticateErrors.InvalidCaptcha;
             }
         }
-        var resetPasswordToken = await _authenticationService.GetResetPasswordToken(request.Username, request.verificationCode);
+        var resetPasswordToken = await authenticationService.GetResetPasswordToken(request.Username, request.verificationCode);
 
         return resetPasswordToken;
     }

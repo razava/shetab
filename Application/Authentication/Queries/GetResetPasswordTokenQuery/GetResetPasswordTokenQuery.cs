@@ -3,4 +3,6 @@ using MediatR;
 
 namespace Application.Authentication.Queries.GetResetPasswordTokenQuery;
 
-public sealed record GetResetPasswordTokenQuery(string Username, string verificationCode, CaptchaValidateModel? CaptchaValidateModel = null) : IRequest<string>;
+public sealed record GetResetPasswordTokenQuery(
+    string Username, string verificationCode,
+    CaptchaValidateModel? CaptchaValidateModel = null) : IRequest<Result<string>>;

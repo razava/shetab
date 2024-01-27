@@ -5,36 +5,25 @@ using MediatR;
 
 namespace Application.Authentication.Queries.ForgotPasswordQuery;
 
-internal sealed class ForgotPasswordQueryHandler : IRequestHandler<ForgotPasswordQuery, bool>
+internal sealed class ForgotPasswordQueryHandler(IAuthenticationService authenticationService, ICaptchaProvider captchaProvider, ICommunicationService communicationService) : IRequestHandler<ForgotPasswordQuery, Result<bool>>
 {
-    private readonly IAuthenticationService _authenticationService;
-    private readonly ICaptchaProvider _captchaProvider;
-    private readonly ICommunicationService _communicationService;
-
-    public ForgotPasswordQueryHandler(IAuthenticationService authenticationService, ICaptchaProvider captchaProvider, ICommunicationService communicationService)
-    {
-        _authenticationService = authenticationService;
-        _captchaProvider = captchaProvider;
-        _communicationService = communicationService;
-    }
-    public async Task<bool> Handle(ForgotPasswordQuery request, CancellationToken cancellationToken)
+    
+    public async Task<Result<bool>> Handle(ForgotPasswordQuery request, CancellationToken cancellationToken)
     {
         if (request.CaptchaValidateModel is not null)
         {
-            var isCaptchaValid = _captchaProvider.Validate(request.CaptchaValidateModel);
+            var isCaptchaValid = captchaProvider.Validate(request.CaptchaValidateModel);
             if (!isCaptchaValid)
-            {
-                throw new InvalidCaptchaException();
-            }
+                return AuthenticateErrors.InvalidCaptcha;
         }
-        var verificationCode = await _authenticationService.GetVerificationCode(request.Username);
+        var verificationCode = await authenticationService.GetVerificationCode(request.Username);
         try
         {
-            await _communicationService.SendVerificationAsync(request.Username, verificationCode);
+            await communicationService.SendVerificationAsync(request.Username, verificationCode);
         }
         catch
         {
-            throw new SendSmsException();
+            return AuthenticateErrors.SendSms;
         }
 
         return true;

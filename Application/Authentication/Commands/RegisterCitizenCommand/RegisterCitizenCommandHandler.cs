@@ -5,52 +5,45 @@ using MediatR;
 
 namespace Application.Authentication.Commands.RegisterCitizenCommand;
 
-internal class RegisterCitizenCommandHandler : IRequestHandler<RegisterCitizenCommand, bool>
+internal class RegisterCitizenCommandHandler(IAuthenticationService authenticationService, ICaptchaProvider captchaProvider, ICommunicationService communicationService) : IRequestHandler<RegisterCitizenCommand, Result<bool>>
 {
-    private readonly IAuthenticationService _authenticationService;
-    private readonly ICaptchaProvider _captchaProvider;
-    private readonly ICommunicationService _communicationService;
-
-    public RegisterCitizenCommandHandler(IAuthenticationService authenticationService, ICaptchaProvider captchaProvider, ICommunicationService communicationService)
-    {
-        _authenticationService = authenticationService;
-        _captchaProvider = captchaProvider;
-        _communicationService = communicationService;
-    }
-    public async Task<bool> Handle(RegisterCitizenCommand request, CancellationToken cancellationToken)
+    
+    public async Task<Result<bool>> Handle(RegisterCitizenCommand request, CancellationToken cancellationToken)
     {
         if (request.CaptchaValidateModel is not null)
         {
-            var isCaptchaValid = _captchaProvider.Validate(request.CaptchaValidateModel);
+            var isCaptchaValid = captchaProvider.Validate(request.CaptchaValidateModel);
             if (!isCaptchaValid)
             {
-                throw new InvalidCaptchaException();
+                return AuthenticateErrors.InvalidCaptcha;
             }
         }
 
         bool result;
         try
         {
-            result = await _authenticationService.RegisterCitizen(request.Username, request.Password);
+            result = await authenticationService.RegisterCitizen(request.Username, request.Password);
             if (result)
             {
-                var verificationCode = await _authenticationService.GetVerificationCode(request.Username);
+                var verificationCode = await authenticationService.GetVerificationCode(request.Username);
                 try
                 {
-                    await _communicationService.SendVerificationAsync(request.Username, verificationCode);
+                    await communicationService.SendVerificationAsync(request.Username, verificationCode);
                 }
                 catch
                 {
-                    throw new SendSmsException();
+                    return AuthenticateErrors.SendSms;
                 }
-                result = true;
+                //result = true;
+                return true;
             }
         }
         catch
         {
-            throw new CreationFailedException("کاربر");
+            return AuthenticateErrors.UserCreationFailed;
         }
 
-        return result;
+        return AuthenticateErrors.UserCreationFailed;
+        //return result;
     }
 }

@@ -6,4 +6,4 @@ namespace Application.Authentication.Commands.RegisterCitizenCommand;
 public sealed record RegisterCitizenCommand(
     string Username,
     string Password,
-    CaptchaValidateModel? CaptchaValidateModel = null) :IRequest<bool>;
+    CaptchaValidateModel? CaptchaValidateModel = null) :IRequest<Result<bool>>;

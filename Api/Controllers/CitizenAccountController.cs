@@ -84,14 +84,18 @@ public class CitizenAccountController : ApiController
 
         var command = new RegisterCitizenCommand(registerDto.Username, registerDto.Password, mappedCaptcha);
         var result = await Sender.Send(command);
-        if (result)
-        {
-            return StatusCode(StatusCodes.Status428PreconditionRequired, "");
-        }
-        else
-        {
-            return BadRequest();
-        }
+
+        return result.Match(
+            s => StatusCode(StatusCodes.Status428PreconditionRequired, ""),
+            f => Problem(f));
+        //if (result)
+        //{
+        //    return StatusCode(StatusCodes.Status428PreconditionRequired, "");
+        //}
+        //else
+        //{
+        //    return BadRequest();
+        //}
     }
 
     [HttpPost("RegisterApp")]
@@ -99,22 +103,19 @@ public class CitizenAccountController : ApiController
     {
         var command = new RegisterCitizenCommand(registerAppDto.Username, registerAppDto.Password);
         var result = await Sender.Send(command);
-        if (result)
-        {
-            return StatusCode(StatusCodes.Status428PreconditionRequired, "");
-        }
-        else
-        {
-            return BadRequest();
-        }
+
+        return result.Match(
+            s => StatusCode(StatusCodes.Status428PreconditionRequired, ""),
+            f => Problem(f));
     }
+
 
     [HttpPost("Verify")]
     public async Task<ActionResult> Verify([FromBody] VerificationDto verificationDto)
     {
         var command = new VerifyPhoneNumberCommand(verificationDto.Username, verificationDto.VerificationCode);
         var result = await Sender.Send(command);
-        if (result)
+        if (result.IsSuccess)
         {
             var loginCommand = new LoginCommand(verificationDto.Username, verificationDto.Password);
             var loginResult = await Sender.Send(loginCommand);
@@ -153,6 +154,7 @@ public class CitizenAccountController : ApiController
             f => Problem(f));
     }
 
+
     [Authorize(Roles = "Citizen")]
     [HttpPut]
     public async Task<IActionResult> UpdateUser(UpdateCitizenProfileDto updateDto)
@@ -174,15 +176,14 @@ public class CitizenAccountController : ApiController
             updateDto.PhoneNumber2);
 
         var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
 
-        return NoContent();
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
 
     //todo : Define Access Policy
-
     [Authorize]
     [HttpPut("Avatar")]
     public async Task<ActionResult> UpdateAvatar([FromForm] UploadDto avatar)
@@ -194,9 +195,12 @@ public class CitizenAccountController : ApiController
         }
         var command = new UpdateUserAvatarCommand(userId, avatar.File);
         var result = await Sender.Send(command);
-        //todo : no need to handle result??
-        return NoContent();
+
+        return result.Match(
+           s => NoContent(),
+           f => Problem(f));
     }
+
 
     [Authorize(Roles = "Citizen")]
     [HttpPut("Password")]
@@ -216,6 +220,7 @@ public class CitizenAccountController : ApiController
             f => Problem(f));
     }
 
+
     [Authorize(Roles = "Citizen")]
     [HttpPut("PasswordApp")]
     public async Task<ActionResult> ChangePasswordApp([FromBody] ChangePasswordAppDto changePasswordAppDto)
@@ -233,74 +238,68 @@ public class CitizenAccountController : ApiController
             f => Problem(f));
     }
 
+
     [HttpPost("ForgotPassword")]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
     {
         var mappedCaptcha = forgotPasswordDto.Captcha.Adapt<CaptchaValidateModel>();
         var query = new ForgotPasswordQuery(forgotPasswordDto.PhoneNumber, mappedCaptcha);
         var result = await Sender.Send(query);
-        if (result)
-        {
-            return StatusCode(StatusCodes.Status428PreconditionRequired, "");
-        }
-        else
-        {
-            return BadRequest();
-        }
+
+        return result.Match(
+            s => StatusCode(StatusCodes.Status428PreconditionRequired, ""),
+            f => Problem(f));
     }
+
 
     [HttpPost("ForgotPasswordApp")]
     public async Task<IActionResult> ForgotPasswordApp([FromBody] ForgotPasswordAppDto forgotPasswordDto)
     {
         var query = new ForgotPasswordQuery(forgotPasswordDto.PhoneNumber);
         var result = await Sender.Send(query);
-        if (result)
-        {
-            return StatusCode(StatusCodes.Status428PreconditionRequired, "");
-        }
-        else
-        {
-            return BadRequest();
-        }
+
+        return result.Match(
+            s => StatusCode(StatusCodes.Status428PreconditionRequired, ""),
+            f => Problem(f));
     }
+
 
     [HttpPost("RequestToken")]
     public async Task<ActionResult> RequestToken([FromBody] RequestTokenDto requestTokenDto)
     {
         var query = new GetResetPasswordTokenQuery(requestTokenDto.PhoneNumber, requestTokenDto.VerificationCode);
         var result = await Sender.Send(query);
-        if (result == null)
-        {
-            return BadRequest();
-        }
-        return Ok(result);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
+
 
     [HttpPost("ResetPassword")]
     public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
     {
         var command = new ResetPasswordCommand(resetPasswordDto.Username, resetPasswordDto.ResetPasswordToken, resetPasswordDto.NewPassword);
         var result = await Sender.Send(command);
-        if (result)
-        {
-            return Ok();
-        }
-        else
-        {
-            return BadRequest();
-        }
+
+        return result.Match(
+            s => Ok(),
+            f => Problem(f));
     }
+
 
     [HttpGet("Captcha")]
     public async Task<ActionResult<string>> GetCaptcha()
     {
         var query = new CaptchaQuery();
         var result = await Sender.Send(query);
-        if (result is null)
-            throw new Exception();
-        Response.Headers.Append("Captcha-Key", result.Key.ToString());
-        return Ok("data:image/jpg;base64," + Convert.ToBase64String(result.Data));
+        if (result.IsFailed)
+            return Problem(result.ToResult());
+
+        Response.Headers.Append("Captcha-Key", result.Value.Key.ToString());
+        return Ok("data:image/jpg;base64," + Convert.ToBase64String(result.Value.Data));
     }
+
 
     [HttpPost("LoginGov")]
     public async Task<IActionResult> LoginGov([FromBody] GovLoginDto govLoginDto)
