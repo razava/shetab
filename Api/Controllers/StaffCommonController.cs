@@ -1,7 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.ExtensionMethods;
-using Application.AdministrativeDivisions.Queries.GetProvince;
+using Application.AdministrativeDivisions.Queries.GetRegion;
 using Application.Categories.Queries.GetCategory;
 using Application.Configurations.Queries.Roles;
 using Application.Configurations.Queries.ShahrbinInstanceManagement;
@@ -27,11 +27,14 @@ public class StaffCommonController : ApiController
 
     [Authorize]
     [HttpGet("ShahrbinInstances")]
-    public async Task<IActionResult> GetInstances()
+    public async Task<ActionResult<List<ShahrbinInstance>>> GetInstances()
     {
         var query = new ShahrbinInstancesQuery();
         var result = await Sender.Send(query);
-        return Ok(result);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
     //todo : Define Access policy
@@ -82,8 +85,10 @@ public class StaffCommonController : ApiController
     {
         var query = new ViolationTypesQuery();
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<ViolationTypeDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<ViolationTypeDto>>()),
+            f => Problem(f));
     }
 
 
@@ -93,8 +98,10 @@ public class StaffCommonController : ApiController
     {
         var query = new GetRegionQuery(id);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<GetRegionDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<GetRegionDto>>()),
+            f => Problem(f));
     }
 
 
@@ -104,8 +111,10 @@ public class StaffCommonController : ApiController
     {
         var query = new GetRolesQuery();
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<GetRolesDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<GetRolesDto>>()),
+            f => Problem(f));
     }
 
 
@@ -139,8 +148,10 @@ public class StaffCommonController : ApiController
         var userId = User.GetUserId();
         var query = new GetUserRegionsQuery(instanceId, userId);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<GetUserRegionsDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<GetUserRegionsDto>>()),
+            f => Problem(f));
     }
 
 }

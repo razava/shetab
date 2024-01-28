@@ -2,21 +2,15 @@
 using Domain.Models.Relational.Common;
 using MediatR;
 
-namespace Application.AdministrativeDivisions.Queries.GetProvince;
+namespace Application.AdministrativeDivisions.Queries.GetRegion;
 
-internal sealed class GetRegionQueryHandler : IRequestHandler<GetRegionQuery, List<Region>>
+internal sealed class GetRegionQueryHandler(IRegionRepository regionRepository) : IRequestHandler<GetRegionQuery, Result<List<Region>>>
 {
-    private readonly IRegionRepository _regionRepository;
 
-    public GetRegionQueryHandler(IRegionRepository regionRepository)
-    {
-        _regionRepository = regionRepository;
-    }
-
-    public async Task<List<Region>> Handle(GetRegionQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<Region>>> Handle(GetRegionQuery request, CancellationToken cancellationToken)
     {
         //TODO: perform required filtering
-        var result = await _regionRepository.GetAsync(p => p.CityId == request.CityId);
+        var result = await regionRepository.GetAsync(p => p.CityId == request.CityId);
 
         return result.ToList();
     }

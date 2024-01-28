@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Application.Configurations.Queries.Roles;
 
-public record GetRolesQuery() : IRequest<List<IsInRoleModel>>;
+public record GetRolesQuery() : IRequest<Result<List<IsInRoleModel>>>;
 
