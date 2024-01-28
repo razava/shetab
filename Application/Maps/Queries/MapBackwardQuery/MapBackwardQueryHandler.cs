@@ -4,18 +4,12 @@ using MediatR;
 
 namespace Application.Maps.Queries.MapBackwardQuery;
 
-internal class MapBackwardQueryHandler : IRequestHandler<MapBackwardQuery, BackwardResultApplication>
+internal class MapBackwardQueryHandler(IMapService mapService) : IRequestHandler<MapBackwardQuery, Result<BackwardResultApplication>>
 {
-    private readonly IMapService _mapService;
-
-    public MapBackwardQueryHandler(IMapService mapService)
+    public async Task<Result<BackwardResultApplication>> Handle(MapBackwardQuery request, CancellationToken cancellationToken)
     {
-        _mapService = mapService;
-    }
-
-    public async Task<BackwardResultApplication> Handle(MapBackwardQuery request, CancellationToken cancellationToken)
-    {
-        var result = await _mapService.Backward(request.Longitude, request.Latitude);
+        var result = await mapService.Backward(request.Longitude, request.Latitude);
+        //todo : service itself throw exception bu check for null response possibility
         return result;
     }
 }

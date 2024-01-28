@@ -6,4 +6,4 @@ public record AnswerPollCommand(
     string UserId,
     int Id,
     string? Text,
-    List<int> ChoicesIds) : IRequest<bool>;
+    List<int> ChoicesIds) : IRequest<Result<bool>>;

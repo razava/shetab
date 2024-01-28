@@ -4,18 +4,12 @@ using MediatR;
 
 namespace Application.Maps.Queries.MapForwardQuery;
 
-internal class MapForwardQueryHandler : IRequestHandler<MapForwardQuery, ForwardResultApplication>
+internal class MapForwardQueryHandler(IMapService mapService) : IRequestHandler<MapForwardQuery, Result<ForwardResultApplication>>
 {
-    private readonly IMapService _mapService;
-
-    public MapForwardQueryHandler(IMapService mapService)
+    public async Task<Result<ForwardResultApplication>> Handle(MapForwardQuery request, CancellationToken cancellationToken)
     {
-        _mapService = mapService;
-    }
-
-    public async Task<ForwardResultApplication> Handle(MapForwardQuery request, CancellationToken cancellationToken)
-    {
-        var result = await _mapService.Forward(request.Address);
+        var result = await mapService.Forward(request.Address);
+        //todo : service itself throw exception bu check for null response possibility
         return result;
     }
 }

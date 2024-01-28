@@ -7,28 +7,20 @@ using MediatR;
 
 namespace Application.Polls.Commands.AnswerPollCommand;
 
-internal class AnswerPollCommandHandler : IRequestHandler<AnswerPollCommand, bool>
+internal class AnswerPollCommandHandler(IPollRepository pollRepository, IUnitOfWork unitOfWork) : IRequestHandler<AnswerPollCommand, Result<bool>>
 {
-    private readonly IPollRepository _pollRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public AnswerPollCommandHandler(IPollRepository pollRepository, IUnitOfWork unitOfWork)
+   
+    public async Task<Result<bool>> Handle(AnswerPollCommand request, CancellationToken cancellationToken)
     {
-        _pollRepository = pollRepository;
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<bool> Handle(AnswerPollCommand request, CancellationToken cancellationToken)
-    {
-        var poll = await _pollRepository.GetById(request.Id, request.UserId);
+        var poll = await pollRepository.GetById(request.Id, request.UserId);
         if (poll is null)
-            throw new NotFoundException("نظرسنجی");
+            return NotFoundErrors.Poll;
 
         poll.Answer(request.UserId, request.ChoicesIds, request.Text);
         
-        _pollRepository.Update(poll);
+        pollRepository.Update(poll);
 
-        await _unitOfWork.SaveAsync();
+        await unitOfWork.SaveAsync();
 
         return true;
     }

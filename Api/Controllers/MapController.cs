@@ -5,6 +5,7 @@ using Application.Maps.Queries.MapForwardQuery;
 using Mapster;
 using Application.Maps.Queries.MapBackwardQuery;
 using MediatR;
+using Api.ExtensionMethods;
 
 namespace Shahrbin.Api.Controllers
 {
@@ -21,8 +22,11 @@ namespace Shahrbin.Api.Controllers
         {
             var query = new MapForwardQuery(address);
             var result = await Sender.Send(query);
-            var r2 = result.Adapt<ForwardResult>();
-            return Ok(r2);
+
+            return result.Match(
+                s => Ok(s.Adapt<ForwardResult>()),
+                f => Problem(f));
+            
         }
 
         [HttpGet("Backward/{lng}/{lat}")]
@@ -30,8 +34,9 @@ namespace Shahrbin.Api.Controllers
         {
             var query = new MapBackwardQuery(lng, lat);
             var result = await Sender.Send(query);
-            var r2 = result.Adapt<BackwardResult>();
-            return Ok(r2);
+            return result.Match(
+                s => Ok(s.Adapt<BackwardResult>()),
+                f => Problem(f));
         }
     }
 }

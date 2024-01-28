@@ -28,8 +28,12 @@ public class CitizenPollsController : ApiController
         var userId = User.GetUserId();
         var query = new GetPollsQuery(instanceId, userId);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<GetPollsDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<GetPollsDto>>()),
+            f => Problem(f));
+        //var mappedResult = result.Adapt<List<GetPollsDto>>();
+        //return Ok(mappedResult);
     }
 
     [Authorize(Roles = "Citizen")]
@@ -39,10 +43,14 @@ public class CitizenPollsController : ApiController
         var userId = User.GetUserId();
         var query = new GetPollsByIdQuery(id, userId);
         var result = await Sender.Send(query);
-        if (result == null)
-            return Problem();
-        var mappedResult = result.Adapt<GetPollsDto>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<GetPollsDto>()),
+            f => Problem(f));
+        //if (result == null)
+        //    return Problem();
+        //var mappedResult = result.Adapt<GetPollsDto>();
+        //return Ok(mappedResult);
     }
 
     //[Authorize(Roles = "Citizen")]
@@ -64,9 +72,10 @@ public class CitizenPollsController : ApiController
             answerDto.Text,
             answerDto.ChoicesIds);
         var result = await Sender.Send(commad);
-        if (!result)
-            return Problem();
-        return Ok();
+
+        return result.Match(
+            s => Ok(),
+            f => Problem(f));
     }
 
 
