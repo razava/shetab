@@ -309,9 +309,13 @@ public class StaffReportController : ApiController
         var userId = User.GetUserId();
         var query = new GetCommentsQuery(ReportId, pagingInfo);
         var result = await Sender.Send(query);
-        Response.AddPaginationHeaders(result.Meta);
+
+        if(result.IsFailed)
+            return Problem(result.ToResult());
+    
+        Response.AddPaginationHeaders(result.Value.Meta);
         var mappedResult = new List<GetReportComments>();
-        foreach (var item in result)
+        foreach (var item in result.Value)
         {
             var mapppedItem = item.Adapt<GetReportComments>();
             mapppedItem.CanDelete = item.UserId == userId;
@@ -354,11 +358,10 @@ public class StaffReportController : ApiController
         var userId = User.GetUserId();
         var command = new DeleteCommentCommand(id, userId, User.GetUserRoles());
         var result = await Sender.Send(command);
-        if (!result)
-        {
-            return Problem();
-        }
-        return NoContent();
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
 

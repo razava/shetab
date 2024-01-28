@@ -1,31 +1,25 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
+using Domain.Models.Relational.Common;
 using MediatR;
 
 namespace Application.Reports.Commands.ReportViolation;
 
-internal sealed class ReportViolationCommandHandler : IRequestHandler<ReportViolationCommand, Violation>
+internal sealed class ReportViolationCommandHandler(IViolationRepository violationRepository, IUnitOfWork unitOfWork) : IRequestHandler<ReportViolationCommand, Result<Violation>>
 {
-    private readonly IViolationRepository _violationRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public ReportViolationCommandHandler(IViolationRepository violationRepository, IUnitOfWork unitOfWork)
-    {
-        _violationRepository = violationRepository;
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<Violation> Handle(ReportViolationCommand request, CancellationToken cancellationToken)
+    
+    public async Task<Result<Violation>> Handle(ReportViolationCommand request, CancellationToken cancellationToken)
     {
         var violation = new Violation()
         {
+            ShahrbinInstanceId = request.InstanceId,
             ReportId = request.ReportId,
             UserId = request.UserId,
             ViolationTypeId = request.ViolationTypeId,
             Description = request.Description,
         };
-        _violationRepository.Insert(violation);
-        await _unitOfWork.SaveAsync();
+        violationRepository.Insert(violation);
+        await unitOfWork.SaveAsync();
         return violation;
     }
 }

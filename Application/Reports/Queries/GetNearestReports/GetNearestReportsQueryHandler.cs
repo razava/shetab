@@ -6,19 +6,13 @@ using NetTopologySuite.Geometries;
 
 namespace Application.Reports.Queries.GetNearestReports;
 
-internal sealed class GetNearestReportsQueryHandler : IRequestHandler<GetNearestReportsQuery, PagedList<Report>>
+internal sealed class GetNearestReportsQueryHandler(IReportRepository reportRepository) : IRequestHandler<GetNearestReportsQuery, Result<PagedList<Report>>>
 {
-    private readonly IReportRepository _reportRepository;
 
-    public GetNearestReportsQueryHandler(IReportRepository reportRepository)
-    {
-        _reportRepository = reportRepository;
-    }
-
-    public async Task<PagedList<Report>> Handle(GetNearestReportsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PagedList<Report>>> Handle(GetNearestReportsQuery request, CancellationToken cancellationToken)
     {
         var currentLocation = new Point(request.Longitude, request.Latitude) { SRID = 4326 };
-        var reports = await _reportRepository.GetPagedAsync(
+        var reports = await reportRepository.GetPagedAsync(
             request.PagingInfo,
             r => r.ReportState != ReportState.NeedAcceptance
                  && r.Visibility == Visibility.EveryOne

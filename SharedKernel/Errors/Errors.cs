@@ -38,6 +38,7 @@ public static class AuthenticateErrors
 
 public static class OperationErrors
 {
+    public static readonly Error General = new Error("خطایی رخ داد.");
     public static readonly Error CommentHasReply = new Error("این کامنت یک ریپلای دارد.");
     public static readonly Error LoopMade = new Error("حلقه ای در ساختار سازمانی ایجاد شده است.");
     public static readonly Error ExecutiveOnlyLimit = new Error("کاربر برای ارسال پیام به شهروند باید نقش واحد اجرایی داشته باشد.");
@@ -91,6 +92,7 @@ public static class CreationFailedErrors
 
 public static class AccessDeniedErrors
 {
+    public static readonly Error General = new Error("محدودیت دسترسی.");
     public static readonly Error Executive = new Error("فقط واحد اجرایی می تواند پیمانکار تعریف کند.");
 }
 

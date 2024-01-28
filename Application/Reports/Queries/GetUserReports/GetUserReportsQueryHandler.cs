@@ -4,18 +4,11 @@ using MediatR;
 
 namespace Application.Reports.Queries.GetUserReports;
 
-internal sealed class GetUserReportsQueryHandler : IRequestHandler<GetUserReportsQuery, PagedList<Report>>
+internal sealed class GetUserReportsQueryHandler(IReportRepository reportRepository) : IRequestHandler<GetUserReportsQuery, Result<PagedList<Report>>>
 {
-    private readonly IReportRepository _reportRepository;
-
-    public GetUserReportsQueryHandler(IReportRepository reportRepository)
+    public async Task<Result<PagedList<Report>>> Handle(GetUserReportsQuery request, CancellationToken cancellationToken)
     {
-        _reportRepository = reportRepository;
-    }
-
-    public async Task<PagedList<Report>> Handle(GetUserReportsQuery request, CancellationToken cancellationToken)
-    {
-        var reports = await _reportRepository.GetPagedAsync(
+        var reports = await reportRepository.GetPagedAsync(
             request.PagingInfo,
             r => r.CitizenId == request.UserId,
             false,

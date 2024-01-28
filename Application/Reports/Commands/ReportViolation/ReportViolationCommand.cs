@@ -4,8 +4,9 @@ using MediatR;
 namespace Application.Reports.Commands.ReportViolation;
 
 public sealed record ReportViolationCommand(
+    int InstanceId,
     Guid ReportId,
     string UserId,
     int ViolationTypeId,
-    string Description) : IRequest<Violation>;
+    string Description) : IRequest<Result<Violation>>;
 

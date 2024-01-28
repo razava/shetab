@@ -8,5 +8,5 @@ public sealed record GetNearestReportsQuery(
     PagingInfo PagingInfo,
     int InstanceId,
     double Longitude,
-    double Latitude) : IRequest<PagedList<Report>>;
+    double Latitude) : IRequest<Result<PagedList<Report>>>;
 

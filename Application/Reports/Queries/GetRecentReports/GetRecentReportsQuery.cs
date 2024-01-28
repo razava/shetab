@@ -8,5 +8,5 @@ namespace Application.Reports.Queries.GetRecentReports;
 public sealed record GetRecentReportsQuery(
     PagingInfo PagingInfo,
     int instanceId,
-    string UserId) : IRequest<PagedList<Report>>;
+    string UserId) : IRequest<Result<PagedList<Report>>>;
 

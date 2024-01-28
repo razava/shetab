@@ -6,35 +6,27 @@ using MediatR;
 
 namespace Application.Comments.Commands.DeleteComment;
 
-internal class DeleteCommentCommandHandler : IRequestHandler<DeleteCommentCommand, bool>
+internal class DeleteCommentCommandHandler(ICommentRepository commentRepository, IUnitOfWork unitOfWork) : IRequestHandler<DeleteCommentCommand, Result<bool>>
 {
-    private readonly ICommentRepository _commentRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public DeleteCommentCommandHandler(ICommentRepository commentRepository, IUnitOfWork unitOfWork)
+    
+    public async Task<Result<bool>> Handle(DeleteCommentCommand request, CancellationToken cancellationToken)
     {
-        _commentRepository = commentRepository;
-        _unitOfWork = unitOfWork;
-    }
-
-    async Task<bool> IRequestHandler<DeleteCommentCommand, bool>.Handle(DeleteCommentCommand request, CancellationToken cancellationToken)
-    {
-        var comment = await _commentRepository.GetSingleAsync(c => c.Id == request.CommentId);
+        var comment = await commentRepository.GetSingleAsync(c => c.Id == request.CommentId);
         if (comment is null)
-            throw new NotFoundException("نظر");
+            return NotFoundErrors.Comment;
 
         if(!(comment.UserId == request.UserId || request.UserRoles.Contains(RoleNames.Operator)))
         {
-            return false;
+            return AccessDeniedErrors.General;
         }
-        _commentRepository.Delete(comment);
+        commentRepository.Delete(comment);
         try
         {
-            await _unitOfWork.SaveAsync();
+            await unitOfWork.SaveAsync();
         }
         catch
         {
-            return false;
+            return OperationErrors.General;
         }
 
         return true;

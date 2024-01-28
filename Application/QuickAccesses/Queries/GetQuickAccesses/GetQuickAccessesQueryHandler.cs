@@ -1,8 +1,6 @@
 ﻿using Application.Common.Interfaces.Persistence;
-using Application.Common.Statics;
 using Domain.Models.Relational;
 using MediatR;
-using System.Linq.Expressions;
 
 namespace Application.QuickAccesses.Queries.GetQuickAccesses;
 

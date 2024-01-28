@@ -32,8 +32,6 @@ public class CitizenPollsController : ApiController
         return result.Match(
             s => Ok(s.Adapt<List<GetPollsDto>>()),
             f => Problem(f));
-        //var mappedResult = result.Adapt<List<GetPollsDto>>();
-        //return Ok(mappedResult);
     }
 
     [Authorize(Roles = "Citizen")]
@@ -47,10 +45,6 @@ public class CitizenPollsController : ApiController
         return result.Match(
             s => Ok(s.Adapt<GetPollsDto>()),
             f => Problem(f));
-        //if (result == null)
-        //    return Problem();
-        //var mappedResult = result.Adapt<GetPollsDto>();
-        //return Ok(mappedResult);
     }
 
     //[Authorize(Roles = "Citizen")]

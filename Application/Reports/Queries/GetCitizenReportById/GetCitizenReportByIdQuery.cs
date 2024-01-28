@@ -5,5 +5,5 @@ namespace Application.Reports.Queries.GetCitizenReportById;
 
 public sealed record GetCitizenReportByIdQuery(
     Guid id,
-    string UserId) : IRequest<Report>;
+    string UserId) : IRequest<Result<Report>>;
 

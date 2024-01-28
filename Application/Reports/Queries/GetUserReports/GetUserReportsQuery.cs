@@ -6,5 +6,5 @@ namespace Application.Reports.Queries.GetUserReports;
 
 public sealed record GetUserReportsQuery(
     PagingInfo PagingInfo,
-    string UserId) : IRequest<PagedList<Report>>;
+    string UserId) : IRequest<Result<PagedList<Report>>>;
 

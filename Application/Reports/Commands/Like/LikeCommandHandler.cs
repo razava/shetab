@@ -3,21 +3,14 @@ using MediatR;
 
 namespace Application.Reports.Commands.Like;
 
-internal class LikeCommandHandler : IRequestHandler<LikeCommand, bool>
+internal class LikeCommandHandler(IReportLikesRepository likesRepository, IUnitOfWork unitOfWork) : IRequestHandler<LikeCommand, Result<bool>>
 {
-    private readonly IReportLikesRepository _likesRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public LikeCommandHandler(IReportLikesRepository likesRepository, IUnitOfWork unitOfWork)
+    
+    public async Task<Result<bool>> Handle(LikeCommand request, CancellationToken cancellationToken)
     {
-        _likesRepository = likesRepository;
-        _unitOfWork = unitOfWork;
-    }
+        var result = await likesRepository.Like(request.UserId, request.ReportId, request.IsLiked);
 
-    public async Task<bool> Handle(LikeCommand request, CancellationToken cancellationToken)
-    {
-        var result = await _likesRepository.Like(request.UserId, request.ReportId, request.IsLiked);
-        await _unitOfWork.SaveAsync();
+        await unitOfWork.SaveAsync();
 
         return result;
     }

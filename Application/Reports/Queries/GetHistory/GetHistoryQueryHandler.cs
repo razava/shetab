@@ -5,19 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Reports.Queries.GetReportById;
 
-internal sealed class GetHistoryQueryHandler : IRequestHandler<GetHistoryQuery, List<TransitionLog>>
+internal sealed class GetHistoryQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetHistoryQuery, Result<List<TransitionLog>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
-
-    public GetHistoryQueryHandler(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<List<TransitionLog>> Handle(GetHistoryQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<TransitionLog>>> Handle(GetHistoryQuery request, CancellationToken cancellationToken)
     {
         //TODO: check whether user can access to content or not
-        var context = _unitOfWork.DbContext;
+        var context = unitOfWork.DbContext;
         var result = await context.Set<TransitionLog>().Where(tl => tl.ReportId == request.Id).ToListAsync(cancellationToken);
         return result;
     }

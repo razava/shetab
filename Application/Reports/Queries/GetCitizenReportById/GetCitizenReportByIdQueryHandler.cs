@@ -5,25 +5,18 @@ using MediatR;
 
 namespace Application.Reports.Queries.GetCitizenReportById;
 
-internal sealed class GetCitizenReportByIdQueryHandler : IRequestHandler<GetCitizenReportByIdQuery, Report>
+internal sealed class GetCitizenReportByIdQueryHandler(IReportRepository reportRepository) : IRequestHandler<GetCitizenReportByIdQuery, Result<Report>>
 {
-    private readonly IReportRepository _reportRepository;
-
-    public GetCitizenReportByIdQueryHandler(IReportRepository reportRepository)
+    public async Task<Result<Report>> Handle(GetCitizenReportByIdQuery request, CancellationToken cancellationToken)
     {
-        _reportRepository = reportRepository;
-    }
-
-    public async Task<Report> Handle(GetCitizenReportByIdQuery request, CancellationToken cancellationToken)
-    {
-        var report = await _reportRepository.GetSingleAsync(
+        var report = await reportRepository.GetSingleAsync(
             r => r.Id == request.id,
             false);
         if (report is null)
-            throw new NotFoundException("گزارش");
+            return NotFoundErrors.Report;
         if (report.CitizenId != request.UserId)
         {
-            throw new AccessDeniedException();
+            return AccessDeniedErrors.General;
         }
         return report;
     }

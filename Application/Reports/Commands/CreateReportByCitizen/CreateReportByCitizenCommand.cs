@@ -13,5 +13,5 @@ public sealed record CreateReportByCitizenCommand(
     AddressInfoRequest Address,
     List<Guid> Attachments,
     bool IsIdentityVisible = true,
-    bool IsPublic = true) : IRequest<Report>;
+    bool IsPublic = true) : IRequest<Result<Report>>;
 

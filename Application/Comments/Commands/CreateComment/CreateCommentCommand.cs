@@ -6,4 +6,4 @@ public record CreateCommentCommand(
     int InstanceId,
     string UserId,
     Guid ReportId,
-    string Content) : IRequest<bool>;
+    string Content) : IRequest<Result<bool>>;

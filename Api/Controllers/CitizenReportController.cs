@@ -19,6 +19,7 @@ using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 
 namespace Api.Controllers;
@@ -42,9 +43,12 @@ public class CitizenReportController : ApiController
         var query = new GetRecentReportsQuery(pagingInfo, instanceId, userId);
         //todo : handle user profile data
         var result = await Sender.Send(query);
-        Response.AddPaginationHeaders(result.Meta);
-        var mappedResult = result.Adapt<List<CitizenGetReportListDto>>();
-        return Ok(mappedResult);
+
+        if (result.IsFailed)
+            return Problem(result.ToResult());
+        var resultValue = result.Value;
+        Response.AddPaginationHeaders(resultValue.Meta);
+        return Ok(resultValue.Adapt<List<CitizenGetReportListDto>>());
     }
 
 
@@ -57,8 +61,10 @@ public class CitizenReportController : ApiController
         var instanceId = User.GetUserInstanceId();
         var query = new GetHistoryQuery(id, userId, instanceId);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<TransitionLogDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<TransitionLogDto>>()),
+            f => Problem(f));
     }
 
 
@@ -68,10 +74,13 @@ public class CitizenReportController : ApiController
     {
         var query = new GetNearestReportsQuery(pagingInfo, instanceId, locationDto.Longitude, locationDto.Latitude);
         var result = await Sender.Send(query);
-        Response.AddPaginationHeaders(result.Meta);
-        var mappedResult = result.Adapt<List<CitizenGetReportListDto>>();
-        return Ok(mappedResult);
+
+        if(result.IsFailed)
+            return Problem(result.ToResult());
+        Response.AddPaginationHeaders(result.Value.Meta);
+        return Ok(result.Adapt<List<CitizenGetReportListDto>>());
     }
+
 
     //todo : define & set dtos
     [Authorize(Roles = "Citizen")]
@@ -104,9 +113,11 @@ public class CitizenReportController : ApiController
         }
         var query = new GetUserReportsQuery(pagingInfo, userId);
         var result = await Sender.Send(query);
-        Response.AddPaginationHeaders(result.Meta);
-        var mappedResult = result.Adapt<List<CitizenGetReportListDto>>();
-        return Ok(mappedResult);
+
+        if (result.IsFailed)
+            return Problem(result.ToResult());
+        Response.AddPaginationHeaders(result.Value.Meta);
+        return Ok(result.Value.Adapt<List<CitizenGetReportListDto>>());
     }
 
 
@@ -120,8 +131,10 @@ public class CitizenReportController : ApiController
 
         var query = new GetCitizenReportByIdQuery(id, userId);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<CitizenGetReportDetailsDto>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<CitizenGetReportDetailsDto>()),
+            f => Problem(f));
     }
 
 
@@ -152,11 +165,11 @@ public class CitizenReportController : ApiController
             addressInfo,
             model.Attachments ?? new List<Guid>(),
             model.IsIdentityVisible);
-        var report = await Sender.Send(command);
-        
-        var routeValues = new {id = report.Id, instanceId = instanceId };
-        return CreatedAtAction(nameof(GetMyReportById), routeValues, report.Adapt<CitizenGetReportDetailsDto>());
+        var result = await Sender.Send(command);
 
+        return result.Match(
+            s => CreatedAtAction(nameof(GetMyReportById), new { id = s.Id, instanceId = instanceId },  s.Adapt<CitizenGetReportDetailsDto>()),
+            f => Problem(f));
     }
 
     
@@ -167,8 +180,10 @@ public class CitizenReportController : ApiController
         //there is 2 query for get QuickAccess in application layer.
         var query = new GetQuickAccessesQuery(instanceId);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<CitizenGetQuickAccess>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<CitizenGetQuickAccess>>()),
+            f => Problem(f));
     }
     
 
@@ -182,9 +197,10 @@ public class CitizenReportController : ApiController
             return Unauthorized();
         var command = new LikeCommand(userId, id, isLiked);
         var result = await Sender.Send(command);
-        //if (!result)
-        //    return Problem();
-        return NoContent();
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
      
@@ -199,11 +215,10 @@ public class CitizenReportController : ApiController
         }
         var command = new CreateCommentCommand(instanceId, userId, id, commentDto.Comment);
         var result = await Sender.Send(command);
-        if (!result)
-        {
-            return Problem();
-        }
-        return Ok();
+        
+        return result.Match(
+            s => Ok(),
+            f => Problem(f));
     }
     
     
@@ -214,10 +229,15 @@ public class CitizenReportController : ApiController
         var userId = User.GetUserId();
         var query = new GetCommentsQuery(id, pagingInfo);
         var result = await Sender.Send(query);
-        Response.AddPaginationHeaders(result.Meta);
+
+        if(result.IsFailed)
+            return Problem(result.ToResult());
+
+        var resultValue = result.Value;
+        Response.AddPaginationHeaders(resultValue.Meta);
 
         var mappedResult = new List<GetReportComments>();
-        foreach (var item in result)
+        foreach (var item in resultValue)
         {
             var mapppedItem = item.Adapt<GetReportComments>();
             mapppedItem.CanDelete = item.UserId == userId;
@@ -237,11 +257,10 @@ public class CitizenReportController : ApiController
             return Unauthorized();
         var command = new DeleteCommentCommand(commentId, userId, User.GetUserRoles());
         var result = await Sender.Send(command);
-        if (!result)
-        {
-            return Problem();
-        }
-        return NoContent();
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
 
@@ -257,16 +276,17 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpPost("ReportViolation/{id:Guid}")]
-    public async Task<ActionResult> CreateRepotrViolation(Guid id, CreateReportViolationDto createDto)
+    public async Task<ActionResult> CreateRepotrViolation(Guid id, int instanceId, CreateReportViolationDto createDto)
     {
         var userId = User.GetUserId();
         if (userId is null)
             return Unauthorized();
-        var command = new ReportViolationCommand(id, userId, createDto.ViolationTypeId, createDto.Description);
+        var command = new ReportViolationCommand(instanceId, id, userId, createDto.ViolationTypeId, createDto.Description);
         var result = await Sender.Send(command);
-        if(result == null)
-            return Problem();
-        return Ok();
+
+        return result.Match(
+            s => Ok(),
+            f => Problem(f));
     }
 
 

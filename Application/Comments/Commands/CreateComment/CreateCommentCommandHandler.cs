@@ -4,18 +4,9 @@ using MediatR;
 
 namespace Application.Comments.Commands.CreateComment;
 
-internal class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand, bool>
+internal class CreateCommentCommandHandler(ICommentRepository commentRepository, IUnitOfWork unitOfWork) : IRequestHandler<CreateCommentCommand, Result<bool>>
 {
-    private readonly ICommentRepository _commentRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public CreateCommentCommandHandler(ICommentRepository commentRepository, IUnitOfWork unitOfWork)
-    {
-        _commentRepository = commentRepository;
-        _unitOfWork = unitOfWork;
-    }
-
-    async Task<bool> IRequestHandler<CreateCommentCommand, bool>.Handle(CreateCommentCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
     {
         var comment = new Comment()
         {
@@ -25,14 +16,14 @@ internal class CreateCommentCommandHandler : IRequestHandler<CreateCommentComman
             UserId = request.UserId,
             DateTime = DateTime.UtcNow
         };
-        _commentRepository.Insert(comment);
+        commentRepository.Insert(comment);
         try
         {
-            await _unitOfWork.SaveAsync();
+            await unitOfWork.SaveAsync();
         }
         catch
         {
-            return false;
+            return OperationErrors.General;
         }
         
         return true;
