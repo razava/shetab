@@ -5,19 +5,14 @@ using MediatR;
 
 namespace Application.Faqs.Queries.GetFaqByIdQuery;
 
-internal class GetFaqByIdQueryHandler : IRequestHandler<GetFaqByIdQuery, Faq>
+internal class GetFaqByIdQueryHandler(IFaqRepository faqRepository) : IRequestHandler<GetFaqByIdQuery, Result<Faq>>
 {
-    private readonly IFaqRepository _faqRepository;
 
-    public GetFaqByIdQueryHandler(IFaqRepository faqRepository)
+    public async Task<Result<Faq>> Handle(GetFaqByIdQuery request, CancellationToken cancellationToken)
     {
-        _faqRepository = faqRepository;
-    }
-    public async Task<Faq> Handle(GetFaqByIdQuery request, CancellationToken cancellationToken)
-    {
-        var result = await _faqRepository.GetSingleAsync(f => f.Id == request.Id, false);
+        var result = await faqRepository.GetSingleAsync(f => f.Id == request.Id, false);
         if (result == null)
-            throw new NotFoundException("سوال متداول");
+            return NotFoundErrors.FAQ;
         return result;
 
     }

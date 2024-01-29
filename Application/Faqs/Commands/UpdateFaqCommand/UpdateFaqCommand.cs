@@ -7,4 +7,4 @@ public sealed record UpdateFaqCommand(
     int Id,
     string? Question,
     string? Answer,
-    bool? IsDeleted) : IRequest<Faq>;
+    bool? IsDeleted) : IRequest<Result<Faq>>;

@@ -29,8 +29,10 @@ public class StaffFaqController : ApiController
         var instanceId = User.GetUserInstanceId();
         var query = new GetFaqQuery(instanceId, true);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<GetFaqsDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<GetFaqsDto>>()),
+            f => Problem(f));
     }
     
 
@@ -40,10 +42,10 @@ public class StaffFaqController : ApiController
     {
         var query = new GetFaqByIdQuery(id);
         var result = await Sender.Send(query);
-        if (result == null)
-            return Problem();
-        var mappedResult = result.Adapt<GetFaqsDto>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<GetFaqsDto>()),
+            f => Problem(f));
     }
 
 
@@ -58,11 +60,10 @@ public class StaffFaqController : ApiController
             createFaqDto.Answer,
             createFaqDto.IsDeleted);
         var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
-        //return CreatedAtAction("", result.Adapt<GetFaqsDto>());
-        var routeValues = new { id = result.Id, instanceId = instanceId };
-        return CreatedAtAction(nameof(GetFaqById), routeValues, result.Adapt<GetFaqsDto>());
+
+        return result.Match(
+            s => CreatedAtAction(nameof(GetFaqById), new { id = s.Id, instanceId = instanceId }, s.Adapt<GetFaqsDto>()),
+            f => Problem(f));
     }
 
 
@@ -76,8 +77,10 @@ public class StaffFaqController : ApiController
             updateFaqDto.Answer,
             updateFaqDto.IsDeleted);
         var result = await Sender.Send(command);
-        if (result == null) return Problem();
-        return NoContent();
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
 

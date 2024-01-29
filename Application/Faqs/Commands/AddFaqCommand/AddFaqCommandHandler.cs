@@ -4,25 +4,17 @@ using MediatR;
 
 namespace Application.Faqs.Commands.AddFaqCommand;
 
-internal sealed class AddFaqCommandHandler : IRequestHandler<AddFaqCommand, Faq>
+internal sealed class AddFaqCommandHandler(
+    IFaqRepository faqRepository,
+    IUnitOfWork unitOfWork) : IRequestHandler<AddFaqCommand, Result<Faq>>
 {
-    private readonly IFaqRepository _faqRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public AddFaqCommandHandler(
-        IFaqRepository faqRepository,
-        IUnitOfWork unitOfWork)
-    {
-        _faqRepository = faqRepository;
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<Faq> Handle(AddFaqCommand request, CancellationToken cancellationToken)
+    
+    public async Task<Result<Faq>> Handle(AddFaqCommand request, CancellationToken cancellationToken)
     {
         var faq = Faq.Create(request.InstanceId, request.Question, request.Answer, request.IsDeleted);
 
-        _faqRepository.Insert(faq);
-        await _unitOfWork.SaveAsync();
+        faqRepository.Insert(faq);
+        await unitOfWork.SaveAsync();
 
         return faq;
     }

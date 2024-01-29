@@ -6,18 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Info.Queries.GetListChartQuery;
 
-internal class GetListChartQueryHandler : IRequestHandler<GetListChartQuery, List<Chart>>
+internal class GetListChartQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetListChartQuery, Result<List<Chart>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
-    public GetListChartQueryHandler(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
 
-
-    public async Task<List<Chart>> Handle(GetListChartQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<Chart>>> Handle(GetListChartQuery request, CancellationToken cancellationToken)
     {
-        var result = await _unitOfWork.DbContext.Set<Chart>()
+        var result = await unitOfWork.DbContext.Set<Chart>()
             .AsNoTracking()
             .Where(c =>
             c.ShahrbinInstanceId == request.InstanceId && request.RoleNames.Any(r => c.Roles.Any(t => t.Name == r)))

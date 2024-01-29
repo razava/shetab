@@ -11,21 +11,13 @@ using System.Linq.Expressions;
 
 namespace Application.Info.Queries.GetInfoQuery;
 
-internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
+internal class GetInfoQueryHandler(
+    IUnitOfWork unitOfWork,
+    IUserRepository userRepository,
+    IActorRepository actorRepository) : IRequestHandler<GetInfoQuery, Result<InfoModel>>
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserRepository _userRepository;
-    private readonly IActorRepository _actorRepository;
-
-    public GetInfoQueryHandler(IUnitOfWork unitOfWork, IUserRepository userRepository, IActorRepository actorRepository)
-    {
-        _unitOfWork = unitOfWork;
-        _userRepository = userRepository;
-        _actorRepository = actorRepository;
-    }
-
-
-    public async Task<InfoModel> Handle(GetInfoQuery request, CancellationToken cancellationToken)
+    
+    public async Task<Result<InfoModel>> Handle(GetInfoQuery request, CancellationToken cancellationToken)
     {
         var code = request.Code % 100000;
         InfoModel result = new InfoModel();
@@ -69,7 +61,7 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
     private async Task<InfoModel> GetUsersStatistics(int instanceId)
     {
         var result = new InfoModel();
-        var userContext = _unitOfWork.DbContext.Set<ApplicationUser>().AsNoTracking();
+        var userContext = unitOfWork.DbContext.Set<ApplicationUser>().AsNoTracking();
 
         var totalPersonel = await userContext.Where(e =>
         e.ShahrbinInstanceId != null && e.ShahrbinInstanceId == instanceId).LongCountAsync();
@@ -121,7 +113,7 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
     private async Task<InfoModel> GetReportsStatistics(int instanceId)
     {
         var result = new InfoModel();
-        var query = _unitOfWork.DbContext.Set<Report>().AsNoTracking().Where(r => r.ShahrbinInstanceId == instanceId);
+        var query = unitOfWork.DbContext.Set<Report>().AsNoTracking().Where(r => r.ShahrbinInstanceId == instanceId);
 
         var totalReports = await query.LongCountAsync();
 
@@ -156,7 +148,7 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
     private async Task<InfoModel> GetTimeStatistics(int instanceId)
     {
         var result = new InfoModel();
-        var query = _unitOfWork.DbContext.Set<Report>().AsNoTracking().Where(e => e.ShahrbinInstanceId == instanceId);
+        var query = unitOfWork.DbContext.Set<Report>().AsNoTracking().Where(e => e.ShahrbinInstanceId == instanceId);
 
         //average durations
         var allDuration = await query
@@ -256,7 +248,7 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
 
         var infoChart = new InfoChart("وضعیت درخواست ها به تفکیک دسته بندی", "", false, false);
 
-        var query = _unitOfWork.DbContext.Set<Report>()
+        var query = unitOfWork.DbContext.Set<Report>()
             .AsNoTracking()
             .Where(r => r.ShahrbinInstanceId == instanceId);
 
@@ -265,7 +257,7 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
             .Select(q => new { Key = q.Key, Count = q.LongCount() })
             .ToListAsync();
 
-        var categories = await _unitOfWork.DbContext.Set<Category>()
+        var categories = await unitOfWork.DbContext.Set<Category>()
             .AsNoTracking()
             .Where(c => c.ShahrbinInstanceId == instanceId && c.ParentId == null)
             .Include(c => c.Categories)
@@ -355,7 +347,7 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
         var infoChart = new InfoChart("وضعیت درخواست ها به تفکیک منطقه", "", false, false);
 
         //todo : should not be filtered by regions related to user?
-        var query = _unitOfWork.DbContext.Set<Report>()
+        var query = unitOfWork.DbContext.Set<Report>()
             .AsNoTracking()
             .Where(r => r.ShahrbinInstanceId == instanceId);
 
@@ -364,11 +356,11 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
             .Select(q => new { Key = q.Key, Count = q.LongCount() })
             .ToListAsync();
 
-        var cityId = await _unitOfWork.DbContext.Set<ShahrbinInstance>()
+        var cityId = await unitOfWork.DbContext.Set<ShahrbinInstance>()
             .AsNoTracking().Where(s => s.Id == instanceId).
             Select(s => s.CityId).SingleOrDefaultAsync();
 
-        var regions = await _unitOfWork.DbContext.Set<Region>()
+        var regions = await unitOfWork.DbContext.Set<Region>()
             .AsNoTracking()
             .Where(r => r.CityId == cityId)
             .Select(e => new Bin<int>(e.Id, e.Name))
@@ -446,16 +438,16 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
 
     private async Task<InfoModel> GetRepportsTimeByRegion(int instanceId)
     {
-        var query = _unitOfWork.DbContext.Set<Report>()
+        var query = unitOfWork.DbContext.Set<Report>()
         .AsNoTracking()
         .Where(r => r.ShahrbinInstanceId == instanceId)
         .Include(r => r.Address);
 
-        var cityId = await _unitOfWork.DbContext.Set<ShahrbinInstance>()
+        var cityId = await unitOfWork.DbContext.Set<ShahrbinInstance>()
             .AsNoTracking().Where(s => s.Id == instanceId).
             Select(s => s.CityId).SingleOrDefaultAsync();
 
-        var bins = await _unitOfWork.DbContext.Set<Region>()
+        var bins = await unitOfWork.DbContext.Set<Region>()
             .AsNoTracking()
             .Where(r => r.CityId == cityId)
             .Select(e => new Bin<int>(e.Id, e.Name))
@@ -477,13 +469,13 @@ internal class GetInfoQueryHandler : IRequestHandler<GetInfoQuery, InfoModel>
     private async Task<InfoModel> GetRepportsTimeByExecutive(int instanceId)
     {
         
-        var query = _unitOfWork.DbContext.Set<Report>()
+        var query = unitOfWork.DbContext.Set<Report>()
         .AsNoTracking()
         .Where(r => r.ShahrbinInstanceId == instanceId);
 
-        var executives = (await _userRepository.GetUsersInRole(RoleNames.Executive)).Where(u => u.ShahrbinInstanceId == instanceId).ToList();
+        var executives = (await userRepository.GetUsersInRole(RoleNames.Executive)).Where(u => u.ShahrbinInstanceId == instanceId).ToList();
         var executivesIds = executives.Select(executives => executives.Id);
-        var executiveActors = (await _actorRepository.GetAsync(a => executivesIds.Contains(a.Identifier), false)).ToList();
+        var executiveActors = (await actorRepository.GetAsync(a => executivesIds.Contains(a.Identifier), false)).ToList();
 
         var bins = new List<Bin<string>>();
 

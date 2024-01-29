@@ -1,36 +1,25 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Persistence;
-using Application.NewsApp.Commands.UpdateNewsCommand;
 using Domain.Models.Relational;
-using Domain.Models.Relational.Common;
-using Infrastructure.Storage;
 using MediatR;
 
 namespace Application.Faqs.Commands.UpdateFaqCommand;
 
-internal sealed class UpdateFaqCommandHandler : IRequestHandler<UpdateFaqCommand, Faq>
+internal sealed class UpdateFaqCommandHandler(
+    IFaqRepository faqRepository,
+    IUnitOfWork unitOfWork) : IRequestHandler<UpdateFaqCommand, Result<Faq>>
 {
-    private readonly IFaqRepository _faqRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public UpdateFaqCommandHandler(
-        IFaqRepository faqRepository,
-        IUnitOfWork unitOfWork)
+    
+    public async Task<Result<Faq>> Handle(UpdateFaqCommand request, CancellationToken cancellationToken)
     {
-        _faqRepository = faqRepository;
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<Faq> Handle(UpdateFaqCommand request, CancellationToken cancellationToken)
-    {
-        var faq = await _faqRepository.GetSingleAsync(q => q.Id == request.Id);
+        var faq = await faqRepository.GetSingleAsync(q => q.Id == request.Id);
         if (faq is null)
-            throw new NotFoundException("سوال متداول");
+            return NotFoundErrors.FAQ;
 
         faq.Update(request.Question, request.Answer, request.IsDeleted);
 
-        _faqRepository.Update(faq);
-        await _unitOfWork.SaveAsync();
+        faqRepository.Update(faq);
+        await unitOfWork.SaveAsync();
 
         return faq;
     }

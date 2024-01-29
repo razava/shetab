@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Application.Info.Queries.GetInfoQuery;
 
-public record GetInfoQuery(int Code, int InstanceId, string UserId) : IRequest<InfoModel>;
+public record GetInfoQuery(int Code, int InstanceId, string UserId) : IRequest<Result<InfoModel>>;
 

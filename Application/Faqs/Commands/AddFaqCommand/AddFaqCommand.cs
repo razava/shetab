@@ -7,4 +7,4 @@ public sealed record AddFaqCommand(
     int InstanceId,
     string Question,
     string Answer,
-    bool IsDeleted) : IRequest<Faq>;
+    bool IsDeleted) : IRequest<Result<Faq>>;

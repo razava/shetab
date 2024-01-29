@@ -3,6 +3,6 @@ using MediatR;
 
 namespace Application.Faqs.Queries.GetFaqByIdQuery;
 
-public record GetFaqByIdQuery(int Id) : IRequest<Faq>;
+public record GetFaqByIdQuery(int Id) : IRequest<Result<Faq>>;
 
 

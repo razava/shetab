@@ -27,8 +27,10 @@ public class StaffInfoController : ApiController
         var instanceId = User.GetUserInstanceId();
         var query = new GetListChartQuery(instanceId, userRoles);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<ChartDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<ChartDto>>()),
+            f => Problem(f));
     }
 
 
@@ -40,7 +42,10 @@ public class StaffInfoController : ApiController
         var userId = User.GetUserId();
         var query = new GetInfoQuery(id, instanceId, userId);
         var result = await Sender.Send(query);
-        return Ok(result);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
     /*
