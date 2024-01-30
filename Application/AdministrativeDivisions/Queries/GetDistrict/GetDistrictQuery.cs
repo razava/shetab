@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.AdministrativeDivisions.Queries.GetProvince;
 
-public sealed record GetDistrictQuery(int CountyId) : IRequest<List<District>>;
+public sealed record GetDistrictQuery(int CountyId) : IRequest<Result<List<District>>>;
 

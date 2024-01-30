@@ -3,4 +3,6 @@ using MediatR;
 
 namespace Application.Authentication.Commands.SendVerificationCodeCommand;
 
-public sealed record SendVerificationCodeCommand(string Username, CaptchaValidateModel? CaptchaValidateModel = null) : IRequest<bool>;
+public sealed record SendVerificationCodeCommand(
+    string Username,
+    CaptchaValidateModel? CaptchaValidateModel = null) : IRequest<Result<bool>>;

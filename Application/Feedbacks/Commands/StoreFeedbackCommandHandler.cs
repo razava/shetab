@@ -4,39 +4,28 @@ using MediatR;
 
 namespace Application.Feedbacks.Commands;
 
-internal sealed class StoreFeedbackCommandHandler : IRequestHandler<StoreFeedbackCommand, bool>
+internal sealed class StoreFeedbackCommandHandler(
+    IFeedbackRepository feedbackRepository,
+    IUnitOfWork unitOfWork,
+    IReportRepository reportRepository) : IRequestHandler<StoreFeedbackCommand, Result<bool>>
 {
-    private readonly IFeedbackRepository _feedbackRepository;
-    private readonly IReportRepository _reportRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public StoreFeedbackCommandHandler(
-        IFeedbackRepository feedbackRepository,
-        IUnitOfWork unitOfWork,
-        IReportRepository reportRepository)
-    {
-        _feedbackRepository = feedbackRepository;
-        _unitOfWork = unitOfWork;
-        _reportRepository = reportRepository;
-    }
-
-    public async Task<bool> Handle(StoreFeedbackCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(StoreFeedbackCommand request, CancellationToken cancellationToken)
     {
         //TODO: It's not completed yet. Decide where to put feedback, I think it's better to be implemented inside report.
-        var feedback = await _feedbackRepository.GetSingleAsync(
+        var feedback = await feedbackRepository.GetSingleAsync(
             f => f.UserId == request.UserId && f.Token == request.Token && f.ReportId == request.ReportId);
         if ((feedback is null))
         {
-            throw new ServerNotFoundException("خطایی رخ داد.", new FeedbackNotFoundException());
+            return ServerNotFoundErrors.Feedback;
         }
-        var report = await _reportRepository.GetSingleAsync(r => r.Id == request.ReportId);
+        var report = await reportRepository.GetSingleAsync(r => r.Id == request.ReportId);
         if (report is null)
         {
-            throw new NotFoundException("گزارش");
+            return NotFoundErrors.Report;
         }
         report.UpdateFeedback(request.Rating);
 
-        await _unitOfWork.SaveAsync();
+        await unitOfWork.SaveAsync();
 
         return true;
     }

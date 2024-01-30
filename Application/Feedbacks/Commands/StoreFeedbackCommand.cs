@@ -7,4 +7,4 @@ public sealed record StoreFeedbackCommand(
     string UserId,
     string Token,
     int Rating
-    ):IRequest<bool>;
+    ):IRequest<Result<bool>>;
