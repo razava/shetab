@@ -8,4 +8,4 @@ namespace Application.Comments.Queries.GetAllCommentsQuery;
 public record GetAllCommentsQuery(PagingInfo PagingInfo,
     int InstanceId,
     FilterGetCommentViolationModel? FilterModel = default!,
-    bool IsSeen = false) : IRequest<PagedList<Comment>>;
+    bool IsSeen = false) : IRequest<Result<PagedList<Comment>>>;

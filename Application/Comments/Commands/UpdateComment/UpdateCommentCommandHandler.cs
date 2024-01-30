@@ -6,33 +6,24 @@ using MediatR;
 
 namespace Application.Comments.Commands.UpdateComment;
 
-internal class UpdateCommentCommandHandler : IRequestHandler<UpdateCommentCommand, bool>
+internal class UpdateCommentCommandHandler(ICommentRepository commentRepository, IUnitOfWork unitOfWork) : IRequestHandler<UpdateCommentCommand, Result<bool>>
 {
-    private readonly ICommentRepository _commentRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public UpdateCommentCommandHandler(ICommentRepository commentRepository, IUnitOfWork unitOfWork)
+    public async Task<Result<bool>> Handle(UpdateCommentCommand request, CancellationToken cancellationToken)
     {
-        _commentRepository = commentRepository;
-        _unitOfWork = unitOfWork;
-    }
-
-    async Task<bool> IRequestHandler<UpdateCommentCommand, bool>.Handle(UpdateCommentCommand request, CancellationToken cancellationToken)
-    {
-        var comment = await _commentRepository.GetSingleAsync(c => c.Id == request.CommentId);
+        var comment = await commentRepository.GetSingleAsync(c => c.Id == request.CommentId);
         if (comment is null)
         {
-            throw new NotFoundException("نظر");
+            return NotFoundErrors.Comment;
         }
         comment.Text = request.Content;
-        _commentRepository.Update(comment);
+        commentRepository.Update(comment);
         try
         {
-            await _unitOfWork.SaveAsync();
+            await unitOfWork.SaveAsync();
         }
         catch
         {
-            return false;
+            return OperationErrors.General;
         }
 
         return true;

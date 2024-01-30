@@ -5,27 +5,18 @@ using MediatR;
 
 namespace Application.Comments.Commands.ReplyComment;
 
-internal class ReplyCommentCommandHandler : IRequestHandler<ReplyCommentCommand, bool>
+internal class ReplyCommentCommandHandler(ICommentRepository commentRepository, IUnitOfWork unitOfWork) : IRequestHandler<ReplyCommentCommand, Result<bool>>
 {
-    private readonly ICommentRepository _commentRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public ReplyCommentCommandHandler(ICommentRepository commentRepository, IUnitOfWork unitOfWork)
+    public async Task<Result<bool>> Handle(ReplyCommentCommand request, CancellationToken cancellationToken)
     {
-        _commentRepository = commentRepository;
-        _unitOfWork = unitOfWork;
-    }
-
-    async Task<bool> IRequestHandler<ReplyCommentCommand, bool>.Handle(ReplyCommentCommand request, CancellationToken cancellationToken)
-    {
-        var comment = await _commentRepository.GetSingleAsync(c => c.Id == request.CommentId, true, "Reply");
+        var comment = await commentRepository.GetSingleAsync(c => c.Id == request.CommentId, true, "Reply");
         if (comment is null)
         {
-            throw new NotFoundException("نظر");
+            return NotFoundErrors.Comment;
         }
         if (comment.Reply is not null)
         {
-            throw new CommentHasReplyException();
+            return OperationErrors.CommentHasReply;
         }
         if (!string.IsNullOrEmpty(request.Content))
         {
@@ -40,14 +31,14 @@ internal class ReplyCommentCommandHandler : IRequestHandler<ReplyCommentCommand,
         }
         
         comment.IsSeen = true;
-        _commentRepository.Update(comment);
+        commentRepository.Update(comment);
         try
         {
-            await _unitOfWork.SaveAsync();
+            await unitOfWork.SaveAsync();
         }
         catch
         {
-            return false;
+            return OperationErrors.General;
         }
 
         return true;

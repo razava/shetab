@@ -10,6 +10,7 @@ using Application.Common.Interfaces.Persistence;
 using Application.Reports.Commands.AcceptByOperator;
 using Application.Reports.Commands.CreateReportByOperator;
 using Application.Reports.Commands.InspectorTransition;
+using Application.Reports.Commands.MakeTransition;
 using Application.Reports.Commands.MessageToCitizen;
 using Application.Reports.Commands.UpdateByOperator;
 using Application.Reports.Common;
@@ -50,9 +51,11 @@ public class StaffReportController : ApiController
         var mappedFilter = filterGetReports.Adapt<FilterGetReportsModel>();
         var query = new GetReportsQuery(pagingInfo, userId, roles, fromRoleId, instanceId, mappedFilter);
         var result = await Sender.Send(query);
-        Response.AddPaginationHeaders(result.Meta);
-        var mappedResult = result.Adapt<List<StaffGetReportListDto>>();
-        return Ok(mappedResult);
+        
+        if(result.IsFailed)
+            return Problem(result.ToResult());
+        Response.AddPaginationHeaders(result.Value.Meta);
+        return Ok(result.Value.Adapt<List<StaffGetReportListDto>>());
     }
 
 
@@ -63,8 +66,10 @@ public class StaffReportController : ApiController
         var userId = User.GetUserId();
         var query = new GetReportByIdQuery(id, userId, instanceId);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<StaffGetReportDetailsDto>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<StaffGetReportDetailsDto>()),
+            f => Problem(f));
     }
 
 
@@ -73,17 +78,17 @@ public class StaffReportController : ApiController
     [HttpGet("AllReports")]
     public async Task<ActionResult<List<StaffGetReportListDto>>> GetAllReports([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetAllReports filterGetAllReports)
     {
-        //have FilterGetAllReports (diffrent from FilterGetReports)
-
         var userId = User.GetUserId();
         var userRoles = User.GetUserRoles();
         var instanceId = User.GetUserInstanceId();
         var mappedFilter = filterGetAllReports.Adapt<FilterGetAllReportsModel>();
         var query = new GetAllReportsQuery(pagingInfo, instanceId, userId, userRoles, mappedFilter);
         var result = await Sender.Send(query);
-        Response.AddPaginationHeaders(result.Meta);
-        var mappedResult = result.Adapt<List<StaffGetReportListDto>>();
-        return Ok(mappedResult);
+
+        if (result.IsFailed)
+            return Problem(result.ToResult());
+        Response.AddPaginationHeaders(result.Value.Meta);
+        return Ok(result.Value.Adapt<List<StaffGetReportListDto>>());
     }
 
 
@@ -98,8 +103,10 @@ public class StaffReportController : ApiController
         
         var query = new GetPossibleTransitionsQuery(id, userId, instanceId);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<GetPossibleTransitionDto>>();
-        return Ok(mappedResult);    
+
+        return result.Match(
+            s => Ok(s.Adapt<List<GetPossibleTransitionDto>>()),
+            f => Problem(f));
     }
 
 
@@ -121,8 +128,10 @@ public class StaffReportController : ApiController
             User.IsInRole("Executive"),
             User.IsInRole("Contractor"));
         var result = await Sender.Send(command);
-        //need to handle result?
-        return Ok();
+
+        return result.Match(
+            s => Ok(),
+            f => Problem(f));
     }
 
 
@@ -141,9 +150,10 @@ public class StaffReportController : ApiController
             dto.StageId,
             dto.Visibility);
         var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
-        return Ok();
+
+        return result.Match(
+            s => Ok(),
+            f => Problem(f));
     }
 
 
@@ -156,6 +166,9 @@ public class StaffReportController : ApiController
         var userRoles = User.GetUserRoles();
         var query = new GetPossibleSourcesQuery(userId, userRoles);
         var result = await Sender.Send(query);
+
+        if (result.IsFailed)
+            return Problem(result.ToResult());
         var mappedResult = result.Adapt<List<GetPossibleSourceDto>>();
         var newReportsSource = new GetPossibleSourceDto(null, "", "جدید");
         mappedResult.Insert(0, newReportsSource);
@@ -181,9 +194,10 @@ public class StaffReportController : ApiController
             messageToCitizenDto.Message);
 
         var result = await Sender.Send(command);
-        if (result == null)
-            return Problem();
-        return Ok();
+
+        return result.Match(
+           s => Ok(),
+           f => Problem(f));
     }
 
 
@@ -213,12 +227,11 @@ public class StaffReportController : ApiController
             model.IsIdentityVisible,
             model.Visibility == Visibility.EveryOne);
 
-        var report = await Sender.Send(command);
-        if (report == null)
-            return Problem();
+        var result = await Sender.Send(command);
 
-        var routeValues = new { id = report.Id, instanceId = instanceId };
-        return CreatedAtAction(nameof(GetReportById), routeValues, report.Adapt<StaffGetReportDetailsDto>());
+        return result.Match(
+            s => CreatedAtAction(nameof(GetReportById), new { id = s.Id, instanceId = instanceId }, s.Adapt<StaffGetReportDetailsDto>()),
+            f => Problem(f));
     }
 
 
@@ -248,9 +261,11 @@ public class StaffReportController : ApiController
             addressInfo,
             model.Attachments,
             model.Visibility == Visibility.EveryOne);
-        await Sender.Send(command);
+        var result = await Sender.Send(command);
 
-        return NoContent();
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
 
@@ -280,9 +295,11 @@ public class StaffReportController : ApiController
             addressInfo,
             model.Attachments,
             model.Visibility == Visibility.EveryOne);
-        await Sender.Send(command);
+        var result = await Sender.Send(command);
 
-        return Ok(id);
+        return result.Match(
+            s => Ok(id),
+            f => Problem(f));
     }
 
 
@@ -296,9 +313,11 @@ public class StaffReportController : ApiController
         var mappedFilter = filter.Adapt<FilterGetCommentViolationModel>();
         var query = new GetAllCommentsQuery(pagingInfo, instanceId, mappedFilter);
         var result = await Sender.Send(query);
-        Response.AddPaginationHeaders(result.Meta);
-        var mappedResult = result.Adapt<List<GetCommentsDto>>();
-        return Ok(mappedResult);
+
+        if(result.IsFailed)
+            return Problem(result.ToResult());
+        Response.AddPaginationHeaders(result.Value.Meta);
+        return Ok(result.Value.Adapt<List<GetCommentsDto>>());
     }
 
 
@@ -332,9 +351,10 @@ public class StaffReportController : ApiController
         var userId = User.GetUserId();
         var command = new ReplyCommentCommand(userId, commentId, replyCommentDto.Comment);
         var result = await Sender.Send(command);
-        if (!result)
-            return Problem();
-        return Ok();
+
+        return result.Match(
+            s => Ok(),
+            f => Problem(f));
     }
 
 
@@ -345,9 +365,10 @@ public class StaffReportController : ApiController
         var userId = User.GetUserId();
         var command = new UpdateCommentCommand(userId, commentId, updateCommentDto.Comment);
         var result = await Sender.Send(command);
-        if (!result)
-            return Problem();
-        return NoContent();
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
 
@@ -398,10 +419,10 @@ public class StaffReportController : ApiController
     {
         var query = new GetUserByIdQuery(id);
         var result = await Sender.Send(query);
-        if(result == null)
-            return NotFound();
-        var mappedResult = result.Adapt<GetCitizenDto>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<GetCitizenDto>()),
+            f => Problem(f));
     }
 
 
@@ -414,8 +435,10 @@ public class StaffReportController : ApiController
         var instanceId = User.GetUserInstanceId();
         var query = new GetHistoryQuery(id, userId, instanceId);
         var result = await Sender.Send(query);
-        var mappedResult = result.Adapt<List<TransitionLogDto>>();
-        return Ok(mappedResult);
+
+        return result.Match(
+            s => Ok(s.Adapt<List<TransitionLogDto>>()),
+            f => Problem(f));
     }
 
     

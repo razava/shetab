@@ -6,40 +6,24 @@ using MediatR;
 
 namespace Application.Reports.Commands.UpdateByOperator;
 
-internal sealed class UpdateByOperatorCommandHandler : IRequestHandler<UpdateByOperatorCommand, Report>
+internal sealed class UpdateByOperatorCommandHandler(
+    IUnitOfWork unitOfWork,
+    IReportRepository reportRepository,
+    ICategoryRepository categoryRepository,
+    IUploadRepository uploadRepository) : IRequestHandler<UpdateByOperatorCommand, Result<Report>>
 {
-    private readonly IReportRepository _reportRepository;
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly IUploadRepository _uploadRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public UpdateByOperatorCommandHandler(
-        IUnitOfWork unitOfWork,
-        IReportRepository reportRepository,
-        ICategoryRepository categoryRepository,
-        IUploadRepository uploadRepository)
+    public async Task<Result<Report>> Handle(UpdateByOperatorCommand request, CancellationToken cancellationToken)
     {
-        _unitOfWork = unitOfWork;
-        _reportRepository = reportRepository;
-        _categoryRepository = categoryRepository;
-        _uploadRepository = uploadRepository;
-    }
-
-    public async Task<Report> Handle(UpdateByOperatorCommand request, CancellationToken cancellationToken)
-    {
-        var report = await _reportRepository.GetByIDAsync(request.reportId);
+        var report = await reportRepository.GetByIDAsync(request.reportId);
         if (report == null)
-            throw new NotFoundException("گزارش");
+            return NotFoundErrors.Report;
 
         Category? category = null;
         if (request.CategoryId is not null)
         {
-            category = await _categoryRepository.GetByIDAsync(request.CategoryId.Value);
+            category = await categoryRepository.GetByIDAsync(request.CategoryId.Value);
             if (category is null)
-            {
-                //TODO: Handle this error
-                throw new NotFoundException("دسته بندی");
-            }
+                return NotFoundErrors.Category;
 
         }
         Address? address = null;
@@ -55,12 +39,12 @@ internal sealed class UpdateByOperatorCommandHandler : IRequestHandler<UpdateByO
             List<Upload> attachments = new List<Upload>();
             if (request.Attachments.Count > 0)
             {
-                attachments = (await _uploadRepository
+                attachments = (await uploadRepository
                 .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == request.operatorId))
                 .ToList() ?? new List<Upload>();
                 if (request.Attachments.Count != attachments.Count)
                 {
-                    throw new AttachmentsFailureException();
+                    return AttachmentErrors.AttachmentsFailure;
                 }
                 attachments.ForEach(a => a.IsUsed = true);
                 medias = attachments.Select(a => a.Media).ToList();
@@ -75,7 +59,7 @@ internal sealed class UpdateByOperatorCommandHandler : IRequestHandler<UpdateByO
             medias,
             null);
 
-        await _unitOfWork.SaveAsync();
+        await unitOfWork.SaveAsync();
 
         return report;
     }

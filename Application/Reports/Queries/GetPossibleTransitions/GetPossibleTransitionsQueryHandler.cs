@@ -6,24 +6,15 @@ using MediatR;
 
 namespace Application.Reports.Queries.GetPossibleTransitions;
 
-internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPossibleTransitionsQuery, List<PossibleTransitionResponse>>
+internal sealed class GetPossibleTransitionsQueryHandler(IReportRepository reportRepository, IUserRepository userRepository) : IRequestHandler<GetPossibleTransitionsQuery, Result<List<PossibleTransitionResponse>>>
 {
-    private readonly IReportRepository _reportRepository;
-    private readonly IUserRepository _userRepository;
-
-    public GetPossibleTransitionsQueryHandler(IReportRepository reportRepository, IUserRepository userRepository)
+    public async Task<Result<List<PossibleTransitionResponse>>> Handle(GetPossibleTransitionsQuery request, CancellationToken cancellationToken)
     {
-        _reportRepository = reportRepository;
-        _userRepository = userRepository;
-    }
-
-    public async Task<List<PossibleTransitionResponse>> Handle(GetPossibleTransitionsQuery request, CancellationToken cancellationToken)
-    {
-        var report = await _reportRepository.GetByIDAsync(request.reportId);
+        var report = await reportRepository.GetByIDAsync(request.reportId);
         if (report == null)
-            throw new NotFoundException("گزارش");
+            return NotFoundErrors.Report;
         if (report.ShahrbinInstanceId != request.instanceId)
-            throw new AccessDeniedException();
+            return AccessDeniedErrors.General;
 
         var possibleTransitions = report.GetPossibleTransitions();
 
@@ -35,8 +26,8 @@ internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPo
         {
             var userActorIdentifiers = transition.To.Actors.Where(p => p.Type == ActorType.Person).Select(p => p.Identifier).ToList();
             var roleActorIdentifiers = transition.To.Actors.Where(p => p.Type == ActorType.Role).Select(p => p.Identifier).ToList();
-            var userActors = await _userRepository.GetUserActors(userActorIdentifiers);
-            var roleActors = await _userRepository.GetRoleActors(roleActorIdentifiers);
+            var userActors = await userRepository.GetUserActors(userActorIdentifiers);
+            var roleActors = await userRepository.GetRoleActors(roleActorIdentifiers);
 
             var t = new PossibleTransitionResponse()
             {
@@ -77,7 +68,7 @@ internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPo
             {
                 if (actorList[i].Type == ActorType.Role)
                 {
-                    var role = (await _userRepository.GetRoles()).Find(p => p.Id == actorList[i].Identifier);
+                    var role = (await userRepository.GetRoles()).Find(p => p.Id == actorList[i].Identifier);
                     if (role is null)
                         throw new ServerNotFoundException("خطایی رخ داد.", new NullActorRolesException());
 
@@ -97,24 +88,24 @@ internal sealed class GetPossibleTransitionsQueryHandler : IRequestHandler<GetPo
                     {
                         ////contractorIdentifier = role.Id;
                         //usersInRole = await _context.Users.Where(p => p.Executeves.Any(q => q.Id == user.Id)).ToListAsync();
-                        var executive = (await _userRepository.GetUsersInRole("Executive")).Where(p => p.Id == userId).SingleOrDefault();
+                        var executive = (await userRepository.GetUsersInRole("Executive")).Where(p => p.Id == userId).SingleOrDefault();
                         if (executive != null)
                         {
                             usersInRole.AddRange(executive.Contractors.ToList());
                         }
                         else
                         {
-                            usersInRole.AddRange((await _userRepository.GetUsersInRole("Contractor")).ToList());
+                            usersInRole.AddRange((await userRepository.GetUsersInRole("Contractor")).ToList());
                         }
                     }
                     else
                     {
                         finalActors.Add(actorList[i]);
                         //usersInRole = (List<ApplicationUser>)await _userManager.GetUsersInRoleAsync(role.Name);
-                        usersInRole = await _userRepository.GetUsersInRole(role.Name!);
+                        usersInRole = await userRepository.GetUsersInRole(role.Name!);
                     }
 
-                    var actorsForUsersInRole = (await _userRepository.GetActors())
+                    var actorsForUsersInRole = (await userRepository.GetActors())
                         .Where(p => usersInRole.Select(a => a.Id).ToList().Contains(p.Identifier))
                         .ToList();
 

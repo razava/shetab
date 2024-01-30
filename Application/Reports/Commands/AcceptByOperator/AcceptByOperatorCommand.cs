@@ -11,5 +11,5 @@ public sealed record AcceptByOperatorCommand(
     string? Comments,
     AddressInfoRequest? Address,
     List<Guid>? Attachments,
-    bool? IsPublic = true) : IRequest<Report>;
+    bool? IsPublic = true) : IRequest<Result<Report>>;
 

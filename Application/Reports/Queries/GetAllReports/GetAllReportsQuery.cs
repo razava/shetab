@@ -10,5 +10,5 @@ public sealed record GetAllReportsQuery(
     int instanceId,
     string UserId,
     List<string> UserRoles,
-    FilterGetAllReportsModel? FilterModel = default!) : IRequest<PagedList<Report>>;
+    FilterGetAllReportsModel? FilterModel = default!) : IRequest<Result<PagedList<Report>>>;
 

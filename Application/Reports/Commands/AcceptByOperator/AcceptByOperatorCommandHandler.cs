@@ -6,40 +6,24 @@ using MediatR;
 
 namespace Application.Reports.Commands.AcceptByOperator;
 
-internal sealed class AcceptByOperatorCommandHandler : IRequestHandler<AcceptByOperatorCommand, Report>
+internal sealed class AcceptByOperatorCommandHandler(
+    IUnitOfWork unitOfWork,
+    IReportRepository reportRepository,
+    ICategoryRepository categoryRepository,
+    IUploadRepository uploadRepository) : IRequestHandler<AcceptByOperatorCommand, Result<Report>>
 {
-    private readonly IReportRepository _reportRepository;
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly IUploadRepository _uploadRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public AcceptByOperatorCommandHandler(
-        IUnitOfWork unitOfWork,
-        IReportRepository reportRepository,
-        ICategoryRepository categoryRepository,
-        IUploadRepository uploadRepository)
+    public async Task<Result<Report>> Handle(AcceptByOperatorCommand request, CancellationToken cancellationToken)
     {
-        _unitOfWork = unitOfWork;
-        _reportRepository = reportRepository;
-        _categoryRepository = categoryRepository;
-        _uploadRepository = uploadRepository;
-    }
-
-    public async Task<Report> Handle(AcceptByOperatorCommand request, CancellationToken cancellationToken)
-    {
-        var report = await _reportRepository.GetByIDAsync(request.reportId);
+        var report = await reportRepository.GetByIDAsync(request.reportId);
         if (report == null)
-            throw new NotFoundException("گزارش");
+            return NotFoundErrors.Report;
 
         Category? category = null;
         if (request.CategoryId is not null)
         {
-            category = await _categoryRepository.GetByIDAsync(request.CategoryId.Value);
+            category = await categoryRepository.GetByIDAsync(request.CategoryId.Value);
             if (category is null)
-            {
-                //TODO: Handle this error
-                throw new NotFoundException("دسته بندی");
-            }
+                return NotFoundErrors.Category;
 
         }
         Address? address = null;
@@ -55,7 +39,7 @@ internal sealed class AcceptByOperatorCommandHandler : IRequestHandler<AcceptByO
             var deletedAttachments = report.Medias.Select(m => m.Id).ToList();
             deletedAttachments.RemoveAll(request.Attachments.Contains);
             
-                var attachments = (await _uploadRepository
+                var attachments = (await uploadRepository
                     .GetAsync(u => deletedAttachments.Contains(u.Media.Id) && u.UserId == report.CitizenId))
                     .ToList() ?? new List<Upload>();
                 
@@ -71,7 +55,7 @@ internal sealed class AcceptByOperatorCommandHandler : IRequestHandler<AcceptByO
             medias,
             null);
 
-        await _unitOfWork.SaveAsync();
+        await unitOfWork.SaveAsync();
 
         return report;
     }

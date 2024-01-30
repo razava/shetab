@@ -8,22 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Reports.Queries.GetReports;
 
-internal sealed class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, PagedList<Report>>
+internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IReportRepository reportRepository, IUserRepository userRepository) : IRequestHandler<GetReportsQuery, Result<PagedList<Report>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IReportRepository _reportRepository;
-    private readonly IUserRepository _userRepository;
-
-    public GetReportsQueryHandler(IUnitOfWork unitOfWork, IReportRepository reportRepository, IUserRepository userRepository)
+    
+    public async Task<Result<PagedList<Report>>> Handle(GetReportsQuery request, CancellationToken cancellationToken)
     {
-        _unitOfWork = unitOfWork;
-        _reportRepository = reportRepository;
-        _userRepository = userRepository;
-    }
-
-    public async Task<PagedList<Report>> Handle(GetReportsQuery request, CancellationToken cancellationToken)
-    {
-        var actors = await _userRepository.GetActorsAsync(request.UserId);
+        var actors = await userRepository.GetActorsAsync(request.UserId);
         var actorIds = actors.Select(a => a.Id).ToList();
         System.Linq.Expressions.Expression<Func<Report, bool>>? filter;
         if (request.FromRoleId is null && request.Roles.Contains(RoleNames.Operator))
@@ -54,7 +44,7 @@ internal sealed class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, 
         //    false,
         //    a => a.OrderBy(r => r.Sent));
 
-        var context = _unitOfWork.DbContext;
+        var context = unitOfWork.DbContext;
         var query = context.Set<Report>()
             .AsNoTracking()
             .Where(filter)

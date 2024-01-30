@@ -4,16 +4,9 @@ using MediatR;
 
 namespace Application.Comments.Queries.GetAllCommentsQuery;
 
-internal sealed class GetAllCommentsQueryHandler : IRequestHandler<GetAllCommentsQuery, PagedList<Comment>>
+internal sealed class GetAllCommentsQueryHandler(ICommentRepository commentRepository) : IRequestHandler<GetAllCommentsQuery, Result<PagedList<Comment>>>
 {
-    private readonly ICommentRepository _commentRepository;
-
-    public GetAllCommentsQueryHandler(ICommentRepository commentRepository)
-    {
-        _commentRepository = commentRepository;
-    }
-
-    public async Task<PagedList<Comment>> Handle(GetAllCommentsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PagedList<Comment>>> Handle(GetAllCommentsQuery request, CancellationToken cancellationToken)
     {
         System.Linq.Expressions.Expression<Func<Comment, bool>>? filter = c =>
         c.ShahrbinInstanceId == request.InstanceId && c.IsSeen == request.IsSeen
@@ -23,7 +16,7 @@ internal sealed class GetAllCommentsQueryHandler : IRequestHandler<GetAllComment
         && (request.FilterModel.CategoryIds == null || c.Report == null || request.FilterModel.CategoryIds.Contains(c.Report.CategoryId))
         && (request.FilterModel.Query == null || c.Report == null || c.Report.TrackingNumber.Contains(request.FilterModel.Query)));
 
-        var result = await _commentRepository.GetPagedAsync(
+        var result = await commentRepository.GetPagedAsync(
             request.PagingInfo, 
             //c => c.ShahrbinInstanceId == request.InstanceId && c.IsSeen == request.IsSeen,
             filter,

@@ -6,39 +6,22 @@ using MediatR;
 
 namespace Application.Reports.Commands.CreateReportByOperator;
 
-internal sealed class CreateReportByOperatorCommandHandler : IRequestHandler<CreateReportByOperatorCommand, Report>
+internal sealed class CreateReportByOperatorCommandHandler(
+    IUnitOfWork unitOfWork,
+    IReportRepository reportRepository,
+    ICategoryRepository categoryRepository,
+    IUserRepository userRepository,
+    IUploadRepository uploadRepository) : IRequestHandler<CreateReportByOperatorCommand, Result<Report>>
 {
-    private readonly IReportRepository _reportRepository;
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly IUploadRepository _uploadRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public CreateReportByOperatorCommandHandler(
-        IUnitOfWork unitOfWork,
-        IReportRepository reportRepository,
-        ICategoryRepository categoryRepository,
-        IUserRepository userRepository,
-        IUploadRepository uploadRepository)
+    public async Task<Result<Report>> Handle(CreateReportByOperatorCommand request, CancellationToken cancellationToken)
     {
-        _unitOfWork = unitOfWork;
-        _reportRepository = reportRepository;
-        _categoryRepository = categoryRepository;
-        _userRepository = userRepository;
-        _uploadRepository = uploadRepository;
-    }
-
-    public async Task<Report> Handle(CreateReportByOperatorCommand request, CancellationToken cancellationToken)
-    {
-        var category = await _categoryRepository.GetByIDAsync(request.CategoryId);
+        var category = await categoryRepository.GetByIDAsync(request.CategoryId);
         if (category is null)
-        {
-            //TODO: Handle this error
-            throw new NotFoundException("دسته بندی");
-        }
+            return NotFoundErrors.Category;
+        
         var address = request.Address.GetAddress();
         //address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
-        var user = await _userRepository.GetOrCreateCitizen(request.phoneNumber, request.firstName, request.lastName);
+        var user = await userRepository.GetOrCreateCitizen(request.phoneNumber, request.firstName, request.lastName);
 
         List<Media> medias = new List<Media>();
         if (request.Attachments is not null)
@@ -46,12 +29,12 @@ internal sealed class CreateReportByOperatorCommandHandler : IRequestHandler<Cre
             List<Upload> attachments = new List<Upload>();
             if (request.Attachments.Count > 0)
             {
-                attachments = (await _uploadRepository
+                attachments = (await uploadRepository
                 .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == request.operatorId))
                 .ToList() ?? new List<Upload>();
                 if (request.Attachments.Count != attachments.Count)
                 {
-                    throw new AttachmentsFailureException();
+                    return AttachmentErrors.AttachmentsFailure;
                 }
                 attachments.ForEach(a => a.IsUsed = true);
                 medias = attachments.Select(a => a.Media).ToList();
@@ -70,8 +53,8 @@ internal sealed class CreateReportByOperatorCommandHandler : IRequestHandler<Cre
             Priority.Normal,
             request.IsIdentityVisible);
 
-        _reportRepository.Insert(report);
-        await _unitOfWork.SaveAsync();
+        reportRepository.Insert(report);
+        await unitOfWork.SaveAsync();
 
 
         //TODO: Inform related users not all

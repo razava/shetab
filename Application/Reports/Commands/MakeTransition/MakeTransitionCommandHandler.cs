@@ -4,32 +4,20 @@ using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using MediatR;
 
-namespace Application.Reports.Commands.CreateReportByOperator;
+namespace Application.Reports.Commands.MakeTransition;
 
-internal sealed class MakeTransitionCommandHandler : IRequestHandler<MakeTransitionCommand, Report>
+internal sealed class MakeTransitionCommandHandler(
+    IUnitOfWork unitOfWork,
+    IReportRepository reportRepository,
+    IUserRepository userRepository,
+    IUploadRepository uploadRepository) : IRequestHandler<MakeTransitionCommand, Result<Report>>
 {
-    private readonly IReportRepository _reportRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly IUploadRepository _uploadRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public MakeTransitionCommandHandler(
-        IUnitOfWork unitOfWork,
-        IReportRepository reportRepository,
-        IUserRepository userRepository,
-        IUploadRepository uploadRepository)
+    
+    public async Task<Result<Report>> Handle(MakeTransitionCommand request, CancellationToken cancellationToken)
     {
-        _unitOfWork = unitOfWork;
-        _reportRepository = reportRepository;
-        _userRepository = userRepository;
-        _uploadRepository = uploadRepository;
-    }
-
-    public async Task<Report> Handle(MakeTransitionCommand request, CancellationToken cancellationToken)
-    {
-        var report = await _reportRepository.GetByIDAsync(request.ReportId);
+        var report = await reportRepository.GetByIDAsync(request.ReportId);
         if (report == null)
-            throw new NotFoundException("گزارش");
+            return NotFoundErrors.Report;
 
         List<Media> medias = new List<Media>();
         if (request.Attachments is not null)
@@ -37,12 +25,12 @@ internal sealed class MakeTransitionCommandHandler : IRequestHandler<MakeTransit
             List<Upload> attachments = new List<Upload>();
             if (request.Attachments.Count > 0)
             {
-                attachments = (await _uploadRepository
+                attachments = (await uploadRepository
                 .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == request.ActorIdentifier))
                 .ToList() ?? new List<Upload>();
                 if (request.Attachments.Count != attachments.Count)
                 {
-                    throw new AttachmentsFailureException();
+                    return AttachmentErrors.AttachmentsFailure;
                 }
                 attachments.ForEach(a => a.IsUsed = true);
                 medias = attachments.Select(a => a.Media).ToList();
@@ -60,12 +48,12 @@ internal sealed class MakeTransitionCommandHandler : IRequestHandler<MakeTransit
             request.IsExecutive,
             request.IsContractor);
 
-        if(report.Feedback is not null && string.IsNullOrEmpty(report.Feedback.PhoneNumber))
+        if (report.Feedback is not null && string.IsNullOrEmpty(report.Feedback.PhoneNumber))
         {
-            report.Feedback.PhoneNumber = (await _userRepository.FindAsync(report.CitizenId))?.PhoneNumber ?? "";
+            report.Feedback.PhoneNumber = (await userRepository.FindAsync(report.CitizenId))?.PhoneNumber ?? "";
         }
-        _reportRepository.Update(report);
-        await _unitOfWork.SaveAsync();
+        reportRepository.Update(report);
+        await unitOfWork.SaveAsync();
 
 
         //TODO: Inform related users not all

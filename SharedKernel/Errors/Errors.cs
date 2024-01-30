@@ -94,6 +94,7 @@ public static class AccessDeniedErrors
 {
     public static readonly Error General = new Error("محدودیت دسترسی.");
     public static readonly Error Executive = new Error("فقط واحد اجرایی می تواند پیمانکار تعریف کند.");
+    public static readonly Error Actor = new Error("کاربر جاری Actor نیست."); // not used.
 }
 
 public static class CommunicationErrors

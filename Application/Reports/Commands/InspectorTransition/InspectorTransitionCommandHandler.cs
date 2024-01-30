@@ -1,36 +1,23 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Persistence;
-using Application.Reports.Commands.CreateReportByOperator;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using MediatR;
 
 namespace Application.Reports.Commands.InspectorTransition;
 
-internal sealed class InspectorTransitionCommandHandler : IRequestHandler<InspectorTransitionCommand, Report>
+internal sealed class InspectorTransitionCommandHandler(
+    IUnitOfWork unitOfWork,
+    IReportRepository reportRepository,
+    IUserRepository userRepository,
+    IUploadRepository uploadRepository) : IRequestHandler<InspectorTransitionCommand, Result<Report>>
 {
-    private readonly IReportRepository _reportRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly IUploadRepository _uploadRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public InspectorTransitionCommandHandler(
-        IUnitOfWork unitOfWork,
-        IReportRepository reportRepository,
-        IUserRepository userRepository,
-        IUploadRepository uploadRepository)
+    
+    public async Task<Result<Report>> Handle(InspectorTransitionCommand request, CancellationToken cancellationToken)
     {
-        _unitOfWork = unitOfWork;
-        _reportRepository = reportRepository;
-        _userRepository = userRepository;
-        _uploadRepository = uploadRepository;
-    }
-
-    public async Task<Report> Handle(InspectorTransitionCommand request, CancellationToken cancellationToken)
-    {
-        var report = await _reportRepository.GetByIDAsync(request.ReportId);
+        var report = await reportRepository.GetByIDAsync(request.ReportId);
         if (report == null)
-            throw new NotFoundException("گزارش");
+            return NotFoundErrors.Report;
 
         List<Media> medias = new List<Media>();
         if (request.Attachments is not null)
@@ -38,12 +25,12 @@ internal sealed class InspectorTransitionCommandHandler : IRequestHandler<Inspec
             List<Upload> attachments = new List<Upload>();
             if (request.Attachments.Count > 0)
             {
-                attachments = (await _uploadRepository
+                attachments = (await uploadRepository
                 .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == request.InspectorId))
                 .ToList() ?? new List<Upload>();
                 if (request.Attachments.Count != attachments.Count)
                 {
-                    throw new AttachmentsFailureException();
+                    return AttachmentErrors.AttachmentsFailure;
                 }
                 attachments.ForEach(a => a.IsUsed = true);
                 medias = attachments.Select(a => a.Media).ToList();
@@ -59,8 +46,8 @@ internal sealed class InspectorTransitionCommandHandler : IRequestHandler<Inspec
             request.InspectorId,
             request.Visibility);
 
-        _reportRepository.Update(report);
-        await _unitOfWork.SaveAsync();
+        reportRepository.Update(report);
+        await unitOfWork.SaveAsync();
 
         //TODO: Send messages and handle other things!
 

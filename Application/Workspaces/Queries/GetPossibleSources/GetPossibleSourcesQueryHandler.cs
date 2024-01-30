@@ -7,30 +7,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Workspaces.Queries.GetPossibleSources;
 
-public sealed class GetPossibleSourcesQueryHandler : IRequestHandler<GetPossibleSourcesQuery, List<PossibleSourceResponse>>
+public sealed class GetPossibleSourcesQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetPossibleSourcesQuery, Result<List<PossibleSourceResponse>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
-
-    public GetPossibleSourcesQueryHandler(IUnitOfWork unitOfWork)
+    public async Task<Result<List<PossibleSourceResponse>>> Handle(GetPossibleSourcesQuery request, CancellationToken cancellationToken)
     {
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<List<PossibleSourceResponse>> Handle(GetPossibleSourcesQuery request, CancellationToken cancellationToken)
-    {
-        var roleIds = await _unitOfWork.DbContext.Set<ApplicationRole>()
+        var roleIds = await unitOfWork.DbContext.Set<ApplicationRole>()
             .Where(r => r.Name != null && request.RoleNames.Contains(r.Name))
             .Select(r => r.Id)
             .ToListAsync();
 
-        var stagesIds = await _unitOfWork.DbContext.Set<ProcessStage>()
+        var stagesIds = await unitOfWork.DbContext.Set<ProcessStage>()
             .Where(ps => ps.Actors.Any(
                 a => a.Type == ActorType.Person && a.Identifier == request.UserId || 
                      a.Type == ActorType.Role && roleIds.Contains(a.Identifier)))
             .Select(ps => ps.Id)
             .ToListAsync();
 
-        var possibleSources = await _unitOfWork.DbContext.Set<ProcessTransition>()
+        var possibleSources = await unitOfWork.DbContext.Set<ProcessTransition>()
             .Where(t => stagesIds.Contains(t.ToId))
             .Select(t => t.From.DisplayRole)
             .GroupBy(dr => dr.Id)

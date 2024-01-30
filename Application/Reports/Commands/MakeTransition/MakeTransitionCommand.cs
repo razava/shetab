@@ -3,7 +3,7 @@ using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using MediatR;
 
-namespace Application.Reports.Commands.CreateReportByOperator;
+namespace Application.Reports.Commands.MakeTransition;
 
 public sealed record MakeTransitionCommand(
     Guid ReportId,
@@ -14,5 +14,5 @@ public sealed record MakeTransitionCommand(
     string ActorIdentifier,
     int ToActorId,
     bool IsExecutive = false,
-    bool IsContractor = false) : IRequest<Report>;
+    bool IsContractor = false) : IRequest<Result<Report>>;
 

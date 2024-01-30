@@ -7,5 +7,5 @@ namespace Application.Reports.Queries.GetReportById;
 public sealed record GetReportByIdQuery(
     Guid id,
     string userId,
-    int instanceId) : IRequest<Report>;
+    int instanceId) : IRequest<Result<Report>>;
 

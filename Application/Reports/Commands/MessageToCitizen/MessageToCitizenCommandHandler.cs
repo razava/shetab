@@ -8,42 +8,28 @@ using MediatR;
 
 namespace Application.Reports.Commands.MessageToCitizen;
 
-internal sealed class MessageToCitizenCommandHandler : IRequestHandler<MessageToCitizenCommand, Report>
+internal sealed class MessageToCitizenCommandHandler(
+    IUnitOfWork unitOfWork,
+    IReportRepository reportRepository,
+    ICommunicationService communication,
+    IActorRepository actorRepository,
+    IUploadRepository uploadRepository) : IRequestHandler<MessageToCitizenCommand, Result<Report>>
 {
-    private readonly IReportRepository _reportRepository;
-    private readonly ICommunicationService _communication;
-    private readonly IActorRepository _actorRepository;
-    private readonly IUploadRepository _uploadRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public MessageToCitizenCommandHandler(
-        IUnitOfWork unitOfWork,
-        IReportRepository reportRepository,
-        ICommunicationService communication,
-        IActorRepository actorRepository,
-        IUploadRepository uploadRepository)
-    {
-        _unitOfWork = unitOfWork;
-        _reportRepository = reportRepository;
-        _communication = communication;
-        _actorRepository = actorRepository;
-        _uploadRepository = uploadRepository;
-    }
-
-    public async Task<Report> Handle(MessageToCitizenCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Report>> Handle(MessageToCitizenCommand request, CancellationToken cancellationToken)
     {
         if (!request.UserRoles.Contains(RoleNames.Executive))
         {
-            throw new ExecutiveOnlyLimitException();
+            return OperationErrors.ExecutiveOnlyLimit;
         }
-        var actor = await _actorRepository.GetSingleAsync(a => a.Identifier == request.UserId);
+        var actor = await actorRepository.GetSingleAsync(a => a.Identifier == request.UserId);
         if (actor == null)
         {
-            throw new AccessDeniedException("کاربر جاری Actor نیست.");
+            //return AccessDeniedErrors.Actor;
+            return AccessDeniedErrors.General;
         }
-        var report = await _reportRepository.GetByIDAsync(request.reportId);
+        var report = await reportRepository.GetByIDAsync(request.reportId);
         if (report == null)
-            throw new NotFoundException("گزارش");
+            return NotFoundErrors.Report;
 
         List<Media> medias = new List<Media>();
         if (request.Attachments is not null)
@@ -51,12 +37,12 @@ internal sealed class MessageToCitizenCommandHandler : IRequestHandler<MessageTo
             List<Upload> attachments = new List<Upload>();
             if (request.Attachments.Count > 0)
             {
-                attachments = (await _uploadRepository
+                attachments = (await uploadRepository
                 .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == request.UserId))
                 .ToList() ?? new List<Upload>();
                 if (request.Attachments.Count != attachments.Count)
                 {
-                    throw new AttachmentsFailureException();
+                    return AttachmentErrors.AttachmentsFailure;
                 }
                 attachments.ForEach(a => a.IsUsed = true);
                 medias = attachments.Select(a => a.Media).ToList();
@@ -64,7 +50,7 @@ internal sealed class MessageToCitizenCommandHandler : IRequestHandler<MessageTo
         }
 
         report.MessageToCitizen(actor.Identifier, medias, request.Message, request.Comment);
-        await _unitOfWork.SaveAsync();
+        await unitOfWork.SaveAsync();
 
         return report;
     }

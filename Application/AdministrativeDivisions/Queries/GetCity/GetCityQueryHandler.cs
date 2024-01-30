@@ -4,18 +4,11 @@ using MediatR;
 
 namespace Application.AdministrativeDivisions.Queries.GetProvince;
 
-internal sealed class GetCityQueryHandler : IRequestHandler<GetCityQuery, List<City>>
+internal sealed class GetCityQueryHandler(ICityRepository cityRepository) : IRequestHandler<GetCityQuery, Result<List<City>>>
 {
-    private readonly ICityRepository _cityRepository;
-
-    public GetCityQueryHandler(ICityRepository cityRepository)
+    public async Task<Result<List<City>>> Handle(GetCityQuery request, CancellationToken cancellationToken)
     {
-        _cityRepository = cityRepository;
-    }
-
-    public async Task<List<City>> Handle(GetCityQuery request, CancellationToken cancellationToken)
-    {
-        var result = await _cityRepository.GetAsync(p => p.DistrictId == request.DistrictId);
+        var result = await cityRepository.GetAsync(p => p.DistrictId == request.DistrictId);
 
         return result.ToList();
     }

@@ -5,18 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Reports.Queries.GetAllReports;
 
-internal sealed class GetAllReportsQueryHandler : IRequestHandler<GetAllReportsQuery, PagedList<Report>>
+internal sealed class GetAllReportsQueryHandler(IUnitOfWork unitOfWork, IReportRepository reportRepository) : IRequestHandler<GetAllReportsQuery, Result<PagedList<Report>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IReportRepository _reportRepository;
-
-    public GetAllReportsQueryHandler(IUnitOfWork unitOfWork, IReportRepository reportRepository)
-    {
-        _unitOfWork = unitOfWork;
-        _reportRepository = reportRepository;
-    }
-
-    public async Task<PagedList<Report>> Handle(GetAllReportsQuery request, CancellationToken cancellationToken)
+    
+    public async Task<Result<PagedList<Report>>> Handle(GetAllReportsQuery request, CancellationToken cancellationToken)
     {
         //TODO: Implement appropriate filters
         //var reports = await _reportRepository.GetPagedAsync(request.PagingInfo,
@@ -41,7 +33,7 @@ internal sealed class GetAllReportsQueryHandler : IRequestHandler<GetAllReportsQ
         (r.Citizen.PhoneNumber.Contains(request.FilterModel.PhoneNumber)) ||
         (r.Citizen.PhoneNumber2.Contains(request.FilterModel.PhoneNumber))));
 
-        var context = _unitOfWork.DbContext;
+        var context = unitOfWork.DbContext;
         var query = context.Set<Report>()
             .AsNoTracking()
             .Where(handleFilter)

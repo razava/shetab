@@ -13,4 +13,4 @@ public sealed record InspectorTransitionCommand(
     string InspectorId,
     int ToActorId,  
     int StageId,
-    Visibility? Visibility) : IRequest<Report>;
+    Visibility? Visibility) : IRequest<Result<Report>>;
