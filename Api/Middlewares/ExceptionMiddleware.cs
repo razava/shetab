@@ -2,6 +2,7 @@
 using Domain.Exceptions;
 using FluentValidation;
 using Infrastructure.Exceptions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
@@ -26,6 +27,8 @@ public class ExceptionMiddleware
         }
         catch (ValidationException ex)
         {
+            await HandleValidationException(context, ex);
+            /*
             _logger.LogError(ex, "Exception occurred : Validation error : {Message} {@Errors} ",
                 ex.Message,
                 ex.Errors);
@@ -56,7 +59,7 @@ public class ExceptionMiddleware
 
             var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
             await context.Response.WriteAsync(problemDetailsJson);
-
+            */
         }
         catch (Exception ex)
         {
@@ -80,8 +83,7 @@ public class ExceptionMiddleware
                 case UserCreationFailedException:
                 case RoleAssignmentFailedException:
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                    var errorDetails = JsonSerializer.Serialize(ex.Data["Errors"]);
-                    _logger.LogError(ex, "User Creation Failed, errors: {Errors}", errorDetails);
+                    problemDetails = HandleIdentityErrors(ex, problemDetails);
                     break;
                 case InvalidCaptchaException:
                 case NullAssignedRoleException:
@@ -144,6 +146,92 @@ public class ExceptionMiddleware
         }
     }
 
+
+    private async Task<ActionResult<bool>> HandleValidationException(HttpContext context, ValidationException ex)
+    {
+        _logger.LogError(ex, "Exception occurred : Validation error : {Message} {@Errors} ",
+                ex.Message,
+                ex.Errors);
+
+        context.Response.ContentType = "application/problem+json";
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+        var problemDetails = new ProblemDetails()
+        {
+            Status = context.Response.StatusCode,
+            Detail = "One or more validation errors has occurred",
+            Instance = "",
+            Title = "Validation error",
+            Type = "ValidationFailure"
+        };
+
+        if (ex.Errors is not null)
+        {
+            var errors = ex.Errors
+                .Select(e => new {
+                    PropertyName = e.PropertyName,
+                    ErrorMessage = e.ErrorMessage,
+                    AttemptedValue = e.AttemptedValue,
+                    ErrorCode = e.ErrorCode
+                });
+            problemDetails.Extensions["errors"] = errors;  //= ex.Errors;
+        }
+
+        var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
+        await context.Response.WriteAsync(problemDetailsJson);
+        return true;
+    }
+
+    
+    private ProblemDetails HandleIdentityErrors(Exception ex, ProblemDetails problemDetails)
+    {
+        if(ex.Data["Errors"] != null)
+        {
+            var errors = (List<IdentityError>)ex.Data["Errors"]!;
+            string errorMessages = "";
+            bool isOneOf = true;
+            var errorDetails = JsonSerializer.Serialize(errors);
+            _logger.LogError(ex, "[Operation Failed, errors: {Errors}", errorDetails);
+
+            foreach (var error in errors)
+            {
+                switch (error.Code)
+                {
+                    case nameof(IdentityErrorDescriber.DuplicateUserName):
+                        error.Description = "نام کاربری تکراری است.";
+                        break;
+                    case nameof(IdentityErrorDescriber.InvalidUserName):
+                        error.Description = "نام کاربری نامعتبر است.";
+                        break;
+                    case nameof(IdentityErrorDescriber.PasswordTooShort):  //if other limits on password added to authentication configuration,other checks must add :|
+                        error.Description = "رمز عبور حداقل باید 6 کارکتر باشد.";
+                        break;
+                    case nameof(IdentityErrorDescriber.PasswordMismatch):
+                        error.Description = "پسورد همخوانی ندارد.";
+                        break;
+                    case nameof(IdentityErrorDescriber.InvalidToken):
+                        error.Description = "توکن نامعتبر است.";
+                        break;
+                    case nameof(IdentityErrorDescriber.InvalidRoleName):
+                        error.Description = "نقش نامعتبر.";
+                        break;
+                    case nameof(IdentityErrorDescriber.DuplicateRoleName):
+                        error.Description = "نقش تکراری.";
+                        break;
+                    default:
+                        isOneOf = false;
+                        break;
+                }
+                if (isOneOf)
+                    errorMessages = errorMessages + error.Description;
+            }
+
+            problemDetails.Extensions["errors"] = errors;
+            problemDetails.Detail = errorMessages;
+            
+        }
+        return problemDetails;
+    }
 }
 
 

@@ -169,7 +169,7 @@ public class StaffReportController : ApiController
 
         if (result.IsFailed)
             return Problem(result.ToResult());
-        var mappedResult = result.Adapt<List<GetPossibleSourceDto>>();
+        var mappedResult = result.Value.Adapt<List<GetPossibleSourceDto>>();
         var newReportsSource = new GetPossibleSourceDto(null, "", "جدید");
         mappedResult.Insert(0, newReportsSource);
         return Ok(mappedResult);
