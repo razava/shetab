@@ -12,10 +12,12 @@ internal class CreateUserCommandHandler(IUserRepository userRepository) : IReque
     {
         ApplicationUser user = new()
         {
+            ShahrbinInstanceId = request.InstanceId,
             UserName = request.Username,
             FirstName = request.FirstName,
             LastName = request.LastName,
             Title = request.Title,
+            PhoneNumberConfirmed = true
         };
         await userRepository.CreateAsync(user, request.Password);
         

@@ -199,7 +199,7 @@ public class AdminUserManagementController : ApiController
     public async Task<ActionResult<ApplicationUser>> CreateUser(CreateUserDto model)
     {
         var instanceId = User.GetUserInstanceId();
-        var command = new CreateUserCommand(model.Username, model.Password, model.FirstName, model.LastName, model.Title);
+        var command = new CreateUserCommand(instanceId, model.Username, model.Password, model.FirstName, model.LastName, model.Title);
         var user = await Sender.Send(command);
 
         return user.Match(
