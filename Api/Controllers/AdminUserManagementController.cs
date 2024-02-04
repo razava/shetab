@@ -5,6 +5,7 @@ using Application.Common.Interfaces.Persistence;
 using Application.Users.Commands.CreateContractor;
 using Application.Users.Commands.CreateNewPassword;
 using Application.Users.Commands.CreateUser;
+using Application.Users.Commands.UpdateCategories;
 using Application.Users.Commands.UpdateRegions;
 using Application.Users.Commands.UpdateRoles;
 using Application.Users.Commands.UpdateUserProfile;
@@ -13,6 +14,7 @@ using Application.Users.Queries.GetContractors;
 using Application.Users.Queries.GetRegions;
 using Application.Users.Queries.GetRoles;
 using Application.Users.Queries.GetUserById;
+using Application.Users.Queries.GetUserCategories;
 using Application.Users.Queries.GetUsers;
 using Domain.Models.Relational.IdentityAggregate;
 using Mapster;
@@ -128,7 +130,35 @@ public class AdminUserManagementController : ApiController
             f => Problem(f));
     }
 
-    
+
+    [Authorize(Roles = "Admin")]
+    [HttpPut("Categories/{id}")]
+    public async Task<ActionResult> UpdateUserCategories(string id, UpdateUserCategories updateModel)
+    {
+        var command = new UpdateCategoriesCommand(id, updateModel.CategoryIds);
+        var result = await Sender.Send(command);
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
+    }
+
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("Categories/{id}")]
+    public async Task<ActionResult<List<int>>> GetUserCategories(string id)
+    {
+        var query = new GetUserCategoriesQuery(id);
+        var result = await Sender.Send(query);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+
+
+
+
     //instanceId ??
     [Authorize]
     [HttpGet("AllUsers")]
@@ -178,6 +208,7 @@ public class AdminUserManagementController : ApiController
     }
 
 
+   
 
     //This endpoint is accessible by executives only
     [Authorize(Roles = "Executive")]

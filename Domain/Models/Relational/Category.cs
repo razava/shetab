@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Models.Relational.Common;
+using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
 using Domain.Models.Relational.ReportAggregate;
 
@@ -26,6 +27,7 @@ public class Category : BaseModel
     public bool ObjectionAllowed { get; set; }
     public bool EditingAllowed { get; set; } = true;
     public bool HideMap { get; set; }
+    public List<ApplicationUser> Users { get; set; } = new List<ApplicationUser>();
 
     [NotMapped]
     public List<int> Siblings

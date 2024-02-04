@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Reports.Queries.GetAllReports;
 
-internal sealed class GetAllReportsQueryHandler(IUnitOfWork unitOfWork, IReportRepository reportRepository) : IRequestHandler<GetAllReportsQuery, Result<PagedList<Report>>>
+internal sealed class GetAllReportsQueryHandler(IUnitOfWork unitOfWork, IReportRepository reportRepository, IUserRepository userRepository) : IRequestHandler<GetAllReportsQuery, Result<PagedList<Report>>>
 {
     
     public async Task<Result<PagedList<Report>>> Handle(GetAllReportsQuery request, CancellationToken cancellationToken)
@@ -16,10 +16,12 @@ internal sealed class GetAllReportsQueryHandler(IUnitOfWork unitOfWork, IReportR
         //         && r.TransitionLogs.Any(tl => tl.ActorIdentifier == request.UserId),
         //    false,
         //    a => a.OrderBy(r => r.Sent));
+        var categories = await userRepository.GetUserCategoriesAsync(request.UserId);
 
         System.Linq.Expressions.Expression<Func<Report, bool>>? handleFilter = r =>
             r.ShahrbinInstanceId == request.instanceId
-            && r.TransitionLogs.Any(tl => tl.ActorIdentifier == request.UserId);
+            && r.TransitionLogs.Any(tl => tl.ActorIdentifier == request.UserId)
+            && (!categories.Any() || categories.Contains(r.CategoryId));
 
         System.Linq.Expressions.Expression<Func<Report, bool>>? inputFilter = r =>
         ((request.FilterModel == null) ||

@@ -38,6 +38,8 @@ public class ApplicationUser : IdentityUser
     public UserFlags Flags { get; set; }
     public int? ShahrbinInstanceId { get; set; }
     public ShahrbinInstance? ShahrbinInstance { get; set; }
+
+    public List<Category> Categories { get; set; } = new List<Category>();
 }
 
 

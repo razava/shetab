@@ -33,6 +33,11 @@ public record IsInRegionDto(
     [Required]
     bool IsIn);
 
+
+public record UpdateUserCategories(
+    List<int> CategoryIds);
+
+
 public record UpdateUserDto(
     [MaxLength(32)]
     string? FirstName,

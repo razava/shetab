@@ -1,5 +1,6 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Persistence;
+using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
@@ -258,4 +259,45 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
 
         return createResult;
     }
+
+
+    public async Task<bool> UpdateCategoriesAsync(string userId, List<int> categoryIds)
+    {
+        var user = await _dbContext.Set<ApplicationUser>()
+            .Where(u => u.Id == userId)
+            .Include(u => u.Categories)
+            .SingleOrDefaultAsync();
+
+        if (user is null)
+            throw new NotFoundException("کاربر");
+
+        var categories = new List<Category>();
+        foreach (var categoryId in categoryIds)
+        {
+            var category = await _dbContext.Set<Category>().Where(c => c.Id == categoryId)/*.Include(c => c.Users)*/.SingleOrDefaultAsync();
+            if (category is null) throw new NotFoundException("دسته بندی");
+            categories.Add(category);
+        }
+
+        user.Categories = categories;
+        
+        return true;
+    }
+
+
+    public async Task<List<int>> GetUserCategoriesAsync(string userId)
+    {
+        var user = await _dbContext.Set<ApplicationUser>()
+            .AsNoTracking()
+            .Where(u => u.Id == userId)
+            .Include(u => u.Categories)
+            .SingleOrDefaultAsync();
+
+        if (user is null)
+            throw new NotFoundException("کاربر");
+
+        return user.Categories.Select(u => u.Id).ToList();
+
+    }
+
 }

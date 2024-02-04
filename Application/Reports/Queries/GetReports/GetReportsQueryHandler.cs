@@ -2,6 +2,7 @@
 using Application.Common.Statics;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
+using Domain.Models.Relational.IdentityAggregate;
 using Domain.Primitives;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,18 +14,24 @@ internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IReportRepo
     
     public async Task<Result<PagedList<Report>>> Handle(GetReportsQuery request, CancellationToken cancellationToken)
     {
+        var context = unitOfWork.DbContext;
+
         var actors = await userRepository.GetActorsAsync(request.UserId);
         var actorIds = actors.Select(a => a.Id).ToList();
+        var categories = await userRepository.GetUserCategoriesAsync(request.UserId);
+
         System.Linq.Expressions.Expression<Func<Report, bool>>? filter;
         if (request.FromRoleId is null && request.Roles.Contains(RoleNames.Operator))
         {
-            filter = r => r.ReportState == ReportState.NeedAcceptance && r.ShahrbinInstanceId == request.InstanceId;
+            filter = r => r.ReportState == ReportState.NeedAcceptance && r.ShahrbinInstanceId == request.InstanceId
+            && (!categories.Any() || categories.Contains(r.CategoryId));
         }
         else
         {
             filter = r => r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value) &&
                      r.LastTransition != null && r.LastTransition.From.DisplayRoleId == request.FromRoleId &&
-                     r.ShahrbinInstanceId == request.InstanceId;
+                     r.ShahrbinInstanceId == request.InstanceId
+                     && (!categories.Any() || categories.Contains(r.CategoryId));
         }
 
         System.Linq.Expressions.Expression<Func<Report, bool>>? inputFilters = r =>
@@ -44,7 +51,7 @@ internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IReportRepo
         //    false,
         //    a => a.OrderBy(r => r.Sent));
 
-        var context = unitOfWork.DbContext;
+        
         var query = context.Set<Report>()
             .AsNoTracking()
             .Where(filter)
