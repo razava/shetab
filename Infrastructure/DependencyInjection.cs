@@ -1,9 +1,11 @@
-﻿using Application.Common.Interfaces.Communication;
+﻿using Application.Common.Interfaces.Caching;
+using Application.Common.Interfaces.Communication;
 using Application.Common.Interfaces.Map;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Security;
 using Domain.Models.Relational.IdentityAggregate;
 using Infrastructure.Authentication;
+using Infrastructure.Caching;
 using Infrastructure.Captcha;
 using Infrastructure.Communications;
 using Infrastructure.Exceptions;
@@ -32,7 +34,8 @@ public static class DependencyInjection
         services.AddStorage(configuration, webHostEnvironment);
         services.AddCommunication(configuration);
         services.AddMap(configuration);
-        
+        services.AddCache();
+
         return services;
     }
 
@@ -153,4 +156,12 @@ public static class DependencyInjection
         services.AddScoped<IMapService, ParsiMapService>();
         return services;
     }
+
+    public static IServiceCollection AddCache(this IServiceCollection services)
+    {
+        services.AddMemoryCache();
+        services.AddSingleton<IQueryCacheService, QueryCacheService>();
+        return services;
+    }
+
 }
