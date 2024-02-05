@@ -189,9 +189,7 @@ public class StaffReportController : ApiController
             userId,
             userRoles,
             messageToCitizenDto.Attachments,
-            messageToCitizenDto.Comment,
-            messageToCitizenDto.IsPublic,
-            messageToCitizenDto.Message);
+            messageToCitizenDto.Comment);
 
         var result = await Sender.Send(command);
 

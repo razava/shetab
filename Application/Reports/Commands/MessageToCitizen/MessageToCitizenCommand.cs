@@ -10,7 +10,5 @@ public sealed record MessageToCitizenCommand(
     string UserId,
     List<string> UserRoles,
     List<Guid> Attachments,
-    string Comment,
-    bool IsPublic,
-    string Message) : IRequest<Result<Report>>; //TODO: Fix the return typd
+    string Comment) : IRequest<Result<Report>>; //TODO: Fix the return typd
 

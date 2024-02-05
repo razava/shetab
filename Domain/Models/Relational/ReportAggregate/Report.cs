@@ -283,7 +283,6 @@ public class Report : Entity
     public Message MessageToCitizen(
         string actorIdentifier,
         List<Media> attachments,
-        string message,
         string comment)
     {
         var now = DateTime.UtcNow;
@@ -300,7 +299,7 @@ public class Report : Entity
         {
             ShahrbinInstanceId = ShahrbinInstanceId,
             Title = "پاسخ به شهروند" + " - " + TrackingNumber,
-            Content = message,
+            Content = comment,
             DateTime = now,
             MessageType = MessageType.Report,
             SubjectId = Id,
