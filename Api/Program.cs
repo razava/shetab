@@ -17,6 +17,7 @@ using Infrastructure.Map.ParsiMap;
 using Api.Middlewares;
 using Api.Services.Filters;
 using Serilog;
+using Application.Common.Statics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,6 +68,12 @@ builder.Services.AddSwaggerGen(swagger =>
                             new string[] {}
                     }
                 });
+});
+
+//Adding Authorization
+builder.Services.AddAuthorization(options =>
+{
+    CustomPolicies.AddPolicies(options);
 });
 
 //Cors policy
