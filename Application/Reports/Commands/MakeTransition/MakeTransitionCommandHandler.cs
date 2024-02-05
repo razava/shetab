@@ -25,9 +25,9 @@ internal sealed class MakeTransitionCommandHandler(
             List<Upload> attachments = new List<Upload>();
             if (request.Attachments.Count > 0)
             {
-                attachments = (await uploadRepository
-                .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == request.ActorIdentifier))
-                .ToList() ?? new List<Upload>();
+                attachments = (await uploadRepository.GetAsync(
+                    u => request.Attachments.Contains(u.Id) && u.UserId == request.ActorIdentifier))
+                    .ToList() ?? new List<Upload>();
                 if (request.Attachments.Count != attachments.Count)
                 {
                     return AttachmentErrors.AttachmentsFailure;
@@ -36,6 +36,7 @@ internal sealed class MakeTransitionCommandHandler(
                 medias = attachments.Select(a => a.Media).ToList();
             }
         }
+        var actors = await userRepository.GetActorsAsync(request.ActorIdentifier);
 
         report.MakeTransition(
             request.TransitionId,
@@ -45,6 +46,7 @@ internal sealed class MakeTransitionCommandHandler(
             ActorType.Person,
             request.ActorIdentifier,
             request.ToActorId,
+            actors,
             request.IsExecutive,
             request.IsContractor);
 
