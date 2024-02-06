@@ -88,7 +88,8 @@ internal sealed class GetPossibleTransitionsQueryHandler(IReportRepository repor
                     {
                         ////contractorIdentifier = role.Id;
                         //usersInRole = await _context.Users.Where(p => p.Executeves.Any(q => q.Id == user.Id)).ToListAsync();
-                        var executive = (await userRepository.GetUsersInRole("Executive")).Where(p => p.Id == userId).SingleOrDefault();
+                        //var executive = (await userRepository.GetUsersInRole("Executive")).Where(p => p.Id == userId).SingleOrDefault();
+                        var executive = await userRepository.GetSingleAsync(u => u.Id == userId, false, "Contractors");
                         if (executive != null)
                         {
                             usersInRole.AddRange(executive.Contractors.ToList());
