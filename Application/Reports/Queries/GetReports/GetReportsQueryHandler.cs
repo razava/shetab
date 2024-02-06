@@ -2,14 +2,12 @@
 using Application.Common.Statics;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
-using Domain.Models.Relational.IdentityAggregate;
-using Domain.Primitives;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Reports.Queries.GetReports;
 
-internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IReportRepository reportRepository, IUserRepository userRepository) : IRequestHandler<GetReportsQuery, Result<PagedList<Report>>>
+internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork/*, IReportRepository reportRepository*/, IUserRepository userRepository) : IRequestHandler<GetReportsQuery, Result<PagedList<Report>>>
 {
     
     public async Task<Result<PagedList<Report>>> Handle(GetReportsQuery request, CancellationToken cancellationToken)
@@ -41,7 +39,7 @@ internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IReportRepo
         && (request.FilterGetReports.CurrentStates == null || request.FilterGetReports.CurrentStates.Contains(r.ReportState)) 
         && (request.FilterGetReports.Query == null || r.TrackingNumber.Contains(request.FilterGetReports.Query))
         && (request.FilterGetReports.PhoneNumber == null ||
-        (r.Citizen.PhoneNumber.Contains(request.FilterGetReports.PhoneNumber)) ||
+        (r.Citizen.PhoneNumber!.Contains(request.FilterGetReports.PhoneNumber)) ||
         (r.Citizen.PhoneNumber2.Contains(request.FilterGetReports.PhoneNumber)) ));
 
 
