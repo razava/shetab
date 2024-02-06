@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace Application.Categories.Queries.GetCategory;
 
-internal sealed class GetCategoryQueryHandler(IUnitOfWork unitOfWork, ICategoryRepository categoryRepository) : IRequestHandler<GetCategoryQuery, Result<List<Category>>>
+internal sealed class GetCategoryQueryHandler(/*IUnitOfWork unitOfWork, */ICategoryRepository categoryRepository) : IRequestHandler<GetCategoryQuery, Result<List<Category>>>
 {
    
     public async Task<Result<List<Category>>> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
