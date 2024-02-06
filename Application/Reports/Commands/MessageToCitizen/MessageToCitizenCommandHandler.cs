@@ -49,7 +49,7 @@ internal sealed class MessageToCitizenCommandHandler(
             }
         }
 
-        report.MessageToCitizen(actor.Identifier, medias, request.Message, request.Comment);
+        report.MessageToCitizen(actor.Identifier, medias, request.Comment);
         await unitOfWork.SaveAsync();
 
         return report;

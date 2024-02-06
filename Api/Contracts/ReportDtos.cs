@@ -238,10 +238,7 @@ public record GetPossibleSourceDto(
 public record MessageToCitizenDto(
     List<Guid> Attachments,
     [MaxLength(512)]
-    string Comment,
-    bool IsPublic,
-    [MaxLength(512)]
-    string Message);
+    string Comment);
 
 
 

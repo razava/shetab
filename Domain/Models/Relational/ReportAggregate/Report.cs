@@ -283,7 +283,6 @@ public class Report : Entity
     public Message MessageToCitizen(
         string actorIdentifier,
         List<Media> attachments,
-        string message,
         string comment)
     {
         var now = DateTime.UtcNow;
@@ -300,7 +299,7 @@ public class Report : Entity
         {
             ShahrbinInstanceId = ShahrbinInstanceId,
             Title = "پاسخ به شهروند" + " - " + TrackingNumber,
-            Content = message,
+            Content = comment,
             DateTime = now,
             MessageType = MessageType.Report,
             SubjectId = Id,
@@ -323,6 +322,7 @@ public class Report : Entity
         ActorType actorType,
         string actorIdentifier,
         int toActorId,
+        List<Actor> actors,
         bool isExecutive = false,
         bool isContractor = false)
     {
@@ -334,6 +334,7 @@ public class Report : Entity
             actorType,
             actorIdentifier,
             toActorId,
+            actors,
             isExecutive,
             isContractor);
     }
@@ -436,7 +437,8 @@ public class Report : Entity
                     "",
                     ActorType.Auto,
                     bot.Id,
-                    bot.DestinationActorId);
+                    bot.DestinationActorId,
+                    new List<Actor> { autoActor });
                 break;
             }
         }
@@ -450,6 +452,7 @@ public class Report : Entity
         ActorType actorType,
         string actorIdentifier,
         int toActorId,
+        List<Actor> actors,
         bool isExecutive = false,
         bool isContractor = false)
     {
@@ -462,7 +465,10 @@ public class Report : Entity
         if (CurrentStageId != transition.FromId)
             throw new InvalidOperationException();
 
-        //TODO: Check user permissions for making transition
+        if(!transition.From.Actors.Intersect(actors).Any())
+        {
+            throw new UnauthorizedAccessException();
+        }
 
         var reason = transition.ReasonList.Where(p => p.Id == reasonId).SingleOrDefault();
 
@@ -490,7 +496,9 @@ public class Report : Entity
             }
         }
 
-        CurrentActor = transition.To.Actors.Where(ca => ca.Id == toActorId).SingleOrDefault();
+        //CurrentActor = transition.To.Actors.Where(ca => ca.Id == toActorId).SingleOrDefault();
+        //TODO: Check if toActorId is allowed
+        CurrentActorId = toActorId;
 
         //if (actorIds.Count == 0)
         //{
