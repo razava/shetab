@@ -22,21 +22,6 @@ public class AdminCategoryController : ApiController
     {
     }
 
-    //todo : .................Commands & queries ............
-    //TODO: Define access policies
-
-    //[Authorize]
-    //[HttpGet]
-    //public async Task<ActionResult<List<FlattenShortCategoryDto>>> GetCategories(int instanceId)
-    //{
-    //    //todo : need a query that return flat list.............................................
-    //    //var query = new GetCategoryQuery(instanceId);
-    //    //var result = await Sender.Send(query);
-    //    //var mappedResult = result.Adapt<List<FlattenShortCategoryDto>>();
-    //    //return Ok(mappedResult);
-    //    await Task.CompletedTask;
-    //    return Ok();
-    //}
 
     [Authorize]
     [HttpGet("All")]
