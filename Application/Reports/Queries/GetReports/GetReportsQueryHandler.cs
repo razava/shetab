@@ -30,7 +30,7 @@ internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IReportRepo
         {
             filter = r => r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value) &&
                      r.LastTransition != null && r.LastTransition.From.DisplayRoleId == request.FromRoleId &&
-                     r.ShahrbinInstanceId == request.InstanceId
+                     (request.InstanceId == -1 || r.ShahrbinInstanceId == request.InstanceId)
                      && (!categories.Any() || categories.Contains(r.CategoryId));
         }
 
