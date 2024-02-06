@@ -1,9 +1,6 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
-using Domain.Primitives;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Application.Categories.Queries.GetCategory;
 
