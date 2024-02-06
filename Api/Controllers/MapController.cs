@@ -6,6 +6,7 @@ using Mapster;
 using Application.Maps.Queries.MapBackwardQuery;
 using MediatR;
 using Api.ExtensionMethods;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Shahrbin.Api.Controllers
 {
@@ -17,6 +18,7 @@ namespace Shahrbin.Api.Controllers
         {
         }
 
+        [Authorize]
         [HttpGet("Forward/{address}")]
         public async Task<ActionResult<ForwardResult>> Forward(string address)
         {
@@ -29,6 +31,8 @@ namespace Shahrbin.Api.Controllers
             
         }
 
+
+        [Authorize]
         [HttpGet("Backward/{lng}/{lat}")]
         public async Task<ActionResult<BackwardResult>> Backward(double lng, double lat)
         {

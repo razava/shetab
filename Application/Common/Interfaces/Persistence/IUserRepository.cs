@@ -1,6 +1,7 @@
 ﻿using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Application.Common.Interfaces.Persistence;
 
@@ -25,6 +26,7 @@ public interface IUserRepository : IGenericRepository<ApplicationUser>
     public Task<ApplicationUser?> FindByNameAsync(string username);
     public Task<ApplicationRole?> FindRoleByNameAsync(string roleName);
     public Task<IdentityResult> CreateRoleAsync(ApplicationRole applicationRole);
+    public Task<IdentityResult> AddClaimsToRoleAsunc(ApplicationRole role, Claim claim);
     public Task<bool> RoleExistsAsync(string roleName);
     public Task<List<Actor>> GetActorsAsync(string userId);
     public Task<bool> CreateNewPasswordAsync(string userId, string password);

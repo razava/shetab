@@ -54,13 +54,7 @@ public static class AppClaimTypes
     {
         public static string Prefix = "Account-";
         public static string Get = $"{Prefix}Get";
-        public static class Update //.........one is enough?
-        {
-            public static string Prefix = Account.Prefix + "Update-";
-            public static string Profile = $"{Prefix}Profile";
-            public static string Avatear = $"{Prefix}Avatear";
-            public static string Password = $"{Prefix}Password";
-        }
+        public static string Update = $"{Prefix}Update";
     }
 
     public static class User
@@ -74,7 +68,7 @@ public static class AppClaimTypes
             public static string All = $"{Prefix}All";
             public static string Roles = $"{Prefix}Roles";
             public static string Regions = $"{Prefix}Regions";
-            public static string Contractors = $"{Prefix}Contractors"; //....??
+            public static string Contractors = $"{Prefix}Contractors"; //....?? in admin 
         }
         public static class Update
         {
@@ -96,14 +90,7 @@ public static class AppClaimTypes
     public static class Info
     {
         public static string Prefix = "Info-";
-        public static class Read
-        {
-            public static string Prefix = Info.Prefix + "Read-";
-            public static string Charts = $"{Prefix}Charts";
-            public static string Summary = $"{Prefix}Summary";
-            public static string Locations = $"{Prefix}Locations";
-            public static string Excel = $"{Prefix}Excel";
-        }
+        public static string Read = $"{Prefix}Read";
     }
 
     public static class Common
@@ -120,37 +107,22 @@ public static class AppClaimTypes
     public static class Category
     {
         public static string Prefix = "Category-";
-        public static string Read = $"{Prefix}Read";
+        public static string Read = $"{Prefix}Read";   //need? all users can read categories
         public static string Manage = $"{Prefix}Manage";
     }
 
     public static class Processes
     {
         public static string Prefix = "Processes-";
-        public static class Read
-        {
-            public static string Prefix = Processes.Prefix + "Read-";
-            public static string All = $"{Prefix}All";
-            public static string Details = $"{Prefix}Details";
-        }
-
-        public static string Create = $"{Prefix}Create";
-        public static string Update = $"{Prefix}Update";
+        public static string Read = $"{Prefix}Read";
+        public static string Manage = $"{Prefix}Manage";
     }
 
     public static class OrganizationalUnit
     {
         public static string Prefix = "OrganizationalUnit-";
-        public static class Read
-        {
-            public static string Prefix = OrganizationalUnit.Prefix + "Read-";
-            public static string All = $"{Prefix}All";
-            public static string Self = $"{Prefix}Self";
-            public static string Details = $"{Prefix}Details";
-        }
-
-        public static string Create = $"{Prefix}Create";
-        public static string Update = $"{Prefix}Update";
+        public static string Read = $"{Prefix}Read";
+        public static string Manage = $"{Prefix}MAnage";
     }
 
     public static class File
@@ -202,37 +174,21 @@ public static class AppClaimTypes
     public static class Messages
     {
         public static string Prefix = "Messages-";
-        public static class Read
-        {
-            public static string Prefix = Messages.Prefix + "Read-";
-            public static string All = $"{Prefix}All";
-            public static string Count = $"{Prefix}Count";
-        }
-    }
-
-    public static class Map
-    {
-        public static string Prefix = "Map-";
-        public static class Read
-        {
-            public static string Prefix = Map.Prefix + "Read-";
-            public static string Forward = $"{Prefix}Forward";
-            public static string Backward = $"{Prefix}Backward";
-        }
+        public static string Read = $"{Prefix}Read";
     }
 
     public static class Feedback
     {
         public static string Prefix = "Feedback-";
         public static string Create = $"{Prefix}Create";
-
+        public static string Read = $"{Prefix}Read";
     }
 
     public static class Satisfaction
     {
         public static string Prefix = "Satisfaction-";
         public static string Update = $"{Prefix}Update";
-
+        public static string Read = $"{Prefix}Read";
     }
 
     public static class Violation

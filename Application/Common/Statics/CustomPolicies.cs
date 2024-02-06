@@ -64,12 +64,7 @@ public static class CustomPolicies
         //Account
         claimStr = AppClaimTypes.Account.Get;
         options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-
-        claimStr = AppClaimTypes.Account.Update.Profile;
-        options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-        claimStr = AppClaimTypes.Account.Update.Avatear;
-        options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-        claimStr = AppClaimTypes.Account.Update.Password;
+        claimStr = AppClaimTypes.Account.Update;
         options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
 
 
@@ -104,15 +99,9 @@ public static class CustomPolicies
 
 
         //Info
-        claimStr = AppClaimTypes.Info.Read.Charts;
+        claimStr = AppClaimTypes.Info.Read;
         options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-        claimStr = AppClaimTypes.Info.Read.Summary;
-        options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-        claimStr = AppClaimTypes.Info.Read.Locations;
-        options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-        claimStr = AppClaimTypes.Info.Read.Excel;
-        options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-
+        
 
         //Common
         claimStr = AppClaimTypes.Common.Read.Executives;
@@ -127,30 +116,18 @@ public static class CustomPolicies
 
 
         //Process
-        claimStr = AppClaimTypes.Processes.Read.All;
+        claimStr = AppClaimTypes.Processes.Read;
         options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-        claimStr = AppClaimTypes.Processes.Read.Details;
-        options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-
-        claimStr = AppClaimTypes.Processes.Create;
-        options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-        claimStr = AppClaimTypes.Processes.Update;
+        claimStr = AppClaimTypes.Processes.Manage;
         options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
 
 
         //Organizational Unit
-        claimStr = AppClaimTypes.OrganizationalUnit.Read.All;
+        claimStr = AppClaimTypes.OrganizationalUnit.Read;
         options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-        claimStr = AppClaimTypes.OrganizationalUnit.Read.Self;
+        claimStr = AppClaimTypes.OrganizationalUnit.Manage;
         options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-        claimStr = AppClaimTypes.OrganizationalUnit.Read.Details;
-        options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-
-        claimStr = AppClaimTypes.OrganizationalUnit.Create;
-        options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-        claimStr = AppClaimTypes.OrganizationalUnit.Update;
-        options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-
+        
 
         //File
         claimStr = AppClaimTypes.File.Upload;
@@ -193,26 +170,21 @@ public static class CustomPolicies
 
 
         //Messages
-        claimStr = AppClaimTypes.Messages.Read.All;
+        claimStr = AppClaimTypes.Messages.Read;
         options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-        claimStr = AppClaimTypes.Messages.Read.Count;
-        options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-
-
-        //Map
-        claimStr = AppClaimTypes.Map.Read.Forward;
-        options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-        claimStr = AppClaimTypes.Map.Read.Backward;
-        options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
-
+        
 
         //Feedback
         claimStr = AppClaimTypes.Feedback.Create;
+        options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
+        claimStr = AppClaimTypes.Feedback.Read;
         options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
 
 
         //Satisfaction
         claimStr = AppClaimTypes.Satisfaction.Update;
+        options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
+        claimStr = AppClaimTypes.Satisfaction.Read;
         options.AddPolicy(claimStr, policy => policy.RequireClaim(claimStr));
 
 

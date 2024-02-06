@@ -1,5 +1,6 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Persistence;
+using Application.Common.Statics;
 using ClosedXML.Excel;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
@@ -8,6 +9,7 @@ using Domain.Models.Relational.ProcessAggregate;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace Application.Setup.Commands;
@@ -309,18 +311,187 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
     private async Task initDefaultsFromExcel(List<Region> regions, ShahrbinInstance instance)
     {
         //Init roles
-        var rolesInfo = new List<Tuple<string, string>>()
+        var rolesInfo = new List<Tuple<string, string, List<string>>>()
             {
-                new Tuple<string, string>("Citizen", "شهروند"),
-                new Tuple<string, string>("Operator", "اپراتور"),
-                new Tuple<string, string>("Executive", "واحد اجرایی"),
-                new Tuple<string, string>("Contractor", "پیمانکار"),
-                new Tuple<string, string>("Manager", "واحد سازمانی"),
-                new Tuple<string, string>("Advertiser", "مدیر تبلیغات"),
-                new Tuple<string, string>("Mayor", "شهردار"),
-                new Tuple<string, string>("Admin", "مدیر فنی"),
-                new Tuple<string, string>("PowerUser",""),
-                new Tuple<string, string>("Inspector", "بازرس")
+                new Tuple<string, string, List<string>>("Citizen", "شهروند",
+                new List<string>
+                {
+                    AppClaimTypes.Report.Create.ByCitizen,
+                    AppClaimTypes.Report.Read.Self,
+                    AppClaimTypes.Report.Read.Nearest,
+                    AppClaimTypes.Report.Read.Recent,
+                    AppClaimTypes.Report.Read.Comments,
+                    AppClaimTypes.Report.Read.History,
+                    AppClaimTypes.Report.Like,
+                    AppClaimTypes.Comments.Create,
+                    AppClaimTypes.Comments.Delete,
+                    AppClaimTypes.Account.Get,
+                    AppClaimTypes.Account.Update,
+                    AppClaimTypes.Category.Read,
+                    AppClaimTypes.File.Upload,
+                    AppClaimTypes.News.Read.ByCitizen,
+                    AppClaimTypes.Polls.Answer,
+                    AppClaimTypes.Polls.Read.ByCitizen,
+                    AppClaimTypes.Messages.Read,
+                    AppClaimTypes.Feedback.Create,
+                    AppClaimTypes.Violation.Create.ForReport,
+                    AppClaimTypes.Violation.Create.ForComment
+                }),
+                new Tuple<string, string, List<string>>("Operator", "اپراتور",
+                new List<string>
+                {
+                    AppClaimTypes.Report.Create.ByOperator,
+                    AppClaimTypes.Report.Read.All,
+                    AppClaimTypes.Report.Read.Details,
+                    AppClaimTypes.Report.Read.History,
+                    AppClaimTypes.Report.Read.Comments,
+                    AppClaimTypes.Report.Update,
+                    AppClaimTypes.Report.Accept,
+                    AppClaimTypes.Task.Read,
+                    AppClaimTypes.Task.MakeTransition,
+                    AppClaimTypes.Comments.Read,
+                    AppClaimTypes.Comments.Reply,
+                    AppClaimTypes.Comments.Update,
+                    AppClaimTypes.Comments.Delete,
+                    AppClaimTypes.Account.Get,
+                    AppClaimTypes.Account.Update,
+                    AppClaimTypes.Info.Read,
+                    //AppClaimTypes.Common.Read.Executives,
+                    AppClaimTypes.File.Upload,
+                    AppClaimTypes.Satisfaction.Update,
+                    AppClaimTypes.Violation.Read,
+                    AppClaimTypes.Violation.Update,
+                }),
+                new Tuple<string, string, List<string>>("Executive", "واحد اجرایی",
+                new List<string>
+                {
+                    AppClaimTypes.Report.Read.All,
+                    AppClaimTypes.Report.Read.Details,
+                    AppClaimTypes.Report.Read.History,
+                    AppClaimTypes.Report.Read.Comments,
+                    AppClaimTypes.Task.Read,
+                    AppClaimTypes.Task.MakeTransition,
+                    AppClaimTypes.Task.MessageToCitizen,
+                    AppClaimTypes.Account.Get,
+                    AppClaimTypes.Account.Update,
+                    AppClaimTypes.Contractor.Get,
+                    AppClaimTypes.Contractor.Create,
+                    AppClaimTypes.Info.Read,
+                    AppClaimTypes.File.Upload,
+                    AppClaimTypes.Feedback.Read,
+                    AppClaimTypes.Satisfaction.Read,
+                    AppClaimTypes.Violation.Read
+                }),
+                new Tuple<string, string, List<string>>("Contractor", "پیمانکار",
+                new List<string>
+                {
+                    AppClaimTypes.Report.Read.All,
+                    AppClaimTypes.Report.Read.Details,
+                    AppClaimTypes.Report.Read.History,
+                    AppClaimTypes.Report.Read.Comments,
+                    AppClaimTypes.Task.Read,
+                    AppClaimTypes.Task.MakeTransition,
+                    AppClaimTypes.Account.Get,
+                    AppClaimTypes.Account.Update,
+                    AppClaimTypes.File.Upload,
+                    AppClaimTypes.Feedback.Read,
+                    AppClaimTypes.Satisfaction.Read,
+                    AppClaimTypes.Violation.Read
+                }),
+                new Tuple<string, string, List<string>>("Manager", "واحد سازمانی",
+                new List<string>
+                {
+                    AppClaimTypes.Report.Read.All,
+                    AppClaimTypes.Report.Read.Details,
+                    AppClaimTypes.Report.Read.History,
+                    AppClaimTypes.Report.Read.Comments,
+                    AppClaimTypes.Task.Read,
+                    AppClaimTypes.Task.MakeTransition,
+                    AppClaimTypes.Account.Get,
+                    AppClaimTypes.Account.Update,
+                    AppClaimTypes.Info.Read,
+                    AppClaimTypes.Common.Read.Executives,
+                    AppClaimTypes.File.Upload,
+                    AppClaimTypes.Feedback.Read,
+                    AppClaimTypes.Satisfaction.Read,
+                    AppClaimTypes.Violation.Read
+
+                }),
+                new Tuple<string, string, List<string>>("Advertiser", "مدیر تبلیغات",
+                new List<string>
+                {
+                    //todo : compelete
+                }),
+                new Tuple<string, string, List<string>>("Mayor", "شهردار",
+                new List<string>
+                {
+                    AppClaimTypes.Report.Read.All,
+                    AppClaimTypes.Report.Read.Details,
+                    AppClaimTypes.Report.Read.History,
+                    AppClaimTypes.Report.Read.Comments,
+                    AppClaimTypes.Account.Get,
+                    AppClaimTypes.Account.Update,
+                    AppClaimTypes.Info.Read,
+                    AppClaimTypes.Feedback.Read,
+                    AppClaimTypes.Satisfaction.Read,
+                    AppClaimTypes.Violation.Read
+                }),
+                new Tuple<string, string, List<string>>("Admin", "مدیر فنی",
+                new List<string>
+                {
+                    AppClaimTypes.Account.Get,
+                    AppClaimTypes.Account.Update,
+                    AppClaimTypes.User.Create,
+                    AppClaimTypes.User.Create,
+                    AppClaimTypes.User.Read.All,
+                    AppClaimTypes.User.Read.Roles,
+                    AppClaimTypes.User.Read.Regions,
+                    AppClaimTypes.User.Read.Contractors,
+                    AppClaimTypes.User.Update.Details,
+                    AppClaimTypes.User.Update.Password,
+                    AppClaimTypes.User.Update.Roles,
+                    AppClaimTypes.User.Update.Regions,
+                    AppClaimTypes.Info.Read,
+                    AppClaimTypes.Category.Read,
+                    AppClaimTypes.Category.Manage,
+                    AppClaimTypes.Processes.Read,
+                    AppClaimTypes.Processes.Manage,
+                    AppClaimTypes.OrganizationalUnit.Read,
+                    AppClaimTypes.OrganizationalUnit.Manage,
+                    AppClaimTypes.File.Upload,
+                    AppClaimTypes.QuickAccess.Read.ByAdmin,
+                    AppClaimTypes.QuickAccess.Manage,
+                    AppClaimTypes.News.Read.ByAdmin,
+                    AppClaimTypes.News.Manage,
+                    AppClaimTypes.Polls.Read.ByAdmin,
+                    AppClaimTypes.Polls.Read.Summary,
+                    AppClaimTypes.Polls.Manage,
+
+                }),
+                new Tuple<string, string, List<string>>("PowerUser","",
+                new List<string>
+                {
+                    //todo : compelete
+                }),
+                new Tuple<string, string, List<string>>("Inspector", "بازرس",
+                new List<string>
+                {
+                    AppClaimTypes.Report.Read.All,
+                    AppClaimTypes.Report.Read.Details,
+                    AppClaimTypes.Report.Read.History,
+                    AppClaimTypes.Report.Read.Comments,
+                    //AppClaimTypes.Report.Update,
+                    AppClaimTypes.Task.Read,
+                    AppClaimTypes.Task.MakeTransition,
+                    AppClaimTypes.Task.Review,
+                    AppClaimTypes.Account.Get,
+                    AppClaimTypes.Account.Update,
+                    AppClaimTypes.Info.Read,
+                    AppClaimTypes.File.Upload,
+                    AppClaimTypes.Feedback.Read,
+                    AppClaimTypes.Satisfaction.Read,
+                    AppClaimTypes.Violation.Read
+                })
             };
 
 
@@ -331,6 +502,10 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             {
                 var r = new ApplicationRole() { Name = role.Item1, Title = role.Item2 };
                 await _userRepository.CreateRoleAsync(r);
+                foreach (var claim in role.Item3)
+                {
+                    await _userRepository.AddClaimsToRoleAsunc(r, new Claim(claim, "TRUE"));
+                }
                 roles.Add(r);
             }
         }

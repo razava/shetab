@@ -7,6 +7,7 @@ using Domain.Models.Relational.ProcessAggregate;
 using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Infrastructure.Persistence.Repositories;
 
@@ -162,6 +163,15 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
         var result = await _roleManager.CreateAsync(applicationRole);
         return result;
     }
+
+
+    public async Task<IdentityResult> AddClaimsToRoleAsunc(ApplicationRole role, Claim claim)
+    {
+        var result = await _roleManager.AddClaimAsync(role, claim);
+        return result;
+    }
+        
+
 
     public async Task<bool> RoleExistsAsync(string roleName)
     {
