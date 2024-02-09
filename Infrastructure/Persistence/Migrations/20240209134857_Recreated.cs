@@ -1,30 +1,17 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using NetTopologySuite.Geometries;
 
 #nullable disable
 
 namespace Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Recreated : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Actor",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Identifier = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Actor", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -38,6 +25,19 @@ namespace Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Form",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Form", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -88,20 +88,7 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Province",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Province", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Reason",
+                name: "ProcessReason",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -112,7 +99,20 @@ namespace Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Reason", x => x.Id);
+                    table.PrimaryKey("PK_ProcessReason", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Province",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Province", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -147,6 +147,29 @@ namespace Infrastructure.Persistence.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FormElement",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FormId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ElementType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Order = table.Column<int>(type: "int", nullable: false),
+                    Meta = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FormElement", x => new { x.FormId, x.Id });
+                    table.ForeignKey(
+                        name: "FK_FormElement_Form_FormId",
+                        column: x => x.FormId,
+                        principalTable: "Form",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -320,30 +343,6 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ActorRegion",
-                columns: table => new
-                {
-                    ActorsId = table.Column<int>(type: "int", nullable: false),
-                    RegionsId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ActorRegion", x => new { x.ActorsId, x.RegionsId });
-                    table.ForeignKey(
-                        name: "FK_ActorRegion_Actor_ActorsId",
-                        column: x => x.ActorsId,
-                        principalTable: "Actor",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ActorRegion_Region_RegionsId",
-                        column: x => x.RegionsId,
-                        principalTable: "Region",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ApplicationLink",
                 columns: table => new
                 {
@@ -404,9 +403,7 @@ namespace Infrastructure.Persistence.Migrations
                     Address_Detail = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address_Number = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address_PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Address_Latitude = table.Column<double>(type: "float", nullable: true),
-                    Address_Longitude = table.Column<double>(type: "float", nullable: true),
-                    Address_Elevation = table.Column<double>(type: "float", nullable: true),
+                    Address_Location = table.Column<Point>(type: "geography", nullable: true),
                     VerificationSent = table.Column<DateTime>(type: "datetime2", nullable: true),
                     FcmToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Flags = table.Column<int>(type: "int", nullable: false),
@@ -458,6 +455,28 @@ namespace Infrastructure.Persistence.Migrations
                     table.PrimaryKey("PK_Chart", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Chart_ShahrbinInstance_ShahrbinInstanceId",
+                        column: x => x.ShahrbinInstanceId,
+                        principalTable: "ShahrbinInstance",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Faq",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Question = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Answer = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    ShahrbinInstanceId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Faq", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Faq_ShahrbinInstance_ShahrbinInstanceId",
                         column: x => x.ShahrbinInstanceId,
                         principalTable: "ShahrbinInstance",
                         principalColumn: "Id",
@@ -605,40 +624,6 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrganizationalUnit",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Type = table.Column<int>(type: "int", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ActorId = table.Column<int>(type: "int", nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ShahrbinInstanceId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrganizationalUnit", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_OrganizationalUnit_Actor_ActorId",
-                        column: x => x.ActorId,
-                        principalTable: "Actor",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_OrganizationalUnit_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OrganizationalUnit_ShahrbinInstance_ShahrbinInstanceId",
-                        column: x => x.ShahrbinInstanceId,
-                        principalTable: "ShahrbinInstance",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Poll",
                 columns: table => new
                 {
@@ -649,6 +634,7 @@ namespace Infrastructure.Persistence.Migrations
                     Question = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Expiration = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     AuthorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ShahrbinInstanceId = table.Column<int>(type: "int", nullable: false)
@@ -690,6 +676,33 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Upload",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Media_Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Media_Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Media_Url2 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Media_Url3 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Media_Url4 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Media_AlternateText = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Media_Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Media_MediaType = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Upload", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Upload_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ApplicationRoleChart",
                 columns: table => new
                 {
@@ -714,56 +727,32 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrganizationalUnitOrganizationalUnit",
-                columns: table => new
-                {
-                    OrganizationalUnitsId = table.Column<int>(type: "int", nullable: false),
-                    ParentOrganizationalUnitsId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrganizationalUnitOrganizationalUnit", x => new { x.OrganizationalUnitsId, x.ParentOrganizationalUnitsId });
-                    table.ForeignKey(
-                        name: "FK_OrganizationalUnitOrganizationalUnit_OrganizationalUnit_OrganizationalUnitsId",
-                        column: x => x.OrganizationalUnitsId,
-                        principalTable: "OrganizationalUnit",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OrganizationalUnitOrganizationalUnit_OrganizationalUnit_ParentOrganizationalUnitsId",
-                        column: x => x.ParentOrganizationalUnitsId,
-                        principalTable: "OrganizationalUnit",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Answer",
+                name: "PollAnswer",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PollId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PollId = table.Column<int>(type: "int", nullable: true)
+                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Answer", x => x.Id);
+                    table.PrimaryKey("PK_PollAnswer", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Answer_AspNetUsers_UserId",
+                        name: "FK_PollAnswer_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Answer_Poll_PollId",
+                        name: "FK_PollAnswer_Poll_PollId",
                         column: x => x.PollId,
                         principalTable: "Poll",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Choice",
+                name: "PollChoice",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -775,37 +764,12 @@ namespace Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Choice", x => x.Id);
+                    table.PrimaryKey("PK_PollChoice", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Choice_Poll_PollId",
+                        name: "FK_PollChoice_Poll_PollId",
                         column: x => x.PollId,
                         principalTable: "Poll",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Poll_PollMedias",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PollId = table.Column<int>(type: "int", nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Url2 = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Url3 = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Url4 = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AlternateText = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MediaType = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Poll_PollMedias", x => new { x.PollId, x.Id });
-                    table.ForeignKey(
-                        name: "FK_Poll_PollMedias_Poll_PollId",
-                        column: x => x.PollId,
-                        principalTable: "Poll",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -817,6 +781,7 @@ namespace Infrastructure.Persistence.Migrations
                     Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RevisionUnitId = table.Column<int>(type: "int", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     ShahrbinInstanceId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -846,15 +811,15 @@ namespace Infrastructure.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_PollAnswerPollChoice", x => new { x.AnswersId, x.ChoicesId });
                     table.ForeignKey(
-                        name: "FK_PollAnswerPollChoice_Answer_AnswersId",
+                        name: "FK_PollAnswerPollChoice_PollAnswer_AnswersId",
                         column: x => x.AnswersId,
-                        principalTable: "Answer",
+                        principalTable: "PollAnswer",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PollAnswerPollChoice_Choice_ChoicesId",
+                        name: "FK_PollAnswerPollChoice_PollChoice_ChoicesId",
                         column: x => x.ChoicesId,
-                        principalTable: "Choice",
+                        principalTable: "PollChoice",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -865,12 +830,12 @@ namespace Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Order = table.Column<int>(type: "int", nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: true),
                     Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProcessId = table.Column<int>(type: "int", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Order = table.Column<int>(type: "int", nullable: false),
+                    ParentId = table.Column<int>(type: "int", nullable: true),
+                    ProcessId = table.Column<int>(type: "int", nullable: true),
                     AttachmentDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Duration = table.Column<int>(type: "int", nullable: false),
                     ResponseDuration = table.Column<int>(type: "int", nullable: true),
@@ -879,6 +844,7 @@ namespace Infrastructure.Persistence.Migrations
                     ObjectionAllowed = table.Column<bool>(type: "bit", nullable: false),
                     EditingAllowed = table.Column<bool>(type: "bit", nullable: false),
                     HideMap = table.Column<bool>(type: "bit", nullable: false),
+                    FormId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ShahrbinInstanceId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -888,6 +854,11 @@ namespace Infrastructure.Persistence.Migrations
                         name: "FK_Category_Category_ParentId",
                         column: x => x.ParentId,
                         principalTable: "Category",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Category_Form_FormId",
+                        column: x => x.FormId,
+                        principalTable: "Form",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Category_Process_ProcessId",
@@ -903,7 +874,7 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Stage",
+                name: "ProcessStage",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -917,48 +888,42 @@ namespace Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stage", x => x.Id);
+                    table.PrimaryKey("PK_ProcessStage", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Stage_AspNetRoles_DisplayRoleId",
+                        name: "FK_ProcessStage_AspNetRoles_DisplayRoleId",
                         column: x => x.DisplayRoleId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Stage_Process_ProcessId",
+                        name: "FK_ProcessStage_Process_ProcessId",
                         column: x => x.ProcessId,
                         principalTable: "Process",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "FormElement",
+                name: "ApplicationUserCategory",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FormElementType = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Hint = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Default = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DefaultId = table.Column<int>(type: "int", nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Order = table.Column<int>(type: "int", nullable: false),
-                    IsEditable = table.Column<bool>(type: "bit", nullable: false),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    IsRequired = table.Column<bool>(type: "bit", nullable: false),
-                    MaxLength = table.Column<int>(type: "int", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: true)
+                    CategoriesId = table.Column<int>(type: "int", nullable: false),
+                    UsersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FormElement", x => x.Id);
+                    table.PrimaryKey("PK_ApplicationUserCategory", x => new { x.CategoriesId, x.UsersId });
                     table.ForeignKey(
-                        name: "FK_FormElement_Category_CategoryId",
-                        column: x => x.CategoryId,
+                        name: "FK_ApplicationUserCategory_AspNetUsers_UsersId",
+                        column: x => x.UsersId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ApplicationUserCategory_Category_CategoriesId",
+                        column: x => x.CategoriesId,
                         principalTable: "Category",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -999,31 +964,7 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ActorProcessStage",
-                columns: table => new
-                {
-                    ActorsId = table.Column<int>(type: "int", nullable: false),
-                    StagesId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ActorProcessStage", x => new { x.ActorsId, x.StagesId });
-                    table.ForeignKey(
-                        name: "FK_ActorProcessStage_Actor_ActorsId",
-                        column: x => x.ActorsId,
-                        principalTable: "Actor",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ActorProcessStage_Stage_StagesId",
-                        column: x => x.StagesId,
-                        principalTable: "Stage",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Transition",
+                name: "ProcessTransition",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -1043,45 +984,22 @@ namespace Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Transition", x => x.Id);
+                    table.PrimaryKey("PK_ProcessTransition", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Transition_Process_ProcessId",
+                        name: "FK_ProcessTransition_ProcessStage_FromId",
+                        column: x => x.FromId,
+                        principalTable: "ProcessStage",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ProcessTransition_ProcessStage_ToId",
+                        column: x => x.ToId,
+                        principalTable: "ProcessStage",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ProcessTransition_Process_ProcessId",
                         column: x => x.ProcessId,
                         principalTable: "Process",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Transition_Stage_FromId",
-                        column: x => x.FromId,
-                        principalTable: "Stage",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Transition_Stage_ToId",
-                        column: x => x.ToId,
-                        principalTable: "Stage",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "BotActors",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TransitionId = table.Column<int>(type: "int", nullable: false),
-                    MessageToCitizen = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: true),
-                    Visibility = table.Column<int>(type: "int", nullable: true),
-                    ReasonId = table.Column<int>(type: "int", nullable: true),
-                    ReasonMeaning = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BotActors", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_BotActors_Transition_TransitionId",
-                        column: x => x.TransitionId,
-                        principalTable: "Transition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1095,15 +1013,142 @@ namespace Infrastructure.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_ProcessReasonProcessTransition", x => new { x.ReasonListId, x.TransitionsId });
                     table.ForeignKey(
-                        name: "FK_ProcessReasonProcessTransition_Reason_ReasonListId",
+                        name: "FK_ProcessReasonProcessTransition_ProcessReason_ReasonListId",
                         column: x => x.ReasonListId,
-                        principalTable: "Reason",
+                        principalTable: "ProcessReason",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProcessReasonProcessTransition_Transition_TransitionsId",
+                        name: "FK_ProcessReasonProcessTransition_ProcessTransition_TransitionsId",
                         column: x => x.TransitionsId,
-                        principalTable: "Transition",
+                        principalTable: "ProcessTransition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Actor",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Identifier = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    BotActorId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Actor", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ActorProcessStage",
+                columns: table => new
+                {
+                    ActorsId = table.Column<int>(type: "int", nullable: false),
+                    StagesId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActorProcessStage", x => new { x.ActorsId, x.StagesId });
+                    table.ForeignKey(
+                        name: "FK_ActorProcessStage_Actor_ActorsId",
+                        column: x => x.ActorsId,
+                        principalTable: "Actor",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ActorProcessStage_ProcessStage_StagesId",
+                        column: x => x.StagesId,
+                        principalTable: "ProcessStage",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ActorRegion",
+                columns: table => new
+                {
+                    ActorsId = table.Column<int>(type: "int", nullable: false),
+                    RegionsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActorRegion", x => new { x.ActorsId, x.RegionsId });
+                    table.ForeignKey(
+                        name: "FK_ActorRegion_Actor_ActorsId",
+                        column: x => x.ActorsId,
+                        principalTable: "Actor",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ActorRegion_Region_RegionsId",
+                        column: x => x.RegionsId,
+                        principalTable: "Region",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BotActors",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TransitionId = table.Column<int>(type: "int", nullable: false),
+                    DestinationActorId = table.Column<int>(type: "int", nullable: false),
+                    MessageToCitizen = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Priority = table.Column<int>(type: "int", nullable: true),
+                    Visibility = table.Column<int>(type: "int", nullable: true),
+                    ReasonId = table.Column<int>(type: "int", nullable: true),
+                    ReasonMeaning = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BotActors", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BotActors_Actor_DestinationActorId",
+                        column: x => x.DestinationActorId,
+                        principalTable: "Actor",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BotActors_ProcessTransition_TransitionId",
+                        column: x => x.TransitionId,
+                        principalTable: "ProcessTransition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrganizationalUnit",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Type = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ActorId = table.Column<int>(type: "int", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShahrbinInstanceId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrganizationalUnit", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrganizationalUnit_Actor_ActorId",
+                        column: x => x.ActorId,
+                        principalTable: "Actor",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_OrganizationalUnit_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrganizationalUnit_ShahrbinInstance_ShahrbinInstanceId",
+                        column: x => x.ShahrbinInstanceId,
+                        principalTable: "ShahrbinInstance",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1130,9 +1175,7 @@ namespace Infrastructure.Persistence.Migrations
                     Address_Detail = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address_Number = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address_PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address_Latitude = table.Column<double>(type: "float", nullable: true),
-                    Address_Longitude = table.Column<double>(type: "float", nullable: true),
-                    Address_Elevation = table.Column<double>(type: "float", nullable: true),
+                    Address_Location = table.Column<Point>(type: "geography", nullable: true),
                     TrackingNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Priority = table.Column<int>(type: "int", nullable: false),
                     Visibility = table.Column<int>(type: "int", nullable: false),
@@ -1143,7 +1186,7 @@ namespace Infrastructure.Persistence.Migrations
                     CurrentStageId = table.Column<int>(type: "int", nullable: true),
                     LastTransitionId = table.Column<int>(type: "int", nullable: true),
                     LastReasonId = table.Column<int>(type: "int", nullable: true),
-                    CurrentActorsStr = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CurrentActorId = table.Column<int>(type: "int", nullable: true),
                     CitizenId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     RegistrantId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     ExecutiveId = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -1161,6 +1204,11 @@ namespace Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Reports", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reports_Actor_CurrentActorId",
+                        column: x => x.CurrentActorId,
+                        principalTable: "Actor",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Reports_AspNetUsers_CitizenId",
                         column: x => x.CitizenId,
@@ -1193,14 +1241,24 @@ namespace Infrastructure.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_Reports_ProcessReason_LastReasonId",
+                        column: x => x.LastReasonId,
+                        principalTable: "ProcessReason",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Reports_ProcessStage_CurrentStageId",
+                        column: x => x.CurrentStageId,
+                        principalTable: "ProcessStage",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Reports_ProcessTransition_LastTransitionId",
+                        column: x => x.LastTransitionId,
+                        principalTable: "ProcessTransition",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Reports_Process_ProcessId",
                         column: x => x.ProcessId,
                         principalTable: "Process",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Reports_Reason_LastReasonId",
-                        column: x => x.LastReasonId,
-                        principalTable: "Reason",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Reports_Region_Address_RegionId",
@@ -1212,64 +1270,29 @@ namespace Infrastructure.Persistence.Migrations
                         column: x => x.ShahrbinInstanceId,
                         principalTable: "ShahrbinInstance",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Reports_Stage_CurrentStageId",
-                        column: x => x.CurrentStageId,
-                        principalTable: "Stage",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Reports_Transition_LastTransitionId",
-                        column: x => x.LastTransitionId,
-                        principalTable: "Transition",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "ActorBotActor",
+                name: "OrganizationalUnitOrganizationalUnit",
                 columns: table => new
                 {
-                    ActorsId = table.Column<int>(type: "int", nullable: false),
-                    BotActorsId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    OrganizationalUnitsId = table.Column<int>(type: "int", nullable: false),
+                    ParentOrganizationalUnitsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ActorBotActor", x => new { x.ActorsId, x.BotActorsId });
+                    table.PrimaryKey("PK_OrganizationalUnitOrganizationalUnit", x => new { x.OrganizationalUnitsId, x.ParentOrganizationalUnitsId });
                     table.ForeignKey(
-                        name: "FK_ActorBotActor_Actor_ActorsId",
-                        column: x => x.ActorsId,
-                        principalTable: "Actor",
+                        name: "FK_OrganizationalUnitOrganizationalUnit_OrganizationalUnit_OrganizationalUnitsId",
+                        column: x => x.OrganizationalUnitsId,
+                        principalTable: "OrganizationalUnit",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ActorBotActor_BotActors_BotActorsId",
-                        column: x => x.BotActorsId,
-                        principalTable: "BotActors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ActorReport",
-                columns: table => new
-                {
-                    CurrentActorsId = table.Column<int>(type: "int", nullable: false),
-                    ReportsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ActorReport", x => new { x.CurrentActorsId, x.ReportsId });
-                    table.ForeignKey(
-                        name: "FK_ActorReport_Actor_CurrentActorsId",
-                        column: x => x.CurrentActorsId,
-                        principalTable: "Actor",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ActorReport_Reports_ReportsId",
-                        column: x => x.ReportsId,
-                        principalTable: "Reports",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_OrganizationalUnitOrganizationalUnit_OrganizationalUnit_ParentOrganizationalUnitsId",
+                        column: x => x.ParentOrganizationalUnitsId,
+                        principalTable: "OrganizationalUnit",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -1360,7 +1383,7 @@ namespace Infrastructure.Persistence.Migrations
                     LastSent = table.Column<DateTime>(type: "datetime2", nullable: true),
                     MessageType = table.Column<int>(type: "int", nullable: false),
                     SubjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FromId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FromId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     ReportId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ShahrbinInstanceId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -1371,8 +1394,7 @@ namespace Infrastructure.Persistence.Migrations
                         name: "FK_Message_AspNetUsers_FromId",
                         column: x => x.FromId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Message_Reports_ReportId",
                         column: x => x.ReportId,
@@ -1391,11 +1413,11 @@ namespace Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     LikedById = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ReportsLikedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    ReportId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ReportLikes", x => new { x.LikedById, x.ReportsLikedId });
+                    table.PrimaryKey("PK_ReportLikes", x => new { x.LikedById, x.ReportId });
                     table.ForeignKey(
                         name: "FK_ReportLikes_AspNetUsers_LikedById",
                         column: x => x.LikedById,
@@ -1403,8 +1425,8 @@ namespace Infrastructure.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ReportLikes_Reports_ReportsLikedId",
-                        column: x => x.ReportsLikedId,
+                        name: "FK_ReportLikes_Reports_ReportId",
+                        column: x => x.ReportId,
                         principalTable: "Reports",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -1456,9 +1478,14 @@ namespace Infrastructure.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_TransitionLogs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TransitionLogs_Reason_ReasonId",
+                        name: "FK_TransitionLogs_ProcessReason_ReasonId",
                         column: x => x.ReasonId,
-                        principalTable: "Reason",
+                        principalTable: "ProcessReason",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TransitionLogs_ProcessTransition_TransitionId",
+                        column: x => x.TransitionId,
+                        principalTable: "ProcessTransition",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_TransitionLogs_Reports_ReportId",
@@ -1466,11 +1493,6 @@ namespace Infrastructure.Persistence.Migrations
                         principalTable: "Reports",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TransitionLogs_Transition_TransitionId",
-                        column: x => x.TransitionId,
-                        principalTable: "Transition",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -1566,15 +1588,17 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Actor_BotActorId",
+                table: "Actor",
+                column: "BotActorId",
+                unique: true,
+                filter: "[BotActorId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Actor_Identifier",
                 table: "Actor",
                 column: "Identifier",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ActorBotActor_BotActorsId",
-                table: "ActorBotActor",
-                column: "BotActorsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActorProcessStage_StagesId",
@@ -1587,21 +1611,6 @@ namespace Infrastructure.Persistence.Migrations
                 column: "RegionsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ActorReport_ReportsId",
-                table: "ActorReport",
-                column: "ReportsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Answer_PollId",
-                table: "Answer",
-                column: "PollId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Answer_UserId",
-                table: "Answer",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ApplicationLink_ShahrbinInstanceId",
                 table: "ApplicationLink",
                 column: "ShahrbinInstanceId");
@@ -1610,6 +1619,11 @@ namespace Infrastructure.Persistence.Migrations
                 name: "IX_ApplicationRoleChart_RolesId",
                 table: "ApplicationRoleChart",
                 column: "RolesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApplicationUserCategory_UsersId",
+                table: "ApplicationUserCategory",
+                column: "UsersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -1661,9 +1675,19 @@ namespace Infrastructure.Persistence.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BotActors_DestinationActorId",
+                table: "BotActors",
+                column: "DestinationActorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BotActors_TransitionId",
                 table: "BotActors",
                 column: "TransitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Category_FormId",
+                table: "Category",
+                column: "FormId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Category_ParentId",
@@ -1684,11 +1708,6 @@ namespace Infrastructure.Persistence.Migrations
                 name: "IX_Chart_ShahrbinInstanceId",
                 table: "Chart",
                 column: "ShahrbinInstanceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Choice_PollId",
-                table: "Choice",
-                column: "PollId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_City_DistrictId",
@@ -1731,6 +1750,11 @@ namespace Infrastructure.Persistence.Migrations
                 column: "ContractorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Faq_ShahrbinInstanceId",
+                table: "Faq",
+                column: "ShahrbinInstanceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Feedback_ReportId",
                 table: "Feedback",
                 column: "ReportId",
@@ -1745,11 +1769,6 @@ namespace Infrastructure.Persistence.Migrations
                 name: "IX_Feedback_UserId",
                 table: "Feedback",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FormElement_CategoryId",
-                table: "FormElement",
-                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GovFamily_GovUserInfoId",
@@ -1822,9 +1841,24 @@ namespace Infrastructure.Persistence.Migrations
                 column: "ShahrbinInstanceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PollAnswer_PollId",
+                table: "PollAnswer",
+                column: "PollId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PollAnswer_UserId",
+                table: "PollAnswer",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PollAnswerPollChoice_ChoicesId",
                 table: "PollAnswerPollChoice",
                 column: "ChoicesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PollChoice_PollId",
+                table: "PollChoice",
+                column: "PollId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Process_RevisionUnitId",
@@ -1842,6 +1876,31 @@ namespace Infrastructure.Persistence.Migrations
                 column: "TransitionsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProcessStage_DisplayRoleId",
+                table: "ProcessStage",
+                column: "DisplayRoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProcessStage_ProcessId",
+                table: "ProcessStage",
+                column: "ProcessId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProcessTransition_FromId",
+                table: "ProcessTransition",
+                column: "FromId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProcessTransition_ProcessId",
+                table: "ProcessTransition",
+                column: "ProcessId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProcessTransition_ToId",
+                table: "ProcessTransition",
+                column: "ToId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_QuickAccess_CategoryId",
                 table: "QuickAccess",
                 column: "CategoryId");
@@ -1857,9 +1916,9 @@ namespace Infrastructure.Persistence.Migrations
                 column: "CityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReportLikes_ReportsLikedId",
+                name: "IX_ReportLikes_ReportId",
                 table: "ReportLikes",
-                column: "ReportsLikedId");
+                column: "ReportId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reports_Address_RegionId",
@@ -1880,6 +1939,11 @@ namespace Infrastructure.Persistence.Migrations
                 name: "IX_Reports_ContractorId",
                 table: "Reports",
                 column: "ContractorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reports_CurrentActorId",
+                table: "Reports",
+                column: "CurrentActorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reports_CurrentStageId",
@@ -1932,31 +1996,6 @@ namespace Infrastructure.Persistence.Migrations
                 column: "CityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Stage_DisplayRoleId",
-                table: "Stage",
-                column: "DisplayRoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Stage_ProcessId",
-                table: "Stage",
-                column: "ProcessId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Transition_FromId",
-                table: "Transition",
-                column: "FromId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Transition_ProcessId",
-                table: "Transition",
-                column: "ProcessId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Transition_ToId",
-                table: "Transition",
-                column: "ToId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_TransitionLogs_ReasonId",
                 table: "TransitionLogs",
                 column: "ReasonId");
@@ -1970,6 +2009,11 @@ namespace Infrastructure.Persistence.Migrations
                 name: "IX_TransitionLogs_TransitionId",
                 table: "TransitionLogs",
                 column: "TransitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Upload_UserId",
+                table: "Upload",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Violation_CommentId",
@@ -1995,13 +2039,21 @@ namespace Infrastructure.Persistence.Migrations
                 name: "IX_Violation_ViolationTypeId",
                 table: "Violation",
                 column: "ViolationTypeId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Actor_BotActors_BotActorId",
+                table: "Actor",
+                column: "BotActorId",
+                principalTable: "BotActors",
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ActorBotActor");
+            migrationBuilder.DropForeignKey(
+                name: "FK_Actor_BotActors_BotActorId",
+                table: "Actor");
 
             migrationBuilder.DropTable(
                 name: "ActorProcessStage");
@@ -2010,13 +2062,13 @@ namespace Infrastructure.Persistence.Migrations
                 name: "ActorRegion");
 
             migrationBuilder.DropTable(
-                name: "ActorReport");
-
-            migrationBuilder.DropTable(
                 name: "ApplicationLink");
 
             migrationBuilder.DropTable(
                 name: "ApplicationRoleChart");
+
+            migrationBuilder.DropTable(
+                name: "ApplicationUserCategory");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -2037,6 +2089,9 @@ namespace Infrastructure.Persistence.Migrations
                 name: "ExecutiveContractor");
 
             migrationBuilder.DropTable(
+                name: "Faq");
+
+            migrationBuilder.DropTable(
                 name: "Feedback");
 
             migrationBuilder.DropTable(
@@ -2053,9 +2108,6 @@ namespace Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "OrganizationalUnitOrganizationalUnit");
-
-            migrationBuilder.DropTable(
-                name: "Poll_PollMedias");
 
             migrationBuilder.DropTable(
                 name: "PollAnswerPollChoice");
@@ -2076,10 +2128,10 @@ namespace Infrastructure.Persistence.Migrations
                 name: "TransitionLogs_Attachments");
 
             migrationBuilder.DropTable(
-                name: "Violation");
+                name: "Upload");
 
             migrationBuilder.DropTable(
-                name: "BotActors");
+                name: "Violation");
 
             migrationBuilder.DropTable(
                 name: "Chart");
@@ -2094,10 +2146,10 @@ namespace Infrastructure.Persistence.Migrations
                 name: "OrganizationalUnit");
 
             migrationBuilder.DropTable(
-                name: "Answer");
+                name: "PollAnswer");
 
             migrationBuilder.DropTable(
-                name: "Choice");
+                name: "PollChoice");
 
             migrationBuilder.DropTable(
                 name: "TransitionLogs");
@@ -2115,9 +2167,6 @@ namespace Infrastructure.Persistence.Migrations
                 name: "GovSubsidy");
 
             migrationBuilder.DropTable(
-                name: "Actor");
-
-            migrationBuilder.DropTable(
                 name: "Poll");
 
             migrationBuilder.DropTable(
@@ -2127,13 +2176,22 @@ namespace Infrastructure.Persistence.Migrations
                 name: "Category");
 
             migrationBuilder.DropTable(
-                name: "Reason");
+                name: "ProcessReason");
 
             migrationBuilder.DropTable(
-                name: "Transition");
+                name: "Form");
 
             migrationBuilder.DropTable(
-                name: "Stage");
+                name: "BotActors");
+
+            migrationBuilder.DropTable(
+                name: "Actor");
+
+            migrationBuilder.DropTable(
+                name: "ProcessTransition");
+
+            migrationBuilder.DropTable(
+                name: "ProcessStage");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
