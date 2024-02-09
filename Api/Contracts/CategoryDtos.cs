@@ -21,8 +21,8 @@ public class CategoryGetDto
     public bool IsDeleted { get; set; }
     public bool ObjectionAllowed { get; set; }
     public bool EditingAllowed { get; set; } = true;
-    public ICollection<FormElement> FormElements { get; set; } = new List<FormElement>();
     public bool HideMap { get; set; }
+    public Form? Form { get; set; }
 }
 
 
@@ -39,11 +39,11 @@ public class CategoryGetDetailDto
     public int? Duration { get; set; }
     public int? ResponseDuration { get; set; }
     //public CategoryType? CategoryType { get; set; }
-    public ICollection<FormElement> FormElements { get; set; } = new List<FormElement>();
     public bool ObjectionAllowed { get; set; }
     public bool EditingAllowed { get; set; } = true;
     public bool IsDeleted { get; set; }
     public bool HideMap { get; set; }
+    public Form? Form { get; set; }
 }
 
 
