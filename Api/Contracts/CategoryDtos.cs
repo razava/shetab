@@ -78,7 +78,7 @@ public class CategoryCreateDto
     public int Duration { get; set; }
     public int ResponseDuration { get; set; }
     public bool IsDeleted { get; set; }
-    public List<FormElement> FormElements { get; set; } = new List<FormElement>();
+    public Guid? FormId { get; set; }
     public bool ObjectionAllowed { get; set; }
     public bool EditingAllowed { get; set; } = true;
     public bool HideMap { get; set; }
@@ -100,7 +100,7 @@ public class CategoryUpdateDto
     public int? Duration { get; set; }
     public int? ResponseDuration { get; set; }
     public bool? IsDeleted { get; set; }
-    public List<FormElement>? FormElements { get; set; } = new List<FormElement>();
+    public Guid? FormId { get; set; }
     public bool? ObjectionAllowed { get; set; }
     public bool? EditingAllowed { get; set; } = true;
     public bool? HideMap { get; set; }

@@ -89,7 +89,7 @@ public class AdminCategoryController : ApiController
             categoryCreateDto.EditingAllowed,
             categoryCreateDto.HideMap,
             categoryCreateDto.AttachmentDescription,
-            categoryCreateDto.FormElements);
+            categoryCreateDto.FormId);
 
         var result = await Sender.Send(command);
         
@@ -122,7 +122,7 @@ public class AdminCategoryController : ApiController
             categoryUpdateDto.EditingAllowed,
             categoryUpdateDto.HideMap,
             categoryUpdateDto.AttachmentDescription,
-            categoryUpdateDto.FormElements);
+            categoryUpdateDto.FormId);
 
         var result = await Sender.Send(command);
         

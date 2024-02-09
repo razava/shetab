@@ -29,7 +29,7 @@ internal sealed class UpdateCategoryCommandHandler(IUnitOfWork unitOfWork, ICate
             request.EdittingAllowed,
             request.HideMap,
             request.AttachmentDescription,
-            request.FormElements);
+            request.FormId);
 
         categoryRepository.Update(category);
 

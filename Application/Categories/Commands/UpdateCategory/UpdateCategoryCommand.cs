@@ -19,5 +19,5 @@ public sealed record UpdateCategoryCommand(
     bool? EdittingAllowed = true,
     bool? HideMap = false,
     string? AttachmentDescription = "",
-    List<FormElement>? FormElements = null) : IRequest<Result<Category>>;
+    Guid? FormId = null) : IRequest<Result<Category>>;
 

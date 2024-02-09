@@ -23,11 +23,12 @@ public class Category : BaseModel
     public int? ResponseDuration { get; set; }
     public CategoryType CategoryType { get; set; }
     public bool IsDeleted { get; set; }
-    public ICollection<FormElement> FormElements { get; set; } = new List<FormElement>();
     public bool ObjectionAllowed { get; set; }
     public bool EditingAllowed { get; set; } = true;
     public bool HideMap { get; set; }
     public List<ApplicationUser> Users { get; set; } = new List<ApplicationUser>();
+    public Guid? FormId { get; set; } = null;
+    public Form? Form { get; set; } = null;
 
     [NotMapped]
     public List<int> Siblings
@@ -88,7 +89,7 @@ public class Category : BaseModel
         bool edittingAllowed = true,
         bool hideMap = false,
         string attachmentDescription = "",
-        List<FormElement>? formElements = null)
+        Guid? formId = null)
     {
         var category = new Category()
         {
@@ -106,7 +107,7 @@ public class Category : BaseModel
             EditingAllowed = edittingAllowed,
             HideMap = hideMap,
             AttachmentDescription = attachmentDescription,
-            FormElements = formElements ?? new List<FormElement>()
+            FormId = formId
         };
 
         return category;
@@ -126,7 +127,7 @@ public class Category : BaseModel
         bool? edittingAllowed = null,
         bool? hideMap = null,
         string? attachmentDescription = null,
-        List<FormElement>? formElements = null)
+        Guid? formId = null)
     {
         Code = code ?? Code;
         Title = title ?? Title;
@@ -141,6 +142,6 @@ public class Category : BaseModel
         EditingAllowed = edittingAllowed ?? EditingAllowed;
         HideMap = hideMap ?? HideMap;
         AttachmentDescription = attachmentDescription ?? AttachmentDescription;
-        FormElements = formElements ?? new List<FormElement>();
+        FormId = formId;
     }
 }
