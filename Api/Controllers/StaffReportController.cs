@@ -167,12 +167,9 @@ public class StaffReportController : ApiController
         var query = new GetPossibleSourcesQuery(userId, userRoles);
         var result = await Sender.Send(query);
 
-        if (result.IsFailed)
-            return Problem(result.ToResult());
-        var mappedResult = result.Value.Adapt<List<GetPossibleSourceDto>>();
-        var newReportsSource = new GetPossibleSourceDto(null, "", "جدید");
-        mappedResult.Insert(0, newReportsSource);
-        return Ok(mappedResult);
+        return result.Match(
+            s => Ok(s.Adapt<List<GetPossibleSourceDto>>()),
+            f => Problem(f));
     }
 
 

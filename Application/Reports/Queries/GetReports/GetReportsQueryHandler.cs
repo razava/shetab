@@ -4,35 +4,62 @@ using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Application.Reports.Queries.GetReports;
 
-internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork/*, IReportRepository reportRepository*/, IUserRepository userRepository) : IRequestHandler<GetReportsQuery, Result<PagedList<Report>>>
+internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IUserRepository userRepository) 
+    : IRequestHandler<GetReportsQuery, Result<PagedList<Report>>>
 {
     
-    public async Task<Result<PagedList<Report>>> Handle(GetReportsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PagedList<Report>>> Handle(
+        GetReportsQuery request,
+        CancellationToken cancellationToken)
     {
         var context = unitOfWork.DbContext;
 
         var actors = await userRepository.GetActorsAsync(request.UserId);
         var actorIds = actors.Select(a => a.Id).ToList();
-        var categories = await userRepository.GetUserCategoriesAsync(request.UserId);
+        
 
-        System.Linq.Expressions.Expression<Func<Report, bool>>? filter;
-        if (request.FromRoleId is null && request.Roles.Contains(RoleNames.Operator))
+        Expression<Func<Report, bool>>? filter;
+        var query = context.Set<Report>().Where(t => true);
+
+
+        if (request.Roles.Contains(RoleNames.Operator))
         {
-            filter = r => r.ReportState == ReportState.NeedAcceptance && r.ShahrbinInstanceId == request.InstanceId
-            && (!categories.Any() || categories.Contains(r.CategoryId));
+            var categories = await userRepository.GetUserCategoriesAsync(request.UserId);
+            if (categories.Any())
+            {
+                query = query.Where(r => categories.Contains(r.CategoryId));
+            }
+            query = query.Where(r => r.ShahrbinInstanceId == request.InstanceId);
+        }
+
+        if (request.Roles.Contains(RoleNames.Operator) && request.FromRoleId == "NEW")
+        {
+            query = query.Where(r => r.ReportState == ReportState.NeedAcceptance &&
+                                     r.ShahrbinInstanceId == request.InstanceId);
         }
         else
         {
-            filter = r => r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value) &&
-                     r.LastTransition != null && r.LastTransition.From.DisplayRoleId == request.FromRoleId &&
-                     (request.InstanceId == -1 || r.ShahrbinInstanceId == request.InstanceId)
-                     && (!categories.Any() || categories.Contains(r.CategoryId));
-        }
+            query = query.Where(r => r.CurrentActorId != null &&
+                                     actorIds.Contains(r.CurrentActorId.Value));
+            if (request.Roles.Contains(RoleNames.Executive) && request.FromRoleId == "RESPONSED")
+            {
+                query = query.Where(r => r.Responsed != null);
+            }
+            else
+            {
+                query = query.Where(r => r.LastTransition != null && r.LastTransition.From.DisplayRoleId == request.FromRoleId);
+                if (request.Roles.Contains(RoleNames.Executive) && request.FromRoleId != "RESPONSED")
+                {
+                    query = query.Where(r => r.Responsed == null);
+                }
 
-        System.Linq.Expressions.Expression<Func<Report, bool>>? inputFilters = r =>
+            }
+        }
+        Expression<Func<Report, bool>>? inputFilters = r =>
         ((request.FilterGetReports == null) ||
         (request.FilterGetReports.SentFromDate == null || r.Sent >= request.FilterGetReports.SentFromDate)
         && (request.FilterGetReports.SentToDate == null || r.Sent <= request.FilterGetReports.SentToDate)
@@ -50,9 +77,8 @@ internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork/*, IReportRe
         //    a => a.OrderBy(r => r.Sent));
 
         
-        var query = context.Set<Report>()
+        query = query
             .AsNoTracking()
-            .Where(filter)
             .Where(inputFilters);
 
         var reports = await PagedList<Report>.ToPagedList(

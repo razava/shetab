@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
+using Application.Common.Statics;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
@@ -32,7 +33,14 @@ public sealed class GetPossibleSourcesQueryHandler(IUnitOfWork unitOfWork) : IRe
                 p.Select(q => q.Name).FirstOrDefault() ?? "",
                 p.Select(q => q.Title).FirstOrDefault() ?? ""))
             .ToListAsync();
-
+        if (request.RoleNames.Contains(RoleNames.Operator))
+        {
+            possibleSources.Add(new PossibleSourceResponse("NEW", "جدید", "جدید"));
+        }
+        if (request.RoleNames.Contains(RoleNames.Executive))
+        {
+            possibleSources.Add(new PossibleSourceResponse("RESPONSED", "در دست اقدام", "در دست اقدام"));
+        }
         return possibleSources;
     }
 }
