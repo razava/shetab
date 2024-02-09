@@ -32,14 +32,23 @@ public class Form : Entity
     {
     }
 
-    public static Form Create(string title, List<FormElement> elements)
+    public static Form Create(int instanceId, string title, List<FormElement> elements)
     {
         return new Form(Guid.NewGuid())
         {
+            ShahrbinInstanceId = instanceId,
             Title = title,
             Elements = elements
         };
     }
+    public void Update(string? title, List<FormElement>? elements)
+    {
+        Title = title ?? Title;
+        Elements = elements ?? Elements;
+    }
+
+    public int ShahrbinInstanceId { get; set; }
+    public ShahrbinInstance ShahrbinInstance { get; set; } = null!;
     public string Title { get; private set; } = string.Empty;
     public DateTime Created { get; private set; }
     public List<FormElement> Elements { get; private set; } = new List<FormElement>();

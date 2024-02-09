@@ -16,7 +16,7 @@ public static class NotFoundErrors
     public static readonly Error Poll = new Error("نظر سنجی یافت نشد.");
     public static readonly Error Process = new Error("فرایند یافت نشد.");
     public static readonly Error QuickAccess = new Error("دسترسی سریع یافت نشد.");
-    
+    public static readonly Error Form = new Error("فرم یافت نشد.");
 }
 
 
@@ -42,7 +42,7 @@ public static class OperationErrors
     public static readonly Error CommentHasReply = new Error("این کامنت یک ریپلای دارد.");
     public static readonly Error LoopMade = new Error("حلقه ای در ساختار سازمانی ایجاد شده است.");
     public static readonly Error ExecutiveOnlyLimit = new Error("کاربر برای ارسال پیام به شهروند باید نقش واحد اجرایی داشته باشد.");
-
+    public static readonly Error FormIsInUse = new Error("امکان حذف فرم های در حال استفاده وجود ندارد..");
 }
 
 public static class AttachmentErrors

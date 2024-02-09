@@ -81,6 +81,7 @@ public static class DependencyInjection
         services.AddScoped<IShahrbinInstanceRepository, ShahrbinInstanceRepository>();
         services.AddScoped<INewsRepository, NewsRepository>();
         services.AddScoped<IFaqRepository, FaqRepository>();
+        services.AddScoped<IFormRepository, FormRepository>();
         services.AddScoped<IPollRepository, PollRepository>();
         services.AddScoped<IOrganizationalUnitRepository, OrganizationalUnitRepository>();
 
