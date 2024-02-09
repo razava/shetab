@@ -38,7 +38,8 @@ public class Form : Entity
         {
             ShahrbinInstanceId = instanceId,
             Title = title,
-            Elements = elements
+            Elements = elements,
+            Created = DateTime.UtcNow
         };
     }
     public void Update(string? title, List<FormElement>? elements)

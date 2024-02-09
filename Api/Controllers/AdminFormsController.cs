@@ -6,7 +6,6 @@ using Application.Forms.Commands.DeleteFormCommand;
 using Application.Forms.Commands.UpdateFormCommand;
 using Application.Forms.Queries.GetFormByIdQuery;
 using Application.Forms.Queries.GetFormQuery;
-using Domain.Models.Relational.ReportAggregate;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,11 +20,10 @@ public class AdminFormsController : ApiController
     {
     }
 
-
     //TODO: Define access policy
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<Form>>> GetForms()
+    public async Task<ActionResult> GetForms()
     {
         var instanceId = User.GetUserInstanceId();
         var query = new GetFormQuery(instanceId);
@@ -36,10 +34,9 @@ public class AdminFormsController : ApiController
             f => Problem(f));
     }
 
-
     [Authorize]
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<Form>> GetFormById(Guid id)
+    public async Task<ActionResult> GetFormById(Guid id)
     {
         var query = new GetFormByIdQuery(id);
         var result = await Sender.Send(query);
@@ -48,7 +45,6 @@ public class AdminFormsController : ApiController
             s => Ok(s),
             f => Problem(f));
     }
-
 
     [Authorize(Roles = "Admin")]
     [HttpPost]

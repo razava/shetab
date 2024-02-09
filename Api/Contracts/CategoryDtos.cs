@@ -110,7 +110,7 @@ public record GetShortCategoryDto(
     int Id,
     string Code,
     string Title,
-    ICollection<FormElement> FormElements);
+    Form? Form);
 
 
 public record CategoryTitleDto(

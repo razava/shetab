@@ -1,5 +1,5 @@
-﻿using Domain.Models.Relational.Common;
-using Domain.Models.Relational.ReportAggregate;
+﻿using Application.Forms.Common;
+using Domain.Models.Relational.Common;
 using System.ComponentModel.DataAnnotations;
 
 namespace Api.Contracts;
@@ -231,12 +231,12 @@ public record GetExecutiveListDto(
 public record CreateFormDto(
     [Required] [MaxLength(256)]
     string Title,
-    List<FormElement> Elements);
+    List<FormElementModel> Elements);
 
 public record UpdateFormDto(
     [MaxLength(256)]
     string? Title,
-    List<FormElement>? Elements);
+    List<FormElementModel>? Elements);
 
 
 

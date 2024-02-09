@@ -1,8 +1,8 @@
-﻿using Domain.Models.Relational.ReportAggregate;
+﻿using Application.Forms.Common;
 
 namespace Application.Forms.Commands.UpdateFormCommand;
 
 public sealed record UpdateFormCommand(
     Guid Id,
     string? Title,
-    List<FormElement>? Elements) : IRequest<Result<Form>>;
+    List<FormElementModel>? Elements) : IRequest<Result<FormResponse>>;

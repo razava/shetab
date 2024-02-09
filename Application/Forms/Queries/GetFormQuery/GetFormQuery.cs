@@ -1,6 +1,6 @@
-﻿using Domain.Models.Relational.ReportAggregate;
+﻿using Application.Forms.Common;
 
 namespace Application.Forms.Queries.GetFormQuery;
 
 public record GetFormQuery(int InstanceId) 
-    : IRequest<Result<List<Form>>>;
+    : IRequest<Result<List<FormListItemResponse>>>;
