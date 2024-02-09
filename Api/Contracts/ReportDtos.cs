@@ -113,6 +113,7 @@ public record StaffGetReportListDto(
     string LastStatus,
     string TrackingNumber,
     int CategoryId,
+    CategoryTitleDto Category,
     DateTime Sent,
     DateTime Deadline,
     DateTime? ResponseDeadline,

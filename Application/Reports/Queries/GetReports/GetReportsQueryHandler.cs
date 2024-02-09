@@ -2,17 +2,16 @@
 using Application.Common.Statics;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Application.Reports.Queries.GetReports;
 
 internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IUserRepository userRepository) 
-    : IRequestHandler<GetReportsQuery, Result<PagedList<Report>>>
+    : IRequestHandler<GetReportsQuery, Result<PagedList<GetReportsResponse>>>
 {
     
-    public async Task<Result<PagedList<Report>>> Handle(
+    public async Task<Result<PagedList<GetReportsResponse>>> Handle(
         GetReportsQuery request,
         CancellationToken cancellationToken)
     {
@@ -21,8 +20,6 @@ internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IUserReposi
         var actors = await userRepository.GetActorsAsync(request.UserId);
         var actorIds = actors.Select(a => a.Id).ToList();
         
-
-        Expression<Func<Report, bool>>? filter;
         var query = context.Set<Report>().Where(t => true);
 
 
@@ -76,13 +73,24 @@ internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IUserReposi
         //    false,
         //    a => a.OrderBy(r => r.Sent));
 
-        
-        query = query
-            .AsNoTracking()
-            .Where(inputFilters);
 
-        var reports = await PagedList<Report>.ToPagedList(
-            query.OrderBy(r => r.Sent),
+        var query2 = query
+            .AsNoTracking()
+            .Where(inputFilters)
+            .OrderBy(r => r.Sent)
+            .Select(r => new GetReportsResponse(
+                r.Id,
+                r.LastStatus,
+                r.TrackingNumber,
+                r.CategoryId,
+                r.Category.Title,
+                r.Sent,
+                r.Deadline,
+                r.ResponseDeadline,
+                r.Rating));
+
+        var reports = await PagedList<GetReportsResponse>.ToPagedList(
+            query2,
             request.PagingInfo.PageNumber,
             request.PagingInfo.PageSize);
 
