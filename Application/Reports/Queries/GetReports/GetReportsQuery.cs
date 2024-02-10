@@ -1,7 +1,6 @@
 ﻿using Application.Common.FilterModels;
 using Application.Common.Interfaces.Persistence;
-using Domain.Models.Relational;
-using MediatR;
+using Application.Reports.Common;
 
 namespace Application.Reports.Queries.GetReports;
 
@@ -12,15 +11,3 @@ public sealed record GetReportsQuery(
     string? FromRoleId,
     int InstanceId,
     FilterGetReportsModel? FilterGetReports = default!) : IRequest<Result<PagedList<GetReportsResponse>>>;
-
-public record GetReportsResponse(
-    Guid Id,
-    string LastStatus,
-    string TrackingNumber,
-    int CategoryId,
-    string CategoryTitle,
-    DateTime Sent,
-    DateTime Deadline,
-    DateTime? ResponseDeadline,
-    int? Rating
-    );

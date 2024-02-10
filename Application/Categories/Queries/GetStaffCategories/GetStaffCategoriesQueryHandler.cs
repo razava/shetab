@@ -1,10 +1,11 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
-using MediatR;
 
 namespace Application.Categories.Queries.GetStaffCategories;
 
-internal class GetStaffCategoriesQueryHandler(ICategoryRepository categoryRepository, IUserRepository userRepository) : IRequestHandler<GetStaffCategoriesQuery, Result<Category>>
+internal class GetStaffCategoriesQueryHandler(
+    ICategoryRepository categoryRepository,
+    IUserRepository userRepository) : IRequestHandler<GetStaffCategoriesQuery, Result<Category>>
 {
     public async Task<Result<Category>> Handle(GetStaffCategoriesQuery request, CancellationToken cancellationToken)
     {

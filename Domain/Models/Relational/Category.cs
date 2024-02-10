@@ -27,6 +27,8 @@ public class Category : BaseModel
     public bool EditingAllowed { get; set; } = true;
     public bool HideMap { get; set; }
     public List<ApplicationUser> Users { get; set; } = new List<ApplicationUser>();
+    public string RoleId { get; set; } = null!;
+    public ApplicationRole Role { get; set; } = null!;
     public Guid? FormId { get; set; } = null;
     public Form? Form { get; set; } = null;
 
@@ -81,6 +83,7 @@ public class Category : BaseModel
         string description,
         int order,
         int parentId,
+        string roleId,
         int duration,
         int responseDuration,
         int? processId = null,
@@ -99,6 +102,7 @@ public class Category : BaseModel
             Description = description,
             Order = order,
             ParentId = parentId,
+            RoleId = roleId,
             Duration = duration,
             ResponseDuration = responseDuration,
             ProcessId = processId,
@@ -119,6 +123,7 @@ public class Category : BaseModel
         string? description = null,
         int? order = null,
         int? parentId = null,
+        string? roleId = null,
         int? duration = null,
         int? responseDuration = null,
         int? processId = null,
@@ -134,6 +139,7 @@ public class Category : BaseModel
         Description = description ?? Description;
         Order = order ?? Order;
         ParentId = parentId ?? ParentId;
+        RoleId = roleId ?? RoleId;
         Duration = duration ?? Duration;
         ResponseDuration = responseDuration ?? ResponseDuration;
         ProcessId = processId ?? ProcessId;

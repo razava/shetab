@@ -4,6 +4,7 @@ using Api.ExtensionMethods;
 using Application.Categories.Queries.GetCategory;
 using Application.Configurations.Queries.ShahrbinInstanceManagement;
 using Application.Configurations.Queries.ViolationTypes;
+using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Mapster;
 using MediatR;
@@ -26,21 +27,16 @@ public class CitizenCommonController : ApiController
 
     [Authorize]
     [HttpGet("Categories")]
-    public async Task<ActionResult<CategoryGetDto>> GetCategories(int? instanceId)
+    public async Task<ActionResult> GetCategories(int? instanceId)
     {
         if (instanceId is null)
             return BadRequest();
-        var query = new GetCategoryQuery(instanceId.Value);
+        var roles = User.GetUserRoles();
+        var query = new GetCategoryQuery(instanceId.Value, roles);
         var result = await Sender.Send(query);
-        if (result.IsFailed)
-        {
-            return Problem(result.ToResult());
-        }
-        var resultValue = result.Value;
-        //TODO: This can be improved
-        resultValue.ForEach(c => c.Categories = resultValue.Where(p => p.ParentId == c.Id).ToList());
-
-        return Ok(resultValue.Where(c => c.ParentId == null).Single().Adapt<CategoryGetDto>());
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
     

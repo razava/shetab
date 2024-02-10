@@ -1,36 +1,41 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
-using MediatR;
+using Mapster;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Categories.Queries.GetCategory;
 
-internal sealed class GetCategoryQueryHandler(/*IUnitOfWork unitOfWork, */ICategoryRepository categoryRepository) : IRequestHandler<GetCategoryQuery, Result<List<Category>>>
+internal sealed class GetCategoryQueryHandler(IUnitOfWork unitOfWork) 
+    : IRequestHandler<GetCategoryQuery, Result<CategoryResponse>>
 {
    
-    public async Task<Result<List<Category>>> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
+    public async Task<Result<CategoryResponse>> Handle(
+        GetCategoryQuery request,
+        CancellationToken cancellationToken)
     {
-        //TODO: perform required filtering
-        var result = await categoryRepository.GetAsync(p => p.ShahrbinInstanceId == request.InstanceId
-            //&& ((request.FilterModel == null || request.FilterModel.Query == null) || p.Title.Contains(request.FilterModel.Query))
-            && (request.ReturnAll || p.IsDeleted == false), false);
+        var query = unitOfWork.DbContext.Set<Category>()
+            .Where(c => c.ShahrbinInstanceId == request.InstanceId
+                        && (request.ReturnAll || !c.IsDeleted));
 
-        //Expression<Func<Category, bool>> filter = p => (request.FilterModel!= null && request.FilterModel.Query != null) ? p.Title.Contains(request.FilterModel.Query) : true;
+        if (request.Roles is not null)
+            query = query.Where(c => request.Roles.Contains(c.Role.Name!));
 
-        
-        /*
-        var context = _unitOfWork.DbContext;
-        var result = context.Set<Category>()
+        var categories = await query
+            .Include(c => c.Form)
             .AsNoTracking()
-            .Where(p => p.ShahrbinInstanceId == request.InstanceId && (request.ReturnAll || p.IsDeleted == false));
+            .ToListAsync();
 
-        if(request.FilterModel != null && request.FilterModel.Query != null)
+        categories.ForEach(x => x.Categories = categories.Where(c => c.ParentId == x.Id).ToList());
+        var roots = categories.Where(x => x.ParentId == null).ToList();
+
+        Category result;
+        if (roots.Count == 1)
+            result = roots[0];
+        else
         {
-            result = result.Where(c => c.Title.Contains(request.FilterModel.Query))
-                .Include(c => (c.Parent != null) ? c.Parent : null)
-                .ThenInclude(r => (r.Parent != null) ? r.Parent : null)
-                .ThenInclude(e => (e.Parent != null) ? e.Parent : null);
+            result = Category.Create(request.InstanceId, "", "ریشه", "", 0, -1, "", 0, 0);
+            roots.Where(r => r.ParentId == null).ToList().ForEach(c => c.Parent = result);
         }
-        */
-        return result.ToList();
+        return result.Adapt<CategoryResponse>();
     }
 }

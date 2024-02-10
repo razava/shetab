@@ -6,7 +6,6 @@ using Application.Categories.Commands.DeleteCategory;
 using Application.Categories.Commands.UpdateCategory;
 using Application.Categories.Queries.GetCategory;
 using Application.Categories.Queries.GetCategoryById;
-using Application.Common.FilterModels;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -25,32 +24,14 @@ public class AdminCategoryController : ApiController
 
     [Authorize]
     [HttpGet("All")]
-    public async Task<ActionResult<CategoryGetDto>> GetAllCategories([FromQuery] QueryFilter queryFilter)
+    public async Task<ActionResult<CategoryGetDto>> GetAllCategories()
     {
-        //todo : review for result codes and clear if possible
         var instanceId = User.GetUserInstanceId();
-        var mappedFilter = queryFilter.Adapt<QueryFilterModel>();
-        var query = new GetCategoryQuery(instanceId, mappedFilter, true);
+        var query = new GetCategoryQuery(instanceId, null, true);
         var result = await Sender.Send(query);
-        if(result.IsFailed)
-        {
-            return Problem(result.ToResult());
-        }
-        var resultValue = result.Value;
-        var tempResult = resultValue;
-        if (queryFilter.Query != null)
-        {
-            var filtered = tempResult.Where(r => r.Title.Contains(queryFilter.Query)).ToList();
-            var parentIds = filtered.Select(r => r.ParentId).Distinct().ToList();
-            filtered.AddRange(tempResult.Where(t => parentIds.Contains(t.Id)).ToList());
-            filtered.Add(tempResult.Where(t => t.ParentId == null).Single());
-            resultValue = filtered.Distinct().ToList();
-        }
-        resultValue.ForEach(x => x.Categories = resultValue.Where(c => c.ParentId == x.Id).ToList());
-        
-        var root = resultValue.Where(r => r.ParentId == null).Single();
-
-        return Ok(root.Adapt<CategoryGetDto>());
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
 

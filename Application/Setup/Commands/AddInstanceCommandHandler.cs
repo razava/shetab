@@ -59,6 +59,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
         public int Duration { get; set; }
         public string Description { get; set; } = string.Empty;
         public bool ObjectionAllowed { get; set; }
+        public string RoleId { get; set; } = string.Empty;
         public List<InputForCategory> SubCategories { get; set; } = new List<InputForCategory>();
     }
 
@@ -106,6 +107,19 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
         _context.Set<ShahrbinInstance>().Add(instance);
         await _context.SaveChangesAsync();
 
+        var regions = await _context.Set<Region>()
+            .Where(p => p.CityId == instance.CityId)
+            .ToListAsync();
+        await initDefaultsFromExcel(regions, instance);
+
+        var citizenRoleId = await _context.Set<ApplicationRole>()
+            .Where(r => r.Name == RoleNames.Citizen)
+            .Select(r => r.Id)
+            .SingleOrDefaultAsync();
+        if (citizenRoleId is null) 
+        {
+            throw new Exception("No citizen role exists.");
+        }
         InputForCategory? inputForCategory = null;
         ws = workbook.Worksheet(2);
         for (int row = 2; row <= ws.LastRowUsed().RowNumber(); row++)
@@ -122,7 +136,8 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
                     ResponseDuration = 0,
                     ProcessTitle = "",
                     ObjectionAllowed = true,
-                    SubCategories = new List<InputForCategory>()
+                    SubCategories = new List<InputForCategory>(),
+                    RoleId = citizenRoleId
                 };
                 inputForCategories.Add(inputForCategory);
             }
@@ -142,6 +157,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
                     ProcessTitle = $"{instance.Abbreviation}-p-{ws.Cell(row, 7).Value.ToString()}",
                     ObjectionAllowed = true,
                     Order = int.Parse(ws.Cell(row, 5).Value.ToString().Trim()),
+                    RoleId = citizenRoleId
                 });
 
                 var code = $"{instance.Abbreviation}-p-{ws.Cell(row, 7).Value.ToString()}";
@@ -229,14 +245,9 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
     {
         ApplicationUser user;
         Actor actor;
-
-
-
         var regions = await _context.Set<Region>()
             .Where(p => p.CityId == instance.CityId)
             .ToListAsync();
-        await initDefaultsFromExcel(regions, instance);
-
         InputForExecutive inputForExecutive;
 
         if (_context.Set<Process>().Count(p => p.ShahrbinInstanceId == instance.Id) == 0)
@@ -622,7 +633,8 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             ParentId = null,
             CategoryType = CategoryType.Root,
             Title = "ریشه",
-            Code = "-1"
+            Code = "-1",
+            RoleId = inputForCategories[0].RoleId
         };
         _context.Set<Category>().Add(rootCategory);
         await _context.SaveChangesAsync();
@@ -639,7 +651,8 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
                 Title = parentCat.Title,
                 Code = parentCat.Code,
                 Order = parentCat.Order,
-                ParentId = rootCategory.Id
+                ParentId = rootCategory.Id,
+                RoleId = parentCat.RoleId
             };
             foreach (var childCat in parentCat.SubCategories)
             {
@@ -657,7 +670,8 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
                     Duration = childCat.Duration,
                     ResponseDuration = childCat.ResponseDuration,
                     ObjectionAllowed = childCat.ObjectionAllowed,
-                    Description = childCat.Description
+                    Description = childCat.Description,
+                    RoleId = childCat.RoleId
                 };
                 parentCategory.Categories.Add(category);
             }

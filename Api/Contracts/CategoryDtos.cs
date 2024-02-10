@@ -1,4 +1,5 @@
-﻿using Domain.Models.Relational.ReportAggregate;
+﻿using Application.Forms.Common;
+using Domain.Models.Relational.ReportAggregate;
 using System.ComponentModel.DataAnnotations;
 
 namespace Api.Contracts;
@@ -22,7 +23,8 @@ public class CategoryGetDto
     public bool ObjectionAllowed { get; set; }
     public bool EditingAllowed { get; set; } = true;
     public bool HideMap { get; set; }
-    public Form? Form { get; set; }
+    //public Form? Form { get; set; }
+    public FormResponse? Form {  get; set; }
 }
 
 

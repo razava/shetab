@@ -1,6 +1,4 @@
-﻿using Application.Common.FilterModels;
-using Domain.Models.Relational;
-using MediatR;
+﻿using Domain.Models.Relational;
 
 namespace Application.Categories.Queries.GetStaffCategories;
 

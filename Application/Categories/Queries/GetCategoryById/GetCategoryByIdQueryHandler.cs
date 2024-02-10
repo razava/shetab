@@ -1,8 +1,5 @@
-﻿using Application.Categories.Queries.GetCategory;
-using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
-using MediatR;
 
 namespace Application.Categories.Queries.GetCategoryById;
 

@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
+using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Microsoft.EntityFrameworkCore;
@@ -35,8 +36,7 @@ internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IUserReposi
 
         if (request.Roles.Contains(RoleNames.Operator) && request.FromRoleId == "NEW")
         {
-            query = query.Where(r => r.ReportState == ReportState.NeedAcceptance &&
-                                     r.ShahrbinInstanceId == request.InstanceId);
+            query = query.Where(r => r.ReportState == ReportState.NeedAcceptance);
         }
         else
         {
