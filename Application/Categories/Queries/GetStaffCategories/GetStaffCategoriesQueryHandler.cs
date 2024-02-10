@@ -1,55 +1,41 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Categories.Queries.GetCategory;
+using Application.Common.Interfaces.Persistence;
+using Application.Common.Statics;
 using Domain.Models.Relational;
+using Mapster;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Categories.Queries.GetStaffCategories;
 
 internal class GetStaffCategoriesQueryHandler(
-    ICategoryRepository categoryRepository,
-    IUserRepository userRepository) : IRequestHandler<GetStaffCategoriesQuery, Result<Category>>
+    IUnitOfWork unitOfWork) : IRequestHandler<GetStaffCategoriesQuery, Result<CategoryResponse>>
 {
-    public async Task<Result<Category>> Handle(GetStaffCategoriesQuery request, CancellationToken cancellationToken)
+    public async Task<Result<CategoryResponse>> Handle(GetStaffCategoriesQuery request, CancellationToken cancellationToken)
     {
-        var opCategories = await userRepository.GetUserCategoriesAsync(request.UserId);
+        var query = unitOfWork.DbContext.Set<Category>()
+            .Where(c => c.ShahrbinInstanceId == request.InstanceId
+                        && !c.IsDeleted);
 
-        var allCategories = (await categoryRepository.GetAsync(p => 
-            p.ShahrbinInstanceId == request.InstanceId
-            && p.IsDeleted == false
-            , false
-            , null
-            , "Categories")).ToList();
+        if (request.Roles.Contains(RoleNames.Operator))
+            query = query.Where(c => c.Users.Any(cu => cu.Id == request.UserId));
 
-        var result = allCategories;
+        var categories = await query
+            .Include(c => c.Form)
+            .AsNoTracking()
+            .ToListAsync();
 
-        if (opCategories.Any())
+        categories.ForEach(x => x.Categories = categories.Where(c => c.ParentId == x.Id).ToList());
+        var roots = categories.Where(x => x.ParentId == null).ToList();
+
+        Category result;
+        if (roots.Count == 1)
+            result = roots[0];
+        else
         {
-
-            var filteredLeafs = allCategories.Where(c => !c.Categories.Any() && opCategories.Contains(c.Id)).ToList();
-            var filteredLevel = filteredLeafs.Select(e => e.ParentId).ToList();
-            var filteredCategoriesIds = filteredLeafs.Select(fl => fl.Id).ToList();
-
-            while (true)
-            {
-                var tmp = allCategories.Where(ac => ac.ParentId != null && filteredLevel.Contains(ac.Id)).ToList();
-                if (!tmp.Any())
-                    break;
-                filteredCategoriesIds.AddRange(tmp.Select(t => t.Id).ToList());
-                filteredLevel = tmp.Select(fl => fl.ParentId).ToList();
-            }
-
-            //allCategories = allCategories.RemoveAll(c => !filteredCategoriesIds.Contains(c.Id));
-            var filteredCategories = allCategories.Where(c => filteredCategoriesIds.Contains(c.Id)).ToList();
-            var root = allCategories.Where(r => r.ParentId == null).SingleOrDefault();
-            filteredCategories.Add(root);
-
-            result = filteredCategories;
+            result = Category.Create(request.InstanceId, "", "ریشه", "", 0, -1, "", 0, 0);
+            roots.Where(r => r.ParentId == null).ToList().ForEach(c => c.Parent = result);
         }
-
-
-        result.ForEach(x => x.Categories = result.Where(c => c.ParentId == x.Id).ToList());
-
-        var categoryTree = allCategories.Where(r => r.ParentId == null).Single();
-
-        return categoryTree;
+        return result.Adapt<CategoryResponse>();
 
     }
 }

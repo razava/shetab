@@ -24,7 +24,7 @@ public class AdminCategoryController : ApiController
 
     [Authorize]
     [HttpGet("All")]
-    public async Task<ActionResult<CategoryGetDto>> GetAllCategories()
+    public async Task<ActionResult> GetAllCategories()
     {
         var instanceId = User.GetUserInstanceId();
         var query = new GetCategoryQuery(instanceId, null, true);

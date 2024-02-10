@@ -2,7 +2,6 @@
 using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.AdministrativeDivisions.Queries.GetRegion;
-using Application.Categories.Queries.GetCategory;
 using Application.Categories.Queries.GetStaffCategories;
 using Application.Configurations.Queries.Roles;
 using Application.Configurations.Queries.ShahrbinInstanceManagement;
@@ -62,30 +61,17 @@ public class StaffCommonController : ApiController
 
     [Authorize]
     [HttpGet("Categories")]
-    public async Task<ActionResult<CategoryGetDto>> GetCategory(int? instanceId)
+    public async Task<ActionResult> GetCategory()
     {
-        //if (instanceId is null)
-        //    return BadRequest();
-        //var query = new GetCategoryQuery(userInstanceId);
-
         var userInstanceId = User.GetUserInstanceId();
         var userId = User.GetUserId();
+        var userRoles = User.GetUserRoles();
 
-        var query = new GetStaffCategoriesQuery(userInstanceId, userId);
+        var query = new GetStaffCategoriesQuery(userInstanceId, userId, userRoles);
         var result = await Sender.Send(query);
-        if (result.IsFailed)
-        {
-            return Problem(result.ToResult());
-        }
-        var resultValue = result.Value;
-        return Ok(resultValue);
-        //resultValue = resultValue.Distinct().ToList();
-        //resultValue.ForEach(x => x.Categories = resultValue.Where(c => c.ParentId == x.Id).ToList());
-        //resultValue = resultValue.Distinct().ToList();
-
-        //var root = resultValue.Where(r => r.ParentId == null).Single();
-
-        //return Ok(root.Adapt<CategoryGetDto>());
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
 

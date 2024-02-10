@@ -59,7 +59,6 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
         public int Duration { get; set; }
         public string Description { get; set; } = string.Empty;
         public bool ObjectionAllowed { get; set; }
-        public string RoleId { get; set; } = string.Empty;
         public List<InputForCategory> SubCategories { get; set; } = new List<InputForCategory>();
     }
 
@@ -112,14 +111,6 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             .ToListAsync();
         await initDefaultsFromExcel(regions, instance);
 
-        var citizenRoleId = await _context.Set<ApplicationRole>()
-            .Where(r => r.Name == RoleNames.Citizen)
-            .Select(r => r.Id)
-            .SingleOrDefaultAsync();
-        if (citizenRoleId is null) 
-        {
-            throw new Exception("No citizen role exists.");
-        }
         InputForCategory? inputForCategory = null;
         ws = workbook.Worksheet(2);
         for (int row = 2; row <= ws.LastRowUsed().RowNumber(); row++)
@@ -136,8 +127,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
                     ResponseDuration = 0,
                     ProcessTitle = "",
                     ObjectionAllowed = true,
-                    SubCategories = new List<InputForCategory>(),
-                    RoleId = citizenRoleId
+                    SubCategories = new List<InputForCategory>()
                 };
                 inputForCategories.Add(inputForCategory);
             }
@@ -157,7 +147,6 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
                     ProcessTitle = $"{instance.Abbreviation}-p-{ws.Cell(row, 7).Value.ToString()}",
                     ObjectionAllowed = true,
                     Order = int.Parse(ws.Cell(row, 5).Value.ToString().Trim()),
-                    RoleId = citizenRoleId
                 });
 
                 var code = $"{instance.Abbreviation}-p-{ws.Cell(row, 7).Value.ToString()}";
@@ -627,6 +616,21 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
 
     private async Task<bool> initCategoriesFromExcel(ShahrbinInstance instance, List<InputForCategory> inputForCategories)
     {
+        var citizenRoleId = await _context.Set<ApplicationRole>()
+            .Where(r => r.Name == RoleNames.Citizen)
+            .Select(r => r.Id)
+            .SingleOrDefaultAsync();
+        if (citizenRoleId is null)
+        {
+            throw new Exception("No citizen role exists.");
+        }
+        var operatorUser = await _context.Set<ApplicationUser>()
+            .Where(u => u.UserName == (instance.Abbreviation + "-operator"))
+            .SingleOrDefaultAsync();
+        if(operatorUser is null)
+        {
+            throw new Exception("No operator user exists.");
+        }
         var rootCategory = new Category()
         {
             ShahrbinInstanceId = instance.Id,
@@ -634,7 +638,8 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             CategoryType = CategoryType.Root,
             Title = "ریشه",
             Code = "-1",
-            RoleId = inputForCategories[0].RoleId
+            RoleId = citizenRoleId,
+            Users = new List<ApplicationUser> { operatorUser }
         };
         _context.Set<Category>().Add(rootCategory);
         await _context.SaveChangesAsync();
@@ -652,7 +657,8 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
                 Code = parentCat.Code,
                 Order = parentCat.Order,
                 ParentId = rootCategory.Id,
-                RoleId = parentCat.RoleId
+                RoleId = citizenRoleId,
+                Users = new List<ApplicationUser> { operatorUser }
             };
             foreach (var childCat in parentCat.SubCategories)
             {
@@ -671,7 +677,8 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
                     ResponseDuration = childCat.ResponseDuration,
                     ObjectionAllowed = childCat.ObjectionAllowed,
                     Description = childCat.Description,
-                    RoleId = childCat.RoleId
+                    RoleId = citizenRoleId,
+                    Users = new List<ApplicationUser> { operatorUser }
                 };
                 parentCategory.Categories.Add(category);
             }
