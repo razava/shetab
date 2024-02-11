@@ -1,12 +1,17 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Persistence;
+using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
-using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Reports.Queries.GetPossibleTransitions;
 
-internal sealed class GetPossibleTransitionsQueryHandler(IReportRepository reportRepository, IUserRepository userRepository) : IRequestHandler<GetPossibleTransitionsQuery, Result<List<PossibleTransitionResponse>>>
+internal sealed class GetPossibleTransitionsQueryHandler(
+    IUnitOfWork unitOfWork,
+    IReportRepository reportRepository,
+    IUserRepository userRepository) 
+    : IRequestHandler<GetPossibleTransitionsQuery, Result<List<PossibleTransitionResponse>>>
 {
     public async Task<Result<List<PossibleTransitionResponse>>> Handle(GetPossibleTransitionsQuery request, CancellationToken cancellationToken)
     {
@@ -17,6 +22,20 @@ internal sealed class GetPossibleTransitionsQueryHandler(IReportRepository repor
             return AccessDeniedErrors.General;
 
         var possibleTransitions = report.GetPossibleTransitions();
+        //var pt = await unitOfWork.DbContext.Set<Report>()
+        //    .Where(r => r.Id == request.reportId)
+        //    .Select(r => r.Process.Transitions
+        //        .Where(rpt => r.CurrentStageId == rpt.FromId)
+        //        .Select(t => new
+        //        {
+        //            t.Id,
+        //            t.To.Actors,
+        //            t.To.DisplayName,
+        //            t.ReasonList,
+        //            t.CanSendMessageToCitizen,
+        //            t.TransitionType
+        //        }))
+        //    .ToListAsync();
 
         var result = new List<PossibleTransitionResponse>();
         var regionId = report.Address.RegionId;

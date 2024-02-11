@@ -1,17 +1,15 @@
 ﻿using Application.Reports.Common;
-using Domain.Models.Relational;
-using MediatR;
 
 namespace Application.Reports.Commands.CreateReportByCitizen;
 
 public sealed record CreateReportByCitizenCommand(
-    int instanceId,
-    string citizenId,
-    string phoneNumber,
+    int InstanceId,
+    string CitizenId,
+    string PhoneNumber,
     int CategoryId,
     string Comments,
     AddressInfoRequest Address,
     List<Guid> Attachments,
     bool IsIdentityVisible = true,
-    bool IsPublic = true) : IRequest<Result<Report>>;
+    bool IsPublic = true) : IRequest<Result<GetReportByIdResponse>>;
 

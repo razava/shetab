@@ -1,11 +1,9 @@
-﻿using Application.Common.Interfaces.Persistence;
-using Domain.Models.Relational;
-using MediatR;
+﻿using Application.Reports.Common;
 
 namespace Application.Reports.Queries.GetReportById;
 
 public sealed record GetReportByIdQuery(
-    Guid id,
-    string userId,
-    int instanceId) : IRequest<Result<Report>>;
+    Guid Id,
+    string UserId,
+    int InstanceId) : IRequest<Result<GetReportByIdResponse>>;
 

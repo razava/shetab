@@ -1,7 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Forms.Common;
-using Domain.Models.Relational.ReportAggregate;
-using Mapster;
 
 namespace Application.Forms.Commands.UpdateFormCommand;
 
@@ -21,6 +19,6 @@ internal sealed class UpdateFormCommandHandler(
         formRepository.Update(form);
         await unitOfWork.SaveAsync();
 
-        return form.Adapt<FormResponse>();
+        return FormResponse.FromForm(form);
     }
 }

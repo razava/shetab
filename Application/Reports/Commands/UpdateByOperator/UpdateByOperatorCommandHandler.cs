@@ -1,5 +1,6 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Persistence;
+using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using MediatR;
@@ -10,9 +11,9 @@ internal sealed class UpdateByOperatorCommandHandler(
     IUnitOfWork unitOfWork,
     IReportRepository reportRepository,
     ICategoryRepository categoryRepository,
-    IUploadRepository uploadRepository) : IRequestHandler<UpdateByOperatorCommand, Result<Report>>
+    IUploadRepository uploadRepository) : IRequestHandler<UpdateByOperatorCommand, Result<GetReportByIdResponse>>
 {
-    public async Task<Result<Report>> Handle(UpdateByOperatorCommand request, CancellationToken cancellationToken)
+    public async Task<Result<GetReportByIdResponse>> Handle(UpdateByOperatorCommand request, CancellationToken cancellationToken)
     {
         var report = await reportRepository.GetByIDAsync(request.reportId);
         if (report == null)
@@ -61,6 +62,6 @@ internal sealed class UpdateByOperatorCommandHandler(
 
         await unitOfWork.SaveAsync();
 
-        return report;
+        return GetReportByIdResponse.FromReport(report);
     }
 }

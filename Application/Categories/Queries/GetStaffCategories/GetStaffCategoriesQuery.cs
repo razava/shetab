@@ -1,4 +1,4 @@
-﻿using Application.Categories.Queries.GetCategory;
+﻿using Application.Categories.Common;
 
 namespace Application.Categories.Queries.GetStaffCategories;
 

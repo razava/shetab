@@ -1,6 +1,6 @@
 ﻿using Application.Forms.Common;
 
-namespace Application.Categories.Queries.GetCategory;
+namespace Application.Categories.Common;
 
 public record CategoryResponse(
     int Id,

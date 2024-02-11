@@ -61,14 +61,14 @@ public class StaffReportController : ApiController
 
     [Authorize]
     [HttpGet("{id:Guid}")]
-    public async Task<ActionResult<StaffGetReportDetailsDto>> GetReportById(Guid id, int instanceId)
+    public async Task<ActionResult<GetReportByIdResponse>> GetReportById(Guid id, int instanceId)
     {
         var userId = User.GetUserId();
         var query = new GetReportByIdQuery(id, userId, instanceId);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<StaffGetReportDetailsDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -76,7 +76,9 @@ public class StaffReportController : ApiController
     
     [Authorize]
     [HttpGet("AllReports")]
-    public async Task<ActionResult<List<StaffGetReportListDto>>> GetAllReports([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetAllReports filterGetAllReports)
+    public async Task<ActionResult<List<GetReportsResponse>>> GetAllReports(
+        [FromQuery] PagingInfo pagingInfo, 
+        [FromQuery] FilterGetAllReports filterGetAllReports)
     {
         var userId = User.GetUserId();
         var userRoles = User.GetUserRoles();
@@ -88,7 +90,7 @@ public class StaffReportController : ApiController
         if (result.IsFailed)
             return Problem(result.ToResult());
         Response.AddPaginationHeaders(result.Value.Meta);
-        return Ok(result.Value.Adapt<List<StaffGetReportListDto>>());
+        return Ok(result.Value);
     }
 
 
@@ -198,7 +200,7 @@ public class StaffReportController : ApiController
 
     [Authorize(Roles = "Operator")]
     [HttpPost("RegisterByOperator")]
-    public async Task<ActionResult<Guid>> CreateReportByOperator(OperatorCreateReportDto model)
+    public async Task<ActionResult> CreateReportByOperator(OperatorCreateReportDto model)
     {
         var instanceId = User.GetUserInstanceId();
         var operatorId = User.GetUserId();
@@ -225,7 +227,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => CreatedAtAction(nameof(GetReportById), new { id = s.Id, instanceId = instanceId }, s.Adapt<StaffGetReportDetailsDto>()),
+            s => CreatedAtAction(nameof(GetReportById), new { id = s.Id, instanceId = instanceId }, s),
             f => Problem(f));
     }
 

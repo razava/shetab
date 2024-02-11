@@ -1,9 +1,8 @@
-﻿using Domain.Models.Relational;
-using MediatR;
+﻿using Application.Reports.Common;
 
 namespace Application.Reports.Queries.GetCitizenReportById;
 
 public sealed record GetCitizenReportByIdQuery(
-    Guid id,
-    string UserId) : IRequest<Result<Report>>;
+    Guid Id,
+    string UserId) : IRequest<Result<GetReportByIdResponse>>;
 

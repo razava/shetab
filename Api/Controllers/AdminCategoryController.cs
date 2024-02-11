@@ -6,7 +6,6 @@ using Application.Categories.Commands.DeleteCategory;
 using Application.Categories.Commands.UpdateCategory;
 using Application.Categories.Queries.GetCategory;
 using Application.Categories.Queries.GetCategoryById;
-using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,13 +36,13 @@ public class AdminCategoryController : ApiController
 
     [Authorize]
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<CategoryGetDetailDto>> GetCategoryById(int id)
+    public async Task<ActionResult> GetCategoryById(int id)
     {
         var query = new GetCategoryByIdQuery(id);
         var result = await Sender.Send(query);
         
         return result.Match(
-            s => Ok(s.Adapt<CategoryGetDetailDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -78,7 +77,7 @@ public class AdminCategoryController : ApiController
             s => CreatedAtAction(
                 nameof(GetCategoryById),
                 new { id = s.Id, instanceId = instanceId },
-                s.Adapt<CategoryGetDetailDto>()),
+                s),
             f => Problem(f));
     }
 

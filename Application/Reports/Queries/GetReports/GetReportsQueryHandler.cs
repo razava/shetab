@@ -78,16 +78,7 @@ internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IUserReposi
             .AsNoTracking()
             .Where(inputFilters)
             .OrderBy(r => r.Sent)
-            .Select(r => new GetReportsResponse(
-                r.Id,
-                r.LastStatus,
-                r.TrackingNumber,
-                r.CategoryId,
-                r.Category.Title,
-                r.Sent,
-                r.Deadline,
-                r.ResponseDeadline,
-                r.Rating));
+            .Select(r => GetReportsResponse.FromReport(r));
 
         var reports = await PagedList<GetReportsResponse>.ToPagedList(
             query2,

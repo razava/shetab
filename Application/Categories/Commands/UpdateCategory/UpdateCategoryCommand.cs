@@ -1,4 +1,5 @@
-﻿using Domain.Models.Relational;
+﻿using Application.Categories.Common;
+using Domain.Models.Relational;
 using Domain.Models.Relational.ReportAggregate;
 using MediatR;
 
@@ -19,5 +20,5 @@ public sealed record UpdateCategoryCommand(
     bool? EdittingAllowed = true,
     bool? HideMap = false,
     string? AttachmentDescription = "",
-    Guid? FormId = null) : IRequest<Result<Category>>;
+    Guid? FormId = null) : IRequest<Result<CategoryDetailResponse>>;
 

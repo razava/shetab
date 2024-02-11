@@ -20,6 +20,6 @@ internal sealed class AddFormCommandHandler(
         formRepository.Insert(form);
         await unitOfWork.SaveAsync();
 
-        return form.Adapt<FormResponse>();
+        return FormResponse.FromForm(form);
     }
 }

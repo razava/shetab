@@ -1,23 +1,25 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
+using Application.Reports.Common;
 using Domain.Models.Relational;
-using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Reports.Queries.GetCitizenReportById;
 
-internal sealed class GetCitizenReportByIdQueryHandler(IReportRepository reportRepository) : IRequestHandler<GetCitizenReportByIdQuery, Result<Report>>
+internal sealed class GetCitizenReportByIdQueryHandler(IUnitOfWork unitOfWork) 
+    : IRequestHandler<GetCitizenReportByIdQuery, Result<GetReportByIdResponse>>
 {
-    public async Task<Result<Report>> Handle(GetCitizenReportByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetReportByIdResponse>> Handle(
+        GetCitizenReportByIdQuery request, CancellationToken cancellationToken)
     {
-        var report = await reportRepository.GetSingleAsync(
-            r => r.Id == request.id,
-            false);
-        if (report is null)
+        var context = unitOfWork.DbContext.Set<Report>();
+        var query = context.Where(r => r.Id == request.Id && r.CitizenId == request.UserId);
+        var result = await query
+            .Select(r => GetReportByIdResponse.FromReport(r))
+            .SingleOrDefaultAsync();
+
+        if (result is null)
             return NotFoundErrors.Report;
-        if (report.CitizenId != request.UserId)
-        {
-            return AccessDeniedErrors.General;
-        }
-        return report;
+
+        return result;
     }
 }

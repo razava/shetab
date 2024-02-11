@@ -1,12 +1,16 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Categories.Common;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Categories.Commands.UpdateCategory;
 
-internal sealed class UpdateCategoryCommandHandler(IUnitOfWork unitOfWork, ICategoryRepository categoryRepository) : IRequestHandler<UpdateCategoryCommand, Result<Category>>
+internal sealed class UpdateCategoryCommandHandler(
+    IUnitOfWork unitOfWork,
+    ICategoryRepository categoryRepository) 
+    : IRequestHandler<UpdateCategoryCommand, Result<CategoryDetailResponse>>
 {
-    public async Task<Result<Category>> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<Result<CategoryDetailResponse>> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
     {
         //TODO: perform required operations
         var category = await categoryRepository.GetSingleAsync(c => c.Id == request.Id);
@@ -43,6 +47,6 @@ internal sealed class UpdateCategoryCommandHandler(IUnitOfWork unitOfWork, ICate
         categoryRepository.Update(category);
 
         await unitOfWork.SaveAsync();
-        return category;
+        return CategoryDetailResponse.FromCategory(category);
     }
 }

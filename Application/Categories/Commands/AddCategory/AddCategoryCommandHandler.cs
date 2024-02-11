@@ -1,13 +1,15 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Categories.Common;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Categories.Commands.AddCategory;
 
-internal sealed class AddCategoryCommandHandler(IUnitOfWork unitOfWork, ICategoryRepository categoryRepository) : IRequestHandler<AddCategoryCommand, Result<Category>>
+internal sealed class AddCategoryCommandHandler(IUnitOfWork unitOfWork, ICategoryRepository categoryRepository) 
+    : IRequestHandler<AddCategoryCommand, Result<CategoryDetailResponse>>
 {
    
-    public async Task<Result<Category>> Handle(AddCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<Result<CategoryDetailResponse>> Handle(AddCategoryCommand request, CancellationToken cancellationToken)
     {
         var roleId = await unitOfWork.DbContext.Set<Category>()
             .Where(c => c.Id == request.ParentId)
@@ -37,6 +39,6 @@ internal sealed class AddCategoryCommandHandler(IUnitOfWork unitOfWork, ICategor
         categoryRepository.Insert(category);
         await unitOfWork.SaveAsync();
 
-        return category;
+        return CategoryDetailResponse.FromCategory(category);
     }
 }

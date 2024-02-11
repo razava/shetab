@@ -26,8 +26,6 @@ public class MapsterConfigurations
             (src.FirstName == "" && src.LastName == "") ? 
             $"{src.Title}" : $"{src.Title} ({src.FirstName} {src.LastName})");
 
-        TypeAdapterConfig<Report, CitizenGetReportListDto>.NewConfig()
-            .Map(dest => dest.IsLiked, src => src.LikedBy != null && src.LikedBy.Count > 0);
 
         /*
         TypeAdapterConfig<AddressInfo, Address>.NewConfig()

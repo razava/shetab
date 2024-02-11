@@ -19,7 +19,6 @@ using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 
 namespace Api.Controllers;
@@ -37,18 +36,20 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet]
-    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetReports(int instanceId, [FromQuery] PagingInfo pagingInfo)
+    public async Task<ActionResult<List<GetCitizenReportsResponse>>> GetReports(
+        int instanceId,
+        [FromQuery] PagingInfo pagingInfo)
     {
         var userId = User.GetUserId();
         var query = new GetRecentReportsQuery(pagingInfo, instanceId, userId);
-        //todo : handle user profile data
+
         var result = await Sender.Send(query);
 
         if (result.IsFailed)
             return Problem(result.ToResult());
-        var resultValue = result.Value;
-        Response.AddPaginationHeaders(resultValue.Meta);
-        return Ok(resultValue.Adapt<List<CitizenGetReportListDto>>());
+
+        Response.AddPaginationHeaders(result.Value.Meta);
+        return Ok(result.Value);
     }
 
 
@@ -70,15 +71,19 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Nearest")]
-    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetNearest(int instanceId, [FromQuery]PagingInfo pagingInfo, [FromQuery] LocationDto locationDto)
+    public async Task<ActionResult<List<GetCitizenReportsResponse>>> GetNearest(
+        int instanceId,
+        [FromQuery] PagingInfo pagingInfo,
+        [FromQuery] LocationDto locationDto)
     {
-        var query = new GetNearestReportsQuery(pagingInfo, instanceId, locationDto.Longitude, locationDto.Latitude);
+        var userId = User.GetUserId();
+        var query = new GetNearestReportsQuery(pagingInfo, instanceId, userId, locationDto.Longitude, locationDto.Latitude);
         var result = await Sender.Send(query);
 
         if(result.IsFailed)
             return Problem(result.ToResult());
         Response.AddPaginationHeaders(result.Value.Meta);
-        return Ok(result.Adapt<List<CitizenGetReportListDto>>());
+        return Ok(result.Value);
     }
 
 
@@ -104,7 +109,8 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Mine")]
-    public async Task<ActionResult<List<CitizenGetReportListDto>>> GetMyReports([FromQuery] PagingInfo pagingInfo)
+    public async Task<ActionResult<List<GetCitizenReportsResponse>>> GetMyReports(
+        [FromQuery] PagingInfo pagingInfo)
     {
         var userId = User.GetUserId();
         if (userId == null)
@@ -117,13 +123,13 @@ public class CitizenReportController : ApiController
         if (result.IsFailed)
             return Problem(result.ToResult());
         Response.AddPaginationHeaders(result.Value.Meta);
-        return Ok(result.Value.Adapt<List<CitizenGetReportListDto>>());
+        return Ok(result.Value);
     }
 
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Mine/{id:Guid}")]
-    public async Task<ActionResult<CitizenGetReportDetailsDto>> GetMyReportById(Guid id)
+    public async Task<ActionResult<GetReportByIdResponse>> GetMyReportById(Guid id)
     {
         var userId = User.GetUserId();
         if (userId == null)
@@ -133,7 +139,7 @@ public class CitizenReportController : ApiController
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<CitizenGetReportDetailsDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -168,7 +174,7 @@ public class CitizenReportController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => CreatedAtAction(nameof(GetMyReportById), new { id = s.Id, instanceId = instanceId },  s.Adapt<CitizenGetReportDetailsDto>()),
+            s => CreatedAtAction(nameof(GetMyReportById), new { id = s.Id, instanceId = instanceId },  s),
             f => Problem(f));
     }
 

@@ -1,7 +1,4 @@
-﻿using Api.Dtos;
-using Application.Reports.Common;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Domain.Models.Relational;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
 using Domain.Models.Relational.Common;
 using System.ComponentModel.DataAnnotations;
 
@@ -17,46 +14,6 @@ public record CitizenCreateReportDto(
     List<Guid>? Attachments,
     bool IsIdentityVisible);
 
-
-public record CitizenGetReportListDto(
-    Guid Id,
-    int CategoryId,
-    CategoryTitleDto Category,//?
-    GetCitizenShortDto Citizen,  //todo : ???? review this, depends on what application layer returns(display name?)
-    string Comments,
-    AddressDetailDto Address,
-    string TrackingNumber,
-    string LastStatus,
-    DateTime Sent,
-    IEnumerable<TransitionLogDto> TransitionLogs, //??
-    bool IsLiked,
-    int Likes,
-    int CommentsCount,
-    List<MediaDto> Medias);
-
-
-public record GetCitizenShortDto(
-    string FirstName,
-    string LastName,
-    MediaDto Avatar);
-
-
-public record CitizenGetReportDetailsDto(
-    List<MediaDto> Medias,
-    string LastStatus,
-    int CategoryId,
-    CategoryDetailDto Category,//?
-    string Comments,
-    string TrackingNumber,
-    DateTime Sent,
-    AddressMoreDetailDto Address,
-    double? Duration, //?
-    double? ResponseDuration, //?
-    DateTime Deadline,
-    DateTime? ResponseDeadline,
-    int CommentsCount,
-    int Likes,
-    bool IsIdentityVisible);
 
 
 public class OperatorCreateReportDto
@@ -83,17 +40,6 @@ public class OperatorCreateReportDto
     public Visibility Visibility { get; set; } = Visibility.Operators;
 }
 
-//public record OperatorCreateReportDto(
-//    string PhoneNumber,
-//    string FirstName,
-//    string LastName,
-//    int CategoryId,
-//    string Comments,
-//    AddressInfo Address,
-//    List<Guid> Attachments,
-//    bool IsIdentityVisible = true
-//    //,visibility?
-//    );
 
 public class UpdateReportDto
 {
@@ -106,43 +52,6 @@ public class UpdateReportDto
     public AddressDto? Address { get; set; }
     public List<Guid>? Attachments { get; set; }
 }
-
-
-public record StaffGetReportListDto(
-    Guid Id,
-    string LastStatus,
-    string TrackingNumber,
-    int CategoryId,
-    CategoryTitleDto Category,
-    DateTime Sent,
-    DateTime Deadline,
-    DateTime? ResponseDeadline,
-    int? Rating
-    //int Rating
-    );     //todo : Satisfaction.rating is correct
-
-
-public record StaffGetReportDetailsDto(
-    Guid Id,
-    string TrackingNumber,
-    string LastStatus,
-    int CategoryId,
-    GetShortCategoryDto Category,//?
-    string CitizenId,
-    AddressReportGet Address,
-    string Comments,
-    DateTime Sent,
-    DateTime Deadline,
-    DateTime? ResponseDeadline,
-    int? Rating,
-    Visibility Visibility,
-    bool IsIdentityVisible,
-    int Likes,
-    int CommentsCount,
-    List<MediaDto> Medias
-    //Satisfaction [rating, comments, id]
-    );
-
 
 
 public record MakeTransitionDto(

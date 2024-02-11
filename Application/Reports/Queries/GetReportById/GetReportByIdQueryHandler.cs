@@ -1,21 +1,26 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
+using Application.Reports.Common;
 using Domain.Models.Relational;
-using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Reports.Queries.GetReportById;
 
-internal sealed class GetReportByIdQueryHandler(IReportRepository reportRepository) : IRequestHandler<GetReportByIdQuery, Result<Report>>
+internal sealed class GetReportByIdQueryHandler(IUnitOfWork unitOfWork) 
+    : IRequestHandler<GetReportByIdQuery, Result<GetReportByIdResponse>>
 {
 
-    public async Task<Result<Report>> Handle(GetReportByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetReportByIdResponse>> Handle(
+        GetReportByIdQuery request, CancellationToken cancellationToken)
     {
-        //TODO: check whether user can access to content or not
-        var report = await reportRepository.GetSingleAsync(
-            r => r.Id == request.id,
-            false);
-        if (report is null)
+        var context = unitOfWork.DbContext.Set<Report>();
+        var query = context.Where(r => r.Id == request.Id);
+        var result = await query
+            .Select(r => GetReportByIdResponse.FromReport(r))
+            .SingleOrDefaultAsync();
+
+        if (result is null)
             return NotFoundErrors.Report;
-        return report;
+
+        return result;
     }
 }

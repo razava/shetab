@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
+using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using MediatR;
@@ -9,10 +10,11 @@ internal sealed class CreateReportByCitizenCommandHandler(
     IUnitOfWork unitOfWork,
     IReportRepository reportRepository,
     ICategoryRepository categoryRepository,
-    IUploadRepository uploadRepository) : IRequestHandler<CreateReportByCitizenCommand, Result<Report>>
+    IUploadRepository uploadRepository) 
+    : IRequestHandler<CreateReportByCitizenCommand, Result<GetReportByIdResponse>>
 {
     
-    public async Task<Result<Report>> Handle(CreateReportByCitizenCommand request, CancellationToken cancellationToken)
+    public async Task<Result<GetReportByIdResponse>> Handle(CreateReportByCitizenCommand request, CancellationToken cancellationToken)
     {
         var category = await categoryRepository.GetByIDAsync(request.CategoryId);
         if(category is null)
@@ -30,7 +32,7 @@ internal sealed class CreateReportByCitizenCommandHandler(
             if (request.Attachments.Count > 0)
             {
                 attachments = (await uploadRepository
-                .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == request.citizenId))
+                .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == request.CitizenId))
                 .ToList() ?? new List<Upload>();
                 if (request.Attachments.Count != attachments.Count)
                 {
@@ -42,8 +44,8 @@ internal sealed class CreateReportByCitizenCommandHandler(
         }
 
         var report = Report.NewByCitizen(
-            request.citizenId,
-            request.phoneNumber,
+            request.CitizenId,
+            request.PhoneNumber,
             category,
             request.Comments,
             address,
@@ -58,6 +60,6 @@ internal sealed class CreateReportByCitizenCommandHandler(
         //TODO: Inform related users not all
         //await _hub.Clients.All.Update();
         
-        return report;
+        return GetReportByIdResponse.FromReport(report);
     }
 }

@@ -1,4 +1,4 @@
-﻿using Application.Categories.Queries.GetCategory;
+﻿using Application.Categories.Common;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Domain.Models.Relational;

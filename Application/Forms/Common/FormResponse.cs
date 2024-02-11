@@ -1,3 +1,19 @@
-﻿namespace Application.Forms.Common;
+﻿using Domain.Models.Relational.ReportAggregate;
 
-public record FormResponse(Guid Id, string Title, IEnumerable<FormElementResponse> Elements);
+namespace Application.Forms.Common;
+
+public record FormResponse(Guid Id, string Title, IEnumerable<FormElementResponse> Elements)
+{
+    public static FormResponse FromForm(Form form)
+    {
+        return new FormResponse(
+                form.Id,
+                form.Title,
+                form.Elements.Select(fe => new FormElementResponse(
+                    fe.ElementType,
+                    fe.Name,
+                    fe.Title,
+                    fe.Order,
+                    fe.Meta)));
+    }
+};

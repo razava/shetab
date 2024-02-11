@@ -1,8 +1,7 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
+using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
-using MediatR;
 
 namespace Application.Reports.Commands.CreateReportByOperator;
 
@@ -11,9 +10,11 @@ internal sealed class CreateReportByOperatorCommandHandler(
     IReportRepository reportRepository,
     ICategoryRepository categoryRepository,
     IUserRepository userRepository,
-    IUploadRepository uploadRepository) : IRequestHandler<CreateReportByOperatorCommand, Result<Report>>
+    IUploadRepository uploadRepository) 
+    : IRequestHandler<CreateReportByOperatorCommand, Result<GetReportByIdResponse>>
 {
-    public async Task<Result<Report>> Handle(CreateReportByOperatorCommand request, CancellationToken cancellationToken)
+    public async Task<Result<GetReportByIdResponse>> Handle(
+        CreateReportByOperatorCommand request, CancellationToken cancellationToken)
     {
         var category = await categoryRepository.GetByIDAsync(request.CategoryId);
         if (category is null)
@@ -21,7 +22,7 @@ internal sealed class CreateReportByOperatorCommandHandler(
         
         var address = request.Address.GetAddress();
         //address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
-        var user = await userRepository.GetOrCreateCitizen(request.phoneNumber, request.firstName, request.lastName);
+        var user = await userRepository.GetOrCreateCitizen(request.PhoneNumber, request.FirstName, request.LastName);
 
         List<Media> medias = new List<Media>();
         if (request.Attachments is not null)
@@ -30,7 +31,7 @@ internal sealed class CreateReportByOperatorCommandHandler(
             if (request.Attachments.Count > 0)
             {
                 attachments = (await uploadRepository
-                .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == request.operatorId))
+                .GetAsync(u => request.Attachments.Contains(u.Id) && u.UserId == request.OperatorId))
                 .ToList() ?? new List<Upload>();
                 if (request.Attachments.Count != attachments.Count)
                 {
@@ -42,7 +43,7 @@ internal sealed class CreateReportByOperatorCommandHandler(
         }
 
         var report = Report.NewByOperator(
-            request.operatorId,
+            request.OperatorId,
             user.Id,
             user.PhoneNumber!,
             category,
@@ -59,6 +60,6 @@ internal sealed class CreateReportByOperatorCommandHandler(
 
         //TODO: Inform related users not all
         //await _hub.Clients.All.Update();
-        return report;
+        return GetReportByIdResponse.FromReport(report);
     }
 }

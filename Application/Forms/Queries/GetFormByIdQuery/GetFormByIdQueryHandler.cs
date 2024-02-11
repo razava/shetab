@@ -13,15 +13,7 @@ internal class GetFormByIdQueryHandler(IUnitOfWork unitOfWork)
     {
         var result = await unitOfWork.DbContext.Set<Form>()
             .Where(f => f.Id == request.Id)
-            .Select(f => new FormResponse(
-                f.Id,
-                f.Title,
-                f.Elements.Select(fe => new FormElementResponse(
-                    fe.ElementType,
-                    fe.Name,
-                    fe.Title,
-                    fe.Order,
-                    fe.Meta))))
+            .Select(f => FormResponse.FromForm(f))
             .SingleOrDefaultAsync();
         if (result == null)
             return NotFoundErrors.Form;
