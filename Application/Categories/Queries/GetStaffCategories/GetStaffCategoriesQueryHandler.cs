@@ -25,6 +25,7 @@ internal class GetStaffCategoriesQueryHandler(
             .ToListAsync();
 
         categories.ForEach(x => x.Categories = categories.Where(c => c.ParentId == x.Id).ToList());
+        categories.ForEach(x => x.ParentId = categories.Any(c => c.Id == x.ParentId) ? x.ParentId : null);
         var roots = categories.Where(x => x.ParentId == null).ToList();
 
         Category result;
