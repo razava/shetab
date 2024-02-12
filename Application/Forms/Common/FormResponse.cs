@@ -4,8 +4,10 @@ namespace Application.Forms.Common;
 
 public record FormResponse(Guid Id, string Title, IEnumerable<FormElementResponse> Elements)
 {
-    public static FormResponse FromForm(Form form)
+    public static FormResponse? FromForm(Form? form)
     {
+        if (form is null)
+            return null;
         return new FormResponse(
                 form.Id,
                 form.Title,

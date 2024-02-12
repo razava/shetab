@@ -37,6 +37,6 @@ public record CategoryDetailResponse(
             category.EditingAllowed,
             category.IsDeleted,
             category.HideMap,
-            category.Form == null ? null : FormResponse.FromForm(category.Form));
+            FormResponse.FromForm(category.Form));
     }
 };
