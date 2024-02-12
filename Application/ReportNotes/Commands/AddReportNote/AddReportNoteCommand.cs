@@ -2,8 +2,8 @@
 
 namespace Application.ReportNotes.Commands.AddReportNote;
 
-public sealed record DeleteReportNoteCommand(
+public sealed record AddReportNoteCommand(
     string UserId,
     Guid ReportId,
     string Text)
-    : IRequest<ReportNoteResult>;
+    : IRequest<Result<ReportNoteResult>>;

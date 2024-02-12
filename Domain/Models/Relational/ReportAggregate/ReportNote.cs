@@ -17,10 +17,11 @@ public class ReportNote : Entity
     public DateTime Updated { get; private set; }
     public bool IsDeleted { get; private set; }
 
-    public ReportNote Create(Guid reportId, string text)
+    public static ReportNote Create(string userId, Guid reportId, string text)
     {
         return new ReportNote(Guid.NewGuid())
         {
+            UserId = userId,
             ReportId = reportId,
             Text = text,
             Created = DateTime.UtcNow,

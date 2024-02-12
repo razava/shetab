@@ -17,6 +17,7 @@ public static class NotFoundErrors
     public static readonly Error Process = new Error("فرایند یافت نشد.");
     public static readonly Error QuickAccess = new Error("دسترسی سریع یافت نشد.");
     public static readonly Error Form = new Error("فرم یافت نشد.");
+    public static readonly Error ReportNote = new Error("یادداشت یافت نشد.");
 }
 
 
