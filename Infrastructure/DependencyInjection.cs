@@ -3,7 +3,6 @@ using Application.Common.Interfaces.Communication;
 using Application.Common.Interfaces.Map;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Security;
-using Domain.Models.Relational.IdentityAggregate;
 using Infrastructure.Authentication;
 using Infrastructure.Caching;
 using Infrastructure.Captcha;
@@ -16,11 +15,11 @@ using Infrastructure.Persistence.Repositories;
 using Infrastructure.Storage;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SixLabors.ImageSharp;
+using StackExchange.Redis;
 
 namespace Infrastructure;
 
@@ -29,6 +28,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
     {
         services.AddPersistence(configuration);
+        services.AddRedis(configuration);
         services.AddRepositories();
         services.AddSecurity(configuration);
         services.AddStorage(configuration, webHostEnvironment);
@@ -55,6 +55,17 @@ public static class DependencyInjection
                     o.MigrationsAssembly("Infrastructure");
                     o.UseNetTopologySuite();
                 }));
+        return services;
+    }
+
+    public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
+                 ConnectionMultiplexer.Connect(new ConfigurationOptions
+                 {
+                     EndPoints = { $"{configuration.GetValue<string>("Redis:Host")}:{configuration.GetValue<int>("Redis:Port")}" },
+                     AbortOnConnectFail = false,
+                 }));
         return services;
     }
 
@@ -91,17 +102,14 @@ public static class DependencyInjection
 
     public static IServiceCollection AddSecurity(this IServiceCollection services, IConfiguration configuration)
     {
-        var jwtInfo = new JwtInfo(
-            configuration["JWT:Secret"] ?? throw new NullJwtSecretException(),
-            configuration["JWT:ValidIssuer"] ?? throw new NullJwtValidIssuerException(),
-            configuration["JWT:ValidAudience"] ?? throw new NullJwtValidAudienceException(),
-            new TimeSpan(24, 0, 0));
+        var jwtInfo = configuration.GetSection("JWT").Get<JwtInfo>();
+        if (jwtInfo is null)
+            throw new Exception("Jwt info not exist");
 
-        services.AddScoped<IAuthenticationService>(x => new AuthenticationService(
-            x.GetRequiredService<UserManager<ApplicationUser>>(),
-            x.GetRequiredService<IUnitOfWork>(),
-            jwtInfo));
+        services.AddSingleton(jwtInfo);
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<ICaptchaProvider, SixLaborsCaptchaProvider>();
+        services.AddScoped<IAuthenticateRepository, AuthenticateRepository>();
 
         return services;
     }

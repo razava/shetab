@@ -17,8 +17,11 @@ internal sealed class GetResetPasswordTokenQueryHandler(IAuthenticationService a
                 return AuthenticateErrors.InvalidCaptcha;
             }
         }
-        var resetPasswordToken = await authenticationService.GetResetPasswordToken(request.Username, request.verificationCode);
+        var resetPasswordResult = await authenticationService.GetResetPasswordToken(
+            request.Username);
+        if(resetPasswordResult.IsFailed)
+            return resetPasswordResult.ToResult();
 
-        return resetPasswordToken;
+        return resetPasswordResult.Value.Token;
     }
 }

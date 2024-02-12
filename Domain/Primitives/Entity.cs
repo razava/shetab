@@ -1,9 +1,13 @@
-﻿using System.Runtime.ExceptionServices;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Primitives;
 
 public abstract class Entity : IEquatable<Entity>
 {
+    private readonly List<DomainEvent> _domainEvents = new();
+    [NotMapped]
+    public ICollection<DomainEvent> DomainEvents => _domainEvents;
+
     protected Entity(Guid id)
     {
         Id = id;
@@ -44,5 +48,10 @@ public abstract class Entity : IEquatable<Entity>
     public override int GetHashCode()
     {
         return Id.GetHashCode();
+    }
+
+    protected void Raise(DomainEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
     }
 }

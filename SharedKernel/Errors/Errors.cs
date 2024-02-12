@@ -98,9 +98,5 @@ public static class AccessDeniedErrors
     public static readonly Error Actor = new Error("کاربر جاری Actor نیست."); // not used.
 }
 
-public static class CommunicationErrors
-{
-    public static readonly Error SendSms = new Error("خطایی در ارسال پیام رخ داد.");
-}
 
 

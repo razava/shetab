@@ -1,12 +1,15 @@
 ﻿using Application.Common.Interfaces.Security;
-using MediatR;
 
 namespace Application.Authentication.Commands.ChangePasswordCommand;
 
-internal sealed class ChangePasswordCommandHandler(IAuthenticationService authenticationService, ICaptchaProvider captchaProvider) : IRequestHandler<ChangePasswordCommand, Result<bool>>
+internal sealed class ChangePasswordCommandHandler(
+    IAuthenticationService authenticationService,
+    ICaptchaProvider captchaProvider) : IRequestHandler<ChangePasswordCommand, Result<bool>>
 {
     
-    public async Task<Result<bool>> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(
+        ChangePasswordCommand request,
+        CancellationToken cancellationToken)
     {
         if (request.CaptchaValidateModel is not null)
         {
@@ -16,9 +19,11 @@ internal sealed class ChangePasswordCommandHandler(IAuthenticationService authen
                 return AuthenticateErrors.InvalidCaptcha;
             }
         }
-        var result = await authenticationService.ChangePassword(request.Username, request.OldPassword, request.NewPassword);
-        if (!result)
-            return AuthenticateErrors.ChangePasswordFailed;
+        var result = await authenticationService.ChangePassword(
+            request.Username,
+            request.OldPassword,
+            request.NewPassword);
+        
         return result;
     }
 }

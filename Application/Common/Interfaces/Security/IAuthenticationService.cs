@@ -2,14 +2,25 @@
 
 public interface IAuthenticationService
 {
-    public Task<LoginResultModel> Login(string username, string password, string? verificationCode = null);
-    public Task<bool> RegisterCitizen(string username, string password);
-    public Task<bool> ChangePassword(string username, string oldPassword, string newPassword);
-    public Task<string> GetVerificationCode(string username);
-    public Task<bool> VerifyPhoneNumber(string username, string verificationCode);
-    public Task<string> GetResetPasswordToken(string username, string verificationCode);
-    public Task<bool> ResetPassword(string username, string resetPasswordToken,  string newPassword);
+    public Task<Result<LoginResultModel>> Login(string username, string password, bool twoFactorEnabled = false);
+    public Task<Result<VerificationToken>> LogisterCitizen(string phoneNumber);
+    public Task<Result<AuthToken>> VerifyOtp(string otpToken, string code);
+    public Task<Result<AuthToken>> Refresh(string token, string refreshToken);
+    public Task<Result<bool>> Revoke(string userId, string refreshToken);
+    public Task<Result<bool>> ChangePassword(string username, string oldPassword, string newPassword);
+    public Task<Result<RequestToChangePhoneNumberResult>> RequestToChangePhoneNumber(
+        string userName, string newPhoneNumber);
+    public Task<Result<bool>> ChangePhoneNumber(
+        string userName, string otpToken1, string code1, string otpToken2, string code2);
 
+    public Task<Result<VerificationToken>> GetResetPasswordToken(string username);
+    public Task<Result<bool>> ResetPassword(string username, string resetPasswordToken, string newPassword);
 }
 
-public record LoginResultModel(string JwtToken, bool UserNotConfirmed = false);
+public record LoginResultModel(
+    AuthToken? AuthToken,
+    VerificationToken? VerificationToken);
+public record AuthToken(string JwtToken, string RefreshToken);
+public record VerificationToken(string PhoneNumber, string Token);
+public record RequestToChangePhoneNumberResult(VerificationToken Token1, VerificationToken Token2);
+
