@@ -13,14 +13,12 @@ public enum MediaType
 
 public enum Gender
 {
-    [Description("تعریف نشده")]
+    [Description("مشخص نشده")]
     NotDefined,
     [Description("زن")]
     Female,
     [Description("مرد")]
-    Male,
-    [Description("غیره")]
-    Other
+    Male
 }
 
 public enum Education
@@ -106,10 +104,15 @@ public enum ReportFlags
 
 public enum ReportState
 {
+    [Description("در حال رسیدگی")]
     Live,
+    [Description("پایان یافته")]
     Finished,
+    [Description("بررسی مجدد")]
     Review,
+    [Description("تأیید شده")]
     Accepted,
+    [Description("در انتظار تأیید")]
     NeedAcceptance
 }
 
@@ -122,11 +125,13 @@ public enum Visibility
 
 public enum Priority
 {
-    VeryLow,
+    [Description("کم")]
     Low,
+    [Description("عادی")]
     Normal,
+    [Description("زیاد")]
     High,
-    VeryHigh,
+    [Description("فوری")]
     Urgent
 }
 

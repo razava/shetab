@@ -258,7 +258,8 @@ public class StaffReportController : ApiController
             model.Comments,
             addressInfo,
             model.Attachments,
-            model.Visibility == Visibility.EveryOne);
+            model.Priority,
+            model.Visibility);
         var result = await Sender.Send(command);
 
         return result.Match(
@@ -292,7 +293,8 @@ public class StaffReportController : ApiController
             model.Comments,
             addressInfo,
             model.Attachments,
-            model.Visibility == Visibility.EveryOne);
+            model.Priority,
+            model.Visibility);
         var result = await Sender.Send(command);
 
         return result.Match(

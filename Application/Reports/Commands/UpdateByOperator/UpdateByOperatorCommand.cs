@@ -1,5 +1,6 @@
 ﻿using Application.Reports.Common;
 using Domain.Models.Relational;
+using Domain.Models.Relational.Common;
 using MediatR;
 
 namespace Application.Reports.Commands.UpdateByOperator;
@@ -11,5 +12,6 @@ public sealed record UpdateByOperatorCommand(
     string? Comments,
     AddressInfoRequest? Address,
     List<Guid>? Attachments,
-    bool? IsPublic = true) : IRequest<Result<GetReportByIdResponse>>;
+    Priority? Priority,
+    Visibility? Visibility) : IRequest<Result<GetReportByIdResponse>>;
 

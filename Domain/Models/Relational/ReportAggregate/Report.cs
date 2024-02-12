@@ -250,14 +250,14 @@ public class Report : Entity
         string? comments,
         Address? address,
         List<Media>? attachments,
-        Visibility? visibility)
+        Visibility? visibility,
+        Priority? priority)
     {
-        updateReport(category, comments, address, attachments, visibility);
+        updateReport(category, comments, address, attachments, visibility, priority);
         ReportState = ReportState.Live;
         LastStatus = "تأیید درخواست در سامانه";
         LastStatusDateTime = DateTime.UtcNow;
         Visibility = Visibility.Operators;
-        Priority = Priority.Normal;
         InitProcess();
         var log = TransitionLog.CreateApproved(Id, operatorId);
 
@@ -270,9 +270,10 @@ public class Report : Entity
         string? comments,
         Address? address,
         List<Media>? attachments,
-        Visibility? visibility)
+        Visibility? visibility, 
+        Priority? priority)
     {
-        updateReport(category, comments, address, attachments, visibility);
+        updateReport(category, comments, address, attachments, visibility, priority);
         //TODO: Log modified values
         var comment = "";
         var log = TransitionLog.CreateUpdate(Id, comment ?? "", operatorId);
@@ -376,7 +377,8 @@ public class Report : Entity
         string? comments,
         Address? address,
         List<Media>? attachments,
-        Visibility? visibility)
+        Visibility? visibility,
+        Priority? priority)
     {
         var now = DateTime.UtcNow;
 
@@ -392,6 +394,7 @@ public class Report : Entity
         Comments = comments ?? Comments;
         Address = address ?? Address;
         Visibility = visibility ?? Visibility;
+        Priority = priority ?? Priority;
         if (attachments != null)
         {
             Medias = attachments;
