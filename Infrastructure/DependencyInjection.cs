@@ -77,6 +77,7 @@ public static class DependencyInjection
         services.AddScoped<IUploadRepository, UploadRepository> ();
         services.AddScoped<IProcessRepository, ProcessRepository> ();
         services.AddScoped<IReportRepository, ReportRepository> ();
+        services.AddScoped<IReportNoteRepository, ReportNoteRepository> ();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IProvinceRepository, ProvinceRepository>();
         services.AddScoped<ICountyRepository, CountyRepository>();

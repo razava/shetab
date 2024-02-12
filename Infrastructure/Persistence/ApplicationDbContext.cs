@@ -81,6 +81,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<ShahrbinInstance> ShahrbinInstance { get; set; }
     public DbSet<ExecutiveContractor> ExecutiveContractor { get; set; }
     public DbSet<Form> Form { get; set; }
+    public DbSet<ReportNote> ReportNote { get; set; }
 
     /*
     //Inspection
