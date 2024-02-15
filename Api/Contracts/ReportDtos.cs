@@ -51,6 +51,7 @@ public class UpdateReportDto
     public Visibility? Visibility { get; set; }
     public AddressDto? Address { get; set; }
     public List<Guid>? Attachments { get; set; }
+    public Priority? Priority { get; set; }
 }
 
 

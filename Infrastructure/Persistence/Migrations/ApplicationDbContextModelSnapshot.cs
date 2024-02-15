@@ -1603,6 +1603,44 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("MessageRecepient");
                 });
 
+            modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.ReportNote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ReportId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("ReportId");
+
+                    b.ToTable("ReportNote");
+                });
+
             modelBuilder.Entity("Domain.Models.Relational.RevisionUnit", b =>
                 {
                     b.Property<int>("Id")
@@ -2947,6 +2985,19 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasOne("Domain.Models.Relational.ReportAggregate.Message", null)
                         .WithMany("Recepients")
                         .HasForeignKey("MessageId");
+                });
+
+            modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.ReportNote", b =>
+                {
+                    b.HasOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("Domain.Models.Relational.Report", null)
+                        .WithMany()
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.RevisionUnit", b =>

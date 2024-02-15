@@ -1,9 +1,7 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
 using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
-using MediatR;
 
 namespace Application.Reports.Commands.UpdateByOperator;
 
@@ -51,14 +49,15 @@ internal sealed class UpdateByOperatorCommandHandler(
                 medias = attachments.Select(a => a.Media).ToList();
             }
         }
-        
+
         report.Update(
             request.operatorId,
             category,
             request.Comments,
             address,
             medias,
-            null);
+            request.Visibility,
+            request.Priority);
 
         await unitOfWork.SaveAsync();
 

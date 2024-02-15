@@ -53,7 +53,8 @@ internal sealed class AcceptByOperatorCommandHandler(
             request.Comments,
             address,
             medias,
-            null);
+            request.Visibility,
+            request.Priority);
 
         await unitOfWork.SaveAsync();
 

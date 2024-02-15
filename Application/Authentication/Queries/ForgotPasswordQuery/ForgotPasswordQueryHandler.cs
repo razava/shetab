@@ -10,6 +10,7 @@ internal sealed class ForgotPasswordQueryHandler(IAuthenticationService authenti
     
     public async Task<Result<bool>> Handle(ForgotPasswordQuery request, CancellationToken cancellationToken)
     {
+        /*
         if (request.CaptchaValidateModel is not null)
         {
             var isCaptchaValid = captchaProvider.Validate(request.CaptchaValidateModel);
@@ -26,6 +27,8 @@ internal sealed class ForgotPasswordQueryHandler(IAuthenticationService authenti
             return AuthenticateErrors.SendSms;
         }
 
+        return true;
+        */
         return true;
     }
 }

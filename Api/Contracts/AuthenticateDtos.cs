@@ -1,4 +1,5 @@
-﻿using Domain.Models.Relational.Common;
+﻿using Application.Common.Interfaces.Security;
+using Domain.Models.Relational.Common;
 using System.ComponentModel.DataAnnotations;
 
 namespace Api.Contracts;
@@ -8,8 +9,43 @@ public record LoginStaffDto(
     [Required] [MaxLength(32)]
     string Username,
     [Required] [MinLength(6)] [MaxLength(512)]
-    string Password);
+    string Password,
+    CaptchaValidateModel Captcha);
 
+public record LoginResultDto(string JwtToken, string RefreshToken);
+
+public record CitizenVerificationDto(
+    string OtpToken,
+    [Required] [MaxLength(8)]
+    string VerificationCode);
+
+public record StaffVerificationDto(
+    string OtpToken,
+    [Required] [MaxLength(8)]
+    string VerificationCode);
+
+public record LogisterCitizenDto(
+    [Required] [RegularExpression(@"^09[0-9]{9}$")]
+    string PhoneNumber,
+    CaptchaValidateModel Captcha);
+
+public record RevokeDto(
+    string RefreshToken);
+
+public record RefreshDto(
+    string Token,
+    string RefreshToken);
+
+public record ChangePhoneNumberRequestDto(
+    [Required] [RegularExpression(@"^09[0-9]{9}$")]
+    string NewPhoneNumber,
+    CaptchaValidateModel Captcha);
+
+public record ChangePhoneNumberDto(
+    string Token1,
+    string Code1,
+    string Token2,
+    string Code2);
 
 public record VerificationDto(
     [Required] [MaxLength(11)] [Phone]

@@ -7,6 +7,12 @@ using Application.Comments.Commands.UpdateComment;
 using Application.Comments.Queries.GetAllCommentsQuery;
 using Application.Common.FilterModels;
 using Application.Common.Interfaces.Persistence;
+using Application.ReportNotes.Commands.AddReportNote;
+using Application.ReportNotes.Commands.DeleteReportNote;
+using Application.ReportNotes.Commands.UpdateReportNote;
+using Application.ReportNotes.Common;
+using Application.ReportNotes.Queries.GetAllReportNotes;
+using Application.ReportNotes.Queries.GetReportNotes;
 using Application.Reports.Commands.AcceptByOperator;
 using Application.Reports.Commands.CreateReportByOperator;
 using Application.Reports.Commands.InspectorTransition;
@@ -38,8 +44,6 @@ public class StaffReportController : ApiController
     {
     }
 
-    //todo : Define Access Policies
-
     
     [Authorize]
     [HttpGet]
@@ -58,7 +62,6 @@ public class StaffReportController : ApiController
         return Ok(result.Value);
     }
 
-
     [Authorize]
     [HttpGet("{id:Guid}")]
     public async Task<ActionResult<GetReportByIdResponse>> GetReportById(Guid id, int instanceId)
@@ -71,8 +74,6 @@ public class StaffReportController : ApiController
             s => Ok(s),
             f => Problem(f));
     }
-
-
     
     [Authorize]
     [HttpGet("AllReports")]
@@ -257,7 +258,8 @@ public class StaffReportController : ApiController
             model.Comments,
             addressInfo,
             model.Attachments,
-            model.Visibility == Visibility.EveryOne);
+            model.Priority,
+            model.Visibility);
         var result = await Sender.Send(command);
 
         return result.Match(
@@ -291,7 +293,8 @@ public class StaffReportController : ApiController
             model.Comments,
             addressInfo,
             model.Attachments,
-            model.Visibility == Visibility.EveryOne);
+            model.Priority,
+            model.Visibility);
         var result = await Sender.Send(command);
 
         return result.Match(
@@ -438,6 +441,75 @@ public class StaffReportController : ApiController
             f => Problem(f));
     }
 
-    
 
+    [Authorize]
+    [HttpGet("Notes/{reportId:guid}")]
+    public async Task<ActionResult<List<ReportNoteResult>>> GetReportNotes(Guid reportId)
+    {
+        var userId = User.GetUserId();
+        var query = new GetReportNotesQuery(userId, reportId);
+        var result = await Sender.Send(query);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+
+
+    [Authorize]
+    [HttpGet("Notes")]
+    public async Task<ActionResult<List<ReportNoteResult>>> GetUserReportNotes()
+    {
+        var userId = User.GetUserId();
+        var query = new GetAllReportNotesQuery(userId);
+        var result = await Sender.Send(query);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+
+    [Authorize]
+    [HttpPost("Notes/{reportId:guid}")]
+    public async Task<ActionResult<List<ReportNoteResult>>> CreateUserReportNotes
+        (Guid reportId, CreateReportNoteDto reportNoteDto)
+    {
+        var userId = User.GetUserId();
+        var command = new AddReportNoteCommand(userId, reportId, reportNoteDto.Text);
+        var result = await Sender.Send(command);
+
+        return result.Match(
+            s => CreatedAtAction(nameof(GetReportNotes), new {reportId = reportId}, s),
+            f => Problem(f));
+    }
+
+    [Authorize]
+    [HttpPut("Notes/{noteId:guid}")]
+    public async Task<ActionResult<List<ReportNoteResult>>> UpdateUserReportNotes
+        (Guid noteId, CreateReportNoteDto reportNoteDto)
+    {
+        var userId = User.GetUserId();
+        var command = new UpdateReportNoteCommand(noteId, userId, reportNoteDto.Text);
+        var result = await Sender.Send(command);
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
+    }
+
+    [Authorize]
+    [HttpDelete("Notes/{noteId:guid}")]
+    public async Task<ActionResult<List<ReportNoteResult>>> DeleteUserReportNotes
+        (Guid noteId)
+    {
+        var userId = User.GetUserId();
+        var command = new DeleteReportNoteCommand(noteId, userId);
+        var result = await Sender.Send(command);
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
+    }
 }
+
+public record CreateReportNoteDto(string Text);

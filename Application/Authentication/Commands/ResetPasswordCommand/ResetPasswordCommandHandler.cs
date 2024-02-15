@@ -1,13 +1,15 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Security;
-using MediatR;
+﻿using Application.Common.Interfaces.Security;
 
 namespace Application.Authentication.Commands.ResetPasswordCommand;
 
-internal sealed class ResetPasswordCommandHandler(IAuthenticationService authenticationService, ICaptchaProvider captchaProvider) : IRequestHandler<ResetPasswordCommand, Result<bool>>
+internal sealed class ResetPasswordCommandHandler(
+    IAuthenticationService authenticationService,
+    ICaptchaProvider captchaProvider) : IRequestHandler<ResetPasswordCommand, Result<bool>>
 {
     
-    public async Task<Result<bool>> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(
+        ResetPasswordCommand request,
+        CancellationToken cancellationToken)
     {
         if (request.CaptchaValidateModel is not null)
         {
@@ -17,10 +19,11 @@ internal sealed class ResetPasswordCommandHandler(IAuthenticationService authent
                 return AuthenticateErrors.InvalidCaptcha;
             }
         }
-        var isSucceeded = await authenticationService.ResetPassword(request.Username, request.ResetPasswordToken, request.NewPassword);
-        if (!isSucceeded)
-            return AuthenticateErrors.ChangePasswordFailed;
+        var resetPasswordResult = await authenticationService.ResetPassword(
+            request.OtpToken, request.Code, request.NewPassword);
+        if (resetPasswordResult.IsFailed)
+            return resetPasswordResult.ToResult();
 
-        return isSucceeded;
+        return resetPasswordResult.Value;
     }
 }
