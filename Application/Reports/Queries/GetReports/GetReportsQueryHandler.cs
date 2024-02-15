@@ -77,11 +77,9 @@ internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IUserReposi
         var query2 = query
             .AsNoTracking()
             .Where(inputFilters)
-            .OrderBy(r => r.Sent)
-            .Select(GetReportsResponse.GetSelector());
             .OrderByDescending(r => r.Priority)
             .ThenBy(r => r.Sent)
-            .Select(r => GetReportsResponse.FromReport(r));
+            .Select(GetReportsResponse.GetSelector());
 
         var reports = await PagedList<GetReportsResponse>.ToPagedList(
             query2,
