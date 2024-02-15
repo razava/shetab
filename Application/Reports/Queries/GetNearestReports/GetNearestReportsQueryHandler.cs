@@ -2,6 +2,7 @@
 using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
+using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 
 namespace Application.Reports.Queries.GetNearestReports;
@@ -23,7 +24,8 @@ internal sealed class GetNearestReportsQueryHandler(IUnitOfWork unitOfWork)
                                        && r.Address.Location != null);
         var query2 = query
             .OrderBy(r => r.Address.Location!.Distance(currentLocation))
-            .Select(r => GetCitizenReportsResponse.FromReport(r, request.UserId));
+            .AsNoTracking()
+            .Select(GetCitizenReportsResponse.GetSelector(request.UserId));
 
         var reports = await PagedList<GetCitizenReportsResponse>.ToPagedList(
            query2,

@@ -1,5 +1,7 @@
 ﻿using Application.Forms.Common;
+using Application.Reports.Common;
 using Domain.Models.Relational;
+using System.Linq.Expressions;
 
 namespace Application.Categories.Common;
 
@@ -38,5 +40,27 @@ public record CategoryDetailResponse(
             category.IsDeleted,
             category.HideMap,
             FormResponse.FromForm(category.Form));
+    }
+
+    public static Expression<Func<Category, CategoryDetailResponse>> GetSelector()
+    {
+        Expression<Func<Category, CategoryDetailResponse>> selector
+            = category => new CategoryDetailResponse(
+            category.Id,
+            category.Order,
+            category.ParentId,
+            category.Code,
+            category.Title,
+            category.ProcessId,
+            category.Description,
+            category.AttachmentDescription,
+            category.Duration,
+            category.ResponseDuration,
+            category.ObjectionAllowed,
+            category.EditingAllowed,
+            category.IsDeleted,
+            category.HideMap,
+            FormResponse.FromForm(category.Form));
+        return selector;
     }
 };

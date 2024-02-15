@@ -1,6 +1,6 @@
-﻿using Azure.Core;
-using Domain.Models.Relational;
+﻿using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
+using System.Linq.Expressions;
 
 namespace Application.Reports.Common;
 
@@ -35,5 +35,24 @@ public record GetCitizenReportsResponse(
                 report.Likes,
                 report.CommentsCount,
                 report.Medias);
+    }
+    public static Expression<Func<Report, GetCitizenReportsResponse>> GetSelector(string userId)
+    {
+        Expression<Func<Report, GetCitizenReportsResponse>> selector 
+            = report => new GetCitizenReportsResponse(
+                report.Id,
+                report.LastStatus,
+                report.TrackingNumber,
+                report.CategoryId,
+                report.Category.Title,
+                report.Sent,
+                new UserShortResponse(report.Citizen.FirstName, report.Citizen.LastName, report.Citizen.Avatar),
+                report.Comments,
+                report.Address.Detail,
+                report.LikedBy.Any(r => r.Id == userId),
+                report.Likes,
+                report.CommentsCount,
+                report.Medias);
+        return selector;
     }
 }

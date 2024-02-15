@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Reports.Common;
 using Domain.Models.Relational;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Reports.Queries.GetUserReports;
 
@@ -15,7 +16,8 @@ internal sealed class GetUserReportsQueryHandler(IUnitOfWork unitOfWork)
         var query = context.Where(r => r.CitizenId == request.UserId);
         var query2 = query
             .OrderByDescending(r => r.LastStatusDateTime)
-            .Select(r => GetCitizenReportsResponse.FromReport(r, request.UserId));
+            .AsNoTracking()
+            .Select(GetCitizenReportsResponse.GetSelector(request.UserId));
 
         var reports = await PagedList<GetCitizenReportsResponse>.ToPagedList(
            query2,

@@ -15,7 +15,8 @@ internal sealed class GetReportByIdQueryHandler(IUnitOfWork unitOfWork)
         var context = unitOfWork.DbContext.Set<Report>();
         var query = context.Where(r => r.Id == request.Id);
         var result = await query
-            .Select(r => GetReportByIdResponse.FromReport(r))
+            .AsNoTracking()
+            .Select(GetReportByIdResponse.GetSelector())
             .SingleOrDefaultAsync();
 
         if (result is null)
