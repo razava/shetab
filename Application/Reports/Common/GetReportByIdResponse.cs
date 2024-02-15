@@ -1,4 +1,5 @@
-﻿using Domain.Models.Relational;
+﻿using Application.Forms.Common;
+using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using System.Linq.Expressions;
 
@@ -21,7 +22,8 @@ public record GetReportByIdResponse(
     bool IsIdentityVisible,
     int Likes,
     int CommentsCount,
-    IEnumerable<Media> Medias
+    IEnumerable<Media> Medias,
+    FormResponse? Form
     )
 {
     public static GetReportByIdResponse FromReport(Report report)
@@ -43,7 +45,8 @@ public record GetReportByIdResponse(
             report.IsIdentityVisible,
             report.Likes,
             report.CommentsCount,
-            report.Medias);
+            report.Medias,
+            FormResponse.FromForm(report.Category.Form));
     }
 
     public static Expression<Func<Report, GetReportByIdResponse>> GetSelector()
@@ -71,7 +74,8 @@ public record GetReportByIdResponse(
             report.IsIdentityVisible,
             report.Likes,
             report.CommentsCount,
-            report.Medias);
+            report.Medias,
+            FormResponse.FromForm(report.Category.Form));
         return selector;
     }
 };
