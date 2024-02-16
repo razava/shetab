@@ -376,6 +376,7 @@ public class AuthenticationService(
             new Claim(ClaimTypes.Name, user.UserName ?? ""),
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(AppClaimTypes.InstanceId, user.ShahrbinInstanceId?.ToString()??""),
         };
 
         foreach (var userRole in userRoles)

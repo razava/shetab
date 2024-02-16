@@ -47,7 +47,7 @@ public class StaffReportController : ApiController
     
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<GetReportsResponse>>> GetTasks( string? fromRoleId, [FromQuery]PagingInfo pagingInfo, [FromQuery]FilterGetReports filterGetReports)
+    public async Task<ActionResult<List<GetReportsResponse>>> GetTasks(string? fromRoleId, [FromQuery]PagingInfo pagingInfo, [FromQuery]FilterGetReports filterGetReports)
     {
         var userId = User.GetUserId();
         var instanceId = User.GetUserInstanceId();
@@ -458,15 +458,17 @@ public class StaffReportController : ApiController
 
     [Authorize]
     [HttpGet("Notes")]
-    public async Task<ActionResult<List<ReportNoteResult>>> GetUserReportNotes()
+    public async Task<ActionResult<List<ReportNoteResult>>> GetUserReportNotes(
+        [FromQuery] PagingInfo pagingInfo)
     {
         var userId = User.GetUserId();
-        var query = new GetAllReportNotesQuery(userId);
+        var query = new GetAllReportNotesQuery(pagingInfo, userId);
         var result = await Sender.Send(query);
 
-        return result.Match(
-            s => Ok(s),
-            f => Problem(f));
+        if (result.IsFailed)
+            return Problem(result.ToResult());
+        Response.AddPaginationHeaders(result.Value.Meta);
+        return Ok(result.Value);
     }
 
     [Authorize]
