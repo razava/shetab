@@ -1,6 +1,9 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
+using Api.ExtensionMethods;
 using Application.Common.Interfaces.Persistence;
+using Application.Communications.Commands;
+using Application.Messages.Queries.GetMessages;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,21 +23,40 @@ public class MessagesController : ApiController
 
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<GetMessageDto>>> GetMessages([FromQuery] PagingInfo pagingInfo)
+    public async Task<ActionResult> GetMessages([FromQuery] PagingInfo pagingInfo)
     {
-        await Task.CompletedTask;//............
-        return Ok("Not Implemented");
+        var userId = User.GetUserId();
+        var query = new GetMessagesQuery(pagingInfo, userId);
+        var result = await Sender.Send(query);
+        if (result.IsFailed)
+            return Problem(result.ToResult());
+        Response.AddPaginationHeaders(result.Value.Meta);
+        return Ok(result);
     }
 
 
     [Authorize]
     [HttpGet("Count")]
-    public async Task<ActionResult<GetMessageCountDto>> GetMessagesCount([FromQuery] TimeFilter timeFilter)
+    public async Task<ActionResult> GetMessagesCount([FromQuery] TimeFilter timeFilter)
     {
-        await Task.CompletedTask;//..............
-        return Ok("Not Implemented");
+        var userId = User.GetUserId();
+        var query = new GetMessageCountQuery(timeFilter.SentFromDate, userId);
+        var result = await Sender.Send(query);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
-    
 
+    [Authorize]
+    [HttpPost("ConnectionId")]
+    public async Task<ActionResult> AddConnectionId([FromBody] string connectionId)
+    {
+        var userId = User.GetUserId();
+        var command = new AddSignalRConnectionIdCommand(userId, connectionId);
+        var result = await Sender.Send(command);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
 
 }

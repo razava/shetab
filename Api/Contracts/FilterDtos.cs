@@ -10,7 +10,7 @@ public record QueryFilter(
 
 
 public record TimeFilter(
-    DateTime? SentFromDate,
+    DateTime SentFromDate,
     DateTime? SentToDate);
 
 

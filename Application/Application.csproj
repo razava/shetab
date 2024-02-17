@@ -25,6 +25,7 @@
     <Folder Include="Abstractions\Messaging\" />
     <Folder Include="Configurations\Commands\" />
     <Folder Include="Feedbacks\Queries\" />
+    <Folder Include="Messages\Commands\" />
     <Folder Include="Setup\Queries\" />
     <Folder Include="Workspaces\Commands\" />
   </ItemGroup>

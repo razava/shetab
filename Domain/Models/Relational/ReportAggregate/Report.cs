@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Exceptions;
 using Domain.Messages;
+using Domain.Models.ComplaintAggregate.Events;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
@@ -158,6 +159,7 @@ public class Report : Entity
 
         report.TransitionLogs.Add(log);
 
+        
         var message =
             new Message()
             {
@@ -167,13 +169,17 @@ public class Report : Entity
                 DateTime = report.Sent,
                 MessageType = MessageType.Report,
                 SubjectId = report.Id,
-                Recepients = new List<MessageRecepient>()
-                {
-                    new MessageRecepient() { Type = RecepientType.Person, ToId = report.CitizenId }
-                }
+                Recepient = MessageRecepient.Create(RecepientType.Person, report.CitizenId)
             };
         report.Messages.Add(message);
 
+        report.Raise(new ReportCreatedByCitizenDomainEvent(
+            Guid.NewGuid(),
+            report.ShahrbinInstanceId,
+            report.Id,
+            report.Sent,
+            report.TrackingNumber,
+            report.CitizenId));
         return report;
     }
 
@@ -189,8 +195,6 @@ public class Report : Entity
         Priority priority = Priority.Normal,
         bool isIdentityVisible = true)
     {
-        var now = DateTime.UtcNow;
-
         var report = new Report(
             Guid.NewGuid(),
             citizenId,
@@ -220,15 +224,19 @@ public class Report : Entity
                 DateTime = report.Sent,
                 MessageType = MessageType.Report,
                 SubjectId = report.Id,
-                Recepients = new List<MessageRecepient>()
-                {
-                    new MessageRecepient() { Type = RecepientType.Person, ToId = report.CitizenId }
-                }
+                Recepient = MessageRecepient.Create(RecepientType.Person, report.CitizenId)
             };
         report.ReportState = ReportState.Live;
         report.LastStatus = "ثبت درخواست در سامانه";
         report.Messages.Add(message);
 
+        report.Raise(new ReportCreatedByOperatorDomainEvent(
+            Guid.NewGuid(),
+            report.ShahrbinInstanceId,
+            report.Id,
+            report.Sent,
+            report.TrackingNumber,
+            report.CitizenId));
         return report;
     }
     #endregion
@@ -304,13 +312,18 @@ public class Report : Entity
             DateTime = now,
             MessageType = MessageType.Report,
             SubjectId = Id,
-            Recepients = new List<MessageRecepient>()
-                {
-                        new MessageRecepient() { Type = RecepientType.Person, ToId = CitizenId }
-                }
+            Recepient = MessageRecepient.Create(RecepientType.Person, CitizenId)
         };
 
         Messages.Add(resultMessage);
+
+        Raise(new ReportResponsedDomainEvent(
+            Guid.NewGuid(),
+            ShahrbinInstanceId,
+            Id,
+            now,
+            TrackingNumber,
+            CitizenId));
 
         return resultMessage;
     }
@@ -368,7 +381,10 @@ public class Report : Entity
         IsFeedbacked = true;
         Rating = rating;
 
-        TransitionLogs.Add(TransitionLog.CreateFeedback(Id, CitizenId, $"ثبت بازخورد شهروند با امتیاز {rating}"));
+        TransitionLogs.Add(TransitionLog.CreateFeedback(
+            Id,
+            CitizenId,
+            $"ثبت بازخورد شهروند با امتیاز {rating}"));
     }
 
     #region Private methods
@@ -400,7 +416,6 @@ public class Report : Entity
             Medias = attachments;
         }
             
-
         return;
     }
 
@@ -518,8 +533,10 @@ public class Report : Entity
 
         TransitionLogs.Add(log);
 
+        //move these to MakeTransition
         if (ReportState == ReportState.Finished || ReportState == ReportState.Accepted)
         {
+            //Raise finished notif
             Random random = new Random();
             Duration = (now - Sent).TotalSeconds;
             LastStatus = "پایان یافته";
@@ -547,6 +564,7 @@ public class Report : Entity
         }
 
         autoTransition();
+        //raise transitioned notif
     }
 
 

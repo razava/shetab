@@ -14,12 +14,23 @@ public class Message : BaseModel
     public Guid SubjectId { get; set; }
     public string? FromId { get; set; }
     public ApplicationUser? From { get; set; }
-    public ICollection<MessageRecepient> Recepients { get; set; } = new List<MessageRecepient>();
+    public MessageRecepient Recepient { get; set; } = null!;
     public Guid? ReportId { get; set; }
+    public Report? Report { get; set; }
 }
 
 public class MessageRecepient
 {
+    private MessageRecepient() { }
+    public static MessageRecepient Create(RecepientType type, string toId)
+    {
+        return new MessageRecepient()
+        {
+            Id = Guid.NewGuid(),
+            Type = type,
+            ToId = toId
+        };
+    }
     public Guid Id { get; set; }
     public RecepientType Type { get; set; }
     public string ToId { get; set; } = null!;
