@@ -12,7 +12,7 @@ internal class GetAllReportNotesQueryHandler(IUnitOfWork unitOfWork)
         CancellationToken cancellationToken)
     {
         var query = unitOfWork.DbContext.Set<ReportNote>()
-            .Where(r => r.UserId == request.UserId)
+            .Where(r => r.UserId == request.UserId && r.IsDeleted == false)
             .Select(r => ReportNoteResult.FromReportNote(r));
 
         var result = await PagedList<ReportNoteResult>.ToPagedList(

@@ -14,7 +14,7 @@ internal class DeleteReportNoteCommandHandler(
         var note = await reportNoteRepository.GetSingleAsync(r => r.Id == request.Id 
             && r.UserId == request.UserId);
         if (note is null)
-            return NotFoundErrors.News;
+            return NotFoundErrors.ReportNote;
 
         note.Delete();
         reportNoteRepository.Update(note);

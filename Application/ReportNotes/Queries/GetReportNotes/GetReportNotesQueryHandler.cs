@@ -13,7 +13,9 @@ internal class GetReportNotesQueryHandler(IUnitOfWork unitOfWork)
         CancellationToken cancellationToken)
     {
         var result = await unitOfWork.DbContext.Set<ReportNote>()
-            .Where(r => r.ReportId == request.ReportId && r.UserId == request.UserId)
+            .Where(r => r.ReportId == request.ReportId && 
+                        r.UserId == request.UserId && 
+                        r.IsDeleted == false)
             .Select(r => ReportNoteResult.FromReportNote(r))
             .ToListAsync();
 
