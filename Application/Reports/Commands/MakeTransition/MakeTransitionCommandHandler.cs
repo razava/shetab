@@ -36,7 +36,6 @@ internal sealed class MakeTransitionCommandHandler(
                 medias = attachments.Select(a => a.Media).ToList();
             }
         }
-        var actors = await userRepository.GetActorsAsync(request.ActorIdentifier);
 
         report.MakeTransition(
             request.TransitionId,
@@ -46,7 +45,6 @@ internal sealed class MakeTransitionCommandHandler(
             ActorType.Person,
             request.ActorIdentifier,
             request.ToActorId,
-            actors,
             request.IsExecutive,
             request.IsContractor);
 

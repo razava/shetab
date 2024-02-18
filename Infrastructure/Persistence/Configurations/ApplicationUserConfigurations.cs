@@ -33,13 +33,7 @@ public class ApplicationUserConfigurations : IEntityTypeConfiguration<Applicatio
         builder.HasMany(u => u.InspectorReports)
             .WithOne(r => r.Inspector)
             .OnDelete(DeleteBehavior.NoAction);
-        //builder.HasMany(u => u.Executeves)
-        //    .WithMany(u => u.Contractors)
-        //    .UsingEntity(
-        //        "ExecutiveContractor",
-        //        e => e.HasOne(typeof(ApplicationUser)).WithMany().HasForeignKey("ExecutiveId").HasPrincipalKey(nameof(ApplicationUser.Id)),
-        //        c => c.HasOne(typeof(ApplicationUser)).WithMany().HasForeignKey("ContractorId").HasPrincipalKey(nameof(ApplicationUser.Id)),
-        //        j => j.HasKey("ExecutiveId", "ContractorId"));
+        
         builder.HasMany(u => u.Executives)
             .WithMany(u => u.Contractors)
             .UsingEntity<ExecutiveContractor>(
@@ -52,5 +46,12 @@ public class ApplicationUserConfigurations : IEntityTypeConfiguration<Applicatio
                 rl => rl.HasOne(u => u.Report).WithMany().HasForeignKey(u => u.ReportId).HasPrincipalKey(r => r.Id),
                 rl => rl.HasOne(r => r.LikedBy).WithMany().HasForeignKey(r => r.LikedById).HasPrincipalKey(u => u.Id),
                 j => j.HasKey(e => new { e.LikedById, e.ReportId }));
+
+        builder.HasMany(u => u.Categories)
+            .WithMany(c => c.Users)
+            .UsingEntity<OperatorCategory>(
+                rl => rl.HasOne(u => u.Category).WithMany().HasForeignKey(u => u.CategoryId).HasPrincipalKey(c => c.Id),
+                rl => rl.HasOne(c => c.Operator).WithMany().HasForeignKey(c => c.OperatorId).HasPrincipalKey(u => u.Id),
+                j => j.HasKey(e => new { e.CategoryId, e.OperatorId }));
     }
 }

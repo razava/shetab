@@ -77,4 +77,12 @@ public class CommunicationServiceUsingMessageBroker : ICommunicationService
                 Id = id.ToString()
             });
     }
+
+    public async Task SendNotification(List<string> userIds, string method, string message, Guid id)
+    {
+        foreach(string userId in userIds)
+        {
+            await SendNotification(userId, method, message, id);
+        }
+    }
 }

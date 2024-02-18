@@ -43,8 +43,6 @@ public class Report : Entity
     public ProcessTransition? LastTransition { get; private set; }
     public int? LastReasonId { get; private set; }
     public ProcessReason? LastReason { get; private set; }
-    //public string CurrentActorsStr { get; private set; } = string.Empty;
-    //public ICollection<Actor> CurrentActors { get; private set; } = new List<Actor>();
     public int? CurrentActorId { get; set; }
     public Actor? CurrentActor { get; set; }
     public ICollection<TransitionLog> TransitionLogs { get; private set; } = new List<TransitionLog>();
@@ -173,13 +171,11 @@ public class Report : Entity
             };
         report.Messages.Add(message);
 
-        report.Raise(new ReportCreatedByCitizenDomainEvent(
+        report.Raise(new ReportDomainEvent(
             Guid.NewGuid(),
-            report.ShahrbinInstanceId,
-            report.Id,
-            report.Sent,
-            report.TrackingNumber,
-            report.CitizenId));
+            ReportDomainEventTypes.CreatedByCitizen,
+            report));
+
         return report;
     }
 
@@ -230,13 +226,10 @@ public class Report : Entity
         report.LastStatus = "ثبت درخواست در سامانه";
         report.Messages.Add(message);
 
-        report.Raise(new ReportCreatedByOperatorDomainEvent(
+        report.Raise(new ReportDomainEvent(
             Guid.NewGuid(),
-            report.ShahrbinInstanceId,
-            report.Id,
-            report.Sent,
-            report.TrackingNumber,
-            report.CitizenId));
+            ReportDomainEventTypes.CreatedByOperator,
+            report));
         return report;
     }
     #endregion
@@ -317,13 +310,10 @@ public class Report : Entity
 
         Messages.Add(resultMessage);
 
-        Raise(new ReportResponsedDomainEvent(
+        Raise(new ReportDomainEvent(
             Guid.NewGuid(),
-            ShahrbinInstanceId,
-            Id,
-            now,
-            TrackingNumber,
-            CitizenId));
+            ReportDomainEventTypes.Responsed,
+            this));
 
         return resultMessage;
     }
@@ -336,7 +326,6 @@ public class Report : Entity
         ActorType actorType,
         string actorIdentifier,
         int toActorId,
-        List<Actor> actors,
         bool isExecutive = false,
         bool isContractor = false)
     {
@@ -348,9 +337,49 @@ public class Report : Entity
             actorType,
             actorIdentifier,
             toActorId,
-            actors,
             isExecutive,
             isContractor);
+
+
+        var now = DateTime.UtcNow;
+        
+        if (ReportState == ReportState.Finished || ReportState == ReportState.AcceptedByCitizen)
+        {
+            Raise(new ReportDomainEvent(
+                Guid.NewGuid(),
+                ReportDomainEventTypes.Finished,
+                this));
+
+            Random random = new Random();
+            Duration = (now - Sent).TotalSeconds;
+            LastStatus = "پایان یافته";
+            if (Feedback != null)
+            {
+                Feedback.Creation = now;
+                Feedback.LastSent = null;
+                Feedback.ReportId = Id;
+                Feedback.UserId = CitizenId;
+                Feedback.Token = random.Next(10000, 99999).ToString() + random.Next(10000, 99999).ToString();
+                Feedback.TryCount = 0;
+            }
+            else
+            {
+                Feedback = new Feedback()
+                {
+                    ShahrbinInstanceId = ShahrbinInstanceId,
+                    Creation = now,
+                    LastSent = null,
+                    ReportId = Id,
+                    UserId = CitizenId,
+                    Token = random.Next(10000, 99999).ToString() + random.Next(10000, 99999).ToString()
+                };
+            }
+
+            Raise(new ReportDomainEvent(
+                Guid.NewGuid(),
+                ReportDomainEventTypes.Refered,
+                this));
+        }
     }
 
     public void MoveToStage(
@@ -430,7 +459,7 @@ public class Report : Entity
 
     private void autoTransition()
     {
-        if (ReportState == ReportState.Finished || ReportState == ReportState.Accepted)
+        if (ReportState == ReportState.Finished || ReportState == ReportState.AcceptedByCitizen)
             return;
 
         var currentStage = Process.Stages.FirstOrDefault(p => p.Id == CurrentStageId);
@@ -446,7 +475,8 @@ public class Report : Entity
             if (bot == null)
                 throw new BotNotFoundException();
 
-            if (bot.ReasonMeaning == null || LastReason != null && LastReason.ReasonMeaning == bot.ReasonMeaning)
+            if (bot.ReasonMeaning == null 
+                || LastReason != null && LastReason.ReasonMeaning == bot.ReasonMeaning)
             {
                 makeTransition(
                     bot.TransitionId,
@@ -455,8 +485,7 @@ public class Report : Entity
                     "",
                     ActorType.Auto,
                     bot.Id,
-                    bot.DestinationActorId,
-                    new List<Actor> { autoActor });
+                    bot.DestinationActorId);
                 break;
             }
         }
@@ -470,7 +499,6 @@ public class Report : Entity
         ActorType actorType,
         string actorIdentifier,
         int toActorId,
-        List<Actor> actors,
         bool isExecutive = false,
         bool isContractor = false)
     {
@@ -483,15 +511,13 @@ public class Report : Entity
         if (CurrentStageId != transition.FromId)
             throw new InvalidOperationException();
 
-        if(!transition.From.Actors.Intersect(actors).Any())
+        if(!transition.From.Actors.Any(a => a.Id == toActorId))
         {
             throw new UnauthorizedAccessException();
         }
 
         var reason = transition.ReasonList.Where(p => p.Id == reasonId).SingleOrDefault();
 
-        //report.Priority = transitionInfo.Priority != null ? transitionInfo.Priority.Value : report.Priority;
-        //Visibility = transitionInfo.Visibility ?? report.Visibility;
         CurrentStageId = transition.ToId;
         LastStatus = transition.To.Status;
         ReportState = transition.ReportState;
@@ -514,57 +540,27 @@ public class Report : Entity
             }
         }
 
-        //CurrentActor = transition.To.Actors.Where(ca => ca.Id == toActorId).SingleOrDefault();
         //TODO: Check if toActorId is allowed
         CurrentActorId = toActorId;
 
-        //if (actorIds.Count == 0)
-        //{
-        //    actorIds = transition.To.Actors.Select(p => p.Id).ToList();
-        //}
-
-        //CurrentActorsStr = "";
-        //actorIds.ForEach(p => CurrentActorsStr = $"{CurrentActorsStr}|{p}");
-        //CurrentActorsStr = CurrentActorsStr + "|";
-
         var duration = (now - LastStatusDateTime).TotalSeconds;
 
-        var log = TransitionLog.CreateTransition(Id, transitionId, comment, attachments, ReportMessages.Refered, actorType, actorIdentifier, reasonId, duration, transition.IsTransitionLogPublic);
+        var log = TransitionLog.CreateTransition(
+            Id,
+            transitionId,
+            comment,
+            attachments,
+            ReportMessages.Refered,
+            actorType,
+            actorIdentifier,
+            reasonId,
+            duration,
+            transition.IsTransitionLogPublic);
 
         TransitionLogs.Add(log);
 
-        //move these to MakeTransition
-        if (ReportState == ReportState.Finished || ReportState == ReportState.Accepted)
-        {
-            //Raise finished notif
-            Random random = new Random();
-            Duration = (now - Sent).TotalSeconds;
-            LastStatus = "پایان یافته";
-            if (Feedback != null)
-            {
-                Feedback.Creation = now;
-                Feedback.LastSent = null;
-                Feedback.ReportId = Id;
-                Feedback.UserId = CitizenId;
-                Feedback.Token = random.Next(10000, 99999).ToString() + random.Next(10000, 99999).ToString();
-                Feedback.TryCount = 0;
-            }
-            else
-            {
-                Feedback = new Feedback()
-                {
-                    ShahrbinInstanceId = ShahrbinInstanceId,
-                    Creation = now,
-                    LastSent = null,
-                    ReportId = Id,
-                    UserId = CitizenId,
-                    Token = random.Next(10000, 99999).ToString() + random.Next(10000, 99999).ToString()
-                };
-            }
-        }
 
         autoTransition();
-        //raise transitioned notif
     }
 
 
@@ -618,158 +614,7 @@ public class Report : Entity
         {
             autoTransition();
         }
-
-        /*
-        await CommunicationServices.AddNotification(
-            new Message()
-            {
-                ShahrbinInstanceId = _report.ShahrbinInstanceId,
-                Title = "تغییر در وضعیت درخواست" + " - " + _report.TrackingNumber,
-                Content = log.Message,
-                DateTime = log.DateTime,
-                MessageType = MessageType.Report,
-                SubjectId = _report.Id,
-                Recepients = new List<MessageRecepient>()
-                {
-                        new MessageRecepient() { Type = RecepientType.Person, ToId = _report.CitizenId }
-                }
-            },
-            _context);
-
-        if (moveToStageModel.IsAccepted)
-        {
-            await autoTransition2();
-        }
-
-        await _hub.Clients.All.Update();
-        */
     }
     #endregion
-
-
-
-    /*
-     *
-     var _instanceId = ShahrbinInstanceId;
-
-        foreach (var transition in possibleTransitions)
-        {
-            var userActorIdentifiers = transition.To.Actors.Where(p => p.Type == ActorType.Person).Select(p => p.Identifier).ToList();
-            var roleActorIdentifiers = transition.To.Actors.Where(p => p.Type == ActorType.Role).Select(p => p.Identifier).ToList();
-            var userActors = _settings.InstanceSettings[_instanceId].UserActors.Data.Where(p => userActorIdentifiers.Contains(p.Id)).ToList();
-            var roleActors = _settings.InstanceSettings[_instanceId].RoleActors.Data.Where(p => roleActorIdentifiers.Contains(p.Id)).ToList();
-
-            var t = new PossibleTransitionDto()
-            {
-                StageTitle = transition.To.DisplayName,
-                ReasonList = transition.ReasonList,
-                TransitionId = transition.Id,
-                CanSendMessageToCitizen = transition.CanSendMessageToCitizen
-            };
-            var actorList = new List<ActorDto>();
-            foreach (var actor in transition.To.Actors)
-            {
-                //TODO: Is this true that if actor has not assigned any reagion should be included?
-                if (Address.RegionId == null || actor.Regions.Count == 0 ||
-                    actor.Regions.Select(p => p.Id).ToList().Contains(Address.RegionId.Value))
-                {
-                    actorList.Add(new ActorDto()
-                    {
-                        Id = actor.Id,
-                        Identifier = actor.Identifier,
-                        Type = actor.Type,
-                        FirstName = (actor.Type == ActorType.Role) ? roleActors.Where(p => p.Id == actor.Identifier).Select(p => p.Title).FirstOrDefault() :
-                            userActors.Where(p => p.Id == actor.Identifier).Select(p => p.FirstName).FirstOrDefault(),
-                        LastName = (actor.Type == ActorType.Role) ? "" :
-                            userActors.Where(p => p.Id == actor.Identifier).Select(p => p.LastName).FirstOrDefault(),
-                        Title = (actor.Type == ActorType.Role) ? roleActors.Where(p => p.Id == actor.Identifier).Select(p => p.Title).FirstOrDefault() :
-                            userActors.Where(p => p.Id == actor.Identifier).Select(p => p.Title).FirstOrDefault(),
-                    });
-                }
-            }
-
-            //string contractorIdentifier = null;
-
-            //Add persons in each role actor
-            List<ActorDto> finalActors = new List<ActorDto>();
-            for (var i = 0; i < actorList.Count; i++)
-            {
-                if (actorList[i].Type == ActorType.Role)
-                {
-                    var role = _settings.Roles.Data.Find(p => p.Id == actorList[i].Identifier);
-                    if (role.Name == "Citizen")
-                    {
-                        finalActors.Add(actorList[i]);
-                        continue;
-                    }
-                    if (role.Name == "Operator")
-                    {
-                        finalActors.Add(actorList[i]);
-                        continue;
-                    }
-
-                    List<ApplicationUser> usersInRole = null;
-                    if (role.Name == "Contractor")
-                    {
-                        ////contractorIdentifier = role.Id;
-                        //usersInRole = await _context.Users.Where(p => p.Executeves.Any(q => q.Id == user.Id)).ToListAsync();
-                        var executive = _settings.UsersInRoles.Data["Executive"].Where(p => p.Id == user.Id).SingleOrDefault();
-                        if (executive != null)
-                        {
-                            usersInRole = executive.Contractors.ToList();
-                        }
-                        else
-                        {
-                            usersInRole = _settings.UsersInRoles.Data["Contractor"].ToList();
-                        }
-                    }
-                    else
-                    {
-                        finalActors.Add(actorList[i]);
-                        //usersInRole = (List<ApplicationUser>)await _userManager.GetUsersInRoleAsync(role.Name);
-                        usersInRole = _settings.UsersInRoles.Data[role.Name];
-                    }
-
-                    var actorsForUsersInRole = _settings.InstanceSettings[_instanceId].Actors.Data
-                        .Where(p => usersInRole.Select(a => a.Id).ToList().Contains(p.Identifier))
-                        .ToList();
-
-                    //actorList[i].Actors = new List<ActorDto>();
-                    foreach (var actor in actorsForUsersInRole)
-                    {
-                        finalActors.Add(new ActorDto()
-                        {
-                            Id = actor.Id,
-                            Identifier = actor.Identifier,
-                            Type = actor.Type,
-                            FirstName = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.FirstName).FirstOrDefault(),
-                            LastName = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.LastName).FirstOrDefault(),
-                            Organization = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.Organization).FirstOrDefault(),
-                            PhoneNumber = usersInRole.Where(p => p.Id == actor.Identifier).Select(p => p.PhoneNumber).FirstOrDefault(),
-                        });
-                    }
-                }
-                else
-                {
-                    finalActors.Add(actorList[i]);
-                }
-            }
-
-            ////FIX IT!
-            ////Remove contractor role
-            //if (contractorIdentifier != null)
-            //{
-            //    var con = actorList.Find(p => p.Identifier == contractorIdentifier);
-            //    actorList.Remove(con);
-            //}
-
-            t.Actors = finalActors;
-            result.Add(t);
-        }
-
-        return result;
-     *
-     * */
-
 }
 

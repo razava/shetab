@@ -111,7 +111,7 @@ public enum ReportState
     [Description("بررسی مجدد")]
     Review,
     [Description("تأیید شده")]
-    Accepted,
+    AcceptedByCitizen,
     [Description("در انتظار تأیید")]
     NeedAcceptance
 }

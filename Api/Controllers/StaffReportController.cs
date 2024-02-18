@@ -474,14 +474,14 @@ public class StaffReportController : ApiController
     [Authorize]
     [HttpPost("Notes/{reportId:guid}")]
     public async Task<ActionResult<List<ReportNoteResult>>> CreateUserReportNotes
-        (Guid reportId, CreateReportNoteDto reportNoteDto)
+        (Guid reportId, CreateReportNoteDto reportNoteDto, int instanceId)
     {
         var userId = User.GetUserId();
         var command = new AddReportNoteCommand(userId, reportId, reportNoteDto.Text);
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => CreatedAtAction(nameof(GetReportNotes), new {reportId = reportId}, s),
+            s => CreatedAtAction(nameof(GetReportNotes), new { reportId, instanceId }, s),
             f => Problem(f));
     }
 

@@ -273,7 +273,7 @@ internal class GetInfoQueryHandler(
             var catDescendant = category.Siblings;
 
             var finished = groupedQuery.Where(g => catDescendant.Contains(g.Key.CategoryId) && 
-            (g.Key.ReportState == ReportState.Finished || g.Key.ReportState == ReportState.Accepted))
+            (g.Key.ReportState == ReportState.Finished || g.Key.ReportState == ReportState.AcceptedByCitizen))
                 .Sum(g => g.Count);
 
             var live = groupedQuery.Where(g => catDescendant.Contains(g.Key.CategoryId) && 
@@ -371,7 +371,7 @@ internal class GetInfoQueryHandler(
             var serie = new InfoSerie(region.Title, "");
 
             var finished = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
-            (g.Key.ReportState == ReportState.Finished || g.Key.ReportState == ReportState.Accepted))
+            (g.Key.ReportState == ReportState.Finished || g.Key.ReportState == ReportState.AcceptedByCitizen))
                 .Sum(g => g.Count);
 
             var live = groupedQuery.Where(g => g.Key.RegionId == region.Id &&

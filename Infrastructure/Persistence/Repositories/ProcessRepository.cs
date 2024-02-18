@@ -275,7 +275,7 @@ public class ProcessRepository : GenericRepository<Process>, IProcessRepository
                         {
                             new ProcessReason(){ Title = "اعتراض وارد نیست", ReasonMeaning = ReasonMeaning.Nok },
                         },
-            ReportState = ReportState.Accepted,
+            ReportState = ReportState.AcceptedByCitizen,
             CanSendMessageToCitizen = false,
             Order = 4
         });

@@ -1,52 +1,21 @@
-﻿using Domain.Primitives;
+﻿using Domain.Models.Relational;
+using Domain.Primitives;
 
 namespace Domain.Models.ComplaintAggregate.Events;
 
-public record ReportCreatedByOperatorDomainEvent(
-    Guid Id,
-    int InstanceId,
-    Guid ReportId,
-    DateTime DateTime,
-    string TrackingNumber,
-    string CitizenId) : DomainEvent(Id);
+public enum ReportDomainEventTypes
+{
+    CreatedByCitizen,
+    CreatedByOperator,
+    Accepted,
+    Responsed,
+    Updated,
+    Refered,
+    Finished
+}
 
-public record ReportCreatedByCitizenDomainEvent(
+public record ReportDomainEvent(
     Guid Id,
-    int InstanceId,
-    Guid ReportId,
-    DateTime DateTime,
-    string TrackingNumber,
-    string CitizenId) : DomainEvent(Id);
-
-public record ReportResponsedDomainEvent(
-    Guid Id,
-    int InstanceId,
-    Guid ReportId,
-    DateTime DateTime,
-    string TrackingNumber,
-    string CitizenId) : DomainEvent(Id);
-
-public record ReportAcceptedDomainEvent(
-    Guid Id,
-    int InstanceId,
-    Guid ReportId,
-    DateTime DateTime,
-    string TrackingNumber,
-    string CitizenId) : DomainEvent(Id);
-
-public record ReportUpdatedDomainEvent(
-    Guid Id,
-    int InstanceId,
-    Guid ReportId,
-    DateTime DateTime,
-    string TrackingNumber,
-    string CitizenId) : DomainEvent(Id);
-
-public record ReportReferedDomainEvent(
-    Guid Id,
-    int InstanceId,
-    Guid ReportId,
-    DateTime DateTime,
-    string TrackingNumber,
-    string CitizenId) : DomainEvent(Id);
+    ReportDomainEventTypes EventType,
+    Report Report) : DomainEvent(Id);
 

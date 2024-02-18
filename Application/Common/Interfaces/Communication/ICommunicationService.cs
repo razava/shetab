@@ -10,4 +10,5 @@ public interface ICommunicationService
     public Task<int> SendVerificationAsync(string receptor, string message);
     public Task AddCommunicationId(string userId, string communicationId);
     public Task SendNotification(string userId, string method, string message, Guid id);
+    public Task SendNotification(List<string> userIds, string method, string message, Guid id);
 }
