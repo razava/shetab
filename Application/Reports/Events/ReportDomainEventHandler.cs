@@ -1,11 +1,8 @@
 ﻿using Application.Common.Interfaces.Communication;
 using Application.Common.Interfaces.Persistence;
-using Domain.Messages;
 using Domain.Models.ComplaintAggregate.Events;
-using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
-using Domain.Models.Relational.ReportAggregate;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Complaints.Events;

@@ -20,6 +20,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.8.1" />
     <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta19" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.1" />
     <PackageReference Include="SixLaborsCaptcha.Core" Version="0.2.2" />

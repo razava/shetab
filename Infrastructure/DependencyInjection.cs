@@ -4,6 +4,7 @@ using Application.Common.Interfaces.Map;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Security;
 using Infrastructure.Authentication;
+using Infrastructure.BackgroundJobs;
 using Infrastructure.Caching;
 using Infrastructure.Captcha;
 using Infrastructure.Communications;
@@ -18,6 +19,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Quartz;
 using SixLabors.ImageSharp;
 using StackExchange.Redis;
 
@@ -35,6 +37,7 @@ public static class DependencyInjection
         services.AddCommunication(configuration);
         services.AddMap(configuration);
         services.AddCache();
+        services.AddBackgroundJobs();
 
         return services;
     }
@@ -172,6 +175,27 @@ public static class DependencyInjection
     {
         services.AddMemoryCache();
         services.AddSingleton<IQueryCacheService, QueryCacheService>();
+        return services;
+    }
+
+    public static IServiceCollection AddBackgroundJobs(this IServiceCollection services)
+    {
+        services.AddQuartz(options =>
+        {
+            var jobKey = JobKey.Create(nameof(SendingSmsBackgroundJob));
+            options.AddJob<SendingSmsBackgroundJob>(jobKey)
+                .AddTrigger(trigger => 
+                    trigger
+                        .ForJob(jobKey)
+                        .WithSimpleSchedule(schedule =>
+                            schedule.WithIntervalInMinutes(5).RepeatForever()));
+        });
+
+        services.AddQuartzHostedService(options =>
+        {
+            options.WaitForJobsToComplete = true;
+        });
+
         return services;
     }
 

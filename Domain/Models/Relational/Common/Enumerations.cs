@@ -54,11 +54,19 @@ public enum ComplaintState
     Objectioned
 }
 
-public enum MessageType
+public enum MessageSubject
 {
     Report,
     Idea,
     Announcement
+}
+
+public enum MessageSendingType
+{
+    None,
+    Sms,
+    Push,
+    Both
 }
 
 public enum RecepientType

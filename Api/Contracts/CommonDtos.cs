@@ -138,7 +138,7 @@ public record GetMessageDto(
     string Title,
     string Content,
     DateTime DateTime,
-    MessageType MessageType,
+    MessageSubject MessageType,
     Guid SubjectId,
     string FromId);
 

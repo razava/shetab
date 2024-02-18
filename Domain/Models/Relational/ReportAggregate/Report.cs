@@ -165,7 +165,8 @@ public class Report : Entity
                 Title = "ثبت درخواست" + " - " + report.TrackingNumber,
                 Content = ReportMessages.Created,
                 DateTime = report.Sent,
-                MessageType = MessageType.Report,
+                MessageSubject = MessageSubject.Report,
+                MessageSendingType = MessageSendingType.Both,
                 SubjectId = report.Id,
                 Recepient = MessageRecepient.Create(RecepientType.Person, report.CitizenId)
             };
@@ -218,7 +219,8 @@ public class Report : Entity
                 Title = "ثبت درخواست" + " - " + report.TrackingNumber,
                 Content = ReportMessages.Created,
                 DateTime = report.Sent,
-                MessageType = MessageType.Report,
+                MessageSubject = MessageSubject.Report,
+                MessageSendingType = MessageSendingType.Both,
                 SubjectId = report.Id,
                 Recepient = MessageRecepient.Create(RecepientType.Person, report.CitizenId)
             };
@@ -303,7 +305,8 @@ public class Report : Entity
             Title = "پاسخ به شهروند" + " - " + TrackingNumber,
             Content = comment,
             DateTime = now,
-            MessageType = MessageType.Report,
+            MessageSubject = MessageSubject.Report,
+            MessageSendingType = MessageSendingType.Both,
             SubjectId = Id,
             Recepient = MessageRecepient.Create(RecepientType.Person, CitizenId)
         };
