@@ -156,7 +156,7 @@ public class AuthenticateController : ApiController
             f => Problem(f));
     }
 
-    [Authorize(Roles = "Citizen")]
+    [Authorize]
     [HttpGet]
     public async Task<ActionResult<GetCitizenProfileDto>> GetUser()
     {
@@ -172,7 +172,7 @@ public class AuthenticateController : ApiController
     }
 
 
-    [Authorize(Roles = "Citizen")]
+    [Authorize]
     [HttpPut]
     public async Task<IActionResult> UpdateUser(UpdateCitizenProfileDto updateDto)
     {
@@ -219,7 +219,7 @@ public class AuthenticateController : ApiController
     }
 
 
-    [Authorize(Roles = "Citizen")]
+    [Authorize]
     [HttpPut("Password")]
     public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto)
     {
@@ -238,7 +238,7 @@ public class AuthenticateController : ApiController
     }
 
 
-    [Authorize(Roles = "Citizen")]
+    [Authorize]
     [HttpPut("PasswordApp")]
     public async Task<ActionResult> ChangePasswordApp([FromBody] ChangePasswordAppDto changePasswordAppDto)
     {
