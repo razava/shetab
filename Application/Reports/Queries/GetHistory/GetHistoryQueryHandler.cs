@@ -23,11 +23,13 @@ internal sealed class GetHistoryQueryHandler(
         var response = new List<HistoryResponse>();
         foreach (var transitionLog in result)
         {
+            var historyResponse = transitionLog.Adapt<HistoryResponse>();
+            response.Add(historyResponse);
+
             var actor = await actorRepository.GetSingleAsync(a => a.Identifier == transitionLog.ActorIdentifier, false);
             if (actor == null)
-                return ServerNotFoundErrors.Actor;
+                continue; //todo: handle this situation
 
-            var historyResponse = transitionLog.Adapt<HistoryResponse>();
             var actorResponse = new ActorResponse();
             if (actor.Type == ActorType.Person)
             {
@@ -51,7 +53,6 @@ internal sealed class GetHistoryQueryHandler(
                 actorResponse.Title = "ارجاع خودکار";
                 historyResponse.Actor = actorResponse;
             }
-            response.Add(historyResponse);
         }
 
         return response;
