@@ -1,6 +1,5 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
-using MediatR;
+﻿using Application.Common.Interfaces.Persistence;
+using Domain.Models.Relational.ReportAggregate;
 
 namespace Application.Feedbacks.Commands;
 
@@ -10,15 +9,30 @@ internal sealed class StoreFeedbackCommandHandler(
     IReportRepository reportRepository) : IRequestHandler<StoreFeedbackCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(StoreFeedbackCommand request, CancellationToken cancellationToken)
-    {
-        //TODO: It's not completed yet. Decide where to put feedback, I think it's better to be implemented inside report.
-        var feedback = await feedbackRepository.GetSingleAsync(
-            f => f.UserId == request.UserId && f.Token == request.Token && f.ReportId == request.ReportId);
-        if ((feedback is null))
+    {        
+        Feedback? feedback;
+        
+        if(request.ReportId is not null && request.UserId is not null)
+        {
+            feedback = await feedbackRepository.GetSingleAsync(
+                f => f.UserId == request.UserId && f.ReportId == request.ReportId);
+        }
+        else if(request.Token is not null)
+        {
+            feedback = await feedbackRepository.GetSingleAsync(
+                f => f.Token == request.Token);
+        }
+        else
+        {
+            return NotFoundErrors.Feedback;
+        }
+        
+        if (feedback is null)
         {
             return ServerNotFoundErrors.Feedback;
         }
-        var report = await reportRepository.GetSingleAsync(r => r.Id == request.ReportId);
+
+        var report = await reportRepository.GetSingleAsync(r => r.Id == feedback.ReportId);
         if (report is null)
         {
             return NotFoundErrors.Report;

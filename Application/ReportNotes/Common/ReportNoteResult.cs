@@ -3,6 +3,7 @@
 namespace Application.ReportNotes.Common;
 
 public record ReportNoteResult(
+    Guid Id,
     Guid ReportId,
     string Text,
     DateTime Created,
@@ -10,6 +11,6 @@ public record ReportNoteResult(
 {
     public static ReportNoteResult FromReportNote(ReportNote note)
     {
-        return new ReportNoteResult(note.ReportId, note.Text, note.Created, note.Updated);
+        return new ReportNoteResult(note.Id, note.ReportId, note.Text, note.Created, note.Updated);
     }
 }

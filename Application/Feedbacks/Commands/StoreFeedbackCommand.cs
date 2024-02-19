@@ -1,10 +1,8 @@
-﻿using MediatR;
-
-namespace Application.Feedbacks.Commands;
+﻿namespace Application.Feedbacks.Commands;
 
 public sealed record StoreFeedbackCommand(
-    Guid ReportId,
-    string UserId,
-    string Token,
+    Guid? ReportId,
+    string? UserId,
+    string? Token,
     int Rating
-    ):IRequest<Result<bool>>;
+    ) : IRequest<Result<bool>>;

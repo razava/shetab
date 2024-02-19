@@ -4,6 +4,7 @@ using Api.ExtensionMethods;
 using Application.Comments.Commands.CreateComment;
 using Application.Comments.Commands.DeleteComment;
 using Application.Common.Interfaces.Persistence;
+using Application.Feedbacks.Commands;
 using Application.QuickAccesses.Queries.GetQuickAccesses;
 using Application.Reports.Commands.CreateReportByCitizen;
 using Application.Reports.Commands.Like;
@@ -272,13 +273,26 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpPost("Feedback/{id:Guid}")]
-    public async Task<ActionResult> Feedback(Guid id, CreateFeedbackDto createFeedbackDto)
+    public async Task<ActionResult> Feedback(Guid id, [FromBody] CreateFeedbackDto createFeedbackDto)
     {
-        //need userId, ReportId, token, rating..........................................
-        await Task.CompletedTask;
-        return Ok("Not Implemented");
+        var userId = User.GetUserId();
+        var command = new StoreFeedbackCommand(id, userId, null, createFeedbackDto.Rating);
+        var result = await Sender.Send(command);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
+    [HttpPost("FeedbackUnAuthorized/{token}")]
+    public async Task<ActionResult> Feedback(string token, [FromBody] CreateFeedbackDto createFeedbackDto)
+    {
+        var userId = User.GetUserId();
+        var command = new StoreFeedbackCommand(null, null, token, createFeedbackDto.Rating);
+        var result = await Sender.Send(command);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
 
     [Authorize(Roles = "Citizen")]
     [HttpPost("ReportViolation/{id:Guid}")]

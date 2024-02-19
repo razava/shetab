@@ -5,16 +5,14 @@ using System.ComponentModel.DataAnnotations;
 namespace Api.Contracts;
 
 public record CreateFeedbackDto(
-    [MaxLength(1024)]
-    string token,
     [Required]
-    int rating);
+    int Rating);
 
 public record UpdateCommentDto(
     [Required] [MaxLength(512)]
     string Comment,
-    bool? IsSeen,         //..... ??
-    bool? IsVerified);    //..... ??
+    bool? IsSeen,    
+    bool? IsVerified);
 
 public record ReplyCommentDto(
     [Required] [MaxLength(512)]

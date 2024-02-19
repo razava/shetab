@@ -48,10 +48,6 @@ internal sealed class MakeTransitionCommandHandler(
             request.IsExecutive,
             request.IsContractor);
 
-        if (report.Feedback is not null && string.IsNullOrEmpty(report.Feedback.PhoneNumber))
-        {
-            report.Feedback.PhoneNumber = (await userRepository.FindAsync(report.CitizenId))?.PhoneNumber ?? "";
-        }
         reportRepository.Update(report);
         await unitOfWork.SaveAsync();
 
