@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.IdentityAggregate;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Users.Commands.UpdateUserProfile;
 
@@ -13,6 +14,13 @@ internal class UpdateUserProfileCommandHandler(
         var user = await userRepository.GetSingleAsync(u => u.Id == request.UserId);
         if (user is null)
             return NotFoundErrors.User;
+        if (user.PhoneNumber.IsNullOrEmpty()
+            && request.TwoFactorEnabled is not null
+            && request.TwoFactorEnabled.Value)
+        {
+            return AuthenticationErrors.InvalidPhoneNumber;
+        }
+
         user.FirstName = request.FirstName ?? user.FirstName;
         user.LastName = request.LastName ?? user.LastName;
         user.Title = request.Title ?? user.Title;

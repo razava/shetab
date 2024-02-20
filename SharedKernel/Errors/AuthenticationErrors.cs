@@ -16,7 +16,6 @@ public static class AuthenticationErrors
     public static readonly Error UserCreationFailed = new Error("ایجاد کاربر با خطا مواجه شد.");
     public static readonly Error TooManyRequestsForOtp = new Error("درخواست رمز یکبارمصرف بیشتر از حد مجاز است.");
     public static readonly Error ResetPasswordFailed = new Error("بازیابی رمز عبور با مشکل مواجه شد.");
-
 }
 public static class CommunicationErrors
 {

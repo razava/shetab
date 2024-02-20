@@ -35,7 +35,7 @@ public class AuthenticationService(
             {
                 var verificationCodeResult = await SendVerificationCode(user);
                 if (verificationCodeResult.IsFailed)
-                    return result.ToResult();
+                    return verificationCodeResult.ToResult();
                 return new LoginResultModel(null, verificationCodeResult.Value);
             }
             else
