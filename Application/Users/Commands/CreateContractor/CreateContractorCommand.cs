@@ -1,12 +1,12 @@
 ﻿using Domain.Models.Relational.IdentityAggregate;
-using MediatR;
 
 namespace Application.Users.Commands.CreateContractor;
 
 public record CreateContractorCommand(
     string ExecutiveId,
+    List<string> UserRoles,
     string PhoneNumber,
-    string Organization = "",
     string FirstName = "",
     string LastName = "",
-    string Title = ""):IRequest<Result<ApplicationUser>>;
+    string Title = "",
+    string Organization = ""):IRequest<Result<ApplicationUser>>;

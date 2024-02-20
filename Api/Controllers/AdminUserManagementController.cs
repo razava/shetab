@@ -216,16 +216,18 @@ public class AdminUserManagementController : ApiController
     [HttpPost("RegisterContractor")]
     public async Task<IActionResult> RegisterContractor(int instanceId, CreateContractorDto model)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = User.GetUserId();
+        var userRoles = User.GetUserRoles();
         if(userId is null)
             return Unauthorized();
         var command = new CreateContractorCommand(
             userId,
+            userRoles,
             model.PhoneNumber,
-            model.Organization,
             model.FirstName,
             model.LastName,
-            model.Title);
+            model.Title,
+            model.Organization);
         var contractor = await Sender.Send(command);
 
         return contractor.Match(

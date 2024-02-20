@@ -18,6 +18,13 @@ public interface IUserRepository : IGenericRepository<ApplicationUser>
     public Task<bool> IsInRoleAsync(ApplicationUser user, string role);
     public Task<List<Actor>> GetActors();
     public Task<IdentityResult> CreateAsync(ApplicationUser user, string password);
+    public Task<ApplicationUser> AddContractorAsync(
+        string executiveId,
+        string phoneNumber,
+        string firstName,
+        string lastName,
+        string title,
+        string organization);
     public Task<IdentityResult> DeleteAsync(ApplicationUser user);
 
     public Task<IdentityResult> AddToRolesAsync(ApplicationUser user, string[] roles);

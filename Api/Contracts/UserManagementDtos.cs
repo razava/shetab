@@ -111,10 +111,10 @@ public record CreateUserDto(
 public record CreateContractorDto(
        [Required] [MaxLength(11)] [Phone]
        string PhoneNumber,
-       string Organization = "",
        string FirstName = "",
        string LastName = "",
-       string Title = "");
+       string Title = "",
+       string Organization = "");
 
 
 

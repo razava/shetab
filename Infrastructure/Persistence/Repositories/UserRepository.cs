@@ -1,10 +1,11 @@
 ﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Communication;
 using Application.Common.Interfaces.Persistence;
+using Application.Common.Statics;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
-using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -16,12 +17,14 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
     private readonly ApplicationDbContext _dbContext;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
+    private readonly ICommunicationService _communicationService;
 
-    public UserRepository(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager) : base(dbContext)
+    public UserRepository(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICommunicationService communicationService) : base(dbContext)
     {
         _dbContext = dbContext;
         _userManager = userManager;
         _roleManager = roleManager;
+        _communicationService = communicationService;
     }
 
     public async Task<ApplicationUser> GetOrCreateCitizen(string phoneNumber, string firstName, string lastName)
@@ -36,7 +39,8 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
                 PhoneNumber = phoneNumber,
                 PhoneNumberConfirmed = false,
                 FirstName = firstName,
-                LastName = lastName
+                LastName = lastName,
+                TwoFactorEnabled = true
             };
             //TODO: Generate password randomly
             var password = "aA@12345";
@@ -310,4 +314,58 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
 
     }
 
+    public async Task<ApplicationUser> AddContractorAsync(string executiveId, string phoneNumber, string firstName, string lastName, string title, string organization)
+    {
+        var contractorUsername = "c-" + phoneNumber;
+        var executive = await context.Set<ApplicationUser>()
+            .Where(u => u.Id == executiveId)
+            .Include(u => u.Contractors.Where(c => c.UserName == contractorUsername))
+            .SingleOrDefaultAsync();
+        if (executive is null)
+            throw new Exception("Executive not found.");
+
+        var contractor = await context.Set<ApplicationUser>()
+            .Where(u => u.UserName == contractorUsername)
+            .SingleOrDefaultAsync();
+
+        if (contractor is null)
+        {
+            contractor = new ApplicationUser()
+            {
+                UserName = contractorUsername,
+                PhoneNumber = phoneNumber,
+                FirstName = firstName,
+                LastName = lastName,
+                Organization = organization,
+                Title = title,
+                PhoneNumberConfirmed = true,
+                SecurityStamp = Guid.NewGuid().ToString(),
+            };
+            var password = $"c@{Random.Shared.Next(10000, 99999)}C";
+            var r = await RegisterWithRoleAsync(contractor, password, RoleNames.Contractor);
+
+            context.Add(new Actor()
+            {
+                Identifier = contractor.Id,
+                Type = ActorType.Person,
+            });
+            
+            executive.Contractors.Add(contractor);
+
+            var message = "پیمانکار گرامی، عضویت شما در سامانه شهربین با موفقیت انجام شد.";
+            message += "\r\n";
+            message += "لطفاً برای ورود از داده های زیر استفاده نمایید:\r\n";
+            message += $"نام کاربری:{"c-" + phoneNumber}\r\nرمزعبور:{password}";
+            await _communicationService.SendAsync(phoneNumber, message);
+        }
+        else
+        {
+            if (!executive.Contractors.Any())
+                executive.Contractors.Add(contractor);
+        }
+
+        await context.SaveChangesAsync();
+
+        return contractor;
+    }
 }
