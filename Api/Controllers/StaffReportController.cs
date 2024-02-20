@@ -16,6 +16,7 @@ using Application.ReportNotes.Queries.GetReportNotes;
 using Application.Reports.Commands.AcceptByOperator;
 using Application.Reports.Commands.CreateReportByOperator;
 using Application.Reports.Commands.InspectorTransition;
+using Application.Reports.Commands.MakeObjection;
 using Application.Reports.Commands.MakeTransition;
 using Application.Reports.Commands.MessageToCitizen;
 using Application.Reports.Commands.UpdateByOperator;
@@ -47,7 +48,10 @@ public class StaffReportController : ApiController
     
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<GetReportsResponse>>> GetTasks(string? fromRoleId, [FromQuery]PagingInfo pagingInfo, [FromQuery]FilterGetReports filterGetReports)
+    public async Task<ActionResult<List<GetReportsResponse>>> GetTasks(
+        string? fromRoleId,
+        [FromQuery] PagingInfo pagingInfo,
+        [FromQuery] FilterGetReports filterGetReports)
     {
         var userId = User.GetUserId();
         var instanceId = User.GetUserInstanceId();
@@ -137,7 +141,26 @@ public class StaffReportController : ApiController
             f => Problem(f));
     }
 
+    [Authorize(Roles = "Inspector")]
+    [HttpDelete("Objection/{id:Guid}")]
+    public async Task<ActionResult> MakeObjection(Guid id, [FromBody] CitizenObjectReportDto objectionDto)
+    {
+        var userId = User.GetUserId();
+        var userRoles = User.GetUserRoles();
+        var command = new MakeObjectionCommand(
+            userId,
+            userRoles,
+            id,
+            objectionDto.Attachments ?? new List<Guid>(),
+            objectionDto.Comments);
+        var result = await Sender.Send(command);
 
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
+    }
+
+    /*
     [Authorize(Roles = "Inspector")]
     [HttpPost("Review/{id:Guid}")]
     public async Task<ActionResult> Review(Guid id, InspectorTransitionDto dto) 
@@ -158,7 +181,7 @@ public class StaffReportController : ApiController
             s => Ok(),
             f => Problem(f));
     }
-
+    */
 
     //TODO: Define access policy
     [Authorize]

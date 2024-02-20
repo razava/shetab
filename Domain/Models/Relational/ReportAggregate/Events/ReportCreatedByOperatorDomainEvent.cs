@@ -11,7 +11,8 @@ public enum ReportDomainEventTypes
     Responsed,
     Updated,
     Refered,
-    Finished
+    Finished,
+    Objectioned
 }
 
 public record ReportDomainEvent(

@@ -8,6 +8,7 @@ using Application.Feedbacks.Commands;
 using Application.QuickAccesses.Queries.GetQuickAccesses;
 using Application.Reports.Commands.CreateReportByCitizen;
 using Application.Reports.Commands.Like;
+using Application.Reports.Commands.MakeObjection;
 using Application.Reports.Commands.ReportViolation;
 using Application.Reports.Common;
 using Application.Reports.Queries.GetCitizenReportById;
@@ -263,6 +264,25 @@ public class CitizenReportController : ApiController
         if (userId is null)
             return Unauthorized();
         var command = new DeleteCommentCommand(commentId, userId, User.GetUserRoles());
+        var result = await Sender.Send(command);
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
+    }
+
+    [Authorize(Roles = "Citizen")]
+    [HttpDelete("Objection/{id:Guid}")]
+    public async Task<ActionResult> MakeObjection(Guid id, [FromBody]CitizenObjectReportDto objectionDto)
+    {
+        var userId = User.GetUserId();
+        var userRoles = User.GetUserRoles();
+        var command = new MakeObjectionCommand(
+            userId,
+            userRoles,
+            id,
+            objectionDto.Attachments ?? new List<Guid>(),
+            objectionDto.Comments);
         var result = await Sender.Send(command);
 
         return result.Match(

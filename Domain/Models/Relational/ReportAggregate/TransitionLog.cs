@@ -204,9 +204,7 @@ public class TransitionLog
         string? comment,
         List<Media>? attachments,
         string message,
-        ActorType actorType,
-        string actorIdentifier,
-        bool isPublic)
+        string userId)
     {
         return new TransitionLog(
             ReportLogType.Transition,
@@ -215,10 +213,10 @@ public class TransitionLog
             comment,
             attachments,
             message,
-            actorType,
-            actorIdentifier,
+            ActorType.Person,
+            userId,
             null,
             null,
-            isPublic);
+            true);
     }
 }

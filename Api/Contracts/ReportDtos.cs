@@ -15,6 +15,12 @@ public record CitizenCreateReportDto(
     bool IsIdentityVisible);
 
 
+public record CitizenObjectReportDto(
+    [MaxLength(1024)]
+    string Comments,
+    List<Guid>? Attachments);
+
+
 
 public class OperatorCreateReportDto
 {

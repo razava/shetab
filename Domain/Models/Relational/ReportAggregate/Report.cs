@@ -385,6 +385,44 @@ public class Report : Entity
         }
     }
 
+    public void MakeObjection(
+        List<Media> attachments,
+        string comment,
+        string userId)
+    {
+        if (userId == CitizenId && ReportState != ReportState.Finished)
+        {
+            throw new Exception("Processing the request is not completed yet.");
+        }
+
+        var objectionStage = Process.Stages.Where(s => s.Name == "Inspector").FirstOrDefault();
+        if (objectionStage is null) 
+        {
+            throw new Exception("No objection stage found.");
+        }
+
+        CurrentStageId = objectionStage.Id;
+        CurrentActorId = objectionStage.Actors.FirstOrDefault()?.Id ?? 
+            throw new Exception("No actor defined as inspector");
+        IsObjectioned = true;
+        ReportState = ReportState.Review;
+        LastStatus = "بررسی توسط واحد بازرسی";
+        LastTransitionId = null;
+
+        var log = TransitionLog.CreateObjection(
+            Id,
+            comment,
+            attachments,
+            "درخواست برای بررسی توسط واحد بازرسی",
+            userId);
+        TransitionLogs.Add(log);
+
+        Raise(new ReportDomainEvent(
+                Guid.NewGuid(),
+                ReportDomainEventTypes.Objectioned,
+                this));
+    }
+
     public void MoveToStage(
         bool isAccepted,
         int stageId,
