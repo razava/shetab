@@ -198,4 +198,27 @@ public class TransitionLog
             null,
             true);
     }
+
+    public static TransitionLog CreateObjection(
+        Guid reportId,
+        string? comment,
+        List<Media>? attachments,
+        string message,
+        ActorType actorType,
+        string actorIdentifier,
+        bool isPublic)
+    {
+        return new TransitionLog(
+            ReportLogType.Transition,
+            reportId,
+            null,
+            comment,
+            attachments,
+            message,
+            actorType,
+            actorIdentifier,
+            null,
+            null,
+            isPublic);
+    }
 }
