@@ -97,11 +97,15 @@ public record RegisterAppDto(
     string Password);
 
 
-public record UpdateCitizenProfileDto(
+public record UpdateProfileDto(
     [MaxLength(32)]
     string? FirstName,
     [MaxLength(32)]
     string? LastName,
+    [MaxLength(32)]
+    string? Title,
+    [MaxLength(64)]
+    string? Organization,
     Gender? Gender,
     Education? Education,
     DateTime? BirthDate,
@@ -109,23 +113,8 @@ public record UpdateCitizenProfileDto(
     string? PhoneNumber2,
     //AddressDto Address,
     [MaxLength(16)]
-    string? NationalId);
-
-    
-public record UpdateStaffProfileDto(
-    [MaxLength(32)]
-    string? FirstName,
-    [MaxLength(32)]
-    string? LastName,
-    [MaxLength(11)]
-    string? PhoneNumber2,
-    [MaxLength(32)]
-    string? Title,
-    [MaxLength(32)]
-    string? Organization,
-    //AddressDto Address,
-    Education? Education);
- 
+    string? NationalId,
+    bool? TwoFactorLoginEnabled);
 
 public record ChangePasswordDto(
     //string Username,
@@ -170,27 +159,20 @@ public record ResetPasswordDto(
 
 
 
-public record GetCitizenProfileDto(
+public record GetProfileDto(
     //string Id,
     string UserName,
     string FirstName,
     string LastName,
+    string Title,
+    string Organization,
     string PhoneNumber,
     string PhoneNumber2,
     string NationalId,
+    bool TwoFactorLoginEnabled,
     Gender Gender,
     int Education,
     DateTime? BirthDate,
-    AddressDto Address,
-    MediaDto Avatar);
-
-public record GetStaffProfileDto(
-    string UserName,
-    string FirstName,
-    string LastName,
-    string Title,
-    string PhoneNumber,
-    int Education,
     AddressDto Address,
     MediaDto Avatar);
 

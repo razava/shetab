@@ -1,11 +1,11 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.IdentityAggregate;
-using MediatR;
 
 namespace Application.Users.Commands.UpdateUserProfile;
 
-internal class UpdateUserProfileCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork) : IRequestHandler<UpdateUserProfileCommand, Result<ApplicationUser>>
+internal class UpdateUserProfileCommandHandler(
+    IUserRepository userRepository,
+    IUnitOfWork unitOfWork) : IRequestHandler<UpdateUserProfileCommand, Result<ApplicationUser>>
 {
     
     public async Task<Result<ApplicationUser>> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
@@ -18,6 +18,7 @@ internal class UpdateUserProfileCommandHandler(IUserRepository userRepository, I
         user.Title = request.Title ?? user.Title;
         user.Organization = request.Organization ?? user.Organization;
         user.NationalId = request.NationalId ?? user.NationalId;
+        user.TwoFactorEnabled = request.TwoFactorLoginEnabled ?? user.TwoFactorEnabled;
         user.Gender = request.Gender ?? user.Gender;
         user.Education = request.Education ?? user.Education;
         user.BirthDate = request.BirthDate ?? user.BirthDate;

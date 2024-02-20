@@ -2,7 +2,7 @@
 
 public interface IAuthenticationService
 {
-    public Task<Result<LoginResultModel>> Login(string username, string password, bool twoFactorEnabled = false);
+    public Task<Result<LoginResultModel>> Login(string username, string password);
     public Task<Result<VerificationToken>> LogisterCitizen(string phoneNumber);
     public Task<Result<AuthToken>> VerifyOtp(string otpToken, string code);
     public Task<Result<AuthToken>> Refresh(string token, string refreshToken);

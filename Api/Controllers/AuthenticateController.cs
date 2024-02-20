@@ -158,7 +158,7 @@ public class AuthenticateController : ApiController
 
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<GetCitizenProfileDto>> GetUser()
+    public async Task<ActionResult<GetProfileDto>> GetUser()
     {
         var userId = User.GetUserId();
         if (userId == null)
@@ -167,14 +167,14 @@ public class AuthenticateController : ApiController
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<GetCitizenProfileDto>()),
+            s => Ok(s.Adapt<GetProfileDto>()),
             f => Problem(f));
     }
 
 
     [Authorize]
     [HttpPut]
-    public async Task<IActionResult> UpdateUser(UpdateCitizenProfileDto updateDto)
+    public async Task<IActionResult> UpdateUser(UpdateProfileDto updateDto)
     {
         var userId = User.GetUserId();
         if (userId == null)
@@ -184,9 +184,10 @@ public class AuthenticateController : ApiController
             userId,
             updateDto.FirstName,
             updateDto.LastName,
-            null,
-            null,
+            updateDto.Title,
+            updateDto.Organization,
             updateDto.NationalId,
+            updateDto.TwoFactorLoginEnabled,
             updateDto.Gender,
             updateDto.Education,
             updateDto.BirthDate,

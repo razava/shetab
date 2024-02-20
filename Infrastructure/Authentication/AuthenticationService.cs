@@ -22,8 +22,7 @@ public class AuthenticationService(
 {
     public async Task<Result<LoginResultModel>> Login(
         string username,
-        string password,
-        bool twoFactorEnabled = false)
+        string password)
     {
         var result = await GetUser(username);
         if (result.IsFailed)
@@ -32,7 +31,7 @@ public class AuthenticationService(
         var user = result.Value;
         if (await userManager.CheckPasswordAsync(user, password))
         {
-            if (twoFactorEnabled)
+            if (user.TwoFactorEnabled)
             {
                 var verificationCodeResult = await SendVerificationCode(user);
                 if (verificationCodeResult.IsFailed)
@@ -83,7 +82,9 @@ public class AuthenticationService(
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = phoneNumber,
                 PhoneNumber = phoneNumber,
-                PhoneNumberConfirmed = false
+                PhoneNumberConfirmed = false,
+                TwoFactorEnabled = true,
+                Title = "شهروند"
             };
         var verificationCodeResult = await SendVerificationCode(user, isNew);
         if (verificationCodeResult.IsFailed)
@@ -376,7 +377,7 @@ public class AuthenticationService(
             new Claim(ClaimTypes.Name, user.UserName ?? ""),
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(AppClaimTypes.InstanceId, user.ShahrbinInstanceId?.ToString()??""),
+            new Claim(AppClaimTypes.InstanceId, (user.ShahrbinInstanceId ?? -1).ToString()),
         };
 
         foreach (var userRole in userRoles)

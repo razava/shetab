@@ -21,7 +21,7 @@ internal sealed class LoginCommandHandler(
             }
         }
 
-        var loginResult = await authenticationService.Login(request.Username, request.Password, false);
+        var loginResult = await authenticationService.Login(request.Username, request.Password);
         if (loginResult.IsFailed)
             return loginResult.ToResult();
 
