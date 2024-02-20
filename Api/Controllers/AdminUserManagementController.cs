@@ -46,12 +46,13 @@ public class AdminUserManagementController : ApiController
             updateUserDto.FirstName,
             updateUserDto.LastName,
             updateUserDto.Title,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null);
+            updateUserDto.Organization,
+            updateUserDto.NationalId,
+            updateUserDto.TwoFactorEnabled,
+            updateUserDto.Gender,
+            updateUserDto.Education,
+            updateUserDto.BirthDate,
+            updateUserDto.PhoneNumber2);
 
         var result = await Sender.Send(command);
 

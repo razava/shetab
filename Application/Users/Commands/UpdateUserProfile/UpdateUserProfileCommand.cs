@@ -10,7 +10,7 @@ public record UpdateUserProfileCommand(
     string? Title = null,
     string? Organization = null,
     string? NationalId = null,
-    bool? TwoFactorLoginEnabled = null,
+    bool? TwoFactorEnabled = null,
     Gender? Gender = null,
     Education? Education = null,
     DateTime? BirthDate = null,

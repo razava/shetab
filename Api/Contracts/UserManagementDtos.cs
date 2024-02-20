@@ -44,7 +44,18 @@ public record UpdateUserDto(
     [MaxLength(32)]
     string? LastName,
     [MaxLength(32)]
-    string? Title);
+    string? Title,
+    [MaxLength(64)]
+    string? Organization,
+    Gender? Gender,
+    Education? Education,
+    DateTime? BirthDate,
+    [MaxLength(11)]
+    string? PhoneNumber2,
+    //AddressDto Address,
+    [MaxLength(16)]
+    string? NationalId,
+    bool? TwoFactorEnabled);
 
 
 public record AdminGetUserList(
@@ -72,11 +83,12 @@ public record AdminGetUserDetailsDto(
     string FirstName,
     string LastName,
     string Title,
+    string Organization,
+    string NationalId,
+    bool TwoFactorEnabled,
     MediaDto Avatar,
     string PhoneNumber,
-    string Organization,
     string PhoneNumber2,
-    string NationalId,
     Gender Gender,
     Education Education,
     DateTime? BirthDate,

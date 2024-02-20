@@ -18,7 +18,7 @@ internal class UpdateUserProfileCommandHandler(
         user.Title = request.Title ?? user.Title;
         user.Organization = request.Organization ?? user.Organization;
         user.NationalId = request.NationalId ?? user.NationalId;
-        user.TwoFactorEnabled = request.TwoFactorLoginEnabled ?? user.TwoFactorEnabled;
+        user.TwoFactorEnabled = request.TwoFactorEnabled ?? user.TwoFactorEnabled;
         user.Gender = request.Gender ?? user.Gender;
         user.Education = request.Education ?? user.Education;
         user.BirthDate = request.BirthDate ?? user.BirthDate;

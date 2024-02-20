@@ -114,7 +114,7 @@ public record UpdateProfileDto(
     //AddressDto Address,
     [MaxLength(16)]
     string? NationalId,
-    bool? TwoFactorLoginEnabled);
+    bool? TwoFactorEnabled);
 
 public record ChangePasswordDto(
     //string Username,
@@ -169,7 +169,7 @@ public record GetProfileDto(
     string PhoneNumber,
     string PhoneNumber2,
     string NationalId,
-    bool TwoFactorLoginEnabled,
+    bool TwoFactorEnabled,
     Gender Gender,
     int Education,
     DateTime? BirthDate,

@@ -187,7 +187,7 @@ public class AuthenticateController : ApiController
             updateDto.Title,
             updateDto.Organization,
             updateDto.NationalId,
-            updateDto.TwoFactorLoginEnabled,
+            updateDto.TwoFactorEnabled,
             updateDto.Gender,
             updateDto.Education,
             updateDto.BirthDate,
