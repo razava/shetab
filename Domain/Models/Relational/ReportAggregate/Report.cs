@@ -145,6 +145,7 @@ public class Report : Entity
             priority,
             isIdentityVisible);
 
+        //TODO: Handle the case where need acceptance is false
         report.ReportState = ReportState.NeedAcceptance;
         report.LastStatus = ReportMessages.NeedAcceptance;
 

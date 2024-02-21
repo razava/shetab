@@ -1,10 +1,12 @@
 ﻿using Domain.Models.Relational;
+using Domain.Models.Relational.Common;
 using System.Linq.Expressions;
 
 namespace Application.Reports.Common;
 
 public record GetReportsResponse(
     Guid Id,
+    ReportState ReportState,
     string LastStatus,
     string TrackingNumber,
     int CategoryId,
@@ -19,6 +21,7 @@ public record GetReportsResponse(
     {
         return new GetReportsResponse(
                 report.Id,
+                report.ReportState,
                 report.LastStatus,
                 report.TrackingNumber,
                 report.CategoryId,
@@ -34,6 +37,7 @@ public record GetReportsResponse(
         Expression<Func<Report, GetReportsResponse>> selector
             = report => new GetReportsResponse(
                 report.Id,
+                report.ReportState,
                 report.LastStatus,
                 report.TrackingNumber,
                 report.CategoryId,
