@@ -6,6 +6,7 @@ namespace Application.Reports.Common;
 
 public record GetCitizenReportsResponse(
     Guid Id,
+    ReportState ReportState,
     string LastStatus,
     string TrackingNumber,
     int CategoryId,
@@ -23,6 +24,7 @@ public record GetCitizenReportsResponse(
     {
         return new GetCitizenReportsResponse(
                 report.Id,
+                report.ReportState,
                 report.LastStatus,
                 report.TrackingNumber,
                 report.CategoryId,
@@ -41,6 +43,7 @@ public record GetCitizenReportsResponse(
         Expression<Func<Report, GetCitizenReportsResponse>> selector 
             = report => new GetCitizenReportsResponse(
                 report.Id,
+                report.ReportState,
                 report.LastStatus,
                 report.TrackingNumber,
                 report.CategoryId,

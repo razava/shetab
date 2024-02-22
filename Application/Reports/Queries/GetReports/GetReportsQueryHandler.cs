@@ -46,10 +46,14 @@ internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IUserReposi
             {
                 query = query.Where(r => r.Responsed != null);
             }
+            else if (request.Roles.Contains(RoleNames.Inspector) && request.FromRoleId == "INSPECTOR")
+            {
+                query = query.Where(r => r.LastTransitionId == null);
+            }
             else
             {
                 query = query.Where(r => r.LastTransition != null && r.LastTransition.From.DisplayRoleId == request.FromRoleId);
-                if (request.Roles.Contains(RoleNames.Executive) && request.FromRoleId != "RESPONSED")
+                if (request.Roles.Contains(RoleNames.Executive))
                 {
                     query = query.Where(r => r.Responsed == null);
                 }

@@ -142,7 +142,7 @@ public class StaffReportController : ApiController
     }
 
     [Authorize(Roles = "Inspector")]
-    [HttpDelete("Objection/{id:Guid}")]
+    [HttpPost("Objection/{id:Guid}")]
     public async Task<ActionResult> MakeObjection(Guid id, [FromBody] CitizenObjectReportDto objectionDto)
     {
         var userId = User.GetUserId();

@@ -8,7 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Workspaces.Queries.GetPossibleSources;
 
-public sealed class GetPossibleSourcesQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetPossibleSourcesQuery, Result<List<PossibleSourceResponse>>>
+public sealed class GetPossibleSourcesQueryHandler(IUnitOfWork unitOfWork) 
+    : IRequestHandler<GetPossibleSourcesQuery, Result<List<PossibleSourceResponse>>>
 {
     public async Task<Result<List<PossibleSourceResponse>>> Handle(GetPossibleSourcesQuery request, CancellationToken cancellationToken)
     {
@@ -40,6 +41,10 @@ public sealed class GetPossibleSourcesQueryHandler(IUnitOfWork unitOfWork) : IRe
         if (request.RoleNames.Contains(RoleNames.Executive))
         {
             possibleSources.Add(new PossibleSourceResponse("RESPONSED", "در دست اقدام", "در دست اقدام"));
+        }
+        if (request.RoleNames.Contains(RoleNames.Inspector))
+        {
+            possibleSources.Add(new PossibleSourceResponse("INSPECTOR", "واحد بازرسی", "واحد بازرسی"));
         }
         return possibleSources;
     }

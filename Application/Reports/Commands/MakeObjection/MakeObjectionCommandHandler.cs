@@ -35,15 +35,24 @@ internal sealed class MakeObjectionCommandHandler(
             }
         }
 
-        if(report.CitizenId != request.UserId && request.UserRoles.Contains(RoleNames.Inspector))
+        if(report.CitizenId == request.UserId)
         {
-            return AccessDeniedErrors.General;
+            report.MakeObjection(
+            medias,
+            request.Comment);
         }
-
-        report.MakeObjection(
+        else if (request.UserRoles.Contains(RoleNames.Inspector))
+        {
+            report.MakeObjectionByInspector(
             medias,
             request.Comment,
             request.UserId);
+        }
+        else
+        {
+            return AccessDeniedErrors.General;
+        }
+        
 
         reportRepository.Update(report);
         await unitOfWork.SaveAsync();
