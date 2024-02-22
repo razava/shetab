@@ -553,7 +553,7 @@ public class Report : Entity
         if (CurrentStageId != transition.FromId)
             throw new InvalidOperationException();
 
-        if(!transition.From.Actors.Any(a => a.Id == toActorId))
+        if(!transition.To.Actors.Any(a => a.Id == toActorId))
         {
             throw new UnauthorizedAccessException();
         }
