@@ -69,7 +69,8 @@ public class AdminCategoryController : ApiController
             categoryCreateDto.EditingAllowed,
             categoryCreateDto.HideMap,
             categoryCreateDto.AttachmentDescription,
-            categoryCreateDto.FormId);
+            categoryCreateDto.FormId,
+            categoryCreateDto.DefaultPriority);
 
         var result = await Sender.Send(command);
         

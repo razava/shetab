@@ -1,4 +1,5 @@
 ﻿using Application.Categories.Common;
+using Domain.Models.Relational.Common;
 
 namespace Application.Categories.Commands.AddCategory;
 
@@ -17,5 +18,6 @@ public sealed record AddCategoryCommand(
     bool EdittingAllowed = true,
     bool HideMap = false,
     string AttachmentDescription = "",
-    Guid? FormId = null) : IRequest<Result<CategoryDetailResponse>>;
+    Guid? FormId = null,
+    Priority DefaultCategory = Priority.Normal) : IRequest<Result<CategoryDetailResponse>>;
 

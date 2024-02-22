@@ -130,7 +130,6 @@ public class Report : Entity
         Address address,
         List<Media> attachments,
         Visibility visibility,
-        Priority priority = Priority.Normal,
         bool isIdentityVisible = true)
     {
         var report = new Report(
@@ -142,7 +141,7 @@ public class Report : Entity
             address,
             attachments,
             visibility,
-            priority,
+            category.DefaultPriority,
             isIdentityVisible);
 
         //TODO: Handle the case where need acceptance is false

@@ -42,7 +42,8 @@ internal sealed class UpdateCategoryCommandHandler(
             request.EdittingAllowed,
             request.HideMap,
             request.AttachmentDescription,
-            request.FormId);
+            request.FormId,
+            request.DefaultPriority);
 
         categoryRepository.Update(category);
 

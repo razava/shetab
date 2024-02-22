@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Models.Relational.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace Api.Contracts;
 
@@ -24,6 +25,7 @@ public class CategoryCreateDto
     public bool ObjectionAllowed { get; set; }
     public bool EditingAllowed { get; set; } = true;
     public bool HideMap { get; set; }
+    public Priority DefaultPriority { get; set; } = Priority.Normal;
 }
 
 public class CategoryUpdateDto

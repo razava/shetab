@@ -1,24 +1,23 @@
 ﻿using Application.Categories.Common;
-using Domain.Models.Relational;
-using Domain.Models.Relational.ReportAggregate;
-using MediatR;
+using Domain.Models.Relational.Common;
 
 namespace Application.Categories.Commands.UpdateCategory;
 
 public sealed record UpdateCategoryCommand(
     int Id,
-    string? Code,
-    string? Title,
-    string? Description,
-    int? Order,
-    int? ParentId,
-    int? Duration,
-    int? ResponseDuration,
+    string? Code = null,
+    string? Title = null,
+    string? Description = null,
+    int? Order = null,
+    int? ParentId = null,
+    int? Duration = null,
+    int? ResponseDuration = null,
     int? ProcessId = null,
-    bool? IsDeleted = false,
-    bool? ObjectionAllowed = true,
-    bool? EdittingAllowed = true,
-    bool? HideMap = false,
-    string? AttachmentDescription = "",
-    Guid? FormId = null) : IRequest<Result<CategoryDetailResponse>>;
+    bool? IsDeleted = null,
+    bool? ObjectionAllowed = null,
+    bool? EdittingAllowed = null,
+    bool? HideMap = null,
+    string? AttachmentDescription = null,
+    Guid? FormId = null,
+    Priority? DefaultPriority = null) : IRequest<Result<CategoryDetailResponse>>;
 

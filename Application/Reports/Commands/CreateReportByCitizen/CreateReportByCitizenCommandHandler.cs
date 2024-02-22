@@ -50,7 +50,6 @@ internal sealed class CreateReportByCitizenCommandHandler(
             address,
             medias,
             Visibility.EveryOne,
-            Priority.Normal,
             request.IsIdentityVisible);
 
         reportRepository.Insert(report);

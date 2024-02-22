@@ -1,6 +1,6 @@
 ﻿using Application.Forms.Common;
-using Application.Reports.Common;
 using Domain.Models.Relational;
+using Domain.Models.Relational.Common;
 using System.Linq.Expressions;
 
 namespace Application.Categories.Common;
@@ -20,7 +20,8 @@ public record CategoryDetailResponse(
     bool EditingAllowed,
     bool IsDeleted,
     bool HideMap,
-    FormResponse? Form)
+    FormResponse? Form,
+    Priority DefaultPriority)
 {
     public static CategoryDetailResponse FromCategory(Category category)
     {
@@ -39,7 +40,8 @@ public record CategoryDetailResponse(
             category.EditingAllowed,
             category.IsDeleted,
             category.HideMap,
-            FormResponse.FromForm(category.Form));
+            FormResponse.FromForm(category.Form),
+            category.DefaultPriority);
     }
 
     public static Expression<Func<Category, CategoryDetailResponse>> GetSelector()
@@ -60,7 +62,8 @@ public record CategoryDetailResponse(
             category.EditingAllowed,
             category.IsDeleted,
             category.HideMap,
-            FormResponse.FromForm(category.Form));
+            FormResponse.FromForm(category.Form),
+            category.DefaultPriority);
         return selector;
     }
 };

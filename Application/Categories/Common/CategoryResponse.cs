@@ -1,5 +1,6 @@
 ﻿using Application.Forms.Common;
 using Domain.Models.Relational;
+using Domain.Models.Relational.Common;
 
 namespace Application.Categories.Common;
 
@@ -17,7 +18,8 @@ public record CategoryResponse(
     bool ObjectionAllowed,
     bool EditingAllowed,
     bool HideMap,
-    FormResponse? Form)
+    FormResponse? Form,
+    Priority DefaultPriority)
 {
     public static CategoryResponse FromCategory(Category category)
     {
@@ -35,6 +37,7 @@ public record CategoryResponse(
             category.ObjectionAllowed,
             category.EditingAllowed,
             category.HideMap,
-            FormResponse.FromForm(category.Form));
+            FormResponse.FromForm(category.Form),
+            category.DefaultPriority);
     }
 };

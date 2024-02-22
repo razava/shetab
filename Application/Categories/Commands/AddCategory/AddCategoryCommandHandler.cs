@@ -34,7 +34,8 @@ internal sealed class AddCategoryCommandHandler(IUnitOfWork unitOfWork, ICategor
             request.EdittingAllowed,
             request.HideMap,
             request.AttachmentDescription,
-            request.FormId);
+            request.FormId,
+            request.DefaultCategory);
 
         categoryRepository.Insert(category);
         await unitOfWork.SaveAsync();

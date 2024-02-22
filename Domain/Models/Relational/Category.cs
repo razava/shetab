@@ -31,6 +31,7 @@ public class Category : BaseModel
     public ApplicationRole Role { get; set; } = null!;
     public Guid? FormId { get; set; } = null;
     public Form? Form { get; set; } = null;
+    public Priority DefaultPriority { get; set; } = Priority.Normal;
 
     [NotMapped]
     public List<int> Siblings
@@ -92,7 +93,8 @@ public class Category : BaseModel
         bool edittingAllowed = true,
         bool hideMap = false,
         string attachmentDescription = "",
-        Guid? formId = null)
+        Guid? formId = null,
+        Priority defaultPriority = Priority.Normal)
     {
         var category = new Category()
         {
@@ -111,7 +113,8 @@ public class Category : BaseModel
             EditingAllowed = edittingAllowed,
             HideMap = hideMap,
             AttachmentDescription = attachmentDescription,
-            FormId = formId
+            FormId = formId,
+            DefaultPriority = defaultPriority
         };
 
         return category;
@@ -132,7 +135,8 @@ public class Category : BaseModel
         bool? edittingAllowed = null,
         bool? hideMap = null,
         string? attachmentDescription = null,
-        Guid? formId = null)
+        Guid? formId = null,
+        Priority? defaultPriority = null)
     {
         Code = code ?? Code;
         Title = title ?? Title;
@@ -149,5 +153,6 @@ public class Category : BaseModel
         HideMap = hideMap ?? HideMap;
         AttachmentDescription = attachmentDescription ?? AttachmentDescription;
         FormId = formId;
+        DefaultPriority = defaultPriority ?? DefaultPriority;
     }
 }
