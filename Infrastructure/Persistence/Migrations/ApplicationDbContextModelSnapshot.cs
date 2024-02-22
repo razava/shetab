@@ -35,7 +35,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("StagesId");
 
-                    b.ToTable("ActorProcessStage");
+                    b.ToTable("ActorProcessStage", (string)null);
                 });
 
             modelBuilder.Entity("ActorRegion", b =>
@@ -50,7 +50,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("RegionsId");
 
-                    b.ToTable("ActorRegion");
+                    b.ToTable("ActorRegion", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationRoleChart", b =>
@@ -65,7 +65,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("RolesId");
 
-                    b.ToTable("ApplicationRoleChart");
+                    b.ToTable("ApplicationRoleChart", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Gov.GovAddress", b =>
@@ -152,7 +152,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GovAddress");
+                    b.ToTable("GovAddress", (string)null);
 
                     b.HasAnnotation("Relational:JsonPropertyName", "address");
                 });
@@ -178,7 +178,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("GovUserInfoId");
 
-                    b.ToTable("GovFamily");
+                    b.ToTable("GovFamily", (string)null);
 
                     b.HasAnnotation("Relational:JsonPropertyName", "family");
                 });
@@ -215,7 +215,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GovSubsidy");
+                    b.ToTable("GovSubsidy", (string)null);
 
                     b.HasAnnotation("Relational:JsonPropertyName", "subsidy");
                 });
@@ -298,7 +298,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("SubsidyId");
 
-                    b.ToTable("GovUserInfos");
+                    b.ToTable("GovUserInfos", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ApplicationLink", b =>
@@ -330,7 +330,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ShahrbinInstanceId");
 
-                    b.ToTable("ApplicationLink");
+                    b.ToTable("ApplicationLink", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.Category", b =>
@@ -409,7 +409,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ShahrbinInstanceId");
 
-                    b.ToTable("Category");
+                    b.ToTable("Category", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.Chart", b =>
@@ -437,7 +437,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ShahrbinInstanceId");
 
-                    b.ToTable("Chart");
+                    b.ToTable("Chart", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.Common.City", b =>
@@ -462,7 +462,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("DistrictId");
 
-                    b.ToTable("City");
+                    b.ToTable("City", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.Common.County", b =>
@@ -484,7 +484,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ProvinceId");
 
-                    b.ToTable("County");
+                    b.ToTable("County", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.Common.District", b =>
@@ -509,7 +509,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CountyId");
 
-                    b.ToTable("District");
+                    b.ToTable("District", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.Common.Province", b =>
@@ -526,7 +526,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Province");
+                    b.ToTable("Province", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.Common.Region", b =>
@@ -555,7 +555,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CityId");
 
-                    b.ToTable("Region");
+                    b.ToTable("Region", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.Common.ShahrbinInstance", b =>
@@ -595,7 +595,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CityId");
 
-                    b.ToTable("ShahrbinInstance");
+                    b.ToTable("ShahrbinInstance", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.Common.Upload", b =>
@@ -618,7 +618,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Upload");
+                    b.ToTable("Upload", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.Faq", b =>
@@ -647,7 +647,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ShahrbinInstanceId");
 
-                    b.ToTable("Faq");
+                    b.ToTable("Faq", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.IdentityAggregate.ApplicationRole", b =>
@@ -810,7 +810,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ContractorId");
 
-                    b.ToTable("ExecutiveContractor");
+                    b.ToTable("ExecutiveContractor", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.IdentityAggregate.OperatorCategory", b =>
@@ -825,7 +825,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("OperatorId");
 
-                    b.ToTable("OperatorCategory");
+                    b.ToTable("OperatorCategory", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.IdentityAggregate.ReportLikes", b =>
@@ -840,7 +840,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ReportId");
 
-                    b.ToTable("ReportLikes");
+                    b.ToTable("ReportLikes", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.News", b =>
@@ -876,7 +876,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ShahrbinInstanceId");
 
-                    b.ToTable("News");
+                    b.ToTable("News", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.OrganizationalUnit", b =>
@@ -912,7 +912,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("OrganizationalUnit");
+                    b.ToTable("OrganizationalUnit", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.PollAggregate.Poll", b =>
@@ -959,7 +959,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ShahrbinInstanceId");
 
-                    b.ToTable("Poll");
+                    b.ToTable("Poll", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.PollAggregate.PollAnswer", b =>
@@ -987,7 +987,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PollAnswer");
+                    b.ToTable("PollAnswer", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.PollAggregate.PollChoice", b =>
@@ -1016,7 +1016,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("PollId");
 
-                    b.ToTable("PollChoice");
+                    b.ToTable("PollChoice", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ProcessAggregate.Actor", b =>
@@ -1046,7 +1046,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasIndex("Identifier")
                         .IsUnique();
 
-                    b.ToTable("Actor");
+                    b.ToTable("Actor", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ProcessAggregate.BotActor", b =>
@@ -1083,7 +1083,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("TransitionId");
 
-                    b.ToTable("BotActors");
+                    b.ToTable("BotActors", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ProcessAggregate.Process", b =>
@@ -1117,7 +1117,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ShahrbinInstanceId");
 
-                    b.ToTable("Process");
+                    b.ToTable("Process", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ProcessAggregate.ProcessReason", b =>
@@ -1141,7 +1141,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProcessReason");
+                    b.ToTable("ProcessReason", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ProcessAggregate.ProcessStage", b =>
@@ -1180,7 +1180,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ProcessId");
 
-                    b.ToTable("ProcessStage");
+                    b.ToTable("ProcessStage", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ProcessAggregate.ProcessTransition", b =>
@@ -1238,7 +1238,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ToId");
 
-                    b.ToTable("ProcessTransition");
+                    b.ToTable("ProcessTransition", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.QuickAccess", b =>
@@ -1274,7 +1274,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ShahrbinInstanceId");
 
-                    b.ToTable("QuickAccess");
+                    b.ToTable("QuickAccess", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.Report", b =>
@@ -1415,7 +1415,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ShahrbinInstanceId");
 
-                    b.ToTable("Reports");
+                    b.ToTable("Reports", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.Comment", b =>
@@ -1460,7 +1460,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comment");
+                    b.ToTable("Comment", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.Feedback", b =>
@@ -1508,7 +1508,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Feedback");
+                    b.ToTable("Feedback", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.Form", b =>
@@ -1531,7 +1531,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ShahrbinInstanceId");
 
-                    b.ToTable("Form");
+                    b.ToTable("Form", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.Message", b =>
@@ -1583,7 +1583,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ShahrbinInstanceId");
 
-                    b.ToTable("Message");
+                    b.ToTable("Message", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ReportAggregate.ReportNote", b =>
@@ -1621,7 +1621,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ReportId");
 
-                    b.ToTable("ReportNote");
+                    b.ToTable("ReportNote", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.RevisionUnit", b =>
@@ -1640,7 +1640,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("RevisorId");
 
-                    b.ToTable("RevisionUnit");
+                    b.ToTable("RevisionUnit", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.TransitionLog", b =>
@@ -1693,7 +1693,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("TransitionId");
 
-                    b.ToTable("TransitionLogs");
+                    b.ToTable("TransitionLogs", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.Violation", b =>
@@ -1743,7 +1743,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ViolationTypeId");
 
-                    b.ToTable("Violation");
+                    b.ToTable("Violation", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Relational.ViolationType", b =>
@@ -1766,7 +1766,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ViolationType");
+                    b.ToTable("ViolationType", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1887,7 +1887,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ParentOrganizationalUnitsId");
 
-                    b.ToTable("OrganizationalUnitOrganizationalUnit");
+                    b.ToTable("OrganizationalUnitOrganizationalUnit", (string)null);
                 });
 
             modelBuilder.Entity("PollAnswerPollChoice", b =>
@@ -1902,7 +1902,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ChoicesId");
 
-                    b.ToTable("PollAnswerPollChoice");
+                    b.ToTable("PollAnswerPollChoice", (string)null);
                 });
 
             modelBuilder.Entity("ProcessReasonProcessTransition", b =>
@@ -1917,7 +1917,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("TransitionsId");
 
-                    b.ToTable("ProcessReasonProcessTransition");
+                    b.ToTable("ProcessReasonProcessTransition", (string)null);
                 });
 
             modelBuilder.Entity("ActorProcessStage", b =>
@@ -1999,7 +1999,7 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("Domain.Models.Relational.Common.Media", "Image", b1 =>
+                    b.OwnsOne("Domain.Models.Relational.ApplicationLink.Image#Domain.Models.Relational.Common.Media", "Image", b1 =>
                         {
                             b1.Property<int>("ApplicationLinkId")
                                 .HasColumnType("int");
@@ -2036,7 +2036,7 @@ namespace Infrastructure.Persistence.Migrations
 
                             b1.HasKey("ApplicationLinkId");
 
-                            b1.ToTable("ApplicationLink");
+                            b1.ToTable("ApplicationLink", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ApplicationLinkId");
@@ -2159,7 +2159,7 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.OwnsOne("Domain.Models.Relational.Common.Media", "Media", b1 =>
+                    b.OwnsOne("Domain.Models.Relational.Common.Upload.Media#Domain.Models.Relational.Common.Media", "Media", b1 =>
                         {
                             b1.Property<Guid>("UploadId")
                                 .HasColumnType("uniqueidentifier");
@@ -2196,7 +2196,7 @@ namespace Infrastructure.Persistence.Migrations
 
                             b1.HasKey("UploadId");
 
-                            b1.ToTable("Upload");
+                            b1.ToTable("Upload", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("UploadId");
@@ -2226,7 +2226,7 @@ namespace Infrastructure.Persistence.Migrations
                         .HasForeignKey("ShahrbinInstanceId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.OwnsOne("Domain.Models.Relational.Common.Address", "Address", b1 =>
+                    b.OwnsOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser.Address#Domain.Models.Relational.Common.Address", "Address", b1 =>
                         {
                             b1.Property<string>("ApplicationUserId")
                                 .HasColumnType("nvarchar(450)");
@@ -2264,7 +2264,7 @@ namespace Infrastructure.Persistence.Migrations
 
                             b1.HasIndex("RegionId");
 
-                            b1.ToTable("AspNetUsers");
+                            b1.ToTable("AspNetUsers", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ApplicationUserId");
@@ -2276,7 +2276,7 @@ namespace Infrastructure.Persistence.Migrations
                             b1.Navigation("Region");
                         });
 
-                    b.OwnsOne("Domain.Models.Relational.Common.Media", "Avatar", b1 =>
+                    b.OwnsOne("Domain.Models.Relational.IdentityAggregate.ApplicationUser.Avatar#Domain.Models.Relational.Common.Media", "Avatar", b1 =>
                         {
                             b1.Property<string>("ApplicationUserId")
                                 .HasColumnType("nvarchar(450)");
@@ -2313,7 +2313,7 @@ namespace Infrastructure.Persistence.Migrations
 
                             b1.HasKey("ApplicationUserId");
 
-                            b1.ToTable("AspNetUsers");
+                            b1.ToTable("AspNetUsers", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ApplicationUserId");
@@ -2391,7 +2391,7 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("Domain.Models.Relational.Common.Media", "Image", b1 =>
+                    b.OwnsOne("Domain.Models.Relational.News.Image#Domain.Models.Relational.Common.Media", "Image", b1 =>
                         {
                             b1.Property<int>("NewsId")
                                 .HasColumnType("int");
@@ -2428,7 +2428,7 @@ namespace Infrastructure.Persistence.Migrations
 
                             b1.HasKey("NewsId");
 
-                            b1.ToTable("News");
+                            b1.ToTable("News", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("NewsId");
@@ -2602,7 +2602,7 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.OwnsOne("Domain.Models.Relational.Common.Media", "Media", b1 =>
+                    b.OwnsOne("Domain.Models.Relational.QuickAccess.Media#Domain.Models.Relational.Common.Media", "Media", b1 =>
                         {
                             b1.Property<int>("QuickAccessId")
                                 .HasColumnType("int");
@@ -2639,7 +2639,7 @@ namespace Infrastructure.Persistence.Migrations
 
                             b1.HasKey("QuickAccessId");
 
-                            b1.ToTable("QuickAccess");
+                            b1.ToTable("QuickAccess", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("QuickAccessId");
@@ -2715,7 +2715,7 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.OwnsOne("Domain.Models.Relational.Common.Address", "Address", b1 =>
+                    b.OwnsOne("Domain.Models.Relational.Report.Address#Domain.Models.Relational.Common.Address", "Address", b1 =>
                         {
                             b1.Property<Guid>("ReportId")
                                 .HasColumnType("uniqueidentifier");
@@ -2753,7 +2753,7 @@ namespace Infrastructure.Persistence.Migrations
 
                             b1.HasIndex("RegionId");
 
-                            b1.ToTable("Reports");
+                            b1.ToTable("Reports", (string)null);
 
                             b1.HasOne("Domain.Models.Relational.Common.Region", "Region")
                                 .WithMany()
@@ -2765,7 +2765,7 @@ namespace Infrastructure.Persistence.Migrations
                             b1.Navigation("Region");
                         });
 
-                    b.OwnsMany("Domain.Models.Relational.Common.Media", "Medias", b1 =>
+                    b.OwnsMany("Domain.Models.Relational.Report.Medias#Domain.Models.Relational.Common.Media", "Medias", b1 =>
                         {
                             b1.Property<Guid>("ReportId")
                                 .HasColumnType("uniqueidentifier");
@@ -2803,7 +2803,7 @@ namespace Infrastructure.Persistence.Migrations
 
                             b1.HasKey("ReportId", "Id");
 
-                            b1.ToTable("Reports_Medias");
+                            b1.ToTable("Reports_Medias", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ReportId");
@@ -2905,7 +2905,7 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("Domain.Models.Relational.ReportAggregate.FormElement", "Elements", b1 =>
+                    b.OwnsMany("Domain.Models.Relational.ReportAggregate.Form.Elements#Domain.Models.Relational.ReportAggregate.FormElement", "Elements", b1 =>
                         {
                             b1.Property<Guid>("FormId")
                                 .HasColumnType("uniqueidentifier");
@@ -2935,7 +2935,7 @@ namespace Infrastructure.Persistence.Migrations
 
                             b1.HasKey("FormId", "Id");
 
-                            b1.ToTable("FormElement");
+                            b1.ToTable("FormElement", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("FormId");
@@ -2962,7 +2962,7 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("Domain.Models.Relational.ReportAggregate.MessageRecepient", "Recepient", b1 =>
+                    b.OwnsOne("Domain.Models.Relational.ReportAggregate.Message.Recepient#Domain.Models.Relational.ReportAggregate.MessageRecepient", "Recepient", b1 =>
                         {
                             b1.Property<Guid>("MessageId")
                                 .HasColumnType("uniqueidentifier");
@@ -2979,7 +2979,7 @@ namespace Infrastructure.Persistence.Migrations
 
                             b1.HasKey("MessageId");
 
-                            b1.ToTable("Message");
+                            b1.ToTable("Message", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("MessageId");
@@ -3035,7 +3035,7 @@ namespace Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("TransitionId");
 
-                    b.OwnsMany("Domain.Models.Relational.Common.Media", "Attachments", b1 =>
+                    b.OwnsMany("Domain.Models.Relational.TransitionLog.Attachments#Domain.Models.Relational.Common.Media", "Attachments", b1 =>
                         {
                             b1.Property<Guid>("TransitionLogId")
                                 .HasColumnType("uniqueidentifier");
@@ -3073,7 +3073,7 @@ namespace Infrastructure.Persistence.Migrations
 
                             b1.HasKey("TransitionLogId", "Id");
 
-                            b1.ToTable("TransitionLogs_Attachments");
+                            b1.ToTable("TransitionLogs_Attachments", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("TransitionLogId");

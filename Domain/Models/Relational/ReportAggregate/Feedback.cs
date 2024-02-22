@@ -10,7 +10,7 @@ public class Feedback : BaseModel
     public string Token { get; set; } = null!;
     public string UserId { get; set; } = null!;
     public ApplicationUser User { get; set; } = null!;
-    public string PhoneNumber { get; set; } = null!;
+    public string PhoneNumber { get; set; } = string.Empty;
     public DateTime Creation { get; set; }
     public DateTime? LastSent { get; set; }
     public int TryCount { get; set; }
