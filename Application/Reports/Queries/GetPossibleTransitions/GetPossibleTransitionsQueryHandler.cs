@@ -18,8 +18,8 @@ internal sealed class GetPossibleTransitionsQueryHandler(
         var report = await reportRepository.GetByIDAsync(request.reportId);
         if (report == null)
             return NotFoundErrors.Report;
-        if (report.ShahrbinInstanceId != request.instanceId)
-            return AccessDeniedErrors.General;
+        //if (report.ShahrbinInstanceId != request.instanceId)
+        //    return AccessDeniedErrors.General;
 
         var possibleTransitions = report.GetPossibleTransitions();
         //var pt = await unitOfWork.DbContext.Set<Report>()
