@@ -33,21 +33,22 @@ public class CategoryUpdateDto
     public int? Order { get; set; }
     public int? ParentId { get; set; }
     [MaxLength(8)]
-    public string Code { get; set; } = string.Empty;
+    public string? Code { get; set; }
     [MaxLength(32)]
-    public string Title { get; set; } = string.Empty;
+    public string? Title { get; set; }
     public int? ProcessId { get; set; }
     [MaxLength(1024)]
-    public string Description { get; set; } = string.Empty;
+    public string? Description { get; set; }
     [MaxLength(1024)]
-    public string AttachmentDescription { get; set; } = string.Empty;
+    public string? AttachmentDescription { get; set; }
     public int? Duration { get; set; }
     public int? ResponseDuration { get; set; }
     public bool? IsDeleted { get; set; }
     public Guid? FormId { get; set; }
     public bool? ObjectionAllowed { get; set; }
-    public bool? EditingAllowed { get; set; } = true;
+    public bool? EditingAllowed { get; set; }
     public bool? HideMap { get; set; }
+    public Priority? DefaultPriority { get; set; }
 }
 
 

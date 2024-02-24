@@ -9,4 +9,5 @@ public class Chart : BaseModel
     public int Code { get; set; }
     public string Title { get; set; } = null!;
     public List<ApplicationRole> Roles { get; set; } = new List<ApplicationRole>();
+    public string? DefaultParameterValue { get; set; }
 }

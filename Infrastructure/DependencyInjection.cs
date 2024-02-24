@@ -1,8 +1,10 @@
 ﻿using Application.Common.Interfaces.Caching;
 using Application.Common.Interfaces.Communication;
+using Application.Common.Interfaces.Info;
 using Application.Common.Interfaces.Map;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Security;
+using Application.Info.Common;
 using Infrastructure.Authentication;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.Caching;
@@ -12,6 +14,7 @@ using Infrastructure.Exceptions;
 using Infrastructure.Map;
 using Infrastructure.Map.ParsiMap;
 using Infrastructure.Persistence;
+using Infrastructure.Persistence.Info;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Storage;
 using MassTransit;
@@ -38,7 +41,7 @@ public static class DependencyInjection
         services.AddMap(configuration);
         services.AddCache();
         services.AddBackgroundJobs();
-
+        services.AddScoped<IInfoService, InfoService>();
         return services;
     }
 

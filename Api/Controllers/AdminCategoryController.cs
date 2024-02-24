@@ -103,7 +103,8 @@ public class AdminCategoryController : ApiController
             categoryUpdateDto.EditingAllowed,
             categoryUpdateDto.HideMap,
             categoryUpdateDto.AttachmentDescription,
-            categoryUpdateDto.FormId);
+            categoryUpdateDto.FormId,
+            categoryUpdateDto.DefaultPriority);
 
         var result = await Sender.Send(command);
         

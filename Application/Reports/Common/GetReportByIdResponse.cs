@@ -21,6 +21,7 @@ public record GetReportByIdResponse(
     Visibility Visibility,
     bool IsIdentityVisible,
     int Likes,
+    bool IsFeedbacked,
     int CommentsCount,
     IEnumerable<Media> Medias,
     FormResponse? Form
@@ -44,6 +45,7 @@ public record GetReportByIdResponse(
             report.Visibility,
             report.IsIdentityVisible,
             report.Likes,
+            report.IsFeedbacked,
             report.CommentsCount,
             report.Medias,
             FormResponse.FromForm(report.Category.Form));
@@ -73,6 +75,7 @@ public record GetReportByIdResponse(
             report.Visibility,
             report.IsIdentityVisible,
             report.Likes,
+            report.IsFeedbacked,
             report.CommentsCount,
             report.Medias,
             FormResponse.FromForm(report.Category.Form));

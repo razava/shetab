@@ -5,7 +5,6 @@ using Application.Info.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -270,7 +269,7 @@ internal class GetInfoQueryHandler(
         foreach (var category in categories)
         {
             var serie = new InfoSerie(category.Title, "");
-            var catDescendant = category.Siblings;
+            var catDescendant = category.Decendants;
 
             var finished = groupedQuery.Where(g => catDescendant.Contains(g.Key.CategoryId) && 
             (g.Key.ReportState == ReportState.Finished || g.Key.ReportState == ReportState.AcceptedByCitizen))

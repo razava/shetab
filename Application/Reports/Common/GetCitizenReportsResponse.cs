@@ -17,6 +17,7 @@ public record GetCitizenReportsResponse(
     string AddressDetail,
     bool IsLiked,
     int Likes,
+    bool IsFeedbacked,
     int CommentsCount,
     IEnumerable<Media> Medias)
 {
@@ -35,6 +36,7 @@ public record GetCitizenReportsResponse(
                 report.Address.Detail,
                 report.LikedBy.Any(r => r.Id == userId),
                 report.Likes,
+                report.IsFeedbacked,
                 report.CommentsCount,
                 report.Medias);
     }
@@ -54,6 +56,7 @@ public record GetCitizenReportsResponse(
                 report.Address.Detail,
                 report.LikedBy.Any(r => r.Id == userId),
                 report.Likes,
+                report.IsFeedbacked,
                 report.CommentsCount,
                 report.Medias);
         return selector;

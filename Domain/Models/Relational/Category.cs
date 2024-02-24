@@ -34,24 +34,24 @@ public class Category : BaseModel
     public Priority DefaultPriority { get; set; } = Priority.Normal;
 
     [NotMapped]
-    public List<int> Siblings
+    public List<int> Decendants
     {
         get
         {
-            if (siblings == null)
+            if (decendants == null)
             {
-                siblings = getSiblings();
-                return siblings;
+                decendants = getDecendants();
+                return decendants;
             }
             else
             {
-                return siblings;
+                return decendants;
             }
         }
     }
     [NotMapped]
-    private List<int>? siblings = null;
-    private List<int> getSiblings()
+    private List<int>? decendants = null;
+    private List<int> getDecendants()
     {
         var result = new List<int>();
         var buffer = new Queue<Category>();
