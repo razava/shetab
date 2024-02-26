@@ -1,4 +1,4 @@
-﻿namespace Application.Common.Extentions;
+﻿namespace SharedKernel.ExtensionMethods;
 
 public static class TimeSpanExtensionMethods
 {

@@ -1,5 +1,7 @@
 ﻿using Api.Abstractions;
+using Api.ExtensionMethods;
 using Application.Setup.Commands;
+using Application.Setup.Commands.AddDummyDataCommand;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,5 +32,14 @@ public class SetupController : ApiController
         return Ok(result);
     }
 
+    [HttpGet("AddDummies")]
+    public async Task<ActionResult> AddDummies(int count)
+    {
+        var command = new AddDummyDataCommand(count);
+        var result = await Sender.Send(command);
 
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
  }

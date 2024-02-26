@@ -6,6 +6,6 @@ public record GetInfoQuery(
     int Code,
     int InstanceId,
     string UserId,
-    string? Parameter = null)
+    string? Parameter)
     : IRequest<Result<InfoModel>>;
 

@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="Abstractions\Messaging\" />
+    <Folder Include="Common\Extentions\" />
     <Folder Include="Configurations\Commands\" />
     <Folder Include="Feedbacks\Queries\" />
     <Folder Include="Messages\Commands\" />

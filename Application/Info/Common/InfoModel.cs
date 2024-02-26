@@ -37,7 +37,8 @@ public record InfoChart(string ChartTitle, string ChartIcon, bool IsStacked, boo
     {
         if (Series.Count == 0)
             return this;
-
+        if(!Series.SelectMany(s => s.Values).Any())
+            return this;
         Series = Series.OrderByDescending(s => double.Parse(s.Values[0].Value)).ToList();
         return this;
     }
@@ -77,12 +78,12 @@ public record InfoSerie(string Title, string Icon)
         return this;
     }
 
-    public InfoSerie Add(string Title, string Value, string DisplayValue, object? Parameters = null)
+    public InfoSerie Add(string Title, string Value, string DisplayValue, string? Parameters = null)
     {
         Values.Add(new DataItem(Title, Value, DisplayValue, Parameters));
         return this;
     }
 }
 
-public record DataItem(string Title, string Value, string DisplayValue, object? Parameters = null);
+public record DataItem(string Title, string Value, string DisplayValue, string? Parameters = null);
 

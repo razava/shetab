@@ -35,12 +35,12 @@ public class StaffInfoController : ApiController
 
 
     [Authorize]
-    [HttpGet("Charts/{id}")]
-    public async Task<ActionResult<InfoDto>> GetChartsById(int id/*, [FromQuery] PagingInfo pagingInfo*/)//time filter?
+    [HttpGet("Charts/{code}")]
+    public async Task<ActionResult<InfoDto>> GetChartsById(int code, string? parameter)
     {
         var instanceId = User.GetUserInstanceId();
         var userId = User.GetUserId();
-        var query = new GetInfoQuery(id, instanceId, userId);
+        var query = new GetInfoQuery(code, instanceId, userId, parameter);
         var result = await Sender.Send(query);
 
         return result.Match(
