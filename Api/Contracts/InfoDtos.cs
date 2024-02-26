@@ -72,7 +72,8 @@ public record ChartDto(
     int Id,
     int Order,
     int Code,
-    string Title);
+    string Title,
+    string? DefaultParameterValue);
 
 
 
