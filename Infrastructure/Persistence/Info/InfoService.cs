@@ -349,14 +349,26 @@ public class InfoService(
         var regions = await unitOfWork.DbContext.Set<Region>()
             .AsNoTracking()
             .Where(r => r.CityId == cityId)
-            .Select(e => new Bin<int>(e.Id, e.Name))
+            .Select(e => new { e.Id, Title = e.Name })
             .ToListAsync();
+
+        var totalSerie = new InfoSerie("کل", "");
+        var liveSerie = new InfoSerie("در حال رسیدگی", "");
+        var doneSerie = new InfoSerie("رسیدگی شده", "");
+        var needAcceptanceSerie = new InfoSerie("در انتظار تأیید", "");
+        var feedbackedSerie = new InfoSerie("بازخورد شهروند", "");
+        var objectionedSerie = new InfoSerie("اعتراض شهروند", "");
+        infoChart.Add(totalSerie);
+        infoChart.Add(liveSerie);
+        infoChart.Add(doneSerie);
+        infoChart.Add(needAcceptanceSerie);
+        infoChart.Add(feedbackedSerie);
+        infoChart.Add(objectionedSerie);
+        //var temp = new List<long>();
 
         foreach (var region in regions)
         {
-            var serie = new InfoSerie(region.Title, "");
-
-            var finished = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
+            var done = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
             (g.Key.ReportState == ReportState.Finished || g.Key.ReportState == ReportState.AcceptedByCitizen))
                 .Sum(g => g.Count);
 
@@ -368,7 +380,7 @@ public class InfoService(
             g.Key.ReportState == ReportState.NeedAcceptance)
                 .Sum(g => g.Count);
 
-            var total = finished + live + needAcceptance;
+            var total = done + live + needAcceptance;
 
             if (total == 0)
                 continue;
@@ -381,38 +393,35 @@ public class InfoService(
             g.Key.IsObjectioned == true)
                 .Sum(g => g.Count);
 
-            serie.Add(new DataItem(
-                "کل",
+            totalSerie.Add(new DataItem(
+                region.Title,
                 total.ToString(),
-                total.ToString()));
+                GetPercent(total, total)));
 
-            serie.Add(new DataItem(
-                "در حال رسیدگی",
+            liveSerie.Add(new DataItem(
+                region.Title,
                 live.ToString(),
                 GetPercent(live, total)));
 
-            serie.Add(new DataItem(
-                "رسیدگی شده",
-                finished.ToString(),
-                GetPercent(finished, total)));
+            doneSerie.Add(new DataItem(
+                region.Title,
+                done.ToString(),
+                GetPercent(done, total)));
 
-            serie.Add(new DataItem(
-                "در انتظار تایید",
+            needAcceptanceSerie.Add(new DataItem(
+                region.Title,
                 needAcceptance.ToString(),
                 GetPercent(needAcceptance, total)));
 
-            serie.Add(new DataItem(
-                "بازخورد شهروند",
+            feedbackedSerie.Add(new DataItem(
+                region.Title,
                 feedbacked.ToString(),
                 GetPercent(feedbacked, total)));
 
-            serie.Add(new DataItem(
-                "اعتراض شهروند",
+            objectionedSerie.Add(new DataItem(
+                region.Title,
                 objectioned.ToString(),
                 GetPercent(objectioned, total)));
-
-            infoChart.Add(serie);
-
         }
 
         result.Add(infoChart.Sort());
@@ -444,7 +453,7 @@ public class InfoService(
             "متوسط زمان رسیدگی به تفکیک منطقه",
             bins,
             query,
-            z => (int)z.Address.RegionId);
+            z => z.Address.RegionId!.Value);
 
         return result;
     }
@@ -475,7 +484,7 @@ public class InfoService(
             "متوسط زمان رسیدگی به تفکیک واحد اجرایی",
             bins,
             query,
-            z => z.ExecutiveId);
+            z => z.ExecutiveId!);
 
         if (result == null)
             result = new InfoModel();
