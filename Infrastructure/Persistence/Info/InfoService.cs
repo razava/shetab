@@ -187,6 +187,7 @@ public class InfoService(
         var objectionedSerie = new InfoSerie("اعتراض شهروند", "");
         infoChart.Add(totalSerie);
         infoChart.Add(doneSerie);
+        infoChart.Add(waitedSerie);
         infoChart.Add(liveSerie);
         infoChart.Add(feedbackedSerie);
         infoChart.Add(objectionedSerie);
