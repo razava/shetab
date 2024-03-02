@@ -121,6 +121,7 @@ public class StorageService : IStorageService
     {
         var videoExtensions = new List<string> { ".mkv", ".mp4", ".mov", ".3gp", ".ogg" };
         var docExtensions = new List<string> { ".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xls", ".xlsx" };
+        var voiceExtensions = new List<string> { ".mp3" };
 
         if (videoExtensions.Contains(extension.ToLower()))
         {
@@ -132,6 +133,10 @@ public class StorageService : IStorageService
             return MediaType.Doc;
         }
 
+        if (voiceExtensions.Contains(extension.ToLower()))
+        {
+            return MediaType.Voice;
+        }
         return MediaType.Other;
     }
 
@@ -141,7 +146,7 @@ public class StorageService : IStorageService
             {
                 "jpg", "jpeg", "jpe", "jif", "jfif", "jfi", "png", "gif", "tiff", "tif", "svg", "svgz",
                 "pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx",
-                "mkv", "mp4", "mov", "3gp", "ogg"
+                "mkv", "mp4", "mov", "3gp", "ogg", "mp3"
             };
         var extension = fileName.Split('.')[fileName.Split('.').Length - 1];
 
@@ -224,3 +229,5 @@ public class StorageService : IStorageService
     }
 
 }
+
+
