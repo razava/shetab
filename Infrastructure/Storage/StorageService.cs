@@ -119,9 +119,9 @@ public class StorageService : IStorageService
 
     private static MediaType GetMediaType(string extension)
     {
-        var videoExtensions = new List<string> { ".mkv", ".mp4", ".mov", ".3gp", ".ogg" };
+        var videoExtensions = new List<string> { ".mkv", ".mp4", ".mov", ".3gp", ".ogg", ".webm" };
         var docExtensions = new List<string> { ".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xls", ".xlsx" };
-        var voiceExtensions = new List<string> { ".mp3" };
+        var voiceExtensions = new List<string> { ".mp3", ".weba" };
 
         if (videoExtensions.Contains(extension.ToLower()))
         {
@@ -146,7 +146,7 @@ public class StorageService : IStorageService
             {
                 "jpg", "jpeg", "jpe", "jif", "jfif", "jfi", "png", "gif", "tiff", "tif", "svg", "svgz",
                 "pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx",
-                "mkv", "mp4", "mov", "3gp", "ogg", "mp3"
+                "mkv", "mp4", "mov", "3gp", "ogg", "webm", "mp3", "weba"
             };
         var extension = fileName.Split('.')[fileName.Split('.').Length - 1];
 

@@ -28,6 +28,9 @@ internal class GetInfoQueryHandler(
             case 102:
                 result = await infoService.GetReportsStatusPerCategory(request.InstanceId, request.Parameter);
                 break;
+            case 103:
+                result = await infoService.GetReportsStatusPerExecutive(request.InstanceId);
+                break;
             case 104:
                 result = await infoService.GetReportsStatusPerRegion(request.InstanceId);
                 break;
@@ -35,13 +38,11 @@ internal class GetInfoQueryHandler(
                 result = await infoService.GetRepportsTimeByExecutive(request.InstanceId);
                 break;
             case 204:
-                result = await infoService.GetRepportsTimeByRegion(request.InstanceId);
+                result = await infoService.GetReportsTimeByRegion(request.InstanceId);
                 break;
             default:
                 break;
         }
-
-
 
         return result;
     }

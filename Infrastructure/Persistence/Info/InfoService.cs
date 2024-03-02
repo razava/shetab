@@ -5,6 +5,9 @@ using Application.Info.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
+using Domain.Models.Relational.ProcessAggregate;
+using MassTransit.Initializers;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.ExtensionMethods;
 using System.Linq.Expressions;
@@ -16,6 +19,7 @@ public class InfoService(
     IUserRepository userRepository,
     IActorRepository actorRepository) : IInfoService
 {
+    //Status
     public async Task<InfoModel> GetReportsStatusPerCategory(int instanceId, string? parameter)
     {
         int parentCategoryId;
@@ -58,8 +62,8 @@ public class InfoService(
             return result;
 
         var totalSerie = new InfoSerie("کل", "");
-        var liveSerie = new InfoSerie("در حال رسیدگی", "");
-        var doneSerie = new InfoSerie("رسیدگی شده", "");
+        var liveSerie = new InfoSerie("در جریان", "");
+        var doneSerie = new InfoSerie("پایان یافته", "");
         var needAcceptanceSerie = new InfoSerie("در انتظار تأیید", "");
         var feedbackedSerie = new InfoSerie("بازخورد شهروند", "");
         var objectionedSerie = new InfoSerie("اعتراض شهروند", "");
@@ -142,7 +146,221 @@ public class InfoService(
         return result;
     }
 
+    public async Task<InfoModel> GetReportsStatusPerExecutive(int instanceId)
+    {
+        var result = new InfoModel();
 
+        var infoChart = new InfoChart("وضعیت درخواست ها به تفکیک واحد اجرایی", "", false, false);
+
+        //todo : should not be filtered by regions related to user?
+        var query = unitOfWork.DbContext.Set<Report>()
+            .AsNoTracking()
+            .Where(r => r.ShahrbinInstanceId == instanceId);
+
+        var groupedQuery = await query
+            .GroupBy(q => new { q.ExecutiveId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
+            .Select(q => new { Key = q.Key, Count = q.LongCount() })
+            .ToListAsync();
+
+        var executiveIds = (await userRepository.GetUsersInRole(RoleNames.Executive))
+            .Where(u => u.ShahrbinInstanceId == instanceId)
+            .Select(u => u.Id).ToList();
+        var executives = await unitOfWork.DbContext.Set<ApplicationUser>()
+            .Where(u => executiveIds.Contains(u.Id))
+            .Select(u => new { Id = u.Id, Title = u.Title })
+            .ToListAsync();
+
+        var executiveActorIds = await unitOfWork.DbContext.Set<Actor>()
+            .Where(a => executiveIds.Contains(a.Identifier))
+            .ToListAsync();
+        var waitedQuery = await query
+            .Where(q => q.CurrentActor != null && executiveIds.Contains(q.CurrentActor.Identifier))
+            .GroupBy(q => q.CurrentActor!.Identifier)
+            .Select(q => new { q.Key, Count = q.LongCount() })
+            .ToListAsync();
+
+        var totalSerie = new InfoSerie("کل", "");
+        var doneSerie = new InfoSerie("پایان یافته", "");
+        var waitedSerie = new InfoSerie("در انتظار", "");
+        var liveSerie = new InfoSerie("در جریان", "");
+        var feedbackedSerie = new InfoSerie("بازخورد شهروند", "");
+        var objectionedSerie = new InfoSerie("اعتراض شهروند", "");
+        infoChart.Add(totalSerie);
+        infoChart.Add(doneSerie);
+        infoChart.Add(liveSerie);
+        infoChart.Add(feedbackedSerie);
+        infoChart.Add(objectionedSerie);
+        //var temp = new List<long>();
+
+
+        foreach (var executive in executives)
+        {
+            var done = groupedQuery.Where(g => g.Key.ExecutiveId == executive.Id &&
+            (g.Key.ReportState == ReportState.Finished || g.Key.ReportState == ReportState.AcceptedByCitizen))
+                .Sum(g => g.Count);
+
+            var live = groupedQuery.Where(g => g.Key.ExecutiveId == executive.Id &&
+            (g.Key.ReportState == ReportState.Live || g.Key.ReportState == ReportState.Review))
+                .Sum(g => g.Count);
+            
+            var waited = waitedQuery.Where(g => g.Key == executive.Id)
+                .Sum(g => g.Count);
+
+            var total = done + live + waited;
+
+            if (total == 0)
+                continue;
+
+            var feedbacked = groupedQuery.Where(g => g.Key.ExecutiveId == executive.Id &&
+            g.Key.IsFeedbacked == true)
+                .Sum(g => g.Count);
+
+            var objectioned = groupedQuery.Where(g => g.Key.ExecutiveId == executive.Id &&
+            g.Key.IsObjectioned == true)
+                .Sum(g => g.Count);
+
+            totalSerie.Add(new DataItem(
+                executive.Title,
+                total.ToString(),
+                GetPercent(total, total)));
+
+            liveSerie.Add(new DataItem(
+                executive.Title,
+                live.ToString(),
+                GetPercent(live, total)));
+
+            doneSerie.Add(new DataItem(
+                executive.Title,
+                done.ToString(),
+                GetPercent(done, total)));
+
+            waitedSerie.Add(new DataItem(
+                executive.Title,
+                waited.ToString(),
+                GetPercent(waited, total)));
+
+            feedbackedSerie.Add(new DataItem(
+                executive.Title,
+                feedbacked.ToString(),
+                GetPercent(feedbacked, total)));
+
+            objectionedSerie.Add(new DataItem(
+                executive.Title,
+                objectioned.ToString(),
+                GetPercent(objectioned, total)));
+        }
+
+        result.Add(infoChart.Sort());
+
+        return result;
+    }
+
+    public async Task<InfoModel> GetReportsStatusPerRegion(int instanceId)
+    {
+        var result = new InfoModel();
+
+        var infoChart = new InfoChart("وضعیت درخواست ها به تفکیک منطقه", "", false, false);
+
+        //todo : should not be filtered by regions related to user?
+        var query = unitOfWork.DbContext.Set<Report>()
+            .AsNoTracking()
+            .Where(r => r.ShahrbinInstanceId == instanceId);
+
+        var groupedQuery = await query
+            .GroupBy(q => new { q.Address.RegionId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
+            .Select(q => new { Key = q.Key, Count = q.LongCount() })
+            .ToListAsync();
+
+        var cityId = await unitOfWork.DbContext.Set<ShahrbinInstance>()
+            .AsNoTracking().Where(s => s.Id == instanceId).
+            Select(s => s.CityId).SingleOrDefaultAsync();
+
+        var regions = await unitOfWork.DbContext.Set<Region>()
+            .AsNoTracking()
+            .Where(r => r.CityId == cityId)
+            .Select(e => new { e.Id, Title = e.Name })
+            .ToListAsync();
+
+        var totalSerie = new InfoSerie("کل", "");
+        var liveSerie = new InfoSerie("در حال رسیدگی", "");
+        var doneSerie = new InfoSerie("رسیدگی شده", "");
+        var needAcceptanceSerie = new InfoSerie("در انتظار تأیید", "");
+        var feedbackedSerie = new InfoSerie("بازخورد شهروند", "");
+        var objectionedSerie = new InfoSerie("اعتراض شهروند", "");
+        infoChart.Add(totalSerie);
+        infoChart.Add(liveSerie);
+        infoChart.Add(doneSerie);
+        infoChart.Add(needAcceptanceSerie);
+        infoChart.Add(feedbackedSerie);
+        infoChart.Add(objectionedSerie);
+        //var temp = new List<long>();
+
+
+        foreach (var region in regions)
+        {
+            var done = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
+            (g.Key.ReportState == ReportState.Finished || g.Key.ReportState == ReportState.AcceptedByCitizen))
+                .Sum(g => g.Count);
+
+            var live = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
+            (g.Key.ReportState == ReportState.Live || g.Key.ReportState == ReportState.Review))
+                .Sum(g => g.Count);
+
+            var needAcceptance = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
+            g.Key.ReportState == ReportState.NeedAcceptance)
+                .Sum(g => g.Count);
+
+            var total = done + live + needAcceptance;
+
+            if (total == 0)
+                continue;
+
+            var feedbacked = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
+            g.Key.IsFeedbacked == true)
+                .Sum(g => g.Count);
+
+            var objectioned = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
+            g.Key.IsObjectioned == true)
+                .Sum(g => g.Count);
+
+            totalSerie.Add(new DataItem(
+                region.Title,
+                total.ToString(),
+                GetPercent(total, total)));
+
+            liveSerie.Add(new DataItem(
+                region.Title,
+                live.ToString(),
+                GetPercent(live, total)));
+
+            doneSerie.Add(new DataItem(
+                region.Title,
+                done.ToString(),
+                GetPercent(done, total)));
+
+            needAcceptanceSerie.Add(new DataItem(
+                region.Title,
+                needAcceptance.ToString(),
+                GetPercent(needAcceptance, total)));
+
+            feedbackedSerie.Add(new DataItem(
+                region.Title,
+                feedbacked.ToString(),
+                GetPercent(feedbacked, total)));
+
+            objectionedSerie.Add(new DataItem(
+                region.Title,
+                objectioned.ToString(),
+                GetPercent(objectioned, total)));
+        }
+
+        result.Add(infoChart.Sort());
+
+        return result;
+    }
+
+
+    //Statistics
     public async Task<InfoModel> GetUsersStatistics(int instanceId)
     {
         var result = new InfoModel();
@@ -193,7 +411,6 @@ public class InfoService(
         return result;
 
     }
-
 
     public async Task<InfoModel> GetReportsStatistics(int instanceId)
     {
@@ -326,120 +543,102 @@ public class InfoService(
         return result;
     }
 
-    public async Task<InfoModel> GetReportsStatusPerRegion(int instanceId)
+
+    //Temporal
+    public async Task<InfoModel> GetReportsTimePerCategory(int instanceId, string? parameter)
     {
+        int parentCategoryId;
         var result = new InfoModel();
 
-        var infoChart = new InfoChart("وضعیت درخواست ها به تفکیک منطقه", "", false, false);
+        if (int.TryParse(parameter, out int id))
+        {
+            parentCategoryId = id;
+        }
+        else
+        {
+            return result;
+        }
 
-        //todo : should not be filtered by regions related to user?
+        var infoChart = new InfoChart("زمان رسیدگی به تفکیک دسته بندی", "", false, false);
+
         var query = unitOfWork.DbContext.Set<Report>()
             .AsNoTracking()
             .Where(r => r.ShahrbinInstanceId == instanceId);
 
         var groupedQuery = await query
-            .GroupBy(q => new { q.Address.RegionId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
-            .Select(q => new { Key = q.Key, Count = q.LongCount() })
+            .Where(r => r.Duration != null)
+            .GroupBy(r => r.CategoryId)
+            .Select(p => new
+            {
+                Id = p.Key,
+                Duration = p.Average(r => r.Duration),
+                ResponseDuration = p.Average(r => r.ResponseDuration)
+            })
             .ToListAsync();
+        
 
-        var cityId = await unitOfWork.DbContext.Set<ShahrbinInstance>()
-            .AsNoTracking().Where(s => s.Id == instanceId).
-            Select(s => s.CityId).SingleOrDefaultAsync();
-
-        var regions = await unitOfWork.DbContext.Set<Region>()
+        var categories = await unitOfWork.DbContext.Set<Category>()
             .AsNoTracking()
-            .Where(r => r.CityId == cityId)
-            .Select(e => new { e.Id, Title = e.Name })
+            .Where(c => c.ShahrbinInstanceId == instanceId)
             .ToListAsync();
 
-        var totalSerie = new InfoSerie("کل", "");
-        var liveSerie = new InfoSerie("در حال رسیدگی", "");
-        var doneSerie = new InfoSerie("رسیدگی شده", "");
-        var needAcceptanceSerie = new InfoSerie("در انتظار تأیید", "");
-        var feedbackedSerie = new InfoSerie("بازخورد شهروند", "");
-        var objectionedSerie = new InfoSerie("اعتراض شهروند", "");
-        infoChart.Add(totalSerie);
-        infoChart.Add(liveSerie);
+        categories.Structure();
+
+        Category? parentNode = null;
+        if (parentCategoryId < 1)
+            parentNode = categories.Where(c => c.ParentId == null).FirstOrDefault();
+        else
+            parentNode = categories.Where(c => c.Id == parentCategoryId).FirstOrDefault();
+
+        if (parentNode is null)
+            return result;
+
+        var doneSerie = new InfoSerie("متوسط زمان انجام", "");
+        var responseSerie = new InfoSerie("متوسط زمان پاسخ", "");
         infoChart.Add(doneSerie);
-        infoChart.Add(needAcceptanceSerie);
-        infoChart.Add(feedbackedSerie);
-        infoChart.Add(objectionedSerie);
-        //var temp = new List<long>();
-
-        foreach (var region in regions)
+        infoChart.Add(responseSerie);
+        foreach (var category in categories)
         {
-            var done = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
-            (g.Key.ReportState == ReportState.Finished || g.Key.ReportState == ReportState.AcceptedByCitizen))
-                .Sum(g => g.Count);
+            var duration = groupedQuery
+                .Where(g => g.Id == category.Id)
+                .Select(g => g.Duration)
+                .SingleOrDefault();
 
-            var live = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
-            (g.Key.ReportState == ReportState.Live || g.Key.ReportState == ReportState.Review))
-                .Sum(g => g.Count);
+            var responseDuration = groupedQuery
+                .Where(g => g.Id == category.Id)
+                .Select(g => g.ResponseDuration)
+                .SingleOrDefault();
 
-            var needAcceptance = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
-            g.Key.ReportState == ReportState.NeedAcceptance)
-                .Sum(g => g.Count);
+            duration ??= 0;
+            var durationTimeSpan = new TimeSpan(0, 0, (int)duration);
 
-            var total = done + live + needAcceptance;
-
-            if (total == 0)
-                continue;
-
-            var feedbacked = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
-            g.Key.IsFeedbacked == true)
-                .Sum(g => g.Count);
-
-            var objectioned = groupedQuery.Where(g => g.Key.RegionId == region.Id &&
-            g.Key.IsObjectioned == true)
-                .Sum(g => g.Count);
-
-            totalSerie.Add(new DataItem(
-                region.Title,
-                total.ToString(),
-                GetPercent(total, total)));
-
-            liveSerie.Add(new DataItem(
-                region.Title,
-                live.ToString(),
-                GetPercent(live, total)));
+            responseDuration ??= 0;
+            var responseDurationTimeSpan = new TimeSpan(0, 0, (int)responseDuration);
 
             doneSerie.Add(new DataItem(
-                region.Title,
-                done.ToString(),
-                GetPercent(done, total)));
+                category.Title,
+                durationTimeSpan.ToHoursValue(),
+                durationTimeSpan.ToPersianString()));
 
-            needAcceptanceSerie.Add(new DataItem(
-                region.Title,
-                needAcceptance.ToString(),
-                GetPercent(needAcceptance, total)));
-
-            feedbackedSerie.Add(new DataItem(
-                region.Title,
-                feedbacked.ToString(),
-                GetPercent(feedbacked, total)));
-
-            objectionedSerie.Add(new DataItem(
-                region.Title,
-                objectioned.ToString(),
-                GetPercent(objectioned, total)));
+            responseSerie.Add(new DataItem(
+                category.Title,
+                responseDurationTimeSpan.ToHoursValue(),
+                responseDurationTimeSpan.ToPersianString()));
         }
 
         result.Add(infoChart.Sort());
-
         return result;
     }
-
-
-    public async Task<InfoModel> GetRepportsTimeByRegion(int instanceId)
+    public async Task<InfoModel> GetReportsTimeByRegion(int instanceId)
     {
         var query = unitOfWork.DbContext.Set<Report>()
-        .AsNoTracking()
-        .Where(r => r.ShahrbinInstanceId == instanceId)
-        .Include(r => r.Address);
+            .AsNoTracking()
+            .Where(r => r.ShahrbinInstanceId == instanceId)
+            .Include(r => r.Address);
 
         var cityId = await unitOfWork.DbContext.Set<ShahrbinInstance>()
-            .AsNoTracking().Where(s => s.Id == instanceId).
-            Select(s => s.CityId).SingleOrDefaultAsync();
+            .AsNoTracking().Where(s => s.Id == instanceId)
+            .Select(s => s.CityId).SingleOrDefaultAsync();
 
         var bins = await unitOfWork.DbContext.Set<Region>()
             .AsNoTracking()
@@ -458,7 +657,6 @@ public class InfoService(
         return result;
     }
 
-
     public async Task<InfoModel> GetRepportsTimeByExecutive(int instanceId)
     {
 
@@ -466,19 +664,11 @@ public class InfoService(
         .AsNoTracking()
         .Where(r => r.ShahrbinInstanceId == instanceId);
 
-        var executives = (await userRepository.GetUsersInRole(RoleNames.Executive)).Where(u => u.ShahrbinInstanceId == instanceId).ToList();
-        var executivesIds = executives.Select(executives => executives.Id);
-        var executiveActors = (await actorRepository.GetAsync(a => executivesIds.Contains(a.Identifier), false)).ToList();
+        var executives = (await userRepository.GetUsersInRole(RoleNames.Executive))
+            .Where(u => u.ShahrbinInstanceId == instanceId)
+            .ToList();
 
-        var bins = new List<Bin<string>>();
-
-        foreach (var actor in executiveActors)
-        {
-            var user = executives.Where(e => e.Id == actor.Identifier).Single();
-            bins.Add(new Bin<string>(actor.Identifier, user.Title));
-        }
-
-        //Expression<Func<Report, int>> filter = z => (int)z.Address.RegionId ;
+        var bins = executives.Select(e => new Bin<string>(e.Id, e.Title)).ToList();
 
         var result = await GetReportsTimeHistogram<Report, string>(
             "متوسط زمان رسیدگی به تفکیک واحد اجرایی",
@@ -492,9 +682,7 @@ public class InfoService(
         return result;
     }
 
-
-
-
+    /*******************************************************/
     private async Task<InfoModel> GetReportsTimeHistogram<T, Key>(
         string title,
         List<Bin<Key>> bins,
@@ -514,11 +702,12 @@ public class InfoService(
                 ResponseDuration = p.Average(r => r.ResponseDuration)
             })
             .ToListAsync();
-
+        var doneSerie = new InfoSerie("متوسط زمان انجام", "");
+        var responseSerie = new InfoSerie("متوسط زمان پاسخ", "");
+        infoChart.Add(doneSerie);
+        infoChart.Add(responseSerie);
         foreach (var bin in bins)
         {
-            var serie = new InfoSerie(bin.Title, "");
-
             var duration = groupedQuery
                 .Where(g => EqualityComparer<Key>.Default.Equals(g.Id, bin.Id))
                 .Select(g => g.Duration)
@@ -529,31 +718,29 @@ public class InfoService(
                 .Select(g => g.ResponseDuration)
                 .SingleOrDefault();
 
-            duration = duration ??= 0;
+            duration ??= 0;
             var durationTimeSpan = new TimeSpan(0, 0, (int)duration);
 
-            responseDuration = responseDuration ??= 0;
+            responseDuration ??= 0;
             var responseDurationTimeSpan = new TimeSpan(0, 0, (int)responseDuration);
 
-            serie.Add(new DataItem(
-                "متوسط زمان انجام",
+            doneSerie.Add(new DataItem(
+                bin.Title,
                 durationTimeSpan.ToHoursValue(),
                 durationTimeSpan.ToPersianString()));
 
-            serie.Add(new DataItem(
-                "متوسط زمان پاسخ",
+            responseSerie.Add(new DataItem(
+                bin.Title,
                 responseDurationTimeSpan.ToHoursValue(),
                 responseDurationTimeSpan.ToPersianString()));
-
-            infoChart.Add(serie);
         }
 
         result.Add(infoChart.Sort());
         return result;
     }
 
-
     private record Bin<Key>(Key Id, string Title);
+
     private static List<Bin<T>> GetBins<T>() where T : Enum
     {
         var values = (T[])Enum.GetValues(typeof(T));
@@ -561,7 +748,7 @@ public class InfoService(
         values.ToList().ForEach(bin => { bins.Add(new Bin<T>(bin, bin.GetDescription() ?? "")); });
         return bins;
     }
-    /*******************************************************/
+   
     private string GetPercent(long value, long total)
     {
         var percent = Math.Round(((double)value / (total == 0 ? 1 : total)) * 10000) / 100;
