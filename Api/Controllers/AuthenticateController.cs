@@ -104,9 +104,9 @@ public class AuthenticateController : ApiController
     }
 
     [HttpPost("LoginMyYazd")]
-    public async Task<ActionResult<LoginResultDto>> LoginMyYazd([FromBody] string code)
+    public async Task<ActionResult<LoginResultDto>> LoginMyYazd([FromBody] MyYazdSsoDto myYazdSso)
     {
-        var command = new LoginMyYazdCommand(code);
+        var command = new LoginMyYazdCommand(myYazdSso.Code);
         var result = await Sender.Send(command);
         return result.Match(
             s => Ok(s.Adapt<LoginResultDto>()),
@@ -340,3 +340,5 @@ public class AuthenticateController : ApiController
     }
 
 }
+
+public record MyYazdSsoDto(string Code);

@@ -3,8 +3,6 @@ using Domain.Models.MyYazd;
 using FluentResults;
 using Microsoft.Extensions.Logging;
 using SharedKernel.Errors;
-using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
 
 namespace Infrastructure.Authentication;

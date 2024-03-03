@@ -31,6 +31,10 @@ internal sealed class GetAllReportsQueryHandler(IUnitOfWork unitOfWork)
         {
 
         }
+        else if (request.Roles.Contains(RoleNames.Inspector))
+        {
+
+        }
         else
         {
             query = query.Where(r => r.TransitionLogs.Any(rt => rt.ActorIdentifier == request.UserId));

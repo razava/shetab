@@ -768,6 +768,21 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             };
             _context.Set<Chart>().Add(chart);
         }
+
+        code = 5;
+        if (!chartCodes.Contains(code))
+        {
+            chart = new Chart()
+            {
+                Code = instanceId * 100000 + code,
+                Order = 1,
+                Title = "شهروندترین ها",
+                Roles = new List<ApplicationRole>() { operatorRole, managerRole, mayorRole },
+                ShahrbinInstanceId = instanceId,
+            };
+            _context.Set<Chart>().Add(chart);
+        }
+        /*
         code = 101;
         if (!chartCodes.Contains(code))
         {
@@ -781,7 +796,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             };
             _context.Set<Chart>().Add(chart);
         }
-
+        */
         code = 102;
         if (!chartCodes.Contains(code))
         {
@@ -823,7 +838,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             };
             _context.Set<Chart>().Add(chart);
         }
-
+        /*
         code = 201;
         if (!chartCodes.Contains(code))
         {
@@ -837,7 +852,7 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             };
             _context.Set<Chart>().Add(chart);
         }
-
+        */
         code = 202;
         if (!chartCodes.Contains(code))
         {

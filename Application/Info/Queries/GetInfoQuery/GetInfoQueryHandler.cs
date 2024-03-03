@@ -28,6 +28,9 @@ internal class GetInfoQueryHandler(
             case 4:
                 result = await infoService.GetSatisfactionStatistics(request.InstanceId);
                 break;
+            case 5:
+                result = await infoService.GetSatisfactionStatistics(request.InstanceId);
+                break;
             case 102:
                 result = await infoService.GetReportsStatusPerCategory(request.InstanceId, request.Parameter);
                 break;

@@ -14,7 +14,8 @@ public record GetReportsResponse(
     DateTime Sent,
     DateTime Deadline,
     DateTime? ResponseDeadline,
-    int? Rating
+    int? Rating,
+    Priority Priority
     )
 {
     public static GetReportsResponse FromReport(Report report)
@@ -29,7 +30,8 @@ public record GetReportsResponse(
                 report.Sent,
                 report.Deadline,
                 report.ResponseDeadline,
-                report.Rating);
+                report.Rating,
+                report.Priority);
     }
 
     public static Expression<Func<Report, GetReportsResponse>> GetSelector()
@@ -45,7 +47,8 @@ public record GetReportsResponse(
                 report.Sent,
                 report.Deadline,
                 report.ResponseDeadline,
-                report.Rating);
+                report.Rating,
+                report.Priority);
         return selector;
     }
 

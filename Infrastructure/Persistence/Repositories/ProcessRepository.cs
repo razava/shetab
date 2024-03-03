@@ -307,6 +307,7 @@ public class ProcessRepository : GenericRepository<Process>, IProcessRepository
             CanSendMessageToCitizen = false,
             Order = 4
         });
+        /*
         process.Transitions.Add(new ProcessTransition()
         {
             From = stageInspector,
@@ -321,7 +322,7 @@ public class ProcessRepository : GenericRepository<Process>, IProcessRepository
             CanSendMessageToCitizen = false,
             Order = 4
         });
-
+        */
         ////////////////
         bot12 = new BotActor()
         {
