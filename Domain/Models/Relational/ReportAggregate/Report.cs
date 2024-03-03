@@ -349,6 +349,7 @@ public class Report : Entity
         
         if (ReportState == ReportState.Finished || ReportState == ReportState.AcceptedByCitizen)
         {
+            Finished = now;
             Raise(new ReportDomainEvent(
                 Guid.NewGuid(),
                 ReportDomainEventTypes.Finished,

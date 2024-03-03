@@ -11,7 +11,7 @@ public class CategoryCreateDto
     public int ParentId { get; set; }
     [Required] [MaxLength(8)]
     public string Code { get; set; } = string.Empty;
-    [Required] [MaxLength(32)]
+    [Required] [MaxLength(1024)]
     public string Title { get; set; } = string.Empty;
     public int? ProcessId { get; set; }
     [MaxLength(1024)]
@@ -34,7 +34,7 @@ public class CategoryUpdateDto
     public int? ParentId { get; set; }
     [MaxLength(8)]
     public string? Code { get; set; }
-    [MaxLength(32)]
+    [MaxLength(1024)]
     public string? Title { get; set; }
     public int? ProcessId { get; set; }
     [MaxLength(1024)]

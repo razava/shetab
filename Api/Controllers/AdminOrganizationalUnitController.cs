@@ -104,7 +104,7 @@ public class AdminOrganizationalUnitController : ApiController
 
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete]
+    [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteOrganizationalUnit(int id)
     {
         var command = new DeleteOrganizationalUnitCommand(id);

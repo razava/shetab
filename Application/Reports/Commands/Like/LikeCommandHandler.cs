@@ -1,5 +1,4 @@
 ﻿using Application.Common.Interfaces.Persistence;
-using MediatR;
 
 namespace Application.Reports.Commands.Like;
 

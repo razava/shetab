@@ -3,7 +3,6 @@ using Application.Reports.Queries.GetHistory;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Mapster;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -18,7 +17,11 @@ internal sealed class GetHistoryQueryHandler(
     {
         //TODO: check whether user can access to content or not
         var context = unitOfWork.DbContext;
-        var result = await context.Set<TransitionLog>().Where(tl => tl.ReportId == request.Id).ToListAsync(cancellationToken);
+        var result = await context.Set<TransitionLog>()
+            .Where(tl => tl.ReportId == request.Id)
+            .Include(tl => tl.Reason)
+            .OrderByDescending(tl => tl.DateTime)
+            .ToListAsync(cancellationToken);
         
         var response = new List<HistoryResponse>();
         foreach (var transitionLog in result)

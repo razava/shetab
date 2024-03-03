@@ -10,6 +10,8 @@ using SharedKernel.Errors;
 using Application.Common.Statics;
 using Domain.Models.Relational.IdentityAggregate;
 using Application.Common.Interfaces.Communication;
+using Domain.Models.MyYazd;
+using Application.Common.Interfaces.MyYazd;
 
 namespace Infrastructure.Authentication;
 
@@ -18,7 +20,8 @@ public class AuthenticationService(
     JwtInfo jwtInfo,
     TokenValidationParameters tokenValidationParameters,
     IAuthenticateRepository authenticateRepository,
-    ICommunicationService communicationService) : IAuthenticationService
+    ICommunicationService communicationService,
+    IMyYazdService myYazdService) : IAuthenticationService
 {
     public async Task<Result<LoginResultModel>> Login(
         string username,
@@ -90,6 +93,39 @@ public class AuthenticationService(
         if (verificationCodeResult.IsFailed)
             return verificationCodeResult.ToResult();
         return verificationCodeResult.Value;
+    }
+
+    public async Task<Result<AuthToken>> LoginMyYazd(string code)
+    {
+        var userInfoResult = await myYazdService.GetUserInfo(code);
+        if (userInfoResult.IsFailed)
+        {
+            return userInfoResult.ToResult();
+        }
+
+        var userInfo = userInfoResult.Value;
+        if (!IsPhoneNumberValid(userInfo?.User?.MobileNo))
+        {
+            return AuthenticationErrors.InvalidUsername;
+        }
+        string phoneNumber = userInfo!.User!.MobileNo!;
+        var user = await userManager.FindByNameAsync(phoneNumber);
+        var isNew = user is null;
+        if (user is null)
+        {
+            user = new ApplicationUser()
+            {
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserName = phoneNumber,
+                PhoneNumber = phoneNumber,
+                PhoneNumberConfirmed = false,
+                TwoFactorEnabled = true,
+                Title = "شهروند"
+            };
+
+            await CreateCitizen(user);
+        }
+        return await GenerateToken(user);
     }
 
     public async Task<Result<AuthToken>> Refresh(string token, string refreshToken)

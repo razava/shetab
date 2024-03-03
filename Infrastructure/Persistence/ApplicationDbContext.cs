@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Gov;
+using Domain.Models.MyYazd;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
@@ -83,6 +84,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<Form> Form { get; set; }
     public DbSet<ReportNote> ReportNote { get; set; }
     public DbSet<Satisfaction> Satisfaction { get; set; }
+    public DbSet<MyYazdUserInfo> MyYazdUserInfo { get; set; }
 
     /*
     //Inspection

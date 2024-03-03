@@ -99,5 +99,7 @@ public static class AccessDeniedErrors
     public static readonly Error Actor = new Error("کاربر جاری Actor نیست."); // not used.
 }
 
-
-
+public static class MyYazdErrors
+{
+    public static readonly Error General = new Error("ارتباط با یزد من ناموفق بود.");
+}

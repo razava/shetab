@@ -4,6 +4,7 @@ using Api.ExtensionMethods;
 using Application.Authentication.Commands.ChangePasswordCommand;
 using Application.Authentication.Commands.ChangePhoneNumberCommand;
 using Application.Authentication.Commands.LoginCommand;
+using Application.Authentication.Commands.LoginMyYazdCommand;
 using Application.Authentication.Commands.RefreshCommand;
 using Application.Authentication.Commands.RegisterCitizenCommand;
 using Application.Authentication.Commands.ResetPasswordCommand;
@@ -96,6 +97,16 @@ public class AuthenticateController : ApiController
     public async Task<ActionResult<LoginResultDto>> VerifyCitizen([FromBody] CitizenVerificationDto logisterDto)
     {
         var command = new TwoFactorLoginCommand(logisterDto.OtpToken, logisterDto.VerificationCode);
+        var result = await Sender.Send(command);
+        return result.Match(
+            s => Ok(s.Adapt<LoginResultDto>()),
+            f => Problem(f));
+    }
+
+    [HttpPost("LoginMyYazd")]
+    public async Task<ActionResult<LoginResultDto>> LoginMyYazd([FromBody] string code)
+    {
+        var command = new LoginMyYazdCommand(code);
         var result = await Sender.Send(command);
         return result.Match(
             s => Ok(s.Adapt<LoginResultDto>()),

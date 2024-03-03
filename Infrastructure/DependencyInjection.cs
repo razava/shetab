@@ -2,6 +2,7 @@
 using Application.Common.Interfaces.Communication;
 using Application.Common.Interfaces.Info;
 using Application.Common.Interfaces.Map;
+using Application.Common.Interfaces.MyYazd;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Security;
 using Infrastructure.Authentication;
@@ -40,6 +41,7 @@ public static class DependencyInjection
         services.AddMap(configuration);
         services.AddCache();
         services.AddBackgroundJobs();
+        services.AddMyYazd();
         services.AddScoped<IInfoService, InfoService>();
         return services;
     }
@@ -202,4 +204,14 @@ public static class DependencyInjection
         return services;
     }
 
+    public static IServiceCollection AddMyYazd(this IServiceCollection services)
+    {
+        services.AddHttpClient<IMyYazdService, MyYazdService>(
+            client =>
+            {
+                client.BaseAddress = new Uri("https://my.yazd.ir/");
+            });
+
+        return services;
+    }
 }

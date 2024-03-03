@@ -105,7 +105,7 @@ public record AdminGetQuickAccess(
 public record CreateQuickAccessDto(
     [Required]
     int CategoryId,
-    [Required] [MaxLength(64)]
+    [Required] [MaxLength(1024)]
     string Title,
     [Required]
     int Order,
@@ -113,7 +113,7 @@ public record CreateQuickAccessDto(
 
 public record UpdateQuickAccessDto(
     int? CategoryId,
-    [MaxLength(64)]
+    [MaxLength(1024)]
     string? Title,
     int? Order,
     IFormFile? Image,

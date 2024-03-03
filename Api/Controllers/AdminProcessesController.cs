@@ -100,7 +100,7 @@ public class AdminProcessesController : ApiController
     }
 
     [Authorize]
-    [HttpDelete]
+    [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteProcess(int id)
     {
         var command = new DeleteProcessCommand(id);
