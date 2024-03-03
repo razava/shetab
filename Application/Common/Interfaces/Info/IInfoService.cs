@@ -10,8 +10,13 @@ public interface IInfoService
 
     Task<InfoModel> GetReportsStatusPerCategory(int instanceId, string? parameter);
     Task<InfoModel> GetReportsStatusPerExecutive(int instanceId);
+    Task<InfoModel> GetReportsStatusPerContractor(int instanceId);
     Task<InfoModel> GetReportsStatusPerRegion(int instanceId);
 
+    Task<InfoModel> GetReportsTimePerCategory(int instanceId, string? parameter);
     Task<InfoModel> GetReportsTimeByRegion(int instanceId);
     Task<InfoModel> GetRepportsTimeByExecutive(int instanceId);
+
+    Task<InfoModel> GetRequestsPerOperator(int instanceId);
+    Task<InfoModel> GetRequestsPerRegistrantType(int instanceId);
 }

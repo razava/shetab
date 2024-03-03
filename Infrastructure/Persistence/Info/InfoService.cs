@@ -7,7 +7,6 @@ using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
 using MassTransit.Initializers;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.ExtensionMethods;
 using System.Linq.Expressions;
@@ -247,6 +246,115 @@ public class InfoService(
 
             objectionedSerie.Add(new DataItem(
                 executive.Title,
+                objectioned.ToString(),
+                GetPercent(objectioned, total)));
+        }
+
+        result.Add(infoChart.Sort());
+
+        return result;
+    }
+
+    public async Task<InfoModel> GetReportsStatusPerContractor(int instanceId)
+    {
+        var result = new InfoModel();
+
+        var infoChart = new InfoChart("وضعیت درخواست ها به تفکیک پیمانکار", "", false, false);
+
+        //todo : should not be filtered by regions related to user?
+        var query = unitOfWork.DbContext.Set<Report>()
+            .AsNoTracking()
+            .Where(r => r.ShahrbinInstanceId == instanceId);
+
+        var groupedQuery = await query
+            .GroupBy(q => new { q.ContractorId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
+            .Select(q => new { Key = q.Key, Count = q.LongCount() })
+            .ToListAsync();
+
+        var contractorIds = (await userRepository.GetUsersInRole(RoleNames.Contractor))
+            .Select(u => u.Id).ToList();
+        var contractors = await unitOfWork.DbContext.Set<ApplicationUser>()
+            .Where(u => contractorIds.Contains(u.Id))
+            .Select(u => new { Id = u.Id, Title = u.Title })
+            .ToListAsync();
+
+        var contractorActorIds = await unitOfWork.DbContext.Set<Actor>()
+            .Where(a => contractorIds.Contains(a.Identifier))
+            .ToListAsync();
+        var waitedQuery = await query
+            .Where(q => q.CurrentActor != null && contractorIds.Contains(q.CurrentActor.Identifier))
+            .GroupBy(q => q.CurrentActor!.Identifier)
+            .Select(q => new { q.Key, Count = q.LongCount() })
+            .ToListAsync();
+
+        var totalSerie = new InfoSerie("کل", "");
+        var doneSerie = new InfoSerie("پایان یافته", "");
+        var waitedSerie = new InfoSerie("در انتظار", "");
+        var liveSerie = new InfoSerie("در جریان", "");
+        var feedbackedSerie = new InfoSerie("بازخورد شهروند", "");
+        var objectionedSerie = new InfoSerie("اعتراض شهروند", "");
+        infoChart.Add(totalSerie);
+        infoChart.Add(doneSerie);
+        infoChart.Add(waitedSerie);
+        infoChart.Add(liveSerie);
+        infoChart.Add(feedbackedSerie);
+        infoChart.Add(objectionedSerie);
+        //var temp = new List<long>();
+
+
+        foreach (var contractor in contractors)
+        {
+            var done = groupedQuery.Where(g => g.Key.ContractorId == contractor.Id &&
+            (g.Key.ReportState == ReportState.Finished || g.Key.ReportState == ReportState.AcceptedByCitizen))
+                .Sum(g => g.Count);
+
+            var live = groupedQuery.Where(g => g.Key.ContractorId == contractor.Id &&
+            (g.Key.ReportState == ReportState.Live || g.Key.ReportState == ReportState.Review))
+                .Sum(g => g.Count);
+
+            var waited = waitedQuery.Where(g => g.Key == contractor.Id)
+                .Sum(g => g.Count);
+
+            var total = done + live + waited;
+
+            if (total == 0)
+                continue;
+
+            var feedbacked = groupedQuery.Where(g => g.Key.ContractorId == contractor.Id &&
+            g.Key.IsFeedbacked == true)
+                .Sum(g => g.Count);
+
+            var objectioned = groupedQuery.Where(g => g.Key.ContractorId == contractor.Id &&
+            g.Key.IsObjectioned == true)
+                .Sum(g => g.Count);
+
+            totalSerie.Add(new DataItem(
+                contractor.Title,
+                total.ToString(),
+                GetPercent(total, total)));
+
+            liveSerie.Add(new DataItem(
+                contractor.Title,
+                live.ToString(),
+                GetPercent(live, total)));
+
+            doneSerie.Add(new DataItem(
+                contractor.Title,
+                done.ToString(),
+                GetPercent(done, total)));
+
+            waitedSerie.Add(new DataItem(
+                contractor.Title,
+                waited.ToString(),
+                GetPercent(waited, total)));
+
+            feedbackedSerie.Add(new DataItem(
+                contractor.Title,
+                feedbacked.ToString(),
+                GetPercent(feedbacked, total)));
+
+            objectionedSerie.Add(new DataItem(
+                contractor.Title,
                 objectioned.ToString(),
                 GetPercent(objectioned, total)));
         }
@@ -630,6 +738,7 @@ public class InfoService(
         result.Add(infoChart.Sort());
         return result;
     }
+    
     public async Task<InfoModel> GetReportsTimeByRegion(int instanceId)
     {
         var query = unitOfWork.DbContext.Set<Report>()
@@ -683,6 +792,64 @@ public class InfoService(
         return result;
     }
 
+
+    //Histograms
+    public async Task<InfoModel> GetRequestsPerOperator(int instanceId)
+    {
+        var operatorIds = (await userRepository.GetUsersInRole(RoleNames.Operator))
+            .Where(u => u.ShahrbinInstanceId == instanceId)
+            .Select(u => u.Id)
+            .ToList();
+
+        var hist = await unitOfWork.DbContext.Set<ApplicationUser>()
+            .Where(u => operatorIds.Contains(u.Id))
+            .Select(u => new {Title = u.Title, Count = u.RegisteredReports.Count()})
+            .ToListAsync();
+        var total = hist.Sum(h => h.Count);
+
+        var result = new InfoModel();
+        var infoChart = new InfoChart("تعداد درخواست ثبت شده توسط هر اپراتور", "", false, false);
+        var reportCountSerie = new InfoSerie("تعداد", "");
+        infoChart.Add(reportCountSerie);
+
+        foreach(var item in hist)
+        {
+            reportCountSerie.Add(new DataItem(
+                item.Title,
+                item.Count.ToString(),
+                GetPercent(item.Count, total))); ;
+        }
+        return result;
+    }
+
+    public async Task<InfoModel> GetRequestsPerRegistrantType(int instanceId)
+    {
+        var operatorIds = (await userRepository.GetUsersInRole(RoleNames.Operator))
+            .Where(u => u.ShahrbinInstanceId == instanceId)
+            .Select(u => u.Id)
+            .ToList();
+
+        var hist = await unitOfWork.DbContext.Set<Report>()
+            .GroupBy(r => r.RegistrantId)
+            .Select(r => new { r.Key, Count = r.Count() })
+            .ToListAsync();
+        var total = hist.Sum(h => h.Count);
+        var citizenCount = hist.Where(h => h.Key == null).Sum(h => h.Count);
+        var result = new InfoModel();
+        var infoChart = new InfoChart("تعداد درخواست های ثبت شده توسط هر نوع ثبت کننده", "", false, false);
+        var reportCountSerie = new InfoSerie("تعداد", "");
+        infoChart.Add(reportCountSerie);
+        reportCountSerie.Add(new DataItem(
+            "اپراتور",
+            (total - citizenCount).ToString(),
+            GetPercent(total - citizenCount, total)));
+        reportCountSerie.Add(new DataItem(
+            "شهروند",
+            (citizenCount).ToString(),
+            GetPercent(citizenCount, total)));
+        
+        return result;
+    }
     /*******************************************************/
     private async Task<InfoModel> GetReportsTimeHistogram<T, Key>(
         string title,

@@ -34,11 +34,23 @@ internal class GetInfoQueryHandler(
             case 104:
                 result = await infoService.GetReportsStatusPerRegion(request.InstanceId);
                 break;
+            case 402:
+                result = await infoService.GetReportsStatusPerContractor(request.InstanceId);
+                break;
+            case 202:
+                result = await infoService.GetReportsTimePerCategory(request.InstanceId, request.Parameter);
+                break;
             case 203:
                 result = await infoService.GetRepportsTimeByExecutive(request.InstanceId);
                 break;
             case 204:
                 result = await infoService.GetReportsTimeByRegion(request.InstanceId);
+                break;
+            case 302:
+                result = await infoService.GetRequestsPerOperator(request.InstanceId);
+                break;
+            case 303:
+                result = await infoService.GetRequestsPerRegistrantType(request.InstanceId);
                 break;
             default:
                 break;
