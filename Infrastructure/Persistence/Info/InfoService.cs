@@ -8,6 +8,8 @@ using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
 using MassTransit.Initializers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Quartz.Util;
 using SharedKernel.ExtensionMethods;
 using System.Linq.Expressions;
 
@@ -677,9 +679,52 @@ public class InfoService(
         }
 
         result.Charts.Add(ratingChart);
+
+        var objectionedCount = await unitOfWork.DbContext.Set<Report>()
+            .Where(r => r.ShahrbinInstanceId == instanceId && r.IsObjectioned)
+            .LongCountAsync();
+        result.Singletons.Add(new InfoSingleton(objectionedCount.ToString(), "ارجاع به بازرسی", ""));
+
         return result;
     }
 
+    public async Task<InfoModel> GetActiveCitizens(int instanceId)
+    {
+        var groupedQuery = await unitOfWork.DbContext.Set<Report>()
+            .Where(r => r.ShahrbinInstanceId == instanceId)
+            .GroupBy(r => r.CitizenId)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .OrderByDescending(g => g.Count)
+            .Take(20)
+            .ToListAsync();
+
+        var citizenIds = groupedQuery.Select(g => g.Key).ToList();
+
+        var citizens = await unitOfWork.DbContext.Set<ApplicationUser>()
+            .Where(u => citizenIds.Contains(u.Id))
+            .Select(u => new {u.Id, u.PhoneNumber, u.FirstName, u.LastName})
+            .ToListAsync();
+
+        var result = new InfoModel();
+        var chart = new InfoChart("شهروندترین ها", "", false, false);
+        result.Charts.Add(chart);
+        var serie = new InfoSerie("تعداد درخواست", "");
+        chart.Add(serie);
+
+        foreach(var citizen in citizens)
+        {
+            var count = groupedQuery.Where(g => g.Key == citizen.Id).First().Count;
+            var title = citizen.FirstName + " " + citizen.LastName;
+            if (title.IsNullOrWhiteSpace())
+                title = citizen.PhoneNumber;
+            else
+                title = title + $"({citizen.PhoneNumber})";
+
+            serie.Add(new DataItem(title!, count.ToString(), count.ToString()));
+        }
+
+        return result;
+    }
 
     //Temporal
     public async Task<InfoModel> GetReportsTimePerCategory(int instanceId, string? parameter)
