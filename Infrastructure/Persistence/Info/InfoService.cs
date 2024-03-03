@@ -706,7 +706,7 @@ public class InfoService(
         var responseSerie = new InfoSerie("متوسط زمان پاسخ", "");
         infoChart.Add(doneSerie);
         infoChart.Add(responseSerie);
-        foreach (var category in categories)
+        foreach (var category in parentNode.Categories)
         {
             var duration = groupedQuery
                 .Where(g => g.Id == category.Id)
@@ -819,6 +819,8 @@ public class InfoService(
                 item.Count.ToString(),
                 GetPercent(item.Count, total))); ;
         }
+
+        result.Add(infoChart.Sort());
         return result;
     }
 
@@ -836,6 +838,7 @@ public class InfoService(
         var total = hist.Sum(h => h.Count);
         var citizenCount = hist.Where(h => h.Key == null).Sum(h => h.Count);
         var result = new InfoModel();
+        
         var infoChart = new InfoChart("تعداد درخواست های ثبت شده توسط هر نوع ثبت کننده", "", false, false);
         var reportCountSerie = new InfoSerie("تعداد", "");
         infoChart.Add(reportCountSerie);
@@ -847,7 +850,8 @@ public class InfoService(
             "شهروند",
             (citizenCount).ToString(),
             GetPercent(citizenCount, total)));
-        
+
+        result.Add(infoChart.Sort());
         return result;
     }
     /*******************************************************/
