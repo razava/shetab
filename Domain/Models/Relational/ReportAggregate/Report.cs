@@ -76,6 +76,7 @@ public class Report : Entity
     public Guid? FeedbackId { get; private set; }
     public Feedback? Feedback { get; private set; }
     public int? Rating { get; private set; }
+    public Satisfaction? Satisfaction { get; set; }
 
 
     //Status
@@ -260,7 +261,7 @@ public class Report : Entity
         ReportState = ReportState.Live;
         LastStatus = "تأیید درخواست در سامانه";
         LastStatusDateTime = DateTime.UtcNow;
-        Visibility = Visibility.Operators;
+
         InitProcess();
         var log = TransitionLog.CreateApproved(Id, operatorId);
 

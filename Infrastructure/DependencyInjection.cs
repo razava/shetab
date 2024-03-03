@@ -4,7 +4,6 @@ using Application.Common.Interfaces.Info;
 using Application.Common.Interfaces.Map;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Security;
-using Application.Info.Common;
 using Infrastructure.Authentication;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.Caching;
@@ -103,6 +102,7 @@ public static class DependencyInjection
         services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddScoped<IPollRepository, PollRepository>();
         services.AddScoped<IOrganizationalUnitRepository, OrganizationalUnitRepository>();
+        services.AddScoped<ISatisfactionRepository, SatisfactionRepository>();
 
 
         return services;

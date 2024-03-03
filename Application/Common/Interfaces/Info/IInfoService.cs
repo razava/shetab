@@ -7,6 +7,7 @@ public interface IInfoService
     Task<InfoModel> GetUsersStatistics(int instanceId);
     Task<InfoModel> GetReportsStatistics(int instanceId);
     Task<InfoModel> GetTimeStatistics(int instanceId);
+    Task<InfoModel> GetSatisfactionStatistics(int instanceId);
 
     Task<InfoModel> GetReportsStatusPerCategory(int instanceId, string? parameter);
     Task<InfoModel> GetReportsStatusPerExecutive(int instanceId);

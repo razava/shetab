@@ -24,5 +24,8 @@ public class ReportConfigurations : IEntityTypeConfiguration<Report>
         builder.OwnsOne(r => r.Address);
         builder.OwnsMany(r => r.Medias);
 
+        builder.HasOne(report => report.Satisfaction)
+            .WithOne(s => s.Report)
+            .IsRequired(false);
     }
 }

@@ -755,6 +755,19 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             _context.Set<Chart>().Add(chart);
         }
 
+        code = 4;
+        if (!chartCodes.Contains(code))
+        {
+            chart = new Chart()
+            {
+                Code = instanceId * 100000 + code,
+                Order = 1,
+                Title = "آمار و اطلاعات خشنودی سنجی",
+                Roles = new List<ApplicationRole>() { operatorRole, managerRole, mayorRole },
+                ShahrbinInstanceId = instanceId,
+            };
+            _context.Set<Chart>().Add(chart);
+        }
         code = 101;
         if (!chartCodes.Contains(code))
         {

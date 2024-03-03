@@ -26,6 +26,8 @@ using Application.Reports.Queries.GetComments;
 using Application.Reports.Queries.GetPossibleTransitions;
 using Application.Reports.Queries.GetReportById;
 using Application.Reports.Queries.GetReports;
+using Application.Satisfactions.Commands.UpsertSatisfaction;
+using Application.Satisfactions.Queries.GetSatisfaction;
 using Application.Users.Queries.GetUserById;
 using Application.Workspaces.Queries.GetPossibleSources;
 using Domain.Models.Relational.Common;
@@ -159,29 +161,6 @@ public class StaffReportController : ApiController
             s => NoContent(),
             f => Problem(f));
     }
-
-    /*
-    [Authorize(Roles = "Inspector")]
-    [HttpPost("Review/{id:Guid}")]
-    public async Task<ActionResult> Review(Guid id, InspectorTransitionDto dto) 
-    {
-        var userId = User.GetUserId();
-        var command = new InspectorTransitionCommand(
-            id,
-            dto.IsAccepted,
-            dto.Attachments,
-            dto.Comment,
-            userId,
-            dto.ToActorId,
-            dto.StageId,
-            dto.Visibility);
-        var result = await Sender.Send(command);
-
-        return result.Match(
-            s => Ok(),
-            f => Problem(f));
-    }
-    */
 
     //TODO: Define access policy
     [Authorize]
@@ -409,13 +388,33 @@ public class StaffReportController : ApiController
     }
 
 
-    //todo: is this used??
     [Authorize(Roles = "Operator")]
-    [HttpPut("Satisfaction/{id:Guid}")]   //id : reportId
-    public async Task<ActionResult> PutSatisfaction(Guid id, PutSatisfactionDto putSatisfactionDto)
+    [HttpPost("Satisfaction/{reportId:Guid}")]
+    public async Task<ActionResult> UpsertSatisfaction(Guid reportId, int instanceId, UpsertSatisfactionDto satisfactionDto)
     {
-        await Task.CompletedTask;//....................................
-        return NoContent();
+        var userId = User.GetUserId();
+        var command = new UpsertSatisfactionCommand(
+            reportId,
+            userId,
+            satisfactionDto.Comments,
+            satisfactionDto.Rating);
+
+        var result = await Sender.Send(command);
+        return result.Match(
+            s => CreatedAtAction(nameof(GetSatisfaction), new { instanceId = instanceId, reportId = reportId }, s),
+            f => Problem(f));
+    }
+
+    [Authorize]
+    [HttpGet("Satisfaction/{reportId:Guid}")]
+    public async Task<ActionResult> GetSatisfaction(Guid reportId)
+    {
+        var query = new GetSatisfactionQuery(reportId);
+
+        var result = await Sender.Send(query);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
     [Authorize(Roles = "Operator")]
@@ -538,3 +537,4 @@ public class StaffReportController : ApiController
 }
 
 public record CreateReportNoteDto(string Text);
+public record UpsertSatisfactionDto(string Comments, int Rating);

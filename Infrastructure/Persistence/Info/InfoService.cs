@@ -652,6 +652,34 @@ public class InfoService(
         return result;
     }
 
+    public async Task<InfoModel> GetSatisfactionStatistics(int instanceId) 
+    { 
+        var result = new InfoModel();
+
+        var groupedQuery = await unitOfWork.DbContext.Set<Satisfaction>()
+            .Where(s => s.Report.ShahrbinInstanceId == instanceId)
+            .GroupBy(s => s.Rating)
+            .Select(s => new { s.Key, Count = s.Count() })
+            .ToListAsync();
+
+        var total = groupedQuery.Sum(s => s.Count);
+        var averageRating = ((double)groupedQuery.Sum(s => s.Key * s.Count)) / total;
+        result.Singletons.Add(new InfoSingleton(total.ToString(), "تعداد کل", ""));
+        result.Singletons.Add(new InfoSingleton(averageRating.ToString("0.00"), "متوسط امتیاز", ""));
+
+        var ratingChart = new InfoChart("فراوانی امتیازهای خشنودی سنجی", "", false, false);
+        var ratingSerie = new InfoSerie("تعداد", "");
+        ratingChart.Add(ratingSerie);
+        for (var i = 1; i <= 5; i++)
+        {
+            var count = groupedQuery.Where(r => r.Key == i).Select(r => r.Count).SingleOrDefault();
+            ratingSerie.Add(new DataItem(i.ToString(), count.ToString(), GetPercent(count, total)));
+        }
+
+        result.Charts.Add(ratingChart);
+        return result;
+    }
+
 
     //Temporal
     public async Task<InfoModel> GetReportsTimePerCategory(int instanceId, string? parameter)
@@ -854,6 +882,7 @@ public class InfoService(
         result.Add(infoChart.Sort());
         return result;
     }
+
     /*******************************************************/
     private async Task<InfoModel> GetReportsTimeHistogram<T, Key>(
         string title,
