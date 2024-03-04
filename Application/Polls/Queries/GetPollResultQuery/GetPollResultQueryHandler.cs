@@ -1,22 +1,21 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
+using Application.Info.Common;
 using Domain.Models.Relational.PollAggregate;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Application.Polls.Queries.GetPollResultQuery;
 
-internal class GetPollResultQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetPollResultQuery, Result<PollResultResponce>>
+internal class GetPollResultQueryHandler(IUnitOfWork unitOfWork) 
+    : IRequestHandler<GetPollResultQuery, Result<InfoModel>>
 {
 
-    public async Task<Result<PollResultResponce>> Handle(GetPollResultQuery request, CancellationToken cancellationToken)
+    public async Task<Result<InfoModel>> Handle(GetPollResultQuery request, CancellationToken cancellationToken)
     {
         var context = unitOfWork.DbContext;
         var poll = await context.Set<Poll>()
             .Where(p => p.Id == request.PollId)
             .Include(p => p.Choices)
-            .Select(p => new { Choices = p.Choices.ToList(), Count = p.Answers.LongCount() })
+            .Select(p => new { Title = p.Title, Choices = p.Choices.ToList(), Count = p.Answers.LongCount() })
             .SingleOrDefaultAsync();
         if (poll is null)
             return NotFoundErrors.Poll;
@@ -28,9 +27,16 @@ internal class GetPollResultQueryHandler(IUnitOfWork unitOfWork) : IRequestHandl
             .Select(pacg => new { Id = pacg.Key, Count = pacg.LongCount() })
             .ToListAsync();
 
-
         var total = choices.Sum(p => p.Count);
-        var choiceCount = new List<PollChoiceResult>();
+        total = total == 0 ? 1 : total;
+
+        var info = new InfoModel();
+        info.Singletons.Add(new InfoSingleton(poll.Count.ToString(), "شرکت کنندگان", ""));
+        var chart = new InfoChart(poll.Title, "", false, false);
+        info.Charts.Add(chart);
+        var serie = new InfoSerie(poll.Title, "");
+        chart.Add(serie);
+
         foreach (var choice in poll.Choices.OrderBy(c => c.Order))
         {
             var c = choices.SingleOrDefault(c => c.Id == choice.Id);
@@ -43,9 +49,8 @@ internal class GetPollResultQueryHandler(IUnitOfWork unitOfWork) : IRequestHandl
             {
                 percentage = (double)c.Count/total;
             }
-            choiceCount.Add(new PollChoiceResult(choice.ShortTitle, percentage));
+            serie.Add(choice.ShortTitle, (c?.Count ?? 0).ToString(), percentage.ToString());
         }
-        var result = new PollResultResponce(poll.Count, choiceCount);
-        return result;
+        return info;
     }
 }

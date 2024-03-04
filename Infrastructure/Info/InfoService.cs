@@ -8,12 +8,11 @@ using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
 using MassTransit.Initializers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Quartz.Util;
 using SharedKernel.ExtensionMethods;
 using System.Linq.Expressions;
 
-namespace Infrastructure.Persistence.Info;
+namespace Infrastructure.Info;
 
 public class InfoService(
     IUnitOfWork unitOfWork,
@@ -43,7 +42,7 @@ public class InfoService(
 
         var groupedQuery = await query
             .GroupBy(q => new { q.CategoryId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
-        .Select(q => new { Key = q.Key, Count = q.LongCount() })
+        .Select(q => new { q.Key, Count = q.LongCount() })
             .ToListAsync();
 
         var categories = await unitOfWork.DbContext.Set<Category>()
@@ -54,11 +53,11 @@ public class InfoService(
         categories.Structure();
 
         Category? parentNode = null;
-        if(parentCategoryId < 1)
+        if (parentCategoryId < 1)
             parentNode = categories.Where(c => c.ParentId == null).FirstOrDefault();
         else
             parentNode = categories.Where(c => c.Id == parentCategoryId).FirstOrDefault();
-        
+
         if (parentNode is null)
             return result;
 
@@ -160,7 +159,7 @@ public class InfoService(
 
         var groupedQuery = await query
             .GroupBy(q => new { q.ExecutiveId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
-            .Select(q => new { Key = q.Key, Count = q.LongCount() })
+            .Select(q => new { q.Key, Count = q.LongCount() })
             .ToListAsync();
 
         var executiveIds = (await userRepository.GetUsersInRole(RoleNames.Executive))
@@ -168,7 +167,7 @@ public class InfoService(
             .Select(u => u.Id).ToList();
         var executives = await unitOfWork.DbContext.Set<ApplicationUser>()
             .Where(u => executiveIds.Contains(u.Id))
-            .Select(u => new { Id = u.Id, Title = u.Title })
+            .Select(u => new { u.Id, u.Title })
             .ToListAsync();
 
         var executiveActorIds = await unitOfWork.DbContext.Set<Actor>()
@@ -204,7 +203,7 @@ public class InfoService(
             var live = groupedQuery.Where(g => g.Key.ExecutiveId == executive.Id &&
             (g.Key.ReportState == ReportState.Live || g.Key.ReportState == ReportState.Review))
                 .Sum(g => g.Count);
-            
+
             var waited = waitedQuery.Where(g => g.Key == executive.Id)
                 .Sum(g => g.Count);
 
@@ -270,14 +269,14 @@ public class InfoService(
 
         var groupedQuery = await query
             .GroupBy(q => new { q.ContractorId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
-            .Select(q => new { Key = q.Key, Count = q.LongCount() })
+            .Select(q => new { q.Key, Count = q.LongCount() })
             .ToListAsync();
 
         var contractorIds = (await userRepository.GetUsersInRole(RoleNames.Contractor))
             .Select(u => u.Id).ToList();
         var contractors = await unitOfWork.DbContext.Set<ApplicationUser>()
             .Where(u => contractorIds.Contains(u.Id))
-            .Select(u => new { Id = u.Id, Title = u.Title })
+            .Select(u => new { u.Id, u.Title })
             .ToListAsync();
 
         var contractorActorIds = await unitOfWork.DbContext.Set<Actor>()
@@ -379,7 +378,7 @@ public class InfoService(
 
         var groupedQuery = await query
             .GroupBy(q => new { q.Address.RegionId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
-            .Select(q => new { Key = q.Key, Count = q.LongCount() })
+            .Select(q => new { q.Key, Count = q.LongCount() })
             .ToListAsync();
 
         var cityId = await unitOfWork.DbContext.Set<ShahrbinInstance>()
@@ -654,8 +653,8 @@ public class InfoService(
         return result;
     }
 
-    public async Task<InfoModel> GetSatisfactionStatistics(int instanceId) 
-    { 
+    public async Task<InfoModel> GetSatisfactionStatistics(int instanceId)
+    {
         var result = new InfoModel();
 
         var groupedQuery = await unitOfWork.DbContext.Set<Satisfaction>()
@@ -665,7 +664,7 @@ public class InfoService(
             .ToListAsync();
 
         var total = groupedQuery.Sum(s => s.Count);
-        var averageRating = ((double)groupedQuery.Sum(s => s.Key * s.Count)) / total;
+        var averageRating = (double)groupedQuery.Sum(s => s.Key * s.Count) / total;
         result.Singletons.Add(new InfoSingleton(total.ToString(), "تعداد کل", ""));
         result.Singletons.Add(new InfoSingleton(averageRating.ToString("0.00"), "متوسط امتیاز", ""));
 
@@ -702,7 +701,7 @@ public class InfoService(
 
         var citizens = await unitOfWork.DbContext.Set<ApplicationUser>()
             .Where(u => citizenIds.Contains(u.Id))
-            .Select(u => new {u.Id, u.PhoneNumber, u.FirstName, u.LastName})
+            .Select(u => new { u.Id, u.PhoneNumber, u.FirstName, u.LastName })
             .ToListAsync();
 
         var result = new InfoModel();
@@ -711,7 +710,7 @@ public class InfoService(
         var serie = new InfoSerie("تعداد درخواست", "");
         chart.Add(serie);
 
-        foreach(var citizen in citizens)
+        foreach (var citizen in citizens)
         {
             var count = groupedQuery.Where(g => g.Key == citizen.Id).First().Count;
             var title = citizen.FirstName + " " + citizen.LastName;
@@ -757,7 +756,7 @@ public class InfoService(
                 ResponseDuration = p.Average(r => r.ResponseDuration)
             })
             .ToListAsync();
-        
+
 
         var categories = await unitOfWork.DbContext.Set<Category>()
             .AsNoTracking()
@@ -811,7 +810,7 @@ public class InfoService(
         result.Add(infoChart.Sort());
         return result;
     }
-    
+
     public async Task<InfoModel> GetReportsTimeByRegion(int instanceId)
     {
         var query = unitOfWork.DbContext.Set<Report>()
@@ -876,7 +875,7 @@ public class InfoService(
 
         var hist = await unitOfWork.DbContext.Set<ApplicationUser>()
             .Where(u => operatorIds.Contains(u.Id))
-            .Select(u => new {Title = u.Title, Count = u.RegisteredReports.Count()})
+            .Select(u => new { u.Title, Count = u.RegisteredReports.Count() })
             .ToListAsync();
         var total = hist.Sum(h => h.Count);
 
@@ -885,7 +884,7 @@ public class InfoService(
         var reportCountSerie = new InfoSerie("تعداد", "");
         infoChart.Add(reportCountSerie);
 
-        foreach(var item in hist)
+        foreach (var item in hist)
         {
             reportCountSerie.Add(new DataItem(
                 item.Title,
@@ -911,7 +910,7 @@ public class InfoService(
         var total = hist.Sum(h => h.Count);
         var citizenCount = hist.Where(h => h.Key == null).Sum(h => h.Count);
         var result = new InfoModel();
-        
+
         var infoChart = new InfoChart("تعداد درخواست های ثبت شده توسط هر نوع ثبت کننده", "", false, false);
         var reportCountSerie = new InfoSerie("تعداد", "");
         infoChart.Add(reportCountSerie);
@@ -921,7 +920,7 @@ public class InfoService(
             GetPercent(total - citizenCount, total)));
         reportCountSerie.Add(new DataItem(
             "شهروند",
-            (citizenCount).ToString(),
+            citizenCount.ToString(),
             GetPercent(citizenCount, total)));
 
         result.Add(infoChart.Sort());
@@ -994,10 +993,10 @@ public class InfoService(
         values.ToList().ForEach(bin => { bins.Add(new Bin<T>(bin, bin.GetDescription() ?? "")); });
         return bins;
     }
-   
+
     private string GetPercent(long value, long total)
     {
-        var percent = Math.Round(((double)value / (total == 0 ? 1 : total)) * 10000) / 100;
+        var percent = Math.Round((double)value / (total == 0 ? 1 : total) * 10000) / 100;
         return $"{percent}% ({value})";
     }
 }

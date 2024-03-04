@@ -77,13 +77,13 @@ public class AdminPollsController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpGet("Summary/{id:int}")]
-    public async Task<ActionResult<PollResultDto>> GetSummary(int id)
+    public async Task<ActionResult> GetSummary(int id)
     {
         var query = new GetPollResultQuery(id);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<PollResultDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 

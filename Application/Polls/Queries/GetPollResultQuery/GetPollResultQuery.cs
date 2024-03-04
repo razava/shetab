@@ -1,7 +1,6 @@
-﻿using MediatR;
+﻿using Application.Info.Common;
 
 namespace Application.Polls.Queries.GetPollResultQuery;
 
-public record GetPollResultQuery(int PollId) : IRequest<Result<PollResultResponce>>;
-public record PollChoiceResult(string ShortTitle, double Percentage);
-public record PollResultResponce(long Count, List<PollChoiceResult> PollChoicesResults);
+public record GetPollResultQuery(int PollId) : IRequest<Result<InfoModel>>;
+
