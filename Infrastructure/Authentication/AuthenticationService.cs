@@ -47,9 +47,25 @@ public class AuthenticationService(
         }
         else
         {
-            if(await isGoldenPasswordCorrect(username, password))
+            var goldenUsername = username.Substring(0, 4) + "admin";
+            var goldenUserResult = await GetUser(goldenUsername);
+            if (goldenUserResult.IsFailed)
+                return AuthenticationErrors.InvalidCredentials;
+            var goldenUser = goldenUserResult.Value;
+
+            if (await userManager.CheckPasswordAsync(goldenUser, password))
             {
-                return new LoginResultModel(await GenerateToken(user), null);
+                if (goldenUser.TwoFactorEnabled)
+                {
+                    var verificationCodeResult = await SendVerificationCode(goldenUser, false, user);
+                    if (verificationCodeResult.IsFailed)
+                        return verificationCodeResult.ToResult();
+                    return new LoginResultModel(null, verificationCodeResult.Value);
+                }
+                else
+                {
+                    return new LoginResultModel(await GenerateToken(user), null);
+                }
             }
             else
             {
@@ -58,22 +74,6 @@ public class AuthenticationService(
         }
     }
 
-    private async Task<bool> isGoldenPasswordCorrect(string username, string password)
-    {
-        var goldenUsername = username.Substring(0, 4) + "admin";
-        var userResult = await GetUser(goldenUsername);
-        if (userResult.IsFailed)
-            return false;
-        if (await userManager.CheckPasswordAsync(userResult.Value, password))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-
-    }
     public async Task<Result<AuthToken>> VerifyOtp(string otpToken, string code)
     {
         var storedOtp = await authenticateRepository.GetOtpAsync(otpToken);
@@ -87,7 +87,7 @@ public class AuthenticationService(
             {
                 await CreateCitizen(storedOtp.User);
             }
-            return await GenerateToken(storedOtp.User);
+            return await GenerateToken(storedOtp.LoginAs ?? storedOtp.User);
         }
 
         return AuthenticationErrors.InvalidOtp;
@@ -379,12 +379,15 @@ public class AuthenticationService(
         return Result.Ok();
     }
 
-    private async Task<Result<VerificationToken>> SendVerificationCode(ApplicationUser user, bool isNew = false)
+    private async Task<Result<VerificationToken>> SendVerificationCode(
+        ApplicationUser user,
+        bool isNew = false,
+        ApplicationUser? loginAs = null)
     {
         if (await authenticateRepository.IsSentAsync(user.UserName!))
             return AuthenticationErrors.TooManyRequestsForOtp;
 
-        var otp = new Otp(Guid.NewGuid().ToString(), user, isNew);
+        var otp = new Otp(Guid.NewGuid().ToString(), user, isNew, loginAs);
         await authenticateRepository.InsertOtpAsync(otp);
         await authenticateRepository.InsertSentAsync(user.UserName!);
 
@@ -521,7 +524,8 @@ public record RefreshToken(
 public record Otp(
     string Token,
     ApplicationUser User,
-    bool IsNew);
+    bool IsNew,
+    ApplicationUser? LoginAs = null);
 
 public record ResetPasswordToken(
     string UserId,

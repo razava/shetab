@@ -306,7 +306,7 @@ public class StaffReportController : ApiController
 
 
 
-    [Authorize(Roles = "Operator")]
+    [Authorize]
     [HttpGet("Comments")]
     public async Task<ActionResult<List<GetCommentsDto>>> GetComments([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetCommentViolation filter)
     {
