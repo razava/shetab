@@ -1,8 +1,6 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
-using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
-using Domain.Models.Relational.ProcessAggregate;
 
 namespace Application.Users.Commands.CreateContractor;
 

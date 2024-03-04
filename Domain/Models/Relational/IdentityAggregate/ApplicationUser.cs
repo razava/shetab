@@ -18,6 +18,8 @@ public class ApplicationUser : IdentityUser
     public string CitizenshipCode { get; set; } = string.Empty;
     public Address? Address { get; set; }
     public DateTime? VerificationSent { get; set; }
+    public bool IsHidden { get; set; } = false;
+    public bool SmsAlert { get; set; } = false;
     [InverseProperty("LikedBy")]
     public ICollection<Report> ReportsLiked { get; set; } = new List<Report>();
     [InverseProperty("Citizen")]

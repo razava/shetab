@@ -29,7 +29,8 @@ public class AdminProcessesController : ApiController
     [HttpGet]
     public async Task<ActionResult<List<GetProcessListDto>>> GetProcesses([FromQuery]QueryFilter queryFilter)
     {
-        var query = new GetProcessesQuery(queryFilter.Adapt<QueryFilterModel>());
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetProcessesQuery(instanceId, queryFilter.Adapt<QueryFilterModel>());
         var result = await Sender.Send(query);
 
         return result.Match(

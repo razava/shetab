@@ -163,7 +163,9 @@ public class AdminUserManagementController : ApiController
     //instanceId ??
     [Authorize]
     [HttpGet("AllUsers")]
-    public async Task<ActionResult<List<AdminGetUserList>>> GetAllUsers([FromQuery]PagingInfo pagingInfo, [FromQuery] FilterGetUsers filter)
+    public async Task<ActionResult<List<AdminGetUserList>>> GetAllUsers(
+        [FromQuery] PagingInfo pagingInfo,
+        [FromQuery] FilterGetUsers filter)
     {
         //have FilterGetUsers
         var t = filter;
@@ -253,8 +255,4 @@ public class AdminUserManagementController : ApiController
         Response.AddPaginationHeaders(resultValue.Meta);
         return Ok(resultValue.Adapt<List<GetContractorsList>>());
     }
-
-    
-
-    
 }

@@ -4,4 +4,5 @@ using MediatR;
 
 namespace Application.Users.Queries.GetUsers;
 
-public record GetUsersQuery(PagingInfo PagingInfo, int? InstanceId = null) : IRequest<Result<PagedList<ApplicationUser>>>;
+public record GetUsersQuery(PagingInfo PagingInfo, int InstanceId) 
+    : IRequest<Result<PagedList<ApplicationUser>>>;

@@ -4,4 +4,6 @@ using MediatR;
 
 namespace Application.Processes.Queries.GetProcessesQuery;
 
-public record GetProcessesQuery(QueryFilterModel? FilterModel = default!) : IRequest<Result<List<Process>>>;
+public record GetProcessesQuery(
+    int InstanceId,
+    QueryFilterModel? FilterModel = default!) : IRequest<Result<List<Process>>>;

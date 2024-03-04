@@ -360,6 +360,7 @@ public class AuthenticationService(
         try
         {
             user.PhoneNumberConfirmed = true;
+            user.SmsAlert = true;
             var result = await userManager.CreateAsync(user, "ADGJL';khfs12");
             if (!result.Succeeded)
                 return AuthenticationErrors.UserCreationFailed;
