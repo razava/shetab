@@ -1,9 +1,12 @@
-﻿namespace Application.Info.Common;
+﻿using Application.Common.Interfaces.Info;
+
+namespace Application.Info.Common;
 
 public class InfoModel
 {
     public List<InfoSingleton> Singletons { get; set; } = new List<InfoSingleton>();
     public List<InfoChart> Charts { get; set; } = new List<InfoChart>();
+    public List<InfoLocation> Locations { get; set; } = new List<InfoLocation>();
     public InfoModel Add(InfoSingleton singleton)
     {
         Singletons.Add(singleton);
@@ -43,6 +46,7 @@ public record InfoChart(string ChartTitle, string ChartIcon, bool IsStacked, boo
         return this;
     }
 
+    public record LocationInfo(Guid ReportId, double Latitude, double Longitude);
     /*
     public InfoChart Sort(int serieIndex = 0)
     {
@@ -87,3 +91,4 @@ public record InfoSerie(string Title, string Icon)
 
 public record DataItem(string Title, string Value, string DisplayValue, string? Parameters = null);
 
+public record InfoLocation(Guid ReportId, double Latitude, double Longitude);

@@ -21,4 +21,7 @@ public interface IInfoService
 
     Task<InfoModel> GetRequestsPerOperator(int instanceId);
     Task<InfoModel> GetRequestsPerRegistrantType(int instanceId);
+
+    Task<InfoModel> GetLocations(int instanceId);
 }
+

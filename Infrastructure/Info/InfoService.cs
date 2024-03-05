@@ -999,4 +999,18 @@ public class InfoService(
         var percent = Math.Round((double)value / (total == 0 ? 1 : total) * 10000) / 100;
         return $"{percent}% ({value})";
     }
+
+    public async Task<InfoModel> GetLocations(int instanceId)
+    {
+        var result = new InfoModel();
+        var locations = await unitOfWork.DbContext.Set<Report>()
+            .Where(r => r.ShahrbinInstanceId == instanceId)
+            .Where(r => r.Address.Location != null)
+            .Select(r => new InfoLocation(r.Id, r.Address.Location!.Y, r.Address.Location!.X))
+            .ToListAsync();
+
+        result.Locations = locations;
+
+        return result;
+    }
 }

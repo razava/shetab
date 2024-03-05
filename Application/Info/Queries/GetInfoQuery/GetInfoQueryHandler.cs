@@ -16,6 +16,9 @@ internal class GetInfoQueryHandler(
 
         switch (code)
         {
+            case 0:
+                result = await infoService.GetLocations(request.InstanceId);
+                break;
             case 1:
                 result = await infoService.GetUsersStatistics(request.InstanceId);
                 break;
