@@ -15,7 +15,6 @@ public class MyYazdService(
     {
         try
         {
-            ///media/profile_pics/4432532051121812.png
             var nvc = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("client_id", "jwjOjhnZzct0AzNSacV0XYOvxOKXrLfnumM8hYPN"),
@@ -40,6 +39,26 @@ public class MyYazdService(
                 return MyYazdErrors.General;
             }
             return userInfo;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex.Message, ex);
+            return MyYazdErrors.General;
+        }
+    }
+
+    public async Task<Result<MemoryStream>> GetUserAvatar(string url)
+    {
+        try
+        {
+            using var httpResponse = await httpClient.GetAsync(url);
+
+            httpResponse.EnsureSuccessStatusCode();
+
+            var result = new MemoryStream();
+            await httpResponse.Content.CopyToAsync(result);
+            
+            return result;
         }
         catch (Exception ex)
         {

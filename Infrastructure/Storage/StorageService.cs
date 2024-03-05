@@ -117,6 +117,71 @@ public class StorageService : IStorageService
         return result;
     }
 
+    public async Task<Media?> WriteFileAsync(MemoryStream stream2, AttachmentType attachmentType, string extension)
+    {
+        string fileName;
+        string path;
+        string sub;
+        switch (attachmentType)
+        {
+            case AttachmentType.Avatar:
+                sub = "Avatar";
+                break;
+            case AttachmentType.Report:
+                sub = "Report";
+                break;
+            case AttachmentType.Poll:
+                sub = "Poll";
+                break;
+            default:
+                sub = "Misc";
+                break;
+        }
+        string relativePath;
+        Media result;
+        try
+        {
+            fileName = DateTime.Now.Ticks.ToString();
+            relativePath = Path.Combine("Attachments", sub);
+            var pathBuilt = Path.Combine(_destinationPath, relativePath);
+
+            if (!Directory.Exists(pathBuilt))
+            {
+                Directory.CreateDirectory(pathBuilt);
+            }
+
+            path = Path.Combine(pathBuilt, fileName);
+
+            if (!isImageFile(extension))
+            {
+                path = path + extension;
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await stream2.CopyToAsync(stream);
+                    result = new Media()
+                    {
+                        AlternateText = "",
+                        MediaType = GetMediaType(extension),
+                        Title = "",
+                        Url = Path.Combine(relativePath, fileName + extension)
+                    };
+                }
+            }
+            else
+            {
+                Image image = Image.Load(stream2.ToArray());
+                result = await writeImage(image, _destinationPath, relativePath, fileName, _imageQualities);
+            }
+
+        }
+        catch (Exception e)
+        {
+            throw e.InnerException!;
+        }
+
+        return result;
+    }
+
     private static MediaType GetMediaType(string extension)
     {
         var videoExtensions = new List<string> { ".mkv", ".mp4", ".mov", ".3gp", ".ogg", ".webm" };

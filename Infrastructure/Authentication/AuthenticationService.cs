@@ -11,6 +11,10 @@ using Application.Common.Statics;
 using Domain.Models.Relational.IdentityAggregate;
 using Application.Common.Interfaces.Communication;
 using Application.Common.Interfaces.MyYazd;
+using Domain.Models.MyYazd;
+using Domain.Models.Relational.Common;
+using Infrastructure.Storage;
+using Application.Common.Interfaces.Persistence;
 
 namespace Infrastructure.Authentication;
 
@@ -20,7 +24,10 @@ public class AuthenticationService(
     TokenValidationParameters tokenValidationParameters,
     IAuthenticateRepository authenticateRepository,
     ICommunicationService communicationService,
-    IMyYazdService myYazdService) : IAuthenticationService
+    IMyYazdService myYazdService,
+    IStorageService storageService,
+    IUserRepository userRepository,
+    IUnitOfWork unitOfWork) : IAuthenticationService
 {
     public async Task<Result<LoginResultModel>> Login(
         string username,
@@ -147,9 +154,45 @@ public class AuthenticationService(
 
             await CreateCitizen(user);
         }
+        await updateUserInfoFromYazdSso(user, userInfo.User);
         return await GenerateToken(user);
     }
 
+    private async Task updateUserInfoFromYazdSso(ApplicationUser user, MyYazdUser? myYazdUser)
+    {
+        if (myYazdUser is null)
+            return;
+        user.NationalId = myYazdUser.NationalId ?? user.NationalId;
+        if(myYazdUser.Gender is not null)
+        {
+            user.Gender = myYazdUser.Gender == 1 ? Gender.Male : Gender.Female;
+        }
+        if(myYazdUser.Birthday is not null)
+        {
+            try
+            {
+                var parts = myYazdUser.Birthday.Split('-');
+                user.BirthDate = new DateTime(int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]));
+            }
+            catch { }
+        }
+        user.FirstName = myYazdUser.FirstName ?? user.FirstName;
+        user.LastName = myYazdUser.LastName ?? user.LastName;
+
+        if(myYazdUser.Avatar is not null)
+        {
+            var avatarStreamResult = await myYazdService.GetUserAvatar(myYazdUser.Avatar);
+            if (avatarStreamResult.IsSuccess)
+            {
+                user.Avatar = await storageService.WriteFileAsync(avatarStreamResult.Value, AttachmentType.Avatar, ".jpg");
+            }
+        }
+
+        userRepository.Update(user);
+        await unitOfWork.SaveAsync();
+
+        return;
+    }
     public async Task<Result<AuthToken>> Refresh(string token, string refreshToken)
     {
         var validatedToken = GetPrincipalFromToken(token);
