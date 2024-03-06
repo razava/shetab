@@ -4,24 +4,29 @@ namespace Application.Common.Interfaces.Info;
 
 public interface IInfoService
 {
-    Task<InfoModel> GetUsersStatistics(int instanceId);
-    Task<InfoModel> GetReportsStatistics(int instanceId);
-    Task<InfoModel> GetTimeStatistics(int instanceId);
-    Task<InfoModel> GetSatisfactionStatistics(int instanceId);
-    Task<InfoModel> GetActiveCitizens(int instanceId);
+    Task<InfoModel> GetUsersStatistics(GetInfoQueryParameters queryParameters);
+    Task<InfoModel> GetReportsStatistics(GetInfoQueryParameters queryParameters);
+    Task<InfoModel> GetTimeStatistics(GetInfoQueryParameters queryParameters);
+    Task<InfoModel> GetSatisfactionStatistics(GetInfoQueryParameters queryParameters);
+    Task<InfoModel> GetActiveCitizens(GetInfoQueryParameters queryParameters);
 
-    Task<InfoModel> GetReportsStatusPerCategory(int instanceId, string? parameter);
-    Task<InfoModel> GetReportsStatusPerExecutive(int instanceId);
-    Task<InfoModel> GetReportsStatusPerContractor(int instanceId);
-    Task<InfoModel> GetReportsStatusPerRegion(int instanceId);
+    Task<InfoModel> GetReportsStatusPerCategory(GetInfoQueryParameters queryParameters);
+    Task<InfoModel> GetReportsStatusPerExecutive(GetInfoQueryParameters queryParameters);
+    Task<InfoModel> GetReportsStatusPerContractor(GetInfoQueryParameters queryParameters);
+    Task<InfoModel> GetReportsStatusPerRegion(GetInfoQueryParameters queryParameters);
 
-    Task<InfoModel> GetReportsTimePerCategory(int instanceId, string? parameter);
-    Task<InfoModel> GetReportsTimeByRegion(int instanceId);
-    Task<InfoModel> GetRepportsTimeByExecutive(int instanceId);
+    Task<InfoModel> GetReportsTimePerCategory(GetInfoQueryParameters queryParameters);
+    Task<InfoModel> GetReportsTimeByRegion(GetInfoQueryParameters queryParameters);
+    Task<InfoModel> GetRepportsTimeByExecutive(GetInfoQueryParameters queryParameters);
 
-    Task<InfoModel> GetRequestsPerOperator(int instanceId);
-    Task<InfoModel> GetRequestsPerRegistrantType(int instanceId);
+    Task<InfoModel> GetRequestsPerOperator(GetInfoQueryParameters queryParameters);
+    Task<InfoModel> GetRequestsPerRegistrantType(GetInfoQueryParameters queryParameters);
 
-    Task<InfoModel> GetLocations(int instanceId);
+    Task<InfoModel> GetLocations(GetInfoQueryParameters queryParameters);
 }
 
+public record GetInfoQueryParameters(
+    int InstanceId,
+    string UserId,
+    List<string> Roles,
+    string? Parameter);

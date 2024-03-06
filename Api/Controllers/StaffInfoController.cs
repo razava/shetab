@@ -40,7 +40,8 @@ public class StaffInfoController : ApiController
     {
         var instanceId = User.GetUserInstanceId();
         var userId = User.GetUserId();
-        var query = new GetInfoQuery(code, instanceId, userId, parameter);
+        var userRoles = User.GetUserRoles();
+        var query = new GetInfoQuery(code, instanceId, userId, userRoles, parameter);
         var result = await Sender.Send(query);
 
         return result.Match(

@@ -12,54 +12,54 @@ internal class GetInfoQueryHandler(
         var code = request.Code % 100000;
         InfoModel result = new InfoModel();
 
-        //todo : .............. query shoud be pre processed for relate to current user *********
+        var queryParameters = new GetInfoQueryParameters(request.InstanceId, request.UserId, request.Roles, request.Parameter);
 
         switch (code)
         {
             case 1:
-                result = await infoService.GetUsersStatistics(request.InstanceId);
+                result = await infoService.GetUsersStatistics(queryParameters);
                 break;
             case 2:
-                result = await infoService.GetReportsStatistics(request.InstanceId);
+                result = await infoService.GetReportsStatistics(queryParameters);
                 break;
             case 3:
-                result = await infoService.GetTimeStatistics(request.InstanceId);
+                result = await infoService.GetTimeStatistics(queryParameters);
                 break;
             case 4:
-                result = await infoService.GetSatisfactionStatistics(request.InstanceId);
+                result = await infoService.GetSatisfactionStatistics(queryParameters);
                 break;
             case 5:
-                result = await infoService.GetActiveCitizens(request.InstanceId);
+                result = await infoService.GetActiveCitizens(queryParameters);
                 break;
             case 102:
-                result = await infoService.GetReportsStatusPerCategory(request.InstanceId, request.Parameter);
+                result = await infoService.GetReportsStatusPerCategory(queryParameters);
                 break;
             case 103:
-                result = await infoService.GetReportsStatusPerExecutive(request.InstanceId);
+                result = await infoService.GetReportsStatusPerExecutive(queryParameters);
                 break;
             case 104:
-                result = await infoService.GetReportsStatusPerRegion(request.InstanceId);
+                result = await infoService.GetReportsStatusPerRegion(queryParameters);
                 break;
             case 402:
-                result = await infoService.GetReportsStatusPerContractor(request.InstanceId);
+                result = await infoService.GetReportsStatusPerContractor(queryParameters);
                 break;
             case 202:
-                result = await infoService.GetReportsTimePerCategory(request.InstanceId, request.Parameter);
+                result = await infoService.GetReportsTimePerCategory(queryParameters);
                 break;
             case 203:
-                result = await infoService.GetRepportsTimeByExecutive(request.InstanceId);
+                result = await infoService.GetRepportsTimeByExecutive(queryParameters);
                 break;
             case 204:
-                result = await infoService.GetReportsTimeByRegion(request.InstanceId);
+                result = await infoService.GetReportsTimeByRegion(queryParameters);
                 break;
             case 302:
-                result = await infoService.GetRequestsPerOperator(request.InstanceId);
+                result = await infoService.GetRequestsPerOperator(queryParameters);
                 break;
             case 303:
-                result = await infoService.GetRequestsPerRegistrantType(request.InstanceId);
+                result = await infoService.GetRequestsPerRegistrantType(queryParameters);
                 break;
             case 141:
-                result = await infoService.GetLocations(request.InstanceId);
+                result = await infoService.GetLocations(queryParameters);
                 break;
             default:
                 break;

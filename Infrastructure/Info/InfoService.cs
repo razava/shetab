@@ -6,6 +6,7 @@ using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
+using Domain.Primitives;
 using MassTransit.Initializers;
 using Microsoft.EntityFrameworkCore;
 using Quartz.Util;
@@ -20,12 +21,12 @@ public class InfoService(
     IActorRepository actorRepository) : IInfoService
 {
     //Status
-    public async Task<InfoModel> GetReportsStatusPerCategory(int instanceId, string? parameter)
+    public async Task<InfoModel> GetReportsStatusPerCategory(GetInfoQueryParameters queryParameters)
     {
         int parentCategoryId;
         var result = new InfoModel();
 
-        if (int.TryParse(parameter, out int id))
+        if (int.TryParse(queryParameters.Parameter, out int id))
         {
             parentCategoryId = id;
         }
@@ -36,9 +37,10 @@ public class InfoService(
 
         var infoChart = new InfoChart("وضعیت درخواست ها به تفکیک دسته بندی", "", false, false);
 
+        var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
-            .AsNoTracking()
-            .Where(r => r.ShahrbinInstanceId == instanceId);
+            .Where(queryLimits)
+            .AsNoTracking();
 
         var groupedQuery = await query
             .GroupBy(q => new { q.CategoryId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
@@ -47,7 +49,7 @@ public class InfoService(
 
         var categories = await unitOfWork.DbContext.Set<Category>()
             .AsNoTracking()
-            .Where(c => c.ShahrbinInstanceId == instanceId)
+            .Where(c => c.ShahrbinInstanceId == queryParameters.InstanceId)
             .ToListAsync();
 
         categories.Structure();
@@ -146,16 +148,16 @@ public class InfoService(
         return result;
     }
 
-    public async Task<InfoModel> GetReportsStatusPerExecutive(int instanceId)
+    public async Task<InfoModel> GetReportsStatusPerExecutive(GetInfoQueryParameters queryParameters)
     {
         var result = new InfoModel();
 
         var infoChart = new InfoChart("وضعیت درخواست ها به تفکیک واحد اجرایی", "", false, false);
 
-        //todo : should not be filtered by regions related to user?
+        var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
-            .AsNoTracking()
-            .Where(r => r.ShahrbinInstanceId == instanceId);
+            .Where(queryLimits)
+            .AsNoTracking();
 
         var groupedQuery = await query
             .GroupBy(q => new { q.ExecutiveId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
@@ -163,7 +165,7 @@ public class InfoService(
             .ToListAsync();
 
         var executiveIds = (await userRepository.GetUsersInRole(RoleNames.Executive))
-            .Where(u => u.ShahrbinInstanceId == instanceId)
+            .Where(u => u.ShahrbinInstanceId == queryParameters.InstanceId)
             .Select(u => u.Id).ToList();
         var executives = await unitOfWork.DbContext.Set<ApplicationUser>()
             .Where(u => executiveIds.Contains(u.Id))
@@ -256,16 +258,16 @@ public class InfoService(
         return result;
     }
 
-    public async Task<InfoModel> GetReportsStatusPerContractor(int instanceId)
+    public async Task<InfoModel> GetReportsStatusPerContractor(GetInfoQueryParameters queryParameters)
     {
         var result = new InfoModel();
 
         var infoChart = new InfoChart("وضعیت درخواست ها به تفکیک پیمانکار", "", false, false);
 
-        //todo : should not be filtered by regions related to user?
+        var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
-            .AsNoTracking()
-            .Where(r => r.ShahrbinInstanceId == instanceId);
+            .Where(queryLimits)
+            .AsNoTracking();
 
         var groupedQuery = await query
             .GroupBy(q => new { q.ContractorId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
@@ -365,16 +367,16 @@ public class InfoService(
         return result;
     }
 
-    public async Task<InfoModel> GetReportsStatusPerRegion(int instanceId)
+    public async Task<InfoModel> GetReportsStatusPerRegion(GetInfoQueryParameters queryParameters)
     {
         var result = new InfoModel();
 
         var infoChart = new InfoChart("وضعیت درخواست ها به تفکیک منطقه", "", false, false);
 
-        //todo : should not be filtered by regions related to user?
+        var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
-            .AsNoTracking()
-            .Where(r => r.ShahrbinInstanceId == instanceId);
+            .Where(queryLimits)
+            .AsNoTracking();
 
         var groupedQuery = await query
             .GroupBy(q => new { q.Address.RegionId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
@@ -382,8 +384,8 @@ public class InfoService(
             .ToListAsync();
 
         var cityId = await unitOfWork.DbContext.Set<ShahrbinInstance>()
-            .AsNoTracking().Where(s => s.Id == instanceId).
-            Select(s => s.CityId).SingleOrDefaultAsync();
+            .AsNoTracking().Where(s => s.Id == queryParameters.InstanceId)
+            .Select(s => s.CityId).SingleOrDefaultAsync();
 
         var regions = await unitOfWork.DbContext.Set<Region>()
             .AsNoTracking()
@@ -471,13 +473,13 @@ public class InfoService(
 
 
     //Statistics
-    public async Task<InfoModel> GetUsersStatistics(int instanceId)
+    public async Task<InfoModel> GetUsersStatistics(GetInfoQueryParameters queryParameters)
     {
         var result = new InfoModel();
         var userContext = unitOfWork.DbContext.Set<ApplicationUser>().AsNoTracking();
 
         var totalPersonel = await userContext.Where(e =>
-        e.ShahrbinInstanceId != null && e.ShahrbinInstanceId == instanceId).LongCountAsync();
+        e.ShahrbinInstanceId != null && e.ShahrbinInstanceId == queryParameters.InstanceId).LongCountAsync();
 
         var totalUsers = await userContext.Where(u => u.ShahrbinInstanceId == null).LongCountAsync();
 
@@ -522,10 +524,12 @@ public class InfoService(
 
     }
 
-    public async Task<InfoModel> GetReportsStatistics(int instanceId)
+    public async Task<InfoModel> GetReportsStatistics(GetInfoQueryParameters queryParameters)
     {
-        var result = new InfoModel();
-        var query = unitOfWork.DbContext.Set<Report>().AsNoTracking().Where(r => r.ShahrbinInstanceId == instanceId);
+        var queryLimits = await createReportQuery(queryParameters);
+        var query = unitOfWork.DbContext.Set<Report>()
+            .Where(queryLimits)
+            .AsNoTracking();
 
         var totalReports = await query.LongCountAsync();
 
@@ -534,6 +538,7 @@ public class InfoService(
         var lastWeek = await query.Where(p => p.Sent >= now.Subtract(new TimeSpan(7, 0, 0, 0))).LongCountAsync();
         var lastMonth = await query.Where(p => p.Sent >= now.Subtract(new TimeSpan(30, 0, 0, 0))).LongCountAsync();
 
+        var result = new InfoModel();
         result.Add(new InfoSingleton(
             totalReports.ToString(),
             "کل درخواست ها",
@@ -557,10 +562,12 @@ public class InfoService(
         return result;
     }
 
-    public async Task<InfoModel> GetTimeStatistics(int instanceId)
+    public async Task<InfoModel> GetTimeStatistics(GetInfoQueryParameters queryParameters)
     {
-        var result = new InfoModel();
-        var query = unitOfWork.DbContext.Set<Report>().AsNoTracking().Where(e => e.ShahrbinInstanceId == instanceId);
+        var queryLimits = await createReportQuery(queryParameters);
+        var query = unitOfWork.DbContext.Set<Report>()
+            .Where(queryLimits)
+            .AsNoTracking();
 
         //average durations
         var allDuration = await query
@@ -586,6 +593,7 @@ public class InfoService(
         lastWeekDuration ??= 0;
         lastMonthDuration ??= 0;
 
+        var result = new InfoModel();
         result.Add(new InfoSingleton(
             new TimeSpan(0, 0, (int)allDuration).ToString(),
             "متوسط زمان انجام کل",
@@ -653,18 +661,18 @@ public class InfoService(
         return result;
     }
 
-    public async Task<InfoModel> GetSatisfactionStatistics(int instanceId)
+    public async Task<InfoModel> GetSatisfactionStatistics(GetInfoQueryParameters queryParameters)
     {
-        var result = new InfoModel();
-
         var groupedQuery = await unitOfWork.DbContext.Set<Satisfaction>()
-            .Where(s => s.Report.ShahrbinInstanceId == instanceId)
+            .Where(s => s.Report.ShahrbinInstanceId == queryParameters.InstanceId)
             .GroupBy(s => s.Rating)
             .Select(s => new { s.Key, Count = s.Count() })
             .ToListAsync();
 
         var total = groupedQuery.Sum(s => s.Count);
         var averageRating = (double)groupedQuery.Sum(s => s.Key * s.Count) / total;
+
+        var result = new InfoModel();
         result.Singletons.Add(new InfoSingleton(total.ToString(), "تعداد کل", ""));
         result.Singletons.Add(new InfoSingleton(averageRating.ToString("0.00"), "متوسط امتیاز", ""));
 
@@ -680,17 +688,18 @@ public class InfoService(
         result.Charts.Add(ratingChart);
 
         var objectionedCount = await unitOfWork.DbContext.Set<Report>()
-            .Where(r => r.ShahrbinInstanceId == instanceId && r.IsObjectioned)
+            .Where(r => r.ShahrbinInstanceId == queryParameters.InstanceId && r.IsObjectioned)
             .LongCountAsync();
         result.Singletons.Add(new InfoSingleton(objectionedCount.ToString(), "ارجاع به بازرسی", ""));
 
         return result;
     }
 
-    public async Task<InfoModel> GetActiveCitizens(int instanceId)
+    public async Task<InfoModel> GetActiveCitizens(GetInfoQueryParameters queryParameters)
     {
+        var queryLimits = await createReportQuery(queryParameters);
         var groupedQuery = await unitOfWork.DbContext.Set<Report>()
-            .Where(r => r.ShahrbinInstanceId == instanceId)
+            .Where(queryLimits)
             .GroupBy(r => r.CitizenId)
             .Select(g => new { g.Key, Count = g.Count() })
             .OrderByDescending(g => g.Count)
@@ -726,12 +735,13 @@ public class InfoService(
     }
 
     //Temporal
-    public async Task<InfoModel> GetReportsTimePerCategory(int instanceId, string? parameter)
+    public async Task<InfoModel> GetReportsTimePerCategory(GetInfoQueryParameters queryParameters)
     {
         int parentCategoryId;
+
         var result = new InfoModel();
 
-        if (int.TryParse(parameter, out int id))
+        if (int.TryParse(queryParameters.Parameter, out int id))
         {
             parentCategoryId = id;
         }
@@ -742,9 +752,10 @@ public class InfoService(
 
         var infoChart = new InfoChart("زمان رسیدگی به تفکیک دسته بندی", "", false, false);
 
+        var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
-            .AsNoTracking()
-            .Where(r => r.ShahrbinInstanceId == instanceId);
+            .Where(queryLimits)
+            .AsNoTracking();
 
         var groupedQuery = await query
             .Where(r => r.Duration != null)
@@ -760,7 +771,7 @@ public class InfoService(
 
         var categories = await unitOfWork.DbContext.Set<Category>()
             .AsNoTracking()
-            .Where(c => c.ShahrbinInstanceId == instanceId)
+            .Where(c => c.ShahrbinInstanceId == queryParameters.InstanceId)
             .ToListAsync();
 
         categories.Structure();
@@ -811,15 +822,16 @@ public class InfoService(
         return result;
     }
 
-    public async Task<InfoModel> GetReportsTimeByRegion(int instanceId)
+    public async Task<InfoModel> GetReportsTimeByRegion(GetInfoQueryParameters queryParameters)
     {
+        var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
+            .Where(queryLimits)
             .AsNoTracking()
-            .Where(r => r.ShahrbinInstanceId == instanceId)
             .Include(r => r.Address);
 
         var cityId = await unitOfWork.DbContext.Set<ShahrbinInstance>()
-            .AsNoTracking().Where(s => s.Id == instanceId)
+            .AsNoTracking().Where(s => s.Id == queryParameters.InstanceId)
             .Select(s => s.CityId).SingleOrDefaultAsync();
 
         var bins = await unitOfWork.DbContext.Set<Region>()
@@ -839,15 +851,15 @@ public class InfoService(
         return result;
     }
 
-    public async Task<InfoModel> GetRepportsTimeByExecutive(int instanceId)
+    public async Task<InfoModel> GetRepportsTimeByExecutive(GetInfoQueryParameters queryParameters)
     {
-
+        var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
-        .AsNoTracking()
-        .Where(r => r.ShahrbinInstanceId == instanceId);
+            .Where(queryLimits)
+            .AsNoTracking();
 
         var executives = (await userRepository.GetUsersInRole(RoleNames.Executive))
-            .Where(u => u.ShahrbinInstanceId == instanceId)
+            .Where(u => u.ShahrbinInstanceId == queryParameters.InstanceId)
             .ToList();
 
         var bins = executives.Select(e => new Bin<string>(e.Id, e.Title)).ToList();
@@ -866,10 +878,10 @@ public class InfoService(
 
 
     //Histograms
-    public async Task<InfoModel> GetRequestsPerOperator(int instanceId)
+    public async Task<InfoModel> GetRequestsPerOperator(GetInfoQueryParameters queryParameters)
     {
         var operatorIds = (await userRepository.GetUsersInRole(RoleNames.Operator))
-            .Where(u => u.ShahrbinInstanceId == instanceId)
+            .Where(u => u.ShahrbinInstanceId == queryParameters.InstanceId)
             .Select(u => u.Id)
             .ToList();
 
@@ -896,10 +908,10 @@ public class InfoService(
         return result;
     }
 
-    public async Task<InfoModel> GetRequestsPerRegistrantType(int instanceId)
+    public async Task<InfoModel> GetRequestsPerRegistrantType(GetInfoQueryParameters queryParameters)
     {
         var operatorIds = (await userRepository.GetUsersInRole(RoleNames.Operator))
-            .Where(u => u.ShahrbinInstanceId == instanceId)
+            .Where(u => u.ShahrbinInstanceId == queryParameters.InstanceId)
             .Select(u => u.Id)
             .ToList();
 
@@ -924,6 +936,21 @@ public class InfoService(
             GetPercent(citizenCount, total)));
 
         result.Add(infoChart.Sort());
+        return result;
+    }
+
+    //Locations
+    public async Task<InfoModel> GetLocations(GetInfoQueryParameters queryParameters)
+    {
+        var result = new InfoModel();
+        var locations = await unitOfWork.DbContext.Set<Report>()
+            .Where(r => r.ShahrbinInstanceId == queryParameters.InstanceId)
+            .Where(r => r.Address.Location != null)
+            .Select(r => new InfoLocation(r.Id, r.Address.Location!.Y, r.Address.Location!.X))
+            .ToListAsync();
+
+        result.Locations = locations;
+
         return result;
     }
 
@@ -1000,17 +1027,60 @@ public class InfoService(
         return $"{percent}% ({value})";
     }
 
-    public async Task<InfoModel> GetLocations(int instanceId)
+    private async Task<Expression<Func<Report, bool>>> createReportQuery(GetInfoQueryParameters infoQueryParameters)
     {
-        var result = new InfoModel();
-        var locations = await unitOfWork.DbContext.Set<Report>()
-            .Where(r => r.ShahrbinInstanceId == instanceId)
-            .Where(r => r.Address.Location != null)
-            .Select(r => new InfoLocation(r.Id, r.Address.Location!.Y, r.Address.Location!.X))
+        Expression<Func<Report, bool>> result;
+        List<string> userIds = new List<string>();
+        if(infoQueryParameters.Roles.Contains(RoleNames.Manager))
+        {
+            userIds = await getUserIdsOfOrganizationalUnit(infoQueryParameters.UserId);
+        }
+
+        userIds.Add(infoQueryParameters.UserId);
+
+        var userIdRegion = await unitOfWork.DbContext.Set<Actor>()
+            .Where(a => userIds.Contains(a.Identifier))
+            .Select(a => new { userId = a.Identifier, regionIds = a.Regions.Select(r => r.Id) })
             .ToListAsync();
 
-        result.Locations = locations;
+        var regionIds = userIdRegion.SelectMany(ur => ur.regionIds).ToList().Distinct().ToList();
+        //TODO: This abviously is not correct!
+        result = r => (r.ShahrbinInstanceId == infoQueryParameters.InstanceId) &&
+                      (r.Address.RegionId.HasValue && regionIds.Contains(r.Address.RegionId.Value)) &&
+                      (r.ExecutiveId != null && userIds.Contains(r.ExecutiveId));
 
         return result;
+    }
+
+    private async Task<List<string>> getUserIdsOfOrganizationalUnit(string userId)
+    {
+        var organizationalUnits = await unitOfWork.DbContext.Set<OrganizationalUnit>()
+            .Include(o => o.OrganizationalUnits)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var organizationalUnit = organizationalUnits.Where(o => o.UserId == userId).FirstOrDefault();
+        var userIds = new List<string>();
+        if (organizationalUnit != null)
+        {
+            var queue = new Queue<OrganizationalUnit>();
+            queue.Enqueue(organizationalUnit);
+
+            while (queue.Count > 0)
+            {
+                var t = queue.Dequeue();
+                if (t.Type == OrganizationalUnitType.Executive || t.Type == OrganizationalUnitType.Person)
+                {
+                    userIds.Add(t.UserId);
+                }
+                var childOus = organizationalUnits.Where(o => o.Id == t.Id).First().OrganizationalUnits;
+                foreach (var child in childOus)
+                {
+                    queue.Enqueue(child);
+                }
+            }
+        }
+
+        return userIds;
     }
 }
