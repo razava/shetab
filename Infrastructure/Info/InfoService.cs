@@ -949,7 +949,7 @@ public class InfoService(
             .Where(r => r.Address.Location != null);
 
         
-        if(queryParameters.Geometry is not null)
+        if(queryParameters.Geometry is not null && queryParameters.Geometry.Count > 0)
         {
             var geometryFactory = new GeometryFactory();
             var coordinates = queryParameters.Geometry.Select(g => new Coordinate(g.Longitude, g.Latitude)).ToList();
