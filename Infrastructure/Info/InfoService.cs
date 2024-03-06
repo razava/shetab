@@ -1048,19 +1048,30 @@ public class InfoService(
         {
             userIds = await getUserIdsOfOrganizationalUnit(infoQueryParameters.UserId);
         }
+        else if(infoQueryParameters.Roles.Contains(RoleNames.Operator))
+        {
 
-        userIds.Add(infoQueryParameters.UserId);
+        }
+        else if (infoQueryParameters.Roles.Contains(RoleNames.Mayor))
+        {
+
+        }
+        else
+        {
+            userIds.Add(infoQueryParameters.UserId);
+        }
+
 
         var userIdRegion = await unitOfWork.DbContext.Set<Actor>()
             .Where(a => userIds.Contains(a.Identifier))
-            .Select(a => new { userId = a.Identifier, regionIds = a.Regions.Select(r => r.Id) })
+            .Select(a => new { userId = a.Identifier, regionIds = a.Regions.Select(r => r.Id).ToList() })
             .ToListAsync();
 
         var regionIds = userIdRegion.SelectMany(ur => ur.regionIds).ToList().Distinct().ToList();
         //TODO: This abviously is not correct!
         result = r => (r.ShahrbinInstanceId == infoQueryParameters.InstanceId) &&
                       (r.Address.RegionId.HasValue && regionIds.Contains(r.Address.RegionId.Value)) &&
-                      (r.ExecutiveId != null && userIds.Contains(r.ExecutiveId));
+                      (r.ExecutiveId != null && userIds.Contains(r.ExecutiveId) || userIds.Count == 0);
 
         return result;
     }
