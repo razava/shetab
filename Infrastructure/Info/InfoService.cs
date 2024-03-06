@@ -9,6 +9,7 @@ using Domain.Models.Relational.ProcessAggregate;
 using Domain.Primitives;
 using MassTransit.Initializers;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using Quartz.Util;
 using SharedKernel.ExtensionMethods;
 using System.Linq.Expressions;
@@ -943,9 +944,21 @@ public class InfoService(
     public async Task<InfoModel> GetLocations(GetInfoQueryParameters queryParameters)
     {
         var result = new InfoModel();
-        var locations = await unitOfWork.DbContext.Set<Report>()
+        var locationsQuery = unitOfWork.DbContext.Set<Report>()
             .Where(r => r.ShahrbinInstanceId == queryParameters.InstanceId)
-            .Where(r => r.Address.Location != null)
+            .Where(r => r.Address.Location != null);
+
+        
+        if(queryParameters.Geometry is not null)
+        {
+            var geometryFactory = new GeometryFactory();
+            var coordinates = queryParameters.Geometry.Select(g => new Coordinate(g.Longitude, g.Latitude)).ToList();
+            var geometry = geometryFactory.CreatePolygon(coordinates.ToArray());
+            geometry.SRID = 4326;
+            locationsQuery = locationsQuery.Where(r => geometry.Contains(r.Address.Location));
+        }
+        
+        var locations = await locationsQuery
             .Select(r => new InfoLocation(r.Id, r.Address.Location!.Y, r.Address.Location!.X))
             .ToListAsync();
 

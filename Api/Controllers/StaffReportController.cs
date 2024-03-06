@@ -538,3 +538,10 @@ public class StaffReportController : ApiController
 
 public record CreateReportNoteDto(string Text);
 public record UpsertSatisfactionDto(string Comments, int Rating);
+
+public record ReportFilters(
+    string? Query,
+    List<int>? Regions,
+    List<int>? Categories,
+    List<int>? Stages,
+    List<int>? Priorities);

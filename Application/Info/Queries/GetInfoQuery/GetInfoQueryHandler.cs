@@ -12,7 +12,7 @@ internal class GetInfoQueryHandler(
         var code = request.Code % 100000;
         InfoModel result = new InfoModel();
 
-        var queryParameters = new GetInfoQueryParameters(request.InstanceId, request.UserId, request.Roles, request.Parameter);
+        var queryParameters = new GetInfoQueryParameters(request.InstanceId, request.UserId, request.Roles, request.Parameter, request.Geometry);
 
         switch (code)
         {

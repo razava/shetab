@@ -29,4 +29,6 @@ public record GetInfoQueryParameters(
     int InstanceId,
     string UserId,
     List<string> Roles,
-    string? Parameter);
+    string? Parameter,
+    List<GeoPoint>? Geometry);
+public record GeoPoint(double Longitude, double Latitude);

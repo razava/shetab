@@ -1,6 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.ExtensionMethods;
+using Application.Common.Interfaces.Info;
 using Application.Info.Queries.GetInfoQuery;
 using Application.Info.Queries.GetListChartQuery;
 using Mapster;
@@ -36,12 +37,24 @@ public class StaffInfoController : ApiController
 
     [Authorize]
     [HttpGet("Charts/{code}")]
-    public async Task<ActionResult<InfoDto>> GetChartsById(int code, string? parameter)
+    public async Task<ActionResult<InfoDto>> GetChartsById(int code, string? parameter, [FromQuery] List<double>? geometry)
     {
         var instanceId = User.GetUserInstanceId();
         var userId = User.GetUserId();
         var userRoles = User.GetUserRoles();
-        var query = new GetInfoQuery(code, instanceId, userId, userRoles, parameter);
+        List<GeoPoint>? geoPoints = null;
+        if(geometry is not null)
+        {
+            if(geometry.Count%2 == 0)
+            {
+                geoPoints = new List<GeoPoint>();
+                for(var i=0; i<geometry.Count; i += 2)
+                {
+                    geoPoints.Add(new GeoPoint(geometry[i], geometry[i+1]));
+                }
+            }
+        }
+        var query = new GetInfoQuery(code, instanceId, userId, userRoles, parameter, geoPoints);
         var result = await Sender.Send(query);
 
         return result.Match(
