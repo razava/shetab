@@ -41,7 +41,7 @@ public class InfoService(
         var query = unitOfWork.DbContext.Set<Report>()
             .AsNoTracking();
 
-        await addRestrictions(query, queryParameters);
+        query = await addRestrictions(query, queryParameters);
 
         var groupedQuery = await query
             .GroupBy(q => new { q.CategoryId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
@@ -157,7 +157,7 @@ public class InfoService(
 
         var query = unitOfWork.DbContext.Set<Report>()
             .AsNoTracking();
-        await addRestrictions(query, queryParameters);
+        query = await addRestrictions(query, queryParameters);
 
         var groupedQuery = await query
             .GroupBy(q => new { q.ExecutiveId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
@@ -267,7 +267,7 @@ public class InfoService(
         var query = unitOfWork.DbContext.Set<Report>()
             .AsNoTracking();
 
-        await addRestrictions(query, queryParameters);
+        query = await addRestrictions(query, queryParameters);
 
         var groupedQuery = await query
             .GroupBy(q => new { q.ContractorId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
@@ -376,7 +376,7 @@ public class InfoService(
         var query = unitOfWork.DbContext.Set<Report>()
             .AsNoTracking();
 
-        await addRestrictions(query, queryParameters);
+        query = await addRestrictions(query, queryParameters);
 
         var groupedQuery = await query
             .GroupBy(q => new { q.Address.RegionId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
@@ -529,7 +529,7 @@ public class InfoService(
         var query = unitOfWork.DbContext.Set<Report>()
             .AsNoTracking();
 
-        await addRestrictions(query, queryParameters);
+        query = await addRestrictions(query, queryParameters);
 
         var totalReports = await query.LongCountAsync();
 
@@ -567,7 +567,7 @@ public class InfoService(
         var query = unitOfWork.DbContext.Set<Report>()
             .AsNoTracking();
 
-        await addRestrictions(query, queryParameters);
+        query = await addRestrictions(query, queryParameters);
 
         //average durations
         var allDuration = await query
@@ -700,7 +700,7 @@ public class InfoService(
         var query = unitOfWork.DbContext.Set<Report>()
             .AsNoTracking();
 
-        await addRestrictions(query, queryParameters);
+        query = await addRestrictions(query, queryParameters);
 
         var groupedQuery = await query
             .GroupBy(r => r.CitizenId)
@@ -758,7 +758,7 @@ public class InfoService(
         var query = unitOfWork.DbContext.Set<Report>()
             .AsNoTracking();
 
-        await addRestrictions(query, queryParameters);
+        query = await addRestrictions(query, queryParameters);
 
         var groupedQuery = await query
             .Where(r => r.Duration != null)
@@ -830,7 +830,7 @@ public class InfoService(
         var query = unitOfWork.DbContext.Set<Report>()
             .AsNoTracking();
 
-        await addRestrictions(query, queryParameters);
+        query = await addRestrictions(query, queryParameters);
 
         query = query.Include(r => r.Address);
 
@@ -860,7 +860,7 @@ public class InfoService(
         var query = unitOfWork.DbContext.Set<Report>()
             .AsNoTracking();
 
-        await addRestrictions(query, queryParameters);
+        query = await addRestrictions(query, queryParameters);
 
         var executives = (await userRepository.GetUsersInRole(RoleNames.Executive))
             .Where(u => u.ShahrbinInstanceId == queryParameters.InstanceId)
@@ -1128,7 +1128,7 @@ public class InfoService(
         return userIds;
     }
 
-    private async Task addRestrictions(IQueryable<Report> query, GetInfoQueryParameters infoQueryParameters)
+    private async Task<IQueryable<Report>> addRestrictions(IQueryable<Report> query, GetInfoQueryParameters infoQueryParameters)
     {
         List<string> userIds = new List<string> { infoQueryParameters.UserId };
 
@@ -1166,6 +1166,6 @@ public class InfoService(
             .Where(r => reportIds.Contains(r.Id) ||
                         r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value));
 
-        return ;
+        return query;
     }
 }
