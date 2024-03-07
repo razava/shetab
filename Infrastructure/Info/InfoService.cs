@@ -804,6 +804,9 @@ public class InfoService(
                 .Select(g => g.ResponseDuration)
                 .SingleOrDefault();
 
+            if (duration is null && responseDuration is null)
+                continue;
+
             duration ??= 0;
             var durationTimeSpan = new TimeSpan(0, 0, (int)duration);
 
@@ -960,12 +963,16 @@ public class InfoService(
             geometry.SRID = 4326;
             locationsQuery = locationsQuery.Where(r => geometry.Contains(r.Address.Location));
         }
-        
-        var locations = await locationsQuery
-            .Select(r => new InfoLocation(r.Id, r.Address.Location!.Y, r.Address.Location!.X))
+
+        List<LocationItem> locations;
+        locations = await locationsQuery
+            .Select(r => new LocationItem(r.Id, r.Address.Location!.Y, r.Address.Location!.X))
             .ToListAsync();
 
-        result.Locations = locations;
+        if (locations is null)
+            locations = new List<LocationItem>();
+
+        result.Add(new LocationInfo(locations));
 
         return result;
     }
@@ -1005,6 +1012,9 @@ public class InfoService(
                 .Where(g => EqualityComparer<Key>.Default.Equals(g.Id, bin.Id))
                 .Select(g => g.ResponseDuration)
                 .SingleOrDefault();
+
+            if (duration is null && responseDuration is null)
+                continue;
 
             duration ??= 0;
             var durationTimeSpan = new TimeSpan(0, 0, (int)duration);

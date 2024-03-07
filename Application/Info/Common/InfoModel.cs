@@ -4,23 +4,50 @@ namespace Application.Info.Common;
 
 public class InfoModel
 {
-    public List<InfoSingleton> Singletons { get; set; } = new List<InfoSingleton>();
-    public List<InfoChart> Charts { get; set; } = new List<InfoChart>();
-    public List<InfoLocation> Locations { get; set; } = new List<InfoLocation>();
+    public List<InfoSingleton>? Singletons { get; set; } = null;
+    public List<InfoChart>? Charts { get; set; } = null;
+    public List<LocationInfo>? Locations { get; set; } = null;
     public InfoModel Add(InfoSingleton singleton)
     {
+        if(Singletons is null)
+            Singletons = new List<InfoSingleton>();
+
         Singletons.Add(singleton);
         return this;
     }
     public InfoModel Add(InfoChart chart)
     {
+        if(Charts is null)
+            Charts = new List<InfoChart>();
+
         Charts.Add(chart);
+        return this;
+    }
+    public InfoModel Add(LocationInfo location)
+    {
+        if (Locations is null)
+            Locations = new List<LocationInfo>();
+
+        Locations.Add(location);
         return this;
     }
     public InfoModel Add(InfoModel infoDto)
     {
-        Singletons.AddRange(infoDto.Singletons);
-        Charts.AddRange(infoDto.Charts);
+        if(Singletons is null)
+            Singletons = new List<InfoSingleton>();
+        if(Charts is null)
+            Charts = new List<InfoChart>();
+        if (Locations is null)
+            Locations = new List<LocationInfo>();
+
+        if (infoDto.Singletons is not null)
+            Singletons.AddRange(infoDto.Singletons);
+
+        if(infoDto.Charts is not null)
+            Charts.AddRange(infoDto.Charts);
+
+        if(infoDto.Locations is not null)
+            Locations.AddRange(infoDto.Locations);
         return this;
     }
 }
@@ -91,4 +118,5 @@ public record InfoSerie(string Title, string Icon)
 
 public record DataItem(string Title, string Value, string DisplayValue, string? Parameters = null);
 
-public record InfoLocation(Guid ReportId, double Latitude, double Longitude);
+public record LocationItem(Guid ReportId, double Latitude, double Longitude);
+public record LocationInfo(List<LocationItem> Locations);
