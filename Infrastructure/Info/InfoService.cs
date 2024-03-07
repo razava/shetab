@@ -1040,38 +1040,54 @@ public class InfoService(
         return $"{percent}% ({value})";
     }
 
+    private record UserAndRegions(string UserId, List<int> RegionIds);
     private async Task<Expression<Func<Report, bool>>> createReportQuery(GetInfoQueryParameters infoQueryParameters)
     {
         Expression<Func<Report, bool>> result;
         List<string> userIds = new List<string>();
+        List<UserAndRegions> userAndRegions = new List<UserAndRegions>();
+        List<int> regionIds = new List<int>();
+
         if(infoQueryParameters.Roles.Contains(RoleNames.Manager))
         {
             userIds = await getUserIdsOfOrganizationalUnit(infoQueryParameters.UserId);
+
+            userAndRegions = await unitOfWork.DbContext.Set<Actor>()
+                .Where(a => userIds.Contains(a.Identifier))
+                .Select(a => new UserAndRegions(a.Identifier, a.Regions.Select(r=>r.Id).ToList()))
+                .ToListAsync();
+
+            regionIds = userAndRegions.SelectMany(ur => ur.RegionIds).ToList().Distinct().ToList();
+
+            //TODO: This abviously is not correct!
+            result = r => (r.ShahrbinInstanceId == infoQueryParameters.InstanceId) &&
+                          (r.Address.RegionId.HasValue && regionIds.Contains(r.Address.RegionId.Value)) &&
+                          (r.ExecutiveId != null && userIds.Contains(r.ExecutiveId) || userIds.Count == 0);
         }
-        else if(infoQueryParameters.Roles.Contains(RoleNames.Operator))
+        else 
         {
+            regionIds = await unitOfWork.DbContext.Set<Actor>()
+                .Where(a => a.Identifier == infoQueryParameters.UserId)
+                .SelectMany(a => a.Regions.Select(r => r.Id).ToList())
+                .ToListAsync();
+            if (infoQueryParameters.Roles.Contains(RoleNames.Operator))
+            {
 
+            }
+            else if (infoQueryParameters.Roles.Contains(RoleNames.Mayor))
+            {
+
+            }
+            else
+            {
+                userIds.Add(infoQueryParameters.UserId);
+            }
+            //TODO: This abviously is not correct!
+            result = r => (r.ShahrbinInstanceId == infoQueryParameters.InstanceId) &&
+                          (r.Address.RegionId.HasValue && regionIds.Contains(r.Address.RegionId.Value)) &&
+                          (r.ExecutiveId != null && userIds.Contains(r.ExecutiveId) || userIds.Count == 0);
         }
-        else if (infoQueryParameters.Roles.Contains(RoleNames.Mayor))
-        {
 
-        }
-        else
-        {
-            userIds.Add(infoQueryParameters.UserId);
-        }
-
-
-        var userIdRegion = await unitOfWork.DbContext.Set<Actor>()
-            .Where(a => userIds.Contains(a.Identifier))
-            .Select(a => new { userId = a.Identifier, regionIds = a.Regions.Select(r => r.Id).ToList() })
-            .ToListAsync();
-
-        var regionIds = userIdRegion.SelectMany(ur => ur.regionIds).ToList().Distinct().ToList();
-        //TODO: This abviously is not correct!
-        result = r => (r.ShahrbinInstanceId == infoQueryParameters.InstanceId) &&
-                      (r.Address.RegionId.HasValue && regionIds.Contains(r.Address.RegionId.Value)) &&
-                      (r.ExecutiveId != null && userIds.Contains(r.ExecutiveId) || userIds.Count == 0);
 
         return result;
     }
