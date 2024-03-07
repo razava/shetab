@@ -6,7 +6,6 @@ using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
-using Domain.Primitives;
 using MassTransit.Initializers;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
@@ -38,10 +37,11 @@ public class InfoService(
 
         var infoChart = new InfoChart("وضعیت درخواست ها به تفکیک دسته بندی", "", false, false);
 
-        var queryLimits = await createReportQuery(queryParameters);
+        //var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
-            .Where(queryLimits)
             .AsNoTracking();
+
+        await addRestrictions(query, queryParameters);
 
         var groupedQuery = await query
             .GroupBy(q => new { q.CategoryId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
@@ -155,10 +155,9 @@ public class InfoService(
 
         var infoChart = new InfoChart("وضعیت درخواست ها به تفکیک واحد اجرایی", "", false, false);
 
-        var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
-            .Where(queryLimits)
             .AsNoTracking();
+        await addRestrictions(query, queryParameters);
 
         var groupedQuery = await query
             .GroupBy(q => new { q.ExecutiveId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
@@ -265,10 +264,10 @@ public class InfoService(
 
         var infoChart = new InfoChart("وضعیت درخواست ها به تفکیک پیمانکار", "", false, false);
 
-        var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
-            .Where(queryLimits)
             .AsNoTracking();
+
+        await addRestrictions(query, queryParameters);
 
         var groupedQuery = await query
             .GroupBy(q => new { q.ContractorId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
@@ -374,10 +373,10 @@ public class InfoService(
 
         var infoChart = new InfoChart("وضعیت درخواست ها به تفکیک منطقه", "", false, false);
 
-        var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
-            .Where(queryLimits)
             .AsNoTracking();
+
+        await addRestrictions(query, queryParameters);
 
         var groupedQuery = await query
             .GroupBy(q => new { q.Address.RegionId, q.ReportState, q.IsFeedbacked, q.IsObjectioned })
@@ -527,10 +526,10 @@ public class InfoService(
 
     public async Task<InfoModel> GetReportsStatistics(GetInfoQueryParameters queryParameters)
     {
-        var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
-            .Where(queryLimits)
             .AsNoTracking();
+
+        await addRestrictions(query, queryParameters);
 
         var totalReports = await query.LongCountAsync();
 
@@ -565,10 +564,10 @@ public class InfoService(
 
     public async Task<InfoModel> GetTimeStatistics(GetInfoQueryParameters queryParameters)
     {
-        var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
-            .Where(queryLimits)
             .AsNoTracking();
+
+        await addRestrictions(query, queryParameters);
 
         //average durations
         var allDuration = await query
@@ -698,9 +697,12 @@ public class InfoService(
 
     public async Task<InfoModel> GetActiveCitizens(GetInfoQueryParameters queryParameters)
     {
-        var queryLimits = await createReportQuery(queryParameters);
-        var groupedQuery = await unitOfWork.DbContext.Set<Report>()
-            .Where(queryLimits)
+        var query = unitOfWork.DbContext.Set<Report>()
+            .AsNoTracking();
+
+        await addRestrictions(query, queryParameters);
+
+        var groupedQuery = await query
             .GroupBy(r => r.CitizenId)
             .Select(g => new { g.Key, Count = g.Count() })
             .OrderByDescending(g => g.Count)
@@ -753,10 +755,10 @@ public class InfoService(
 
         var infoChart = new InfoChart("زمان رسیدگی به تفکیک دسته بندی", "", false, false);
 
-        var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
-            .Where(queryLimits)
             .AsNoTracking();
+
+        await addRestrictions(query, queryParameters);
 
         var groupedQuery = await query
             .Where(r => r.Duration != null)
@@ -825,11 +827,12 @@ public class InfoService(
 
     public async Task<InfoModel> GetReportsTimeByRegion(GetInfoQueryParameters queryParameters)
     {
-        var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
-            .Where(queryLimits)
-            .AsNoTracking()
-            .Include(r => r.Address);
+            .AsNoTracking();
+
+        await addRestrictions(query, queryParameters);
+
+        query = query.Include(r => r.Address);
 
         var cityId = await unitOfWork.DbContext.Set<ShahrbinInstance>()
             .AsNoTracking().Where(s => s.Id == queryParameters.InstanceId)
@@ -854,10 +857,10 @@ public class InfoService(
 
     public async Task<InfoModel> GetRepportsTimeByExecutive(GetInfoQueryParameters queryParameters)
     {
-        var queryLimits = await createReportQuery(queryParameters);
         var query = unitOfWork.DbContext.Set<Report>()
-            .Where(queryLimits)
             .AsNoTracking();
+
+        await addRestrictions(query, queryParameters);
 
         var executives = (await userRepository.GetUsersInRole(RoleNames.Executive))
             .Where(u => u.ShahrbinInstanceId == queryParameters.InstanceId)
@@ -1040,12 +1043,13 @@ public class InfoService(
         return $"{percent}% ({value})";
     }
 
-    private record UserAndRegions(string UserId, List<int> RegionIds);
-    private async Task<Expression<Func<Report, bool>>> createReportQuery(GetInfoQueryParameters infoQueryParameters)
+    private record ActorUserRegions(int ActorId, string UserId, List<int> RegionIds);
+
+    private async Task<Expression<Func<Report, bool>>> createReportQuery2(GetInfoQueryParameters infoQueryParameters)
     {
         Expression<Func<Report, bool>> result;
         List<string> userIds = new List<string>();
-        List<UserAndRegions> userAndRegions = new List<UserAndRegions>();
+        List<ActorUserRegions> userAndRegions = new List<ActorUserRegions>();
         List<int> regionIds = new List<int>();
 
         if(infoQueryParameters.Roles.Contains(RoleNames.Manager))
@@ -1054,7 +1058,7 @@ public class InfoService(
 
             userAndRegions = await unitOfWork.DbContext.Set<Actor>()
                 .Where(a => userIds.Contains(a.Identifier))
-                .Select(a => new UserAndRegions(a.Identifier, a.Regions.Select(r=>r.Id).ToList()))
+                .Select(a => new ActorUserRegions(a.Id, a.Identifier, a.Regions.Select(r=>r.Id).ToList()))
                 .ToListAsync();
 
             regionIds = userAndRegions.SelectMany(ur => ur.RegionIds).ToList().Distinct().ToList();
@@ -1122,5 +1126,46 @@ public class InfoService(
         }
 
         return userIds;
+    }
+
+    private async Task addRestrictions(IQueryable<Report> query, GetInfoQueryParameters infoQueryParameters)
+    {
+        List<string> userIds = new List<string> { infoQueryParameters.UserId };
+
+        if (infoQueryParameters.Roles.Contains(RoleNames.Manager))
+        {
+            userIds.AddRange(await getUserIdsOfOrganizationalUnit(infoQueryParameters.UserId));
+        }
+        else
+        {
+            var regionIds = unitOfWork.DbContext.Set<Actor>()
+                .Where(a => a.Identifier == infoQueryParameters.UserId)
+                .SelectMany(a => a.Regions.Select(r => r.Id));
+            query = query.Where(r => r.Address.RegionId != null && regionIds.Contains(r.Address.RegionId.Value));
+
+            if (infoQueryParameters.Roles.Contains(RoleNames.Operator))
+            {
+            }
+            else if (infoQueryParameters.Roles.Contains(RoleNames.Mayor))
+            {
+            }
+            else
+            {
+            }
+        }
+
+        var reportIds = unitOfWork.DbContext.Set<TransitionLog>()
+                .Where(tl => userIds.Contains(tl.ActorIdentifier))
+                .Select(tl => tl.ReportId)
+                .Distinct();
+        var actorIds = unitOfWork.DbContext.Set<Actor>()
+            .Where(a => userIds.Contains(a.Identifier))
+            .Select(a => a.Id)
+            .Distinct();
+        query = query
+            .Where(r => reportIds.Contains(r.Id) ||
+                        r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value));
+
+        return ;
     }
 }
