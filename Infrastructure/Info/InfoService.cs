@@ -1276,7 +1276,11 @@ public class InfoService(
             query = query.Where(r => r.Address.RegionId != null && reportFilters.Regions.Contains(r.Address.RegionId.Value));
         }
 
-        
+        if(reportFilters.SatisfactionValues != null)
+        {
+            query = query.Where(r => reportFilters.SatisfactionValues.Contains(0) && r.Satisfaction == null ||
+                                     r.Satisfaction != null && reportFilters.SatisfactionValues.Contains(r.Satisfaction.Rating));
+        }
         return query;
     }
 

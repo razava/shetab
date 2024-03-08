@@ -6,7 +6,7 @@ using Application.Categories.Queries.GetStaffCategories;
 using Application.Configurations.Queries.Roles;
 using Application.Configurations.Queries.ShahrbinInstanceManagement;
 using Application.Configurations.Queries.ViolationTypes;
-using Application.Reports.Queries.GetReportFilters;
+using Application.Info.Queries.GetReportFilters;
 using Application.Users.Queries.GetRegions;
 using Domain.Models.Relational.Common;
 using Mapster;

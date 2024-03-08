@@ -24,8 +24,7 @@ public record ReportFilters(
     List<int>? Priorities,
     DateTime? FromDate,
     DateTime? ToDate,
-    int? MinSatisfaction,
-    int? MaxSatisfaction);
+    List<int>? SatisfactionValues);
 
 public enum ReportsToInclude
 {

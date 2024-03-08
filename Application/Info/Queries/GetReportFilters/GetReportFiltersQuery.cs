@@ -1,4 +1,4 @@
-﻿namespace Application.Reports.Queries.GetReportFilters;
+﻿namespace Application.Info.Queries.GetReportFilters;
 
 public record GetReportFiltersQuery(int? InstanceId, string UserId, List<string> UserRoles) : IRequest<Result<ReportFiltersResponse>>;
 public record ReportFiltersResponse(
@@ -7,8 +7,7 @@ public record ReportFiltersResponse(
     List<FilterItem>? States,
     List<FilterItem>? Priorities,
     List<FilterItem>? ReportsToInclude,
-    List<FilterItem>? MinSatisfaction,
-    List<FilterItem>? MaxSatisfaction);
+    List<FilterItem>? SatisfactionValues);
 
 public record FilterItem(string Title, int Value);
 public record FilterCategory(

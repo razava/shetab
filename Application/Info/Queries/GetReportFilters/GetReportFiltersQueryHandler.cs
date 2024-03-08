@@ -1,12 +1,10 @@
-﻿using Application.Categories.Common;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
 using Application.Info.Queries.GetInfoQuery;
-using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Mapster;
 using SharedKernel.ExtensionMethods;
 
-namespace Application.Reports.Queries.GetReportFilters;
+namespace Application.Info.Queries.GetReportFilters;
 
 internal class GetReportFiltersQueryHandler(ICategoryRepository categoryRepository, IActorRepository actorRepository)
     : IRequestHandler<GetReportFiltersQuery, Result<ReportFiltersResponse>>
@@ -25,7 +23,7 @@ internal class GetReportFiltersQueryHandler(ICategoryRepository categoryReposito
         foreach (var item in Enum.GetValues(typeof(ReportState)))
             statusFilterItems.Add(new FilterItem(((ReportState)item).GetDescription() ?? "", (int)item));
 
-        var categoryRoot = (await categoryRepository.GetStaffCategories(instanceId, request.UserId, request.UserRoles));
+        var categoryRoot = await categoryRepository.GetStaffCategories(instanceId, request.UserId, request.UserRoles);
 
 
         var regions = await actorRepository.GetUserRegionsAsync(instanceId, request.UserId);
@@ -38,6 +36,7 @@ internal class GetReportFiltersQueryHandler(ICategoryRepository categoryReposito
 
 
         var satisfactionFilterItems = new List<int> { 1, 2, 3, 4, 5 }.Select(s => new FilterItem(s.ToString(), s)).ToList();
+        satisfactionFilterItems.Insert(0, new FilterItem("بدون خشنودی سنجی", 0));
 
         var result = new ReportFiltersResponse(
             regionFilterItems,
@@ -45,7 +44,6 @@ internal class GetReportFiltersQueryHandler(ICategoryRepository categoryReposito
             statusFilterItems,
             priorityFilterItems,
             reportsToInclude,
-            satisfactionFilterItems,
             satisfactionFilterItems);
 
         return result;
