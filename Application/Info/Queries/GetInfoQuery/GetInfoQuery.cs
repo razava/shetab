@@ -29,8 +29,6 @@ public record ReportFilters(
 
 public enum ReportsToInclude
 {
-    [Description("همه")]
-    All,
     [Description("در انتظار بررسی")]
     Interacted,
     [Description("ارجاع داده شده")]

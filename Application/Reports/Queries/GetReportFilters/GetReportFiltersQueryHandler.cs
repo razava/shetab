@@ -23,7 +23,7 @@ internal class GetReportFiltersQueryHandler(ICategoryRepository categoryReposito
 
         var statusFilterItems = new List<FilterItem>();
         foreach (var item in Enum.GetValues(typeof(ReportState)))
-            priorityFilterItems.Add(new FilterItem(((ReportState)item).GetDescription() ?? "", (int)item));
+            statusFilterItems.Add(new FilterItem(((ReportState)item).GetDescription() ?? "", (int)item));
 
         var categoryRoot = (await categoryRepository.GetStaffCategories(instanceId, request.UserId, request.UserRoles));
 
@@ -34,7 +34,7 @@ internal class GetReportFiltersQueryHandler(ICategoryRepository categoryReposito
 
         var reportsToInclude = new List<FilterItem>();
         foreach (var item in Enum.GetValues(typeof(ReportsToInclude)))
-            priorityFilterItems.Add(new FilterItem(((ReportsToInclude)item).GetDescription() ?? "", (int)item));
+            reportsToInclude.Add(new FilterItem(((ReportsToInclude)item).GetDescription() ?? "", (int)item));
 
 
         var satisfactionFilterItems = new List<int> { 1, 2, 3, 4, 5 }.Select(s => new FilterItem(s.ToString(), s)).ToList();

@@ -534,28 +534,6 @@ public class StaffReportController : ApiController
             s => NoContent(),
             f => Problem(f));
     }
-
-    [Authorize]
-    [HttpGet("Filters")]
-    public async Task<ActionResult> GetFilters()
-    {
-        var userId = User.GetUserId();
-        var userRoles = User.GetUserRoles();
-        int? instanceId = null;
-        try
-        {
-            instanceId = User.GetUserInstanceId();
-        }
-        catch
-        {
-        }
-
-        var query = new GetReportFiltersQuery(instanceId, userId, userRoles);
-        var result = await Sender.Send(query);
-        return result.Match(
-            s => Ok(s),
-            f => Problem(f));
-    }
 }
 
 public record CreateReportNoteDto(string Text);

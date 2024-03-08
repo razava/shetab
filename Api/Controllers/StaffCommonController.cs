@@ -6,6 +6,7 @@ using Application.Categories.Queries.GetStaffCategories;
 using Application.Configurations.Queries.Roles;
 using Application.Configurations.Queries.ShahrbinInstanceManagement;
 using Application.Configurations.Queries.ViolationTypes;
+using Application.Reports.Queries.GetReportFilters;
 using Application.Users.Queries.GetRegions;
 using Domain.Models.Relational.Common;
 using Mapster;
@@ -150,5 +151,26 @@ public class StaffCommonController : ApiController
             f => Problem(f));
     }
 
+    [Authorize]
+    [HttpGet("Filters")]
+    public async Task<ActionResult> GetFilters()
+    {
+        var userId = User.GetUserId();
+        var userRoles = User.GetUserRoles();
+        int? instanceId = null;
+        try
+        {
+            instanceId = User.GetUserInstanceId();
+        }
+        catch
+        {
+        }
+
+        var query = new GetReportFiltersQuery(instanceId, userId, userRoles);
+        var result = await Sender.Send(query);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
 }
 
