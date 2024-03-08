@@ -1224,12 +1224,12 @@ public class InfoService(
             query = query.Where(r => geometry.Contains(r.Address.Location));
         }
 
-        query = addFilters(query, queryParameters.ReportFilters);
+        query = AddFilters(query, queryParameters.ReportFilters);
 
         return query;
     }
 
-    private IQueryable<Report> addFilters(IQueryable<Report> query, ReportFilters reportFilters)
+    public IQueryable<Report> AddFilters(IQueryable<Report> query, ReportFilters reportFilters)
     {
         if(reportFilters.Query is not null)
         {

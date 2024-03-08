@@ -7,6 +7,7 @@ using Application.Comments.Commands.UpdateComment;
 using Application.Comments.Queries.GetAllCommentsQuery;
 using Application.Common.FilterModels;
 using Application.Common.Interfaces.Persistence;
+using Application.Info.Queries.GetInfoQuery;
 using Application.ReportNotes.Commands.AddReportNote;
 using Application.ReportNotes.Commands.DeleteReportNote;
 using Application.ReportNotes.Commands.UpdateReportNote;
@@ -51,13 +52,12 @@ public class StaffReportController : ApiController
     public async Task<ActionResult<List<GetReportsResponse>>> GetTasks(
         string? fromRoleId,
         [FromQuery] PagingInfo pagingInfo,
-        [FromQuery] FilterGetReports filterGetReports)
+        [FromQuery] ReportFilters reportFilters)
     {
         var userId = User.GetUserId();
         var instanceId = User.GetUserInstanceId();
         var roles = User.GetUserRoles();
-        var mappedFilter = filterGetReports.Adapt<FilterGetReportsModel>();
-        var query = new GetReportsQuery(pagingInfo, userId, roles, fromRoleId, instanceId, mappedFilter);
+        var query = new GetReportsQuery(pagingInfo, userId, roles, fromRoleId, instanceId, reportFilters);
         var result = await Sender.Send(query);
         
         if(result.IsFailed)

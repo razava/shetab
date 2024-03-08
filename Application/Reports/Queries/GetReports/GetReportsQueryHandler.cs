@@ -1,14 +1,14 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Info;
+using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Application.Reports.Queries.GetReports;
 
-internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IUserRepository userRepository) 
+internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IUserRepository userRepository, IInfoService infoService) 
     : IRequestHandler<GetReportsQuery, Result<PagedList<GetReportsResponse>>>
 {
     
@@ -60,15 +60,9 @@ internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IUserReposi
 
             }
         }
-        Expression<Func<Report, bool>>? inputFilters = r =>
-        ((request.FilterGetReports == null) ||
-        (request.FilterGetReports.SentFromDate == null || r.Sent >= request.FilterGetReports.SentFromDate)
-        && (request.FilterGetReports.SentToDate == null || r.Sent <= request.FilterGetReports.SentToDate)
-        && (request.FilterGetReports.CurrentStates == null || request.FilterGetReports.CurrentStates.Contains(r.ReportState)) 
-        && (request.FilterGetReports.Query == null || r.TrackingNumber.Contains(request.FilterGetReports.Query))
-        && (request.FilterGetReports.PhoneNumber == null ||
-        (r.Citizen.PhoneNumber!.Contains(request.FilterGetReports.PhoneNumber)) ||
-        (r.Citizen.PhoneNumber2.Contains(request.FilterGetReports.PhoneNumber)) ));
+
+        query = infoService.AddFilters(query, request.ReportFilters);
+
 
 
         //var reports = await _reportRepository.GetPagedAsync(
@@ -80,7 +74,6 @@ internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IUserReposi
 
         var query2 = query
             .AsNoTracking()
-            .Where(inputFilters)
             .OrderByDescending(r => r.Priority)
             .ThenBy(r => r.Sent)
             .Select(GetReportsResponse.GetSelector());
