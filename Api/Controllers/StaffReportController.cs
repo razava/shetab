@@ -20,11 +20,9 @@ using Application.Reports.Commands.MakeTransition;
 using Application.Reports.Commands.MessageToCitizen;
 using Application.Reports.Commands.UpdateByOperator;
 using Application.Reports.Common;
-using Application.Reports.Queries.GetAllReports;
 using Application.Reports.Queries.GetComments;
 using Application.Reports.Queries.GetPossibleTransitions;
 using Application.Reports.Queries.GetReportById;
-using Application.Reports.Queries.GetReportFilters;
 using Application.Reports.Queries.GetReports;
 using Application.Satisfactions.Commands.UpsertSatisfaction;
 using Application.Satisfactions.Queries.GetSatisfaction;
@@ -80,27 +78,6 @@ public class StaffReportController : ApiController
             s => Ok(s),
             f => Problem(f));
     }
-    
-    [Authorize]
-    [HttpGet("AllReports")]
-    public async Task<ActionResult<List<GetReportsResponse>>> GetAllReports(
-        [FromQuery] PagingInfo pagingInfo, 
-        [FromQuery] FilterGetAllReports filterGetAllReports)
-    {
-        var userId = User.GetUserId();
-        var userRoles = User.GetUserRoles();
-        var instanceId = User.GetUserInstanceId();
-        var mappedFilter = filterGetAllReports.Adapt<FilterGetAllReportsModel>();
-        var query = new GetAllReportsQuery(pagingInfo, instanceId, userId, userRoles, mappedFilter);
-        var result = await Sender.Send(query);
-
-        if (result.IsFailed)
-            return Problem(result.ToResult());
-        Response.AddPaginationHeaders(result.Value.Meta);
-        return Ok(result.Value);
-    }
-
-
 
     //TODO: Define access policy
     [Authorize]

@@ -3,6 +3,7 @@ using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Application.Info.Common;
 using Application.Info.Queries.GetInfoQuery;
+using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
@@ -971,6 +972,27 @@ public class InfoService(
         return result;
     }
 
+    //Reports
+    public async Task<PagedList<T>> GetReports<T>(GetInfoQueryParameters queryParameters, Expression<Func<Report, T>> selector, PagingInfo pagingInfo)
+    {
+        var query = unitOfWork.DbContext.Set<Report>()
+            .AsNoTracking();
+
+        query = await addRestrictions(query, queryParameters);
+
+        var query2 = query
+            .AsNoTracking()
+            .OrderBy(r => r.Sent)
+            .Select(selector);
+
+        var reports = await PagedList<T>.ToPagedList(
+            query2,
+            pagingInfo.PageNumber,
+            pagingInfo.PageSize);
+
+        return reports;
+    }
+
     /*******************************************************/
     private async Task<InfoModel> GetReportsTimeHistogram<T, Key>(
         string title,
@@ -1257,4 +1279,5 @@ public class InfoService(
         
         return query;
     }
+
 }

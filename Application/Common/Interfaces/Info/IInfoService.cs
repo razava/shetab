@@ -1,5 +1,9 @@
-﻿using Application.Info.Common;
+﻿using Application.Common.Interfaces.Persistence;
+using Application.Info.Common;
 using Application.Info.Queries.GetInfoQuery;
+using Application.Reports.Common;
+using Domain.Models.Relational;
+using System.Linq.Expressions;
 
 namespace Application.Common.Interfaces.Info;
 
@@ -24,6 +28,9 @@ public interface IInfoService
     Task<InfoModel> GetRequestsPerRegistrantType(GetInfoQueryParameters queryParameters);
 
     Task<InfoModel> GetLocations(GetInfoQueryParameters queryParameters);
+
+
+    Task<PagedList<T>> GetReports<T>(GetInfoQueryParameters queryParameters, Expression<Func<Report, T>> selector, PagingInfo pagingInfo);
 }
 
 public record GetInfoQueryParameters(

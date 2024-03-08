@@ -2,8 +2,11 @@
 using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Common.Interfaces.Info;
+using Application.Common.Interfaces.Persistence;
+using Application.Info.Queries.GetAllReports;
 using Application.Info.Queries.GetInfoQuery;
 using Application.Info.Queries.GetListChartQuery;
+using Application.Reports.Common;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -68,8 +71,38 @@ public class StaffInfoController : ApiController
     }
 
 
-    //............................................
-    //todo : is this endpoint used??
+    [Authorize]
+    [HttpGet("Reports")]
+    public async Task<ActionResult<List<GetReportsResponse>>> GetAllReports(
+        [FromQuery] PagingInfo pagingInfo,
+        [FromQuery] List<double>? geometry,
+        [FromQuery] List<ReportsToInclude>? reportsToInclude,
+        [FromQuery] ReportFilters reportFilters)
+    {
+        var instanceId = User.GetUserInstanceId();
+        var userId = User.GetUserId();
+        var userRoles = User.GetUserRoles();
+        List<GeoPoint>? geoPoints = null;
+        if (geometry is not null)
+        {
+            if (geometry.Count % 2 == 0)
+            {
+                geoPoints = new List<GeoPoint>();
+                for (var i = 0; i < geometry.Count; i += 2)
+                {
+                    geoPoints.Add(new GeoPoint(geometry[i], geometry[i + 1]));
+                }
+            }
+        }
+        var query = new GetAllReportsQuery(pagingInfo, instanceId, userId, userRoles, geoPoints, reportsToInclude, reportFilters);
+        var result = await Sender.Send(query);
+
+        if (result.IsFailed)
+            return Problem(result.ToResult());
+        Response.AddPaginationHeaders(result.Value.Meta);
+        return Ok(result.Value);
+    }
+
     [Authorize]
     [HttpGet("Excel")]
     public async Task<ActionResult> GetExcel()

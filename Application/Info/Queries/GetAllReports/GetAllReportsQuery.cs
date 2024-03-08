@@ -1,14 +1,17 @@
-﻿using Application.Common.FilterModels;
+﻿using Application.Common.Interfaces.Info;
 using Application.Common.Interfaces.Persistence;
+using Application.Info.Queries.GetInfoQuery;
 using Application.Reports.Common;
 
-namespace Application.Reports.Queries.GetAllReports;
+namespace Application.Info.Queries.GetAllReports;
 
 public sealed record GetAllReportsQuery(
     PagingInfo PagingInfo,
     int InstanceId,
     string UserId,
     List<string> Roles,
-    FilterGetAllReportsModel? FilterGetReports = default!) 
+    List<GeoPoint>? Geometry,
+    List<ReportsToInclude>? ReportsToInclude,
+    ReportFilters ReportFilters)
     : IRequest<Result<PagedList<GetReportsResponse>>>;
 
