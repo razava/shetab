@@ -1,4 +1,5 @@
 ﻿using Application.Info.Common;
+using Application.Info.Queries.GetInfoQuery;
 
 namespace Application.Common.Interfaces.Info;
 
@@ -30,5 +31,7 @@ public record GetInfoQueryParameters(
     string UserId,
     List<string> Roles,
     string? Parameter,
+    ReportFilters ReportFilters,
+    List<ReportsToInclude>? ReportsToInclude,
     List<GeoPoint>? Geometry);
 public record GeoPoint(double Longitude, double Latitude);

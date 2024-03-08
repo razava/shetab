@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Domain.Models.Relational.Common;
+using System.ComponentModel;
 
 namespace SharedKernel.ExtensionMethods;
 

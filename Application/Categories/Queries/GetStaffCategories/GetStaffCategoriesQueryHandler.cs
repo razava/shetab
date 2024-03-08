@@ -8,34 +8,11 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.Categories.Queries.GetStaffCategories;
 
 internal class GetStaffCategoriesQueryHandler(
-    IUnitOfWork unitOfWork) : IRequestHandler<GetStaffCategoriesQuery, Result<CategoryResponse>>
+    ICategoryRepository categoryRepository) : IRequestHandler<GetStaffCategoriesQuery, Result<CategoryResponse>>
 {
     public async Task<Result<CategoryResponse>> Handle(GetStaffCategoriesQuery request, CancellationToken cancellationToken)
     {
-        var query = unitOfWork.DbContext.Set<Category>()
-            .Where(c => c.ShahrbinInstanceId == request.InstanceId
-                        && !c.IsDeleted);
-
-        if (request.Roles.Contains(RoleNames.Operator))
-            query = query.Where(c => c.Users.Any(cu => cu.Id == request.UserId));
-
-        var categories = await query
-            .Include(c => c.Form)
-            .AsNoTracking()
-            .ToListAsync();
-
-        categories.ForEach(x => x.Categories = categories.Where(c => c.ParentId == x.Id).ToList());
-        categories.ForEach(x => x.ParentId = categories.Any(c => c.Id == x.ParentId) ? x.ParentId : null);
-        var roots = categories.Where(x => x.ParentId == null).ToList();
-
-        Category result;
-        if (roots.Count == 1)
-            result = roots[0];
-        else
-        {
-            result = Category.Create(request.InstanceId, "", "ریشه", "", 0, -1, "", 0, 0);
-            roots.Where(r => r.ParentId == null).ToList().ForEach(c => c.Parent = result);
-        }
+        var result = await categoryRepository.GetStaffCategories(request.InstanceId, request.UserId, request.Roles);
         return result.Adapt<CategoryResponse>();
 
     }

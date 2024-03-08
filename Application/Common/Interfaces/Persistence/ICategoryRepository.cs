@@ -5,4 +5,5 @@ namespace Application.Common.Interfaces.Persistence;
 public interface ICategoryRepository : IGenericRepository<Category>
 {
     public Task<Category?> GetByIDAsync(int id, bool trackChanges = true);
+    public Task<Category?> GetStaffCategories(int instanceId, string userId, List<string> roles);
 }

@@ -15,7 +15,6 @@ using Application.ReportNotes.Queries.GetAllReportNotes;
 using Application.ReportNotes.Queries.GetReportNotes;
 using Application.Reports.Commands.AcceptByOperator;
 using Application.Reports.Commands.CreateReportByOperator;
-using Application.Reports.Commands.InspectorTransition;
 using Application.Reports.Commands.MakeObjection;
 using Application.Reports.Commands.MakeTransition;
 using Application.Reports.Commands.MessageToCitizen;
@@ -25,6 +24,7 @@ using Application.Reports.Queries.GetAllReports;
 using Application.Reports.Queries.GetComments;
 using Application.Reports.Queries.GetPossibleTransitions;
 using Application.Reports.Queries.GetReportById;
+using Application.Reports.Queries.GetReportFilters;
 using Application.Reports.Queries.GetReports;
 using Application.Satisfactions.Commands.UpsertSatisfaction;
 using Application.Satisfactions.Queries.GetSatisfaction;
@@ -534,14 +534,30 @@ public class StaffReportController : ApiController
             s => NoContent(),
             f => Problem(f));
     }
+
+    [Authorize]
+    [HttpGet("Filters")]
+    public async Task<ActionResult> GetFilters()
+    {
+        var userId = User.GetUserId();
+        var userRoles = User.GetUserRoles();
+        int? instanceId = null;
+        try
+        {
+            instanceId = User.GetUserInstanceId();
+        }
+        catch
+        {
+        }
+
+        var query = new GetReportFiltersQuery(instanceId, userId, userRoles);
+        var result = await Sender.Send(query);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
 }
 
 public record CreateReportNoteDto(string Text);
 public record UpsertSatisfactionDto(string Comments, int Rating);
 
-public record ReportFilters(
-    string? Query,
-    List<int>? Regions,
-    List<int>? Categories,
-    List<int>? Stages,
-    List<int>? Priorities);

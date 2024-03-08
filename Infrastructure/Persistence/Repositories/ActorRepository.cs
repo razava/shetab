@@ -3,7 +3,6 @@ using Application.Common.Interfaces.Persistence;
 using Application.Users.Common;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ProcessAggregate;
-using Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;

@@ -2,6 +2,7 @@
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Application.Info.Common;
+using Application.Info.Queries.GetInfoQuery;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
@@ -954,15 +955,8 @@ public class InfoService(
             .Where(r => r.ShahrbinInstanceId == queryParameters.InstanceId)
             .Where(r => r.Address.Location != null);
 
+        locationsQuery = await addRestrictions(locationsQuery, queryParameters);
         
-        if(queryParameters.Geometry is not null && queryParameters.Geometry.Count > 0)
-        {
-            var geometryFactory = new GeometryFactory();
-            var coordinates = queryParameters.Geometry.Select(g => new Coordinate(g.Longitude, g.Latitude)).ToList();
-            var geometry = geometryFactory.CreatePolygon(coordinates.ToArray());
-            geometry.SRID = 4326;
-            locationsQuery = locationsQuery.Where(r => geometry.Contains(r.Address.Location));
-        }
 
         List<LocationItem> locations;
         locations = await locationsQuery
@@ -1138,25 +1132,25 @@ public class InfoService(
         return userIds;
     }
 
-    private async Task<IQueryable<Report>> addRestrictions(IQueryable<Report> query, GetInfoQueryParameters infoQueryParameters)
+    private async Task<IQueryable<Report>> addRestrictions(IQueryable<Report> query, GetInfoQueryParameters queryParameters)
     {
-        List<string> userIds = new List<string> { infoQueryParameters.UserId };
+        List<string> userIds = new List<string> { queryParameters.UserId };
 
-        if (infoQueryParameters.Roles.Contains(RoleNames.Manager))
+        if (queryParameters.Roles.Contains(RoleNames.Manager))
         {
-            userIds.AddRange(await getUserIdsOfOrganizationalUnit(infoQueryParameters.UserId));
+            userIds.AddRange(await getUserIdsOfOrganizationalUnit(queryParameters.UserId));
         }
         else
         {
             var regionIds = unitOfWork.DbContext.Set<Actor>()
-                .Where(a => a.Identifier == infoQueryParameters.UserId)
+                .Where(a => a.Identifier == queryParameters.UserId)
                 .SelectMany(a => a.Regions.Select(r => r.Id));
             query = query.Where(r => r.Address.RegionId != null && regionIds.Contains(r.Address.RegionId.Value));
 
-            if (infoQueryParameters.Roles.Contains(RoleNames.Operator))
+            if (queryParameters.Roles.Contains(RoleNames.Operator))
             {
             }
-            else if (infoQueryParameters.Roles.Contains(RoleNames.Mayor))
+            else if (queryParameters.Roles.Contains(RoleNames.Mayor))
             {
             }
             else
@@ -1165,17 +1159,102 @@ public class InfoService(
         }
 
         var reportIds = unitOfWork.DbContext.Set<TransitionLog>()
-                .Where(tl => userIds.Contains(tl.ActorIdentifier))
-                .Select(tl => tl.ReportId)
-                .Distinct();
+            .Where(tl => userIds.Contains(tl.ActorIdentifier))
+            .Select(tl => tl.ReportId)
+            .Distinct();
         var actorIds = unitOfWork.DbContext.Set<Actor>()
             .Where(a => userIds.Contains(a.Identifier))
             .Select(a => a.Id)
             .Distinct();
-        query = query
-            .Where(r => reportIds.Contains(r.Id) ||
-                        r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value));
 
+        if(queryParameters.ReportsToInclude is null || queryParameters.ReportsToInclude.Count() == 0)
+        {
+            query = query.Where(r => reportIds.Contains(r.Id) ||
+                                     r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value));
+        }
+        else
+        {
+            var reportsToInclude = queryParameters.ReportsToInclude;
+            if (reportsToInclude.Contains(ReportsToInclude.Interacted) && reportsToInclude.Contains(ReportsToInclude.InCartable))
+            {
+                query = query.Where(r => reportIds.Contains(r.Id) ||
+                                    r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value));
+            }
+            else if(reportsToInclude.Contains(ReportsToInclude.Interacted))
+            {
+                query = query.Where(r => reportIds.Contains(r.Id));
+            }
+            else if (reportsToInclude.Contains(ReportsToInclude.InCartable))
+            {
+                query = query.Where(r => r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value));
+            }
+
+        }
+        
+
+
+        if (queryParameters.Geometry is not null && queryParameters.Geometry.Count > 0)
+        {
+            var geometryFactory = new GeometryFactory();
+            var coordinates = queryParameters.Geometry.Select(g => new Coordinate(g.Longitude, g.Latitude)).ToList();
+            var geometry = geometryFactory.CreatePolygon(coordinates.ToArray());
+            geometry.SRID = 4326;
+            query = query.Where(r => geometry.Contains(r.Address.Location));
+        }
+
+        query = addFilters(query, queryParameters.ReportFilters);
+
+        return query;
+    }
+
+    private IQueryable<Report> addFilters(IQueryable<Report> query, ReportFilters reportFilters)
+    {
+        if(reportFilters.Query is not null)
+        {
+            var phrase = reportFilters.Query.Trim();
+            if (phrase.Length >= 3)
+            {
+                query = query.Where(r =>
+                        r.TrackingNumber.Contains(phrase) ||
+                        r.Citizen.FirstName.Contains(phrase) ||
+                        r.Citizen.LastName.Contains(phrase) ||
+                        r.Citizen.PhoneNumber != null && r.Citizen.PhoneNumber.Contains(phrase));
+            }
+        }
+
+        if(reportFilters.FromDate != null)
+        {
+            query = query.Where(r => r.Sent >= reportFilters.FromDate);
+        }
+
+        if (reportFilters.ToDate != null)
+        {
+            query = query.Where(r => r.Sent <= reportFilters.ToDate);
+        }
+
+        if(reportFilters.Categories != null)
+        {
+            query = query.Where(r => reportFilters.Categories.Contains(r.CategoryId));
+        }
+
+        if(reportFilters.Priorities != null)
+        {
+            var priorities = reportFilters.Priorities.Select(p => (Priority)p).ToList();
+            query = query.Where(r => priorities.Contains(r.Priority));
+        }
+
+        if(reportFilters.States != null)
+        {
+            var states = reportFilters.States.Select(s => (ReportState)s).ToList();
+            query = query.Where(r => states.Contains(r.ReportState));
+        }
+
+        if(reportFilters.Regions != null)
+        {
+            query = query.Where(r => r.Address.RegionId != null && reportFilters.Regions.Contains(r.Address.RegionId.Value));
+        }
+
+        
         return query;
     }
 }

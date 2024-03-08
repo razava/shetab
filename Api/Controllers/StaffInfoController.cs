@@ -37,7 +37,12 @@ public class StaffInfoController : ApiController
 
     [Authorize]
     [HttpGet("Charts/{code}")]
-    public async Task<ActionResult<InfoDto>> GetChartsById(int code, string? parameter, [FromQuery] List<double>? geometry)
+    public async Task<ActionResult<InfoDto>> GetChartsById(
+        int code,
+        string? parameter,
+        [FromQuery] List<double>? geometry,
+        [FromQuery] List<ReportsToInclude>? reportsToInclude,
+        [FromQuery] ReportFilters reportFilters)
     {
         var instanceId = User.GetUserInstanceId();
         var userId = User.GetUserId();
@@ -54,7 +59,7 @@ public class StaffInfoController : ApiController
                 }
             }
         }
-        var query = new GetInfoQuery(code, instanceId, userId, userRoles, parameter, geoPoints);
+        var query = new GetInfoQuery(code, instanceId, userId, userRoles, parameter, geoPoints, reportsToInclude, reportFilters);
         var result = await Sender.Send(query);
 
         return result.Match(
@@ -62,41 +67,6 @@ public class StaffInfoController : ApiController
             f => Problem(f));
     }
 
-    /*
-    [Authorize]
-    [HttpGet("Report")]
-    public async Task<ActionResult> GetAllReports()
-    {
-        await Task.CompletedTask;
-        return Ok();
-    }
-
-    [Authorize]
-    [HttpGet("Report/{id}")]
-    public async Task<ActionResult> GetReportById()
-    {
-        await Task.CompletedTask;
-        return Ok();
-    }
-    */
-
-    [Authorize]
-    [HttpGet("Locations")]
-    public async Task<ActionResult<List<LocationDto>>> GetLocations()
-    {
-        await Task.CompletedTask;
-        return Ok("Not Implemented");
-    }
-
-
-    //todo : is this endpoint used??
-    [Authorize]
-    [HttpGet("Summary")]
-    public async Task<ActionResult<InfoDto>> GetSummary()
-    {
-        await Task.CompletedTask;
-        return Ok("Not Implemented");
-    }
 
     //............................................
     //todo : is this endpoint used??
