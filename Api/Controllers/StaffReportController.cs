@@ -30,6 +30,7 @@ using Application.Satisfactions.Queries.GetSatisfaction;
 using Application.Users.Queries.GetUserById;
 using Application.Workspaces.Queries.GetPossibleSources;
 using Domain.Models.Relational.Common;
+using Infrastructure.Info;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

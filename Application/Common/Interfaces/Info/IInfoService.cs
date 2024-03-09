@@ -31,6 +31,8 @@ public interface IInfoService
 
 
     Task<PagedList<T>> GetReports<T>(GetInfoQueryParameters queryParameters, Expression<Func<Report, T>> selector, PagingInfo pagingInfo);
+    Task<Result<MemoryStream>> GetExcel(GetInfoQueryParameters queryParameters);
+
     IQueryable<Report> AddFilters(IQueryable<Report> query, ReportFilters reportFilters);
 }
 

@@ -3,11 +3,12 @@ using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Application.Info.Common;
 using Application.Info.Queries.GetInfoQuery;
-using Application.Reports.Common;
+using ClosedXML.Excel;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
+using FluentResults;
 using MassTransit.Initializers;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
@@ -1251,7 +1252,7 @@ public class InfoService(
 
         if (reportFilters.ToDate != null)
         {
-            query = query.Where(r => r.Sent <= reportFilters.ToDate);
+            query = query.Where(r => r.Sent < reportFilters.ToDate.Value.AddDays(1));
         }
 
         if(reportFilters.Categories != null)
@@ -1284,4 +1285,109 @@ public class InfoService(
         return query;
     }
 
+    public async Task<Result<MemoryStream>> GetExcel(GetInfoQueryParameters queryParameters)
+    {
+        var query = unitOfWork.DbContext.Set<Report>().AsNoTracking();
+        query = await addRestrictions(query, queryParameters);
+
+        query = query
+            .Include(p => p.Citizen)
+            .Include(p => p.Registrant)
+            .Include(p => p.Executive)
+            .Include(p => p.Contractor)
+            .Include(p => p.Inspector)
+            .Include(p => p.Category)
+            .Include(p => p.Category)
+            .ThenInclude(p => p.Parent)
+            .Include(p => p.Address)
+            .Include(p => p.Medias)
+            .Include(p => p.LikedBy)
+            .Include(p => p.LastReason)
+            .Include(p => p.TransitionLogs)
+            .OrderByDescending(p => p.Sent);
+
+        var result = await query.ToListAsync();
+        int i = 1, j = 1;
+        int headerRows = 1;
+        int rowNum;
+        
+        //Creating the workbook
+        var t = Task.Run(() =>
+        {
+            var wb = new XLWorkbook();
+            var ws = wb.AddWorksheet("Sheet1");
+            ws.RightToLeft = true;
+
+            //Header titles
+            rowNum = 1;
+            ws.Cell(rowNum, j++).Value = "ردیف";
+            ws.Cell(rowNum, j++).Value = "تلفن همراه";
+            ws.Cell(rowNum, j++).Value = "نام";
+            ws.Cell(rowNum, j++).Value = "نام خانوادگی";
+            ws.Cell(rowNum, j++).Value = "نام ثبت کننده";
+            ws.Cell(rowNum, j++).Value = "نام خانوادگی ثبت کننده";
+            ws.Cell(rowNum, j++).Value = "واحد اجرایی";
+            ws.Cell(rowNum, j++).Value = "گروه موضوعی";
+            ws.Cell(rowNum, j++).Value = "زیرگروه موضوعی";
+            ws.Cell(rowNum, j++).Value = "آدرس";
+            ws.Cell(rowNum, j++).Value = "شماره رهگیری";
+            ws.Cell(rowNum, j++).Value = "تاریخ درخواست";
+            ws.Cell(rowNum, j++).Value = "تاریخ اتمام";
+            ws.Cell(rowNum, j++).Value = "آخرین وضعیت";
+            ws.Cell(rowNum, j++).Value = "نتیجه";
+            ws.Cell(rowNum, j++).Value = "بازخورد شهروند";
+            ws.Cell(rowNum, j++).Value = "اعتراض شهروند";
+            ws.Cell(rowNum, j++).Value = "متن درخواست";
+            ws.Cell(rowNum, j++).Value = "تاریخچه درخواست";
+
+
+            rowNum = headerRows;
+            i = 0;
+            foreach (var report in result)
+            {
+                rowNum++;
+                i++;
+                j = 1;
+
+                ws.Cell(rowNum, j++).Value = i;
+                ws.Cell(rowNum, j++).Value = report.Citizen.PhoneNumber;
+                ws.Cell(rowNum, j++).Value = report.Citizen.FirstName;
+                ws.Cell(rowNum, j++).Value = report.Citizen.LastName;
+                ws.Cell(rowNum, j++).Value = report.Registrant?.FirstName;
+                ws.Cell(rowNum, j++).Value = report.Registrant?.LastName;
+                ws.Cell(rowNum, j++).Value = $"{report.Executive?.Title} ({report.Executive?.FirstName} {report.Executive?.LastName})";
+                ws.Cell(rowNum, j++).Value = report.Category.Parent?.Title;
+                ws.Cell(rowNum, j++).Value = report.Category.Title;
+                ws.Cell(rowNum, j++).Value = report.Address.Detail;
+                ws.Cell(rowNum, j++).Value = report.TrackingNumber;
+                ws.Cell(rowNum, j++).Value = report.Sent.GregorianToPersian();
+                ws.Cell(rowNum, j++).Value = (report.Finished != null) ? report.Finished.Value.GregorianToPersian() : "";
+                ws.Cell(rowNum, j++).Value = report.LastStatus;
+                ws.Cell(rowNum, j++).Value = (report.LastReason != null) ? report.LastReason.Title : "";
+                ws.Cell(rowNum, j++).Value = report.IsFeedbacked ? "بله" : "خیر";
+                ws.Cell(rowNum, j++).Value = report.IsObjectioned ? "بله" : "خیر";
+                ws.Cell(rowNum, j++).Value = report.Comments;
+                var transitions = "";
+                foreach (var tl in report.TransitionLogs)
+                {
+                    transitions += tl.DateTime.GregorianToPersian();
+                    transitions += ":";
+                    transitions += tl.Message;
+                    transitions += "-";
+                    transitions += tl.Comment;
+                    transitions += "\r\n";
+                }
+                ws.Cell(rowNum, j++).Value = transitions;
+
+            }
+            ws.Columns().AdjustToContents();
+            return wb;
+        });
+
+        var wb = await t;
+        var stream = new MemoryStream();
+        wb.SaveAs(stream);
+        
+        return stream;
+    }
 }
