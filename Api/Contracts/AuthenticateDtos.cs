@@ -133,13 +133,9 @@ public record ChangePasswordAppDto(
 
 
 public record ForgotPasswordDto(
-    [Required] [MaxLength(11)] [Phone]
-    string PhoneNumber,
+    [Required]
+    string Username,
     CaptchaValidateDto Captcha);
-
-public record ForgotPasswordAppDto(
-    [Required] [MaxLength(11)] [Phone]
-    string PhoneNumber);
 
 
 public record RequestTokenDto(

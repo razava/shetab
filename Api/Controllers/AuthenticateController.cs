@@ -272,19 +272,7 @@ public class AuthenticateController : ApiController
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
     {
         var mappedCaptcha = forgotPasswordDto.Captcha.Adapt<CaptchaValidateModel>();
-        var query = new ForgotPasswordQuery(forgotPasswordDto.PhoneNumber, mappedCaptcha);
-        var result = await Sender.Send(query);
-
-        return result.Match(
-            s => StatusCode(StatusCodes.Status428PreconditionRequired, ""),
-            f => Problem(f));
-    }
-
-
-    [HttpPost("ForgotPasswordApp")]
-    public async Task<IActionResult> ForgotPasswordApp([FromBody] ForgotPasswordAppDto forgotPasswordDto)
-    {
-        var query = new ForgotPasswordQuery(forgotPasswordDto.PhoneNumber);
+        var query = new ForgotPasswordQuery(forgotPasswordDto.Username, mappedCaptcha);
         var result = await Sender.Send(query);
 
         return result.Match(
