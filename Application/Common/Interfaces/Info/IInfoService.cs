@@ -34,6 +34,7 @@ public interface IInfoService
     Task<Result<MemoryStream>> GetExcel(GetInfoQueryParameters queryParameters);
 
     IQueryable<Report> AddFilters(IQueryable<Report> query, ReportFilters reportFilters);
+    Task<List<string>> GetUserIdsOfOrganizationalUnit(string userId);
 }
 
 public record GetInfoQueryParameters(

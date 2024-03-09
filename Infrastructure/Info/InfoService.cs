@@ -9,6 +9,7 @@ using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
 using FluentResults;
+using Infrastructure.Persistence;
 using MassTransit.Initializers;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
@@ -19,6 +20,7 @@ using System.Linq.Expressions;
 namespace Infrastructure.Info;
 
 public class InfoService(
+    ApplicationDbContext dbContext,
     IUnitOfWork unitOfWork,
     IUserRepository userRepository,
     IActorRepository actorRepository) : IInfoService
@@ -974,7 +976,10 @@ public class InfoService(
     }
 
     //Reports
-    public async Task<PagedList<T>> GetReports<T>(GetInfoQueryParameters queryParameters, Expression<Func<Report, T>> selector, PagingInfo pagingInfo)
+    public async Task<PagedList<T>> GetReports<T>(
+        GetInfoQueryParameters queryParameters,
+        Expression<Func<Report, T>> selector,
+        PagingInfo pagingInfo)
     {
         var query = unitOfWork.DbContext.Set<Report>()
             .AsNoTracking();
@@ -994,6 +999,172 @@ public class InfoService(
         return reports;
     }
 
+    public async Task<Result<MemoryStream>> GetExcel(GetInfoQueryParameters queryParameters)
+    {
+        var query = unitOfWork.DbContext.Set<Report>().AsNoTracking();
+        query = await addRestrictions(query, queryParameters);
+
+        query = query
+            .Include(p => p.Citizen)
+            .Include(p => p.Registrant)
+            .Include(p => p.Executive)
+            .Include(p => p.Contractor)
+            .Include(p => p.Inspector)
+            .Include(p => p.Category)
+            .Include(p => p.Category)
+            .ThenInclude(p => p.Parent)
+            .Include(p => p.Address)
+            .Include(p => p.Medias)
+            .Include(p => p.LikedBy)
+            .Include(p => p.LastReason)
+            .Include(p => p.TransitionLogs)
+            .OrderByDescending(p => p.Sent);
+
+        var result = await query.ToListAsync();
+        int i = 1, j = 1;
+        int headerRows = 1;
+        int rowNum;
+
+        //Creating the workbook
+        var t = Task.Run(() =>
+        {
+            var wb = new XLWorkbook();
+            var ws = wb.AddWorksheet("Sheet1");
+            ws.RightToLeft = true;
+
+            //Header titles
+            rowNum = 1;
+            ws.Cell(rowNum, j++).Value = "ردیف";
+            ws.Cell(rowNum, j++).Value = "تلفن همراه";
+            ws.Cell(rowNum, j++).Value = "نام";
+            ws.Cell(rowNum, j++).Value = "نام خانوادگی";
+            ws.Cell(rowNum, j++).Value = "نام ثبت کننده";
+            ws.Cell(rowNum, j++).Value = "نام خانوادگی ثبت کننده";
+            ws.Cell(rowNum, j++).Value = "واحد اجرایی";
+            ws.Cell(rowNum, j++).Value = "گروه موضوعی";
+            ws.Cell(rowNum, j++).Value = "زیرگروه موضوعی";
+            ws.Cell(rowNum, j++).Value = "آدرس";
+            ws.Cell(rowNum, j++).Value = "شماره رهگیری";
+            ws.Cell(rowNum, j++).Value = "تاریخ درخواست";
+            ws.Cell(rowNum, j++).Value = "تاریخ اتمام";
+            ws.Cell(rowNum, j++).Value = "آخرین وضعیت";
+            ws.Cell(rowNum, j++).Value = "نتیجه";
+            ws.Cell(rowNum, j++).Value = "بازخورد شهروند";
+            ws.Cell(rowNum, j++).Value = "اعتراض شهروند";
+            ws.Cell(rowNum, j++).Value = "متن درخواست";
+            ws.Cell(rowNum, j++).Value = "تاریخچه درخواست";
+
+
+            rowNum = headerRows;
+            i = 0;
+            foreach (var report in result)
+            {
+                rowNum++;
+                i++;
+                j = 1;
+
+                ws.Cell(rowNum, j++).Value = i;
+                ws.Cell(rowNum, j++).Value = report.Citizen.PhoneNumber;
+                ws.Cell(rowNum, j++).Value = report.Citizen.FirstName;
+                ws.Cell(rowNum, j++).Value = report.Citizen.LastName;
+                ws.Cell(rowNum, j++).Value = report.Registrant?.FirstName;
+                ws.Cell(rowNum, j++).Value = report.Registrant?.LastName;
+                ws.Cell(rowNum, j++).Value = $"{report.Executive?.Title} ({report.Executive?.FirstName} {report.Executive?.LastName})";
+                ws.Cell(rowNum, j++).Value = report.Category.Parent?.Title;
+                ws.Cell(rowNum, j++).Value = report.Category.Title;
+                ws.Cell(rowNum, j++).Value = report.Address.Detail;
+                ws.Cell(rowNum, j++).Value = report.TrackingNumber;
+                ws.Cell(rowNum, j++).Value = report.Sent.GregorianToPersian();
+                ws.Cell(rowNum, j++).Value = (report.Finished != null) ? report.Finished.Value.GregorianToPersian() : "";
+                ws.Cell(rowNum, j++).Value = report.LastStatus;
+                ws.Cell(rowNum, j++).Value = (report.LastReason != null) ? report.LastReason.Title : "";
+                ws.Cell(rowNum, j++).Value = report.IsFeedbacked ? "بله" : "خیر";
+                ws.Cell(rowNum, j++).Value = report.IsObjectioned ? "بله" : "خیر";
+                ws.Cell(rowNum, j++).Value = report.Comments;
+                var transitions = "";
+                foreach (var tl in report.TransitionLogs)
+                {
+                    transitions += tl.DateTime.GregorianToPersian();
+                    transitions += ":";
+                    transitions += tl.Message;
+                    transitions += "-";
+                    transitions += tl.Comment;
+                    transitions += "\r\n";
+                }
+                ws.Cell(rowNum, j++).Value = transitions;
+
+            }
+            ws.Columns().AdjustToContents();
+            return wb;
+        });
+
+        var wb = await t;
+        var stream = new MemoryStream();
+        wb.SaveAs(stream);
+
+        return stream;
+    }
+
+    public IQueryable<Report> AddFilters(IQueryable<Report> query, ReportFilters reportFilters)
+    {
+        if (reportFilters.Query is not null)
+        {
+            var phrase = reportFilters.Query.Trim();
+            if (phrase.Length >= 3)
+            {
+                query = query.Where(r =>
+                        r.TrackingNumber.Contains(phrase) ||
+                        r.Citizen.FirstName.Contains(phrase) ||
+                        r.Citizen.LastName.Contains(phrase) ||
+                        r.Citizen.PhoneNumber != null && r.Citizen.PhoneNumber.Contains(phrase));
+            }
+        }
+
+        if (reportFilters.FromDate != null)
+        {
+            query = query.Where(r => r.Sent >= reportFilters.FromDate);
+        }
+
+        if (reportFilters.ToDate != null)
+        {
+            query = query.Where(r => r.Sent < reportFilters.ToDate.Value.AddDays(1));
+        }
+
+        if (reportFilters.Categories != null)
+        {
+            query = query.Where(r => reportFilters.Categories.Contains(r.CategoryId));
+        }
+
+        if (reportFilters.Priorities != null)
+        {
+            var priorities = reportFilters.Priorities.Select(p => (Priority)p).ToList();
+            query = query.Where(r => priorities.Contains(r.Priority));
+        }
+
+        if (reportFilters.States != null)
+        {
+            var states = reportFilters.States.Select(s => (ReportState)s).ToList();
+            query = query.Where(r => states.Contains(r.ReportState));
+        }
+
+        if (reportFilters.Regions != null)
+        {
+            query = query.Where(r => r.Address.RegionId != null && reportFilters.Regions.Contains(r.Address.RegionId.Value));
+        }
+
+        if (reportFilters.SatisfactionValues != null)
+        {
+            query = query.Where(r => reportFilters.SatisfactionValues.Contains(0) && r.Satisfaction == null ||
+                                     r.Satisfaction != null && reportFilters.SatisfactionValues.Contains(r.Satisfaction.Rating));
+        }
+
+        if(reportFilters.Execitives != null)
+        {
+            query = query.Where(r => r.ExecutiveId != null && reportFilters.Execitives.Contains(r.ExecutiveId));
+        }
+
+        return query;
+    }
     /*******************************************************/
     private async Task<InfoModel> GetReportsTimeHistogram<T, Key>(
         string title,
@@ -1072,58 +1243,7 @@ public class InfoService(
 
     private record ActorUserRegions(int ActorId, string UserId, List<int> RegionIds);
 
-    private async Task<Expression<Func<Report, bool>>> createReportQuery2(GetInfoQueryParameters infoQueryParameters)
-    {
-        Expression<Func<Report, bool>> result;
-        List<string> userIds = new List<string>();
-        List<ActorUserRegions> userAndRegions = new List<ActorUserRegions>();
-        List<int> regionIds = new List<int>();
-
-        if(infoQueryParameters.Roles.Contains(RoleNames.Manager))
-        {
-            userIds = await getUserIdsOfOrganizationalUnit(infoQueryParameters.UserId);
-
-            userAndRegions = await unitOfWork.DbContext.Set<Actor>()
-                .Where(a => userIds.Contains(a.Identifier))
-                .Select(a => new ActorUserRegions(a.Id, a.Identifier, a.Regions.Select(r=>r.Id).ToList()))
-                .ToListAsync();
-
-            regionIds = userAndRegions.SelectMany(ur => ur.RegionIds).ToList().Distinct().ToList();
-
-            //TODO: This abviously is not correct!
-            result = r => (r.ShahrbinInstanceId == infoQueryParameters.InstanceId) &&
-                          (r.Address.RegionId.HasValue && regionIds.Contains(r.Address.RegionId.Value)) &&
-                          (r.ExecutiveId != null && userIds.Contains(r.ExecutiveId) || userIds.Count == 0);
-        }
-        else 
-        {
-            regionIds = await unitOfWork.DbContext.Set<Actor>()
-                .Where(a => a.Identifier == infoQueryParameters.UserId)
-                .SelectMany(a => a.Regions.Select(r => r.Id).ToList())
-                .ToListAsync();
-            if (infoQueryParameters.Roles.Contains(RoleNames.Operator))
-            {
-
-            }
-            else if (infoQueryParameters.Roles.Contains(RoleNames.Mayor))
-            {
-
-            }
-            else
-            {
-                userIds.Add(infoQueryParameters.UserId);
-            }
-            //TODO: This abviously is not correct!
-            result = r => (r.ShahrbinInstanceId == infoQueryParameters.InstanceId) &&
-                          (r.Address.RegionId.HasValue && regionIds.Contains(r.Address.RegionId.Value)) &&
-                          (r.ExecutiveId != null && userIds.Contains(r.ExecutiveId) || userIds.Count == 0);
-        }
-
-
-        return result;
-    }
-
-    private async Task<List<string>> getUserIdsOfOrganizationalUnit(string userId)
+    public async Task<List<string>> GetUserIdsOfOrganizationalUnit(string userId)
     {
         var organizationalUnits = await unitOfWork.DbContext.Set<OrganizationalUnit>()
             .Include(o => o.OrganizationalUnits)
@@ -1161,7 +1281,7 @@ public class InfoService(
 
         if (queryParameters.Roles.Contains(RoleNames.Manager))
         {
-            userIds.AddRange(await getUserIdsOfOrganizationalUnit(queryParameters.UserId));
+            userIds.AddRange(await GetUserIdsOfOrganizationalUnit(queryParameters.UserId));
         }
         else
         {
@@ -1235,164 +1355,4 @@ public class InfoService(
         return query;
     }
 
-    public IQueryable<Report> AddFilters(IQueryable<Report> query, ReportFilters reportFilters)
-    {
-        if(reportFilters.Query is not null)
-        {
-            var phrase = reportFilters.Query.Trim();
-            if (phrase.Length >= 3)
-            {
-                query = query.Where(r =>
-                        r.TrackingNumber.Contains(phrase) ||
-                        r.Citizen.FirstName.Contains(phrase) ||
-                        r.Citizen.LastName.Contains(phrase) ||
-                        r.Citizen.PhoneNumber != null && r.Citizen.PhoneNumber.Contains(phrase));
-            }
-        }
-
-        if(reportFilters.FromDate != null)
-        {
-            query = query.Where(r => r.Sent >= reportFilters.FromDate);
-        }
-
-        if (reportFilters.ToDate != null)
-        {
-            query = query.Where(r => r.Sent < reportFilters.ToDate.Value.AddDays(1));
-        }
-
-        if(reportFilters.Categories != null)
-        {
-            query = query.Where(r => reportFilters.Categories.Contains(r.CategoryId));
-        }
-
-        if(reportFilters.Priorities != null)
-        {
-            var priorities = reportFilters.Priorities.Select(p => (Priority)p).ToList();
-            query = query.Where(r => priorities.Contains(r.Priority));
-        }
-
-        if(reportFilters.States != null)
-        {
-            var states = reportFilters.States.Select(s => (ReportState)s).ToList();
-            query = query.Where(r => states.Contains(r.ReportState));
-        }
-
-        if(reportFilters.Regions != null)
-        {
-            query = query.Where(r => r.Address.RegionId != null && reportFilters.Regions.Contains(r.Address.RegionId.Value));
-        }
-
-        if(reportFilters.SatisfactionValues != null)
-        {
-            query = query.Where(r => reportFilters.SatisfactionValues.Contains(0) && r.Satisfaction == null ||
-                                     r.Satisfaction != null && reportFilters.SatisfactionValues.Contains(r.Satisfaction.Rating));
-        }
-        return query;
-    }
-
-    public async Task<Result<MemoryStream>> GetExcel(GetInfoQueryParameters queryParameters)
-    {
-        var query = unitOfWork.DbContext.Set<Report>().AsNoTracking();
-        query = await addRestrictions(query, queryParameters);
-
-        query = query
-            .Include(p => p.Citizen)
-            .Include(p => p.Registrant)
-            .Include(p => p.Executive)
-            .Include(p => p.Contractor)
-            .Include(p => p.Inspector)
-            .Include(p => p.Category)
-            .Include(p => p.Category)
-            .ThenInclude(p => p.Parent)
-            .Include(p => p.Address)
-            .Include(p => p.Medias)
-            .Include(p => p.LikedBy)
-            .Include(p => p.LastReason)
-            .Include(p => p.TransitionLogs)
-            .OrderByDescending(p => p.Sent);
-
-        var result = await query.ToListAsync();
-        int i = 1, j = 1;
-        int headerRows = 1;
-        int rowNum;
-        
-        //Creating the workbook
-        var t = Task.Run(() =>
-        {
-            var wb = new XLWorkbook();
-            var ws = wb.AddWorksheet("Sheet1");
-            ws.RightToLeft = true;
-
-            //Header titles
-            rowNum = 1;
-            ws.Cell(rowNum, j++).Value = "ردیف";
-            ws.Cell(rowNum, j++).Value = "تلفن همراه";
-            ws.Cell(rowNum, j++).Value = "نام";
-            ws.Cell(rowNum, j++).Value = "نام خانوادگی";
-            ws.Cell(rowNum, j++).Value = "نام ثبت کننده";
-            ws.Cell(rowNum, j++).Value = "نام خانوادگی ثبت کننده";
-            ws.Cell(rowNum, j++).Value = "واحد اجرایی";
-            ws.Cell(rowNum, j++).Value = "گروه موضوعی";
-            ws.Cell(rowNum, j++).Value = "زیرگروه موضوعی";
-            ws.Cell(rowNum, j++).Value = "آدرس";
-            ws.Cell(rowNum, j++).Value = "شماره رهگیری";
-            ws.Cell(rowNum, j++).Value = "تاریخ درخواست";
-            ws.Cell(rowNum, j++).Value = "تاریخ اتمام";
-            ws.Cell(rowNum, j++).Value = "آخرین وضعیت";
-            ws.Cell(rowNum, j++).Value = "نتیجه";
-            ws.Cell(rowNum, j++).Value = "بازخورد شهروند";
-            ws.Cell(rowNum, j++).Value = "اعتراض شهروند";
-            ws.Cell(rowNum, j++).Value = "متن درخواست";
-            ws.Cell(rowNum, j++).Value = "تاریخچه درخواست";
-
-
-            rowNum = headerRows;
-            i = 0;
-            foreach (var report in result)
-            {
-                rowNum++;
-                i++;
-                j = 1;
-
-                ws.Cell(rowNum, j++).Value = i;
-                ws.Cell(rowNum, j++).Value = report.Citizen.PhoneNumber;
-                ws.Cell(rowNum, j++).Value = report.Citizen.FirstName;
-                ws.Cell(rowNum, j++).Value = report.Citizen.LastName;
-                ws.Cell(rowNum, j++).Value = report.Registrant?.FirstName;
-                ws.Cell(rowNum, j++).Value = report.Registrant?.LastName;
-                ws.Cell(rowNum, j++).Value = $"{report.Executive?.Title} ({report.Executive?.FirstName} {report.Executive?.LastName})";
-                ws.Cell(rowNum, j++).Value = report.Category.Parent?.Title;
-                ws.Cell(rowNum, j++).Value = report.Category.Title;
-                ws.Cell(rowNum, j++).Value = report.Address.Detail;
-                ws.Cell(rowNum, j++).Value = report.TrackingNumber;
-                ws.Cell(rowNum, j++).Value = report.Sent.GregorianToPersian();
-                ws.Cell(rowNum, j++).Value = (report.Finished != null) ? report.Finished.Value.GregorianToPersian() : "";
-                ws.Cell(rowNum, j++).Value = report.LastStatus;
-                ws.Cell(rowNum, j++).Value = (report.LastReason != null) ? report.LastReason.Title : "";
-                ws.Cell(rowNum, j++).Value = report.IsFeedbacked ? "بله" : "خیر";
-                ws.Cell(rowNum, j++).Value = report.IsObjectioned ? "بله" : "خیر";
-                ws.Cell(rowNum, j++).Value = report.Comments;
-                var transitions = "";
-                foreach (var tl in report.TransitionLogs)
-                {
-                    transitions += tl.DateTime.GregorianToPersian();
-                    transitions += ":";
-                    transitions += tl.Message;
-                    transitions += "-";
-                    transitions += tl.Comment;
-                    transitions += "\r\n";
-                }
-                ws.Cell(rowNum, j++).Value = transitions;
-
-            }
-            ws.Columns().AdjustToContents();
-            return wb;
-        });
-
-        var wb = await t;
-        var stream = new MemoryStream();
-        wb.SaveAs(stream);
-        
-        return stream;
-    }
 }
