@@ -276,19 +276,7 @@ public class AuthenticateController : ApiController
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => StatusCode(StatusCodes.Status428PreconditionRequired, ""),
-            f => Problem(f));
-    }
-
-
-    [HttpPost("RequestToken")]
-    public async Task<ActionResult> RequestToken([FromBody] RequestTokenDto requestTokenDto)
-    {
-        var query = new GetResetPasswordTokenQuery(requestTokenDto.PhoneNumber, requestTokenDto.VerificationCode);
-        var result = await Sender.Send(query);
-
-        return result.Match(
-            s => Ok(s),
+            s => StatusCode(StatusCodes.Status428PreconditionRequired, s),
             f => Problem(f));
     }
 
@@ -296,7 +284,7 @@ public class AuthenticateController : ApiController
     [HttpPost("ResetPassword")]
     public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
     {
-        var command = new ResetPasswordCommand(resetPasswordDto.Username, resetPasswordDto.ResetPasswordToken, resetPasswordDto.NewPassword);
+        var command = new ResetPasswordCommand(resetPasswordDto.OtpToken, resetPasswordDto.VerificationCode, resetPasswordDto.NewPassword);
         var result = await Sender.Send(command);
 
         return result.Match(

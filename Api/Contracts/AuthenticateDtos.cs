@@ -138,21 +138,11 @@ public record ForgotPasswordDto(
     CaptchaValidateDto Captcha);
 
 
-public record RequestTokenDto(
-    [Required] [MaxLength(11)] [Phone]
-    string PhoneNumber,
-    [Required] [MaxLength(8)]
-    string VerificationCode);
-
-
 public record ResetPasswordDto(
-    [Required] [MaxLength(11)] [Phone]
-    string Username,
-    [Required] [MaxLength(1024)]
-    string ResetPasswordToken,
+    string OtpToken,
+    string VerificationCode,
     [Required] [MinLength(6)] [MaxLength(512)]
     string NewPassword);
-
 
 
 public record GetProfileDto(

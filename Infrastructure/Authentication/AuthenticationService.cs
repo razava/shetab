@@ -393,7 +393,8 @@ public class AuthenticationService(
         if (resetPasswordToken is null)
             return AuthenticationErrors.ResetPasswordFailed;
         await authenticateRepository.DeleteResetPasswordTokenAsync(storedOtp.User.Id);
-        await userManager.ResetPasswordAsync(storedOtp.User, resetPasswordToken.Token, newPassword);
+        var user = await GetUser(storedOtp.User.UserName!);
+        await userManager.ResetPasswordAsync(user.Value, resetPasswordToken.Token, newPassword);
         return true;
     }
 
