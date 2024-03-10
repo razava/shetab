@@ -36,7 +36,7 @@ public sealed class GetPossibleSourcesQueryHandler(IUnitOfWork unitOfWork)
             .ToListAsync();
         if (request.RoleNames.Contains(RoleNames.Operator))
         {
-            possibleSources.Add(new PossibleSourceResponse("NEW", "جدید", "جدید"));
+            possibleSources.Insert(0, new PossibleSourceResponse("NEW", "جدید", "جدید"));
         }
         if (request.RoleNames.Contains(RoleNames.Executive))
         {

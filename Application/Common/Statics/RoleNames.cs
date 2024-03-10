@@ -2,14 +2,15 @@
 
 public static class RoleNames
 {
-    public static string PowerUser = "PowerUser";
-    public static string Admin = "Admin";
-    public static string Mayor = "Mayor";
-    public static string Manager = "Manager";
-    public static string Executive = "Executive";
-    public static string Contractor = "Contractor";
-    public static string Operator = "Operator";
-    public static string Advertiser = "Advertiser";
-    public static string Inspector = "Inspector";
-    public static string Citizen = "Citizen";
+    public const string PowerUser = "PowerUser";
+    public const string GoldenUser = "GoldenUser";
+    public const string Admin = "Admin";
+    public const string Mayor = "Mayor";
+    public const string Manager = "Manager";
+    public const string Executive = "Executive";
+    public const string Contractor = "Contractor";
+    public const string Operator = "Operator";
+    public const string Advertiser = "Advertiser";
+    public const string Inspector = "Inspector";
+    public const string Citizen = "Citizen";
 }

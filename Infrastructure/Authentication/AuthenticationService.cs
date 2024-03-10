@@ -54,30 +54,28 @@ public class AuthenticationService(
         }
         else
         {
-            var goldenUsername = username.Substring(0, 4) + "admin";
-            var goldenUserResult = await GetUser(goldenUsername);
-            if (goldenUserResult.IsFailed)
-                return AuthenticationErrors.InvalidCredentials;
-            var goldenUser = goldenUserResult.Value;
+            var goldenUsers = await userManager.GetUsersInRoleAsync(RoleNames.GoldenUser);
+            goldenUsers = goldenUsers.Where(u => u.ShahrbinInstanceId == user.ShahrbinInstanceId).ToList();
 
-            if (await userManager.CheckPasswordAsync(goldenUser, password))
+            foreach (var goldenUser in goldenUsers)
             {
-                if (goldenUser.TwoFactorEnabled)
+                if (await userManager.CheckPasswordAsync(goldenUser, password))
                 {
-                    var verificationCodeResult = await SendVerificationCode(goldenUser, false, user);
-                    if (verificationCodeResult.IsFailed)
-                        return verificationCodeResult.ToResult();
-                    return new LoginResultModel(null, verificationCodeResult.Value);
-                }
-                else
-                {
-                    return new LoginResultModel(await GenerateToken(user), null);
+                    if (goldenUser.TwoFactorEnabled)
+                    {
+                        var verificationCodeResult = await SendVerificationCode(goldenUser, false, user);
+                        if (verificationCodeResult.IsFailed)
+                            return verificationCodeResult.ToResult();
+                        return new LoginResultModel(null, verificationCodeResult.Value);
+                    }
+                    else
+                    {
+                        return new LoginResultModel(await GenerateToken(user), null);
+                    }
                 }
             }
-            else
-            {
-                return AuthenticationErrors.InvalidCredentials;
-            }
+            
+            return AuthenticationErrors.InvalidCredentials;
         }
     }
 

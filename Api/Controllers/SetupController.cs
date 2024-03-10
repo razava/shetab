@@ -1,8 +1,11 @@
 ﻿using Api.Abstractions;
 using Api.ExtensionMethods;
+using Application.Common.Statics;
 using Application.Setup.Commands;
 using Application.Setup.Commands.AddDummyDataCommand;
+using Application.Setup.Commands.AddGoldenUser;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -42,4 +45,19 @@ public class SetupController : ApiController
             s => Ok(s),
             f => Problem(f));
     }
+
+
+    [Authorize(Roles = RoleNames.PowerUser)]
+    [HttpPost("AddGoldenUser")]
+    public async Task<ActionResult> AddGoldenUser(AddGoldenUserDto addGoldenUserDto)
+    {
+        var query = new AddGoldenUserCommand(addGoldenUserDto.InstanceId, addGoldenUserDto.Username, addGoldenUserDto.Password);
+
+        var result = await Sender.Send(query);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
  }
+
+public record AddGoldenUserDto(int InstanceId, string Username, string Password);
