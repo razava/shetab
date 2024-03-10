@@ -7,12 +7,14 @@ using Application.Configurations.Queries.Roles;
 using Application.Configurations.Queries.ShahrbinInstanceManagement;
 using Application.Configurations.Queries.ViolationTypes;
 using Application.Info.Queries.GetReportFilters;
+using Application.Info.Queries.GetUserFilters;
 using Application.Users.Queries.GetUserRegions;
 using Domain.Models.Relational.Common;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SharedKernel.Errors;
 
 namespace Api.Controllers;
 
@@ -152,8 +154,8 @@ public class StaffCommonController : ApiController
     }
 
     [Authorize]
-    [HttpGet("Filters")]
-    public async Task<ActionResult> GetFilters()
+    [HttpGet("ReportFilters")]
+    public async Task<ActionResult> GetReportFilters()
     {
         var userId = User.GetUserId();
         var userRoles = User.GetUserRoles();
@@ -167,6 +169,28 @@ public class StaffCommonController : ApiController
         }
 
         var query = new GetReportFiltersQuery(instanceId, userId, userRoles);
+        var result = await Sender.Send(query);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+
+    [Authorize]
+    [HttpGet("UserFilters")]
+    public async Task<ActionResult> GetUserFilters()
+    {
+        int? instanceId = null;
+        try
+        {
+            instanceId = User.GetUserInstanceId();
+        }
+        catch
+        {
+        }
+        if (instanceId is null)
+            return Problem(NotFoundErrors.Instance);
+
+        var query = new GetUserFiltersQuery(instanceId.Value);
         var result = await Sender.Send(query);
         return result.Match(
             s => Ok(s),

@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces.Info;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
+using Application.Info.Common;
 using Application.Info.Queries.GetInfoQuery;
 using Domain.Models.Relational.Common;
 using Mapster;
