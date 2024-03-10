@@ -18,30 +18,28 @@ using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Storage;
 using MassTransit;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
-using SixLabors.ImageSharp;
 using StackExchange.Redis;
 
 namespace Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddPersistence(configuration);
         services.AddRedis(configuration);
         services.AddRepositories();
         services.AddSecurity(configuration);
-        services.AddStorage(configuration, webHostEnvironment);
+        services.AddStorage(configuration);
         services.AddCommunication(configuration);
         services.AddMap(configuration);
         services.AddCache();
         services.AddBackgroundJobs();
-        services.AddMyYazd();
+        services.AddMyYazd(configuration);
         services.AddScoped<IInfoService, InfoService>();
         return services;
     }
@@ -124,10 +122,11 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddStorage(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
+    public static IServiceCollection AddStorage(this IServiceCollection services, IConfiguration configuration)
     {
-        var imageSizes = configuration.GetSection(ImageQualityOptions.Name).GetSection("ImageQualities").Get<List<Size>>();
-        services.AddScoped<IStorageService>(x => new StorageService(webHostEnvironment.WebRootPath, imageSizes));
+        services.Configure<StorageOptions>(
+            configuration.GetSection(StorageOptions.Name));
+        services.AddScoped<IStorageService, StorageService>();
 
         return services;
     }
@@ -204,12 +203,16 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddMyYazd(this IServiceCollection services)
+    public static IServiceCollection AddMyYazd(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<MyYazdOptions>(
+            configuration.GetSection(MyYazdOptions.Name));
+
         services.AddHttpClient<IMyYazdService, MyYazdService>(
             client =>
             {
-                client.BaseAddress = new Uri("https://my.yazd.ir/");
+                client.BaseAddress = new Uri(configuration.GetSection(MyYazdOptions.Name).GetValue<string>("BaseAddress") ??
+                    throw new Exception("My yazd base url not specified."));
             });
 
         return services;

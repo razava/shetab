@@ -1,7 +1,10 @@
 ﻿using Application.Common.Interfaces.MyYazd;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.MyYazd;
 using FluentResults;
+using Infrastructure.Storage;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SharedKernel.Errors;
 using System.Text.Json;
 
@@ -9,16 +12,19 @@ namespace Infrastructure.Authentication;
 
 public class MyYazdService(
     HttpClient httpClient,
-    ILogger<MyYazdService> logger) : IDisposable, IMyYazdService
+    ILogger<MyYazdService> logger,
+    IOptions<MyYazdOptions> myYazdOptions) : IDisposable, IMyYazdService
 {
+    private readonly MyYazdOptions _myYazdOptions = myYazdOptions.Value;
+
     public async Task<Result<MyYazdUserInfo>> GetUserInfo(string code)
     {
         try
         {
             var nvc = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("client_id", "jwjOjhnZzct0AzNSacV0XYOvxOKXrLfnumM8hYPN"),
-                new KeyValuePair<string, string>("client_secret", "ahVWYQ4BZnBuvgPHwBFLV4EQvEG6CbOeLTemp8yk4Mqj5Wu2uSeh99f6f1ur0mtAdiOV0Q3iRk7jloYgNk5f6tA5kZnBsuc859kPkoDOCNVe8v1SRhNXTNENFPDIvuGk"),
+                new KeyValuePair<string, string>("client_id", _myYazdOptions.ClientId),
+                new KeyValuePair<string, string>("client_secret", _myYazdOptions.ClientSecret),
                 new KeyValuePair<string, string>("code", code),
                 new KeyValuePair<string, string>("grant_type", "authorization_code")
             };

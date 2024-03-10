@@ -68,7 +68,7 @@ public class CategoryRepository : GenericRepository<Category>, ICategoryReposito
         else
         {
             result = Category.Create(instanceId, "", "ریشه", "", 0, -1, "", 0, 0);
-            roots.Where(r => r.ParentId == null).ToList().ForEach(c => c.Parent = result);
+            roots.Where(r => r.ParentId == null).ToList().ForEach(c => { c.Parent = result; result.Categories.Add(c); });
         }
 
         return result;

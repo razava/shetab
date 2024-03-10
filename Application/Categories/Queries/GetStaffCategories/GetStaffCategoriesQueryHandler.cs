@@ -1,9 +1,6 @@
 ﻿using Application.Categories.Common;
 using Application.Common.Interfaces.Persistence;
-using Application.Common.Statics;
-using Domain.Models.Relational;
 using Mapster;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Categories.Queries.GetStaffCategories;
 

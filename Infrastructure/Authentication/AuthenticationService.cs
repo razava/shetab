@@ -182,7 +182,7 @@ public class AuthenticationService(
             var avatarStreamResult = await myYazdService.GetUserAvatar(myYazdUser.Avatar);
             if (avatarStreamResult.IsSuccess)
             {
-                user.Avatar = await storageService.WriteFileAsync(avatarStreamResult.Value, AttachmentType.Avatar, ".jpg");
+                user.Avatar = await storageService.WriteFileAsync(avatarStreamResult.Value, AttachmentType.Avatar, "jpg");
             }
         }
 

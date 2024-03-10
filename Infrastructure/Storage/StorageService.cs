@@ -1,6 +1,7 @@
 ﻿using Domain.Models.Relational.Common;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
@@ -11,12 +12,36 @@ public class StorageService : IStorageService
 {
     private readonly string _destinationPath;
     private readonly List<Size> _imageQualities;
-    private const long maxAllowdFileSize = 10 * 1024 * 1024;
+    private readonly List<string> _allowedExtensions;
+    private readonly long _maxAllowdFileSize;
+    private readonly List<string> _videoExtensions;
+    private readonly List<string> _docExtensions;
+    private readonly List<string> _voiceExtensions;
+    private readonly List<string> _imageExtensions;
 
-    public StorageService(string destinationPath, List<Size>? imageQualities)
+
+    public StorageService(IOptions<StorageOptions> oooo,
+        IWebHostEnvironment webHostEnvironment)
     {
-        _destinationPath = destinationPath;
-        _imageQualities = imageQualities ?? new List<Size>() { new Size(100, 100), new Size(200, 200), new Size(300, 300) };
+        _destinationPath = webHostEnvironment.WebRootPath;
+        var so = oooo.Value;
+        _imageQualities = so.ImageQualities;
+
+        _imageExtensions = so.ImageExtensions.Split(',').ToList();
+        _imageExtensions = _imageExtensions.Select(x => x.Trim().ToLower()).ToList();
+
+        _videoExtensions = so.VideoExtensions.Split(',').ToList();
+        _videoExtensions = _videoExtensions.Select(x => x.Trim().ToLower()).ToList();
+
+        _docExtensions = so.DocExtensions.Split(',').ToList();
+        _docExtensions = _docExtensions.Select(x => x.Trim().ToLower()).ToList();
+
+        _voiceExtensions = so.VoiceExtensions.Split(',').ToList();
+        _voiceExtensions = _voiceExtensions.Select(x => x.Trim().ToLower()).ToList();
+
+        _allowedExtensions = _imageExtensions.Union(_videoExtensions).Union(_voiceExtensions).Union(_docExtensions).ToList();
+
+        _maxAllowdFileSize = so.MaxFileSize;
     }
 
     public async Task<ICollection<Media>> WriteFileAsync(ICollection<IFormFile> files, AttachmentType attachmentType)
@@ -41,7 +66,7 @@ public class StorageService : IStorageService
         if (file == null)
             return null;
 
-        if (file.Length > maxAllowdFileSize)
+        if (file.Length > _maxAllowdFileSize)
         {
             return null;
         }
@@ -73,8 +98,9 @@ public class StorageService : IStorageService
         Media result;
         try
         {
-            var extension = "." + file.FileName.Split('.')[file.FileName.Split('.').Length - 1];
-            //var extension = ".jpg";
+            var extension = file.FileName.Split('.')[file.FileName.Split('.').Length - 1];
+            var mediaType = GetMediaType(extension);
+
             fileName = DateTime.Now.Ticks.ToString(); //Create a new Name for the file due to security reasons.
             relativePath = Path.Combine("Attachments", sub);
             var pathBuilt = Path.Combine(_destinationPath, relativePath);
@@ -87,18 +113,18 @@ public class StorageService : IStorageService
             path = Path.Combine(pathBuilt,
                fileName);
 
-            if (!isImageFile(extension))
+            if (mediaType != MediaType.Image)
             {
-                path = path + extension;
+                path = path + "." + extension;
                 using (var stream = new FileStream(path, FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
                     result = new Media()
                     {
                         AlternateText = "",
-                        MediaType = GetMediaType(extension),
+                        MediaType = mediaType,
                         Title = "",
-                        Url = Path.Combine(relativePath, fileName + extension)
+                        Url = Path.Combine(relativePath, fileName + "." + extension)
                     };
                 }
             }
@@ -119,6 +145,7 @@ public class StorageService : IStorageService
 
     public async Task<Media?> WriteFileAsync(MemoryStream stream2, AttachmentType attachmentType, string extension)
     {
+        var mediaType = GetMediaType(extension);
         string fileName;
         string path;
         string sub;
@@ -152,18 +179,18 @@ public class StorageService : IStorageService
 
             path = Path.Combine(pathBuilt, fileName);
 
-            if (!isImageFile(extension))
+            if (mediaType != MediaType.Image)
             {
-                path = path + extension;
+                path = path + "." + extension;
                 using (var stream = new FileStream(path, FileMode.Create))
                 {
                     await stream2.CopyToAsync(stream);
                     result = new Media()
                     {
                         AlternateText = "",
-                        MediaType = GetMediaType(extension),
+                        MediaType = mediaType,
                         Title = "",
-                        Url = Path.Combine(relativePath, fileName + extension)
+                        Url = Path.Combine(relativePath, fileName + "." + extension)
                     };
                 }
             }
@@ -182,40 +209,35 @@ public class StorageService : IStorageService
         return result;
     }
 
-    private static MediaType GetMediaType(string extension)
+    private MediaType GetMediaType(string extension)
     {
-        var videoExtensions = new List<string> { ".mkv", ".mp4", ".mov", ".3gp", ".ogg", ".webm" };
-        var docExtensions = new List<string> { ".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xls", ".xlsx" };
-        var voiceExtensions = new List<string> { ".mp3", ".weba" };
+        if (_imageExtensions.Contains(extension.ToLower()))
+        {
+            return MediaType.Image;
+        }
 
-        if (videoExtensions.Contains(extension.ToLower()))
+        if (_videoExtensions.Contains(extension.ToLower()))
         {
             return MediaType.Video;
         }
 
-        if (docExtensions.Contains(extension.ToLower()))
+        if (_docExtensions.Contains(extension.ToLower()))
         {
             return MediaType.Doc;
         }
 
-        if (voiceExtensions.Contains(extension.ToLower()))
+        if (_voiceExtensions.Contains(extension.ToLower()))
         {
             return MediaType.Voice;
         }
         return MediaType.Other;
     }
 
-    private static bool isAcceptedExtension(string fileName)
+    private bool isAcceptedExtension(string fileName)
     {
-        var validExtensions = new List<string>()
-            {
-                "jpg", "jpeg", "jpe", "jif", "jfif", "jfi", "png", "gif", "tiff", "tif", "svg", "svgz",
-                "pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx",
-                "mkv", "mp4", "mov", "3gp", "ogg", "webm", "mp3", "weba"
-            };
         var extension = fileName.Split('.')[fileName.Split('.').Length - 1];
 
-        return validExtensions.Contains(extension.ToLower());
+        return _allowedExtensions.Contains(extension.ToLower());
     }
 
     private async Task<Media> writeImage(Image image, string destinationPath, string relativePath, string fileName, List<Size> imageQualities)
@@ -275,24 +297,6 @@ public class StorageService : IStorageService
         mStream.Seek(0, SeekOrigin.Begin);
         await mStream.CopyToAsync(outStream);
     }
-
-    private bool isImageFile(string extension)
-    {
-        var imageExtensions = new List<string>()
-            {
-                ".jpg", ".jpeg", ".jpe", ".jif", ".jfif", ".jfi", ".png", ".gif", ".tiff", ".tif", ".svg", ".svgz"
-            };
-
-        if (imageExtensions.Contains(extension.ToLower()))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
 }
 
 
