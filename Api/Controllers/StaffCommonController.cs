@@ -7,7 +7,7 @@ using Application.Configurations.Queries.Roles;
 using Application.Configurations.Queries.ShahrbinInstanceManagement;
 using Application.Configurations.Queries.ViolationTypes;
 using Application.Info.Queries.GetReportFilters;
-using Application.Users.Queries.GetRegions;
+using Application.Users.Queries.GetUserRegions;
 using Domain.Models.Relational.Common;
 using Mapster;
 using MediatR;

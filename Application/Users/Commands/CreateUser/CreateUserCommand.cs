@@ -1,5 +1,4 @@
 ﻿using Domain.Models.Relational.IdentityAggregate;
-using MediatR;
 
 namespace Application.Users.Commands.CreateUser;
 
@@ -7,6 +6,7 @@ public record CreateUserCommand(
     int InstanceId,
     string Username,
     string Password,
+    List<string>? Roles,
     string FirstName = "",
     string LastName = "",
     string Title = "") :IRequest<Result<ApplicationUser>>;

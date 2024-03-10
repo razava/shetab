@@ -1,8 +1,7 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Users.Common;
-using MediatR;
 
-namespace Application.Users.Queries.GetRoles;
+namespace Application.Users.Queries.GetUserRoles;
 
 internal class GetUserRolesQueryHandler(IUserRepository userRepository) : IRequestHandler<GetUserRolesQuery, Result<List<IsInRoleModel>>>
 {

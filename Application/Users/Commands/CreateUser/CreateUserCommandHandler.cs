@@ -1,7 +1,7 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
+using Application.Common.Statics;
 using Domain.Models.Relational.IdentityAggregate;
-using MediatR;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Users.Commands.CreateUser;
 
@@ -20,7 +20,13 @@ internal class CreateUserCommandHandler(IUserRepository userRepository) : IReque
             PhoneNumberConfirmed = true
         };
         await userRepository.CreateAsync(user, request.Password);
-        
+
+        if (request.Roles is not null)
+        {
+            request.Roles.RemoveAll(r => r == RoleNames.PowerUser || r == RoleNames.GoldenUser);
+            await userRepository.AddToRolesAsync(user, request.Roles.ToArray());
+        }
+
         return user;
     }
 }

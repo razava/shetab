@@ -1,12 +1,7 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Users.Common;
-using Application.Users.Queries.GetRoles;
-using Domain.Models.Relational.Common;
-using Domain.Models.Relational.ProcessAggregate;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
 
-namespace Application.Users.Queries.GetRegions;
+namespace Application.Users.Queries.GetUserRegions;
 
 internal class GetUserRegionsQueryHandler(IActorRepository actorRepository) : IRequestHandler<GetUserRegionsQuery, Result<List<IsInRegionModel>>>
 {

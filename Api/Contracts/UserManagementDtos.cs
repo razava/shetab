@@ -15,9 +15,9 @@ public record SetRegionsDto(
 
 public record UpdateRolesDto(
     //List<IsInRoleModel> Roles);
-    List<RolesDto> Roles);
+    List<IsInRoleDto> Roles);
 //todo : no need for roleTitle(or display name) in roles list above
-public record RolesDto(
+public record IsInRoleDto(
     [Required] [MaxLength(32)]
     string RoleName,
     [MaxLength(32)]
@@ -94,12 +94,12 @@ public record AdminGetUserDetailsDto(
     DateTime? BirthDate,
     AddressDto Address);
 
-
 public record CreateUserDto(
         [Required] [MaxLength(32)]
         string Username,
         [Required] [MinLength(6)] [MaxLength(512)]
         string Password,
+        List<string>? Roles,
         [MaxLength(32)]
         string FirstName = "",
         [MaxLength(32)]

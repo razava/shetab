@@ -11,10 +11,10 @@ using Application.Users.Commands.UpdateRoles;
 using Application.Users.Commands.UpdateUserProfile;
 using Application.Users.Common;
 using Application.Users.Queries.GetContractors;
-using Application.Users.Queries.GetRegions;
-using Application.Users.Queries.GetRoles;
 using Application.Users.Queries.GetUserById;
 using Application.Users.Queries.GetUserCategories;
+using Application.Users.Queries.GetUserRegions;
+using Application.Users.Queries.GetUserRoles;
 using Application.Users.Queries.GetUsers;
 using Domain.Models.Relational.IdentityAggregate;
 using Mapster;
@@ -92,16 +92,27 @@ public class AdminUserManagementController : ApiController
 
     [Authorize(Roles = "Admin, Manager")]
     [HttpGet("Roles/{id}")]
-    public async Task<ActionResult<List<RolesDto>>> GetUserRoles(string id)
+    public async Task<ActionResult<List<IsInRoleDto>>> GetUserRoles(string id)
     {
         var query = new GetUserRolesQuery(id);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<RolesDto>>()),
+            s => Ok(s.Adapt<List<IsInRoleDto>>()),
             f => Problem(f));
     }
 
+    [Authorize(Roles = "Admin, Manager")]
+    [HttpGet("Roles")]
+    public async Task<ActionResult<List<IsInRoleDto>>> GetRolesForCreate()
+    {
+        var query = new GetRolesQuery();
+        var result = await Sender.Send(query);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
 
     [Authorize]
     [HttpPut("Regions/{id}")]
@@ -202,7 +213,7 @@ public class AdminUserManagementController : ApiController
     public async Task<ActionResult<ApplicationUser>> CreateUser(CreateUserDto model)
     {
         var instanceId = User.GetUserInstanceId();
-        var command = new CreateUserCommand(instanceId, model.Username, model.Password, model.FirstName, model.LastName, model.Title);
+        var command = new CreateUserCommand(instanceId, model.Username, model.Password, model.Roles, model.FirstName, model.LastName, model.Title);
         var user = await Sender.Send(command);
 
         return user.Match(
