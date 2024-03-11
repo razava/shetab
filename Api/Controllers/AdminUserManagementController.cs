@@ -2,6 +2,8 @@
 using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Common.Interfaces.Persistence;
+using Application.Common.Statics;
+using Application.Reports.Queries.GetUserReports;
 using Application.Users.Commands.CreateContractor;
 using Application.Users.Commands.CreateNewPassword;
 using Application.Users.Commands.CreateUser;
@@ -37,7 +39,7 @@ public class AdminUserManagementController : ApiController
     //todo : define roles for Authorize
 
 
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = RoleNames.Admin)]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(string id, UpdateUserDto updateUserDto)
     {
@@ -63,7 +65,7 @@ public class AdminUserManagementController : ApiController
 
 
 
-    [Authorize(Roles = "Admin, Manager")]
+    [Authorize(Roles = RoleNames.Admin)]
     [HttpPut("Password/{id}")]
     public async Task<IActionResult> ChangePasswordById(string id, [FromBody] NewPasswordDto newPasswordDto)
     {
@@ -76,9 +78,9 @@ public class AdminUserManagementController : ApiController
     }
 
 
-    [Authorize(Roles = "Admin, Manager")]
+    [Authorize(Roles = RoleNames.Admin)]
     [HttpPut("Roles/{id}")]
-    public async Task<IActionResult> SetRoles(string id, UpdateRolesDto updateRolesDto) 
+    public async Task<IActionResult> SetRoles(string id, UpdateRolesDto updateRolesDto)
     {
         var mappedRoles = updateRolesDto.Roles.Adapt<List<IsInRoleModel>>();
         var commond = new UpdateRolesCommand(id, mappedRoles);
@@ -90,7 +92,7 @@ public class AdminUserManagementController : ApiController
     }
 
 
-    [Authorize(Roles = "Admin, Manager")]
+    [Authorize(Roles = RoleNames.Admin)]
     [HttpGet("Roles/{id}")]
     public async Task<ActionResult<List<IsInRoleDto>>> GetUserRoles(string id)
     {
@@ -102,7 +104,7 @@ public class AdminUserManagementController : ApiController
             f => Problem(f));
     }
 
-    [Authorize(Roles = "Admin, Manager")]
+    [Authorize(Roles = RoleNames.Admin)]
     [HttpGet("Roles")]
     public async Task<ActionResult<List<IsInRoleDto>>> GetRolesForCreate()
     {
@@ -114,7 +116,7 @@ public class AdminUserManagementController : ApiController
             f => Problem(f));
     }
 
-    [Authorize]
+    [Authorize(Roles = RoleNames.Admin)]
     [HttpPut("Regions/{id}")]
     public async Task<IActionResult> SetUserRegions(string id, List<IsInRegionDto> regions)
     {
@@ -127,9 +129,9 @@ public class AdminUserManagementController : ApiController
             s => NoContent(),
             f => Problem(f));
     }
-    
 
-    [Authorize]
+
+    [Authorize(Roles = RoleNames.Admin)]
     [HttpGet("Regions/{id}")]
     public async Task<ActionResult<List<IsInRegionDto>>> GetUserRegions(string id)
     {
@@ -143,7 +145,7 @@ public class AdminUserManagementController : ApiController
     }
 
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = RoleNames.Admin)]
     [HttpPut("Categories/{id}")]
     public async Task<ActionResult> UpdateUserCategories(string id, UpdateUserCategories updateModel)
     {
@@ -156,7 +158,7 @@ public class AdminUserManagementController : ApiController
     }
 
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = RoleNames.Admin)]
     [HttpGet("Categories/{id}")]
     public async Task<ActionResult<List<int>>> GetUserCategories(string id)
     {
@@ -169,9 +171,6 @@ public class AdminUserManagementController : ApiController
     }
 
 
-
-
-    //instanceId ??
     [Authorize]
     [HttpGet("AllUsers")]
     public async Task<ActionResult<List<AdminGetUserList>>> GetAllUsers(
@@ -192,8 +191,7 @@ public class AdminUserManagementController : ApiController
     }
 
 
-    //.....................not used ??????
-    [Authorize]
+    [Authorize(Roles = RoleNames.Admin)]
     [HttpGet("User/{id}")]
     public async Task<ActionResult<AdminGetUserDetailsDto>> GetUserById(string id)
     {
@@ -205,9 +203,20 @@ public class AdminUserManagementController : ApiController
             f => Problem(f));
     }
 
+    [Authorize(Roles = RoleNames.Admin)]
+    [HttpGet("UserReports/{id}")]
+    public async Task<ActionResult<AdminGetUserDetailsDto>> GetUserReportsById(PagingInfo pagingInfo, string id)
+    {
+        var query = new GetUserReportsQuery(pagingInfo, id);
+        var result = await Sender.Send(query);
 
-    //todo : review returning response and dto.......
-    [Authorize(Roles = "Admin")]
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+
+
+    [Authorize(Roles = RoleNames.Admin)]
     [HttpPost]
     public async Task<ActionResult<ApplicationUser>> CreateUser(CreateUserDto model)
     {
@@ -221,16 +230,13 @@ public class AdminUserManagementController : ApiController
     }
 
 
-   
-
-    //This endpoint is accessible by executives only
-    [Authorize(Roles = "Executive")]
+    [Authorize(Roles = RoleNames.Executive)]
     [HttpPost("RegisterContractor")]
     public async Task<IActionResult> RegisterContractor(int instanceId, CreateContractorDto model)
     {
         var userId = User.GetUserId();
         var userRoles = User.GetUserRoles();
-        if(userId is null)
+        if (userId is null)
             return Unauthorized();
         var command = new CreateContractorCommand(
             userId,
@@ -249,7 +255,7 @@ public class AdminUserManagementController : ApiController
     }
 
 
-    [Authorize(Roles = "Executive")]
+    [Authorize(Roles = RoleNames.Executive)]
     [HttpGet("GetContractors")]
     public async Task<ActionResult<List<GetContractorsList>>> GetContractors([FromQuery] PagingInfo pagingInfo)
     {
