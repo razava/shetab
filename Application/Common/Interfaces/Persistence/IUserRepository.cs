@@ -1,6 +1,8 @@
-﻿using Domain.Models.Relational.IdentityAggregate;
+﻿using Application.Users.Queries.GetUsers;
+using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
 using Microsoft.AspNetCore.Identity;
+using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace Application.Common.Interfaces.Persistence;
@@ -40,4 +42,6 @@ public interface IUserRepository : IGenericRepository<ApplicationUser>
     public Task<IdentityResult> RegisterWithRoleAsync(ApplicationUser user, string password, string role);
     public Task<bool> UpdateCategoriesAsync(string userId, List<int> categoryIds);
     public Task<List<int>> GetUserCategoriesAsync(string userId);
+    public Task<PagedList<T>> GetUsersAsync<T>(
+        int instanceId, PagingInfo pagingInfo, UserFilters filters, Expression<Func<ApplicationUser, T>> selector);
 }

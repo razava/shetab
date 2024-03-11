@@ -2,12 +2,14 @@
 using Application.Common.Interfaces.Communication;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
+using Application.Users.Queries.GetUsers;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace Infrastructure.Persistence.Repositories;
@@ -368,4 +370,52 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
 
         return contractor;
     }
+
+    public async Task<PagedList<T>> GetUsersAsync<T>(
+        int instanceId, PagingInfo pagingInfo, UserFilters filters, Expression<Func<ApplicationUser, T>> selector)
+    {
+        var query = _dbContext.Users
+            .Where(u => u.ShahrbinInstanceId == instanceId || u.ShahrbinInstanceId == null)
+            .AsNoTracking();
+        if (filters.Query is not null)
+        {
+            var phrase = filters.Query.Trim();
+            if (phrase.Length >= 3)
+            {
+                query = query.Where(u =>
+                        u.FirstName.Contains(phrase) ||
+                        u.LastName.Contains(phrase) ||
+                        u.NationalId.Contains(phrase) ||
+                        u.UserName != null && u.UserName.Contains(phrase) ||
+                        u.PhoneNumber != null && u.PhoneNumber.Contains(phrase));
+            }
+        }
+
+        if (filters.Roles is not null)
+        {
+            filters.Roles.RemoveAll(r => string.IsNullOrEmpty(r));
+            if(filters.Roles.Count > 0)
+            {
+                var userIds = _dbContext.Roles
+                .Where(r => filters.Roles.Contains(r.Name!))
+                .Join(_dbContext.UserRoles, r => r.Id, ur => ur.RoleId, (r, ur) => ur.UserId);
+
+                query = query.Where(u => userIds.Contains(u.Id));
+            }
+        }
+
+        if(filters.Regions is not null)
+        {
+            var userIds = _dbContext.Actor
+                .Where(a => a.Regions.Any(r => filters.Regions.Contains(r.Id)))
+                .Select(a => a.Identifier);
+
+            query = query.Where(u => userIds.Contains(u.Id));
+        }
+
+        var query2 = query.Select(selector);
+
+        return await PagedList<T>.ToPagedList(query2, pagingInfo.PageNumber, pagingInfo.PageSize);
+    }
 }
+

@@ -33,6 +33,7 @@ public class AuthenticationService(
         string username,
         string password)
     {
+        username = username.Trim();
         var result = await GetUser(username);
         if (result.IsFailed)
             return result.ToResult();
@@ -100,6 +101,7 @@ public class AuthenticationService(
 
     public async Task<Result<VerificationToken>> LogisterCitizen(string phoneNumber)
     {
+        phoneNumber = phoneNumber.Trim();
         if (!IsPhoneNumberValid(phoneNumber))
         {
             return AuthenticationErrors.InvalidUsername;

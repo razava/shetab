@@ -176,20 +176,19 @@ public class AdminUserManagementController : ApiController
     [HttpGet("AllUsers")]
     public async Task<ActionResult<List<AdminGetUserList>>> GetAllUsers(
         [FromQuery] PagingInfo pagingInfo,
-        [FromQuery] FilterGetUsers filter)
+        [FromQuery] UserFilters filter)
     {
-        //have FilterGetUsers
-        var t = filter;
         var instanceId = User.GetUserInstanceId();
-        var query = new GetUsersQuery(pagingInfo, instanceId);
+        var query = new GetUsersQuery(pagingInfo, instanceId, filter);
         var result = await Sender.Send(query);
 
         if (result.IsFailed)
             return Problem(result.ToResult());
+
         var resultValue = result.Value;
         Response.AddPaginationHeaders(resultValue.Meta);
 
-        return Ok(resultValue.Adapt<List<AdminGetUserList>>());
+        return Ok(resultValue);
     }
 
 

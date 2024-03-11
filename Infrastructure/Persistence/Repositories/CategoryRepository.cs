@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Domain.Models.Relational;
+using Domain.Models.Relational.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
@@ -47,8 +48,7 @@ public class CategoryRepository : GenericRepository<Category>, ICategoryReposito
     public async Task<Category?> GetStaffCategories(int instanceId, string userId, List<string> roles)
     {
         var query = context.Set<Category>()
-            .Where(c => c.ShahrbinInstanceId == instanceId
-                        && !c.IsDeleted);
+            .Where(c => c.ShahrbinInstanceId == instanceId);
 
         if (roles.Contains(RoleNames.Operator))
             query = query.Where(c => c.Users.Any(cu => cu.Id == userId));
@@ -58,8 +58,15 @@ public class CategoryRepository : GenericRepository<Category>, ICategoryReposito
             .AsNoTracking()
             .ToListAsync();
 
-        categories.ForEach(x => x.Categories = categories.Where(c => c.ParentId == x.Id).ToList());
-        categories.ForEach(x => x.ParentId = categories.Any(c => c.Id == x.ParentId) ? x.ParentId : null);
+        categories.ForEach(x => 
+        { 
+            var children = categories.Where(c => c.ParentId == x.Id).ToList();
+            x.Categories = children;
+            children.ForEach(child => child.ParentId = x.Id);
+        });
+        
+        categories.RemoveAll(x => x.IsDeleted);
+
         var roots = categories.Where(x => x.ParentId == null).ToList();
 
         Category result;
@@ -67,7 +74,8 @@ public class CategoryRepository : GenericRepository<Category>, ICategoryReposito
             result = roots[0];
         else
         {
-            result = Category.Create(instanceId, "", "ریشه", "", 0, -1, "", 0, 0);
+            result = roots.Where(x => x.CategoryType == CategoryType.Root).First();
+            roots.Remove(result);
             roots.Where(r => r.ParentId == null).ToList().ForEach(c => { c.Parent = result; result.Categories.Add(c); });
         }
 
