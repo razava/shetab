@@ -16,6 +16,7 @@ public interface IAuthenticationService
 
     public Task<Result<VerificationToken>> GetResetPasswordToken(string username);
     public Task<Result<bool>> ResetPassword(string username, string resetPasswordToken, string newPassword);
+    public Task<Result<VerificationToken>> ResendVerificationCode(string otpToken);
 }
 
 public record LoginResultModel(

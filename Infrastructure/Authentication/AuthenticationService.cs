@@ -43,7 +43,7 @@ public class AuthenticationService(
         {
             if (user.TwoFactorEnabled)
             {
-                var verificationCodeResult = await SendVerificationCode(user);
+                var verificationCodeResult = await sendVerificationCode(user);
                 if (verificationCodeResult.IsFailed)
                     return verificationCodeResult.ToResult();
                 return new LoginResultModel(null, verificationCodeResult.Value);
@@ -64,7 +64,7 @@ public class AuthenticationService(
                 {
                     if (goldenUser.TwoFactorEnabled)
                     {
-                        var verificationCodeResult = await SendVerificationCode(goldenUser, false, user);
+                        var verificationCodeResult = await sendVerificationCode(goldenUser, false, user);
                         if (verificationCodeResult.IsFailed)
                             return verificationCodeResult.ToResult();
                         return new LoginResultModel(null, verificationCodeResult.Value);
@@ -91,7 +91,7 @@ public class AuthenticationService(
             await authenticateRepository.DeleteOtpAsync(otpToken);
             if (storedOtp.IsNew)
             {
-                await CreateCitizen(storedOtp.User);
+                await createCitizen(storedOtp.User);
             }
             return await GenerateToken(storedOtp.LoginAs ?? storedOtp.User);
         }
@@ -118,7 +118,7 @@ public class AuthenticationService(
                 TwoFactorEnabled = true,
                 Title = "شهروند"
             };
-        var verificationCodeResult = await SendVerificationCode(user, isNew);
+        var verificationCodeResult = await sendVerificationCode(user, isNew);
         if (verificationCodeResult.IsFailed)
             return verificationCodeResult.ToResult();
         return verificationCodeResult.Value;
@@ -152,47 +152,12 @@ public class AuthenticationService(
                 Title = "شهروند",
             };
 
-            await CreateCitizen(user);
+            await createCitizen(user);
         }
         await updateUserInfoFromYazdSso(user, userInfo.User);
         return await GenerateToken(user);
     }
 
-    private async Task updateUserInfoFromYazdSso(ApplicationUser user, MyYazdUser? myYazdUser)
-    {
-        if (myYazdUser is null)
-            return;
-        user.NationalId = myYazdUser.NationalId ?? user.NationalId;
-        if(myYazdUser.Gender is not null)
-        {
-            user.Gender = myYazdUser.Gender == 1 ? Gender.Male : Gender.Female;
-        }
-        if(myYazdUser.Birthday is not null)
-        {
-            try
-            {
-                var parts = myYazdUser.Birthday.Split('-');
-                user.BirthDate = new DateTime(int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]));
-            }
-            catch { }
-        }
-        user.FirstName = myYazdUser.FirstName ?? user.FirstName;
-        user.LastName = myYazdUser.LastName ?? user.LastName;
-
-        if(myYazdUser.Avatar is not null)
-        {
-            var avatarStreamResult = await myYazdService.GetUserAvatar(myYazdUser.Avatar);
-            if (avatarStreamResult.IsSuccess)
-            {
-                user.Avatar = await storageService.WriteFileAsync(avatarStreamResult.Value, AttachmentType.Avatar, "jpg");
-            }
-        }
-
-        userRepository.Update(user);
-        await unitOfWork.SaveAsync();
-
-        return;
-    }
     public async Task<Result<AuthToken>> Refresh(string token, string refreshToken)
     {
         var validatedToken = GetPrincipalFromToken(token);
@@ -281,7 +246,7 @@ public class AuthenticationService(
         }
         else
         {
-            var token1Result = await SendVerificationCode(user, false);
+            var token1Result = await sendVerificationCode(user, false);
             if (token1Result.IsFailed)
                 return token1Result.ToResult();
             token1 = token1Result.Value;
@@ -295,7 +260,7 @@ public class AuthenticationService(
             PhoneNumber = newPhoneNumber,
             PhoneNumberConfirmed = false
         };
-        var token2Result = await SendVerificationCode(tmpUser, true);
+        var token2Result = await sendVerificationCode(tmpUser, true);
         if (token2Result.IsFailed)
         {
             return token2Result.ToResult();
@@ -363,7 +328,7 @@ public class AuthenticationService(
             return AuthenticationErrors.ResetPasswordFailed;
         }
 
-        var tokenResult = await SendVerificationCode(user.Value, false);
+        var tokenResult = await sendVerificationCode(user.Value, false);
         if (tokenResult.IsFailed)
             return tokenResult.ToResult();
 
@@ -398,8 +363,75 @@ public class AuthenticationService(
         return true;
     }
 
+    public async Task<Result<VerificationToken>> ResendVerificationCode(
+        string otpToken)
+    {
+        var storedOtp = await authenticateRepository.GetOtpAsync(otpToken);
+        if (storedOtp is null)
+            return AuthenticationErrors.InvalidOtp;
+
+        var user = storedOtp.User;
+        if (await authenticateRepository.IsSentAsync(user.UserName!))
+            return AuthenticationErrors.TooManyRequestsForOtp;
+
+        await authenticateRepository.DeleteOtpAsync(otpToken);
+
+        var otp = new Otp(Guid.NewGuid().ToString(), user, storedOtp.IsNew, storedOtp.LoginAs);
+        await authenticateRepository.InsertOtpAsync(otp);
+        await authenticateRepository.InsertSentAsync(user.UserName!);
+
+        try
+        {
+            await communicationService.SendVerificationAsync(user.PhoneNumber!, await GenerateOtp(user));
+        }
+        catch
+        {
+            return CommunicationErrors.SmsError;
+        }
+
+        return new VerificationToken(user.PhoneNumber!, otp.Token);
+    }
+
+
+
     #region PrivateMethods
-    private async Task<Result> CreateCitizen(ApplicationUser user)
+    private async Task updateUserInfoFromYazdSso(ApplicationUser user, MyYazdUser? myYazdUser)
+    {
+        if (myYazdUser is null)
+            return;
+        user.NationalId = myYazdUser.NationalId ?? user.NationalId;
+        if (myYazdUser.Gender is not null)
+        {
+            user.Gender = myYazdUser.Gender == 1 ? Gender.Male : Gender.Female;
+        }
+        if (myYazdUser.Birthday is not null)
+        {
+            try
+            {
+                var parts = myYazdUser.Birthday.Split('-');
+                user.BirthDate = new DateTime(int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]));
+            }
+            catch { }
+        }
+        user.FirstName = myYazdUser.FirstName ?? user.FirstName;
+        user.LastName = myYazdUser.LastName ?? user.LastName;
+
+        if (myYazdUser.Avatar is not null)
+        {
+            var avatarStreamResult = await myYazdService.GetUserAvatar(myYazdUser.Avatar);
+            if (avatarStreamResult.IsSuccess)
+            {
+                user.Avatar = await storageService.WriteFileAsync(avatarStreamResult.Value, AttachmentType.Avatar, "jpg");
+            }
+        }
+
+        userRepository.Update(user);
+        await unitOfWork.SaveAsync();
+
+        return;
+    }
+
+    private async Task<Result> createCitizen(ApplicationUser user)
     {
         try
         {
@@ -424,7 +456,7 @@ public class AuthenticationService(
         return Result.Ok();
     }
 
-    private async Task<Result<VerificationToken>> SendVerificationCode(
+    private async Task<Result<VerificationToken>> sendVerificationCode(
         ApplicationUser user,
         bool isNew = false,
         ApplicationUser? loginAs = null)

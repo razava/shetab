@@ -137,6 +137,9 @@ public record ForgotPasswordDto(
     string Username,
     CaptchaValidateDto Captcha);
 
+public record ResendOtpDto(
+    [Required]
+    string OtpToken);
 
 public record ResetPasswordDto(
     string OtpToken,

@@ -32,7 +32,7 @@ public class AuthenticateRepository : IAuthenticateRepository
         await _database.StringSetAsync(
             $"otp:{otp.Token}",
             JsonSerializer.Serialize(otp),
-            TimeSpan.FromMinutes(5));
+            TimeSpan.FromMinutes(15));
         return true;
     }
 
@@ -89,7 +89,7 @@ public class AuthenticateRepository : IAuthenticateRepository
         await _database.StringSetAsync(
             $"res:{resetPasswordToken.UserId}",
             JsonSerializer.Serialize(resetPasswordToken),
-            TimeSpan.FromMinutes(5));
+            TimeSpan.FromMinutes(15));
         return true;
     }
 

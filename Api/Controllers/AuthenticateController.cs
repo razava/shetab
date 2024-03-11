@@ -12,6 +12,7 @@ using Application.Authentication.Commands.RevokeCommand;
 using Application.Authentication.Queries.ChangePhoneNumberQuery;
 using Application.Authentication.Queries.ForgotPasswordQuery;
 using Application.Authentication.Queries.GetResetPasswordTokenQuery;
+using Application.Authentication.Queries.ResendOtp;
 using Application.Common.Interfaces.Security;
 using Application.Medias.Commands.AddMedia;
 using Application.Users.Commands.UpdateUserAvatar;
@@ -292,6 +293,16 @@ public class AuthenticateController : ApiController
             f => Problem(f));
     }
 
+    [HttpPost("ResendOtp")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ResendOtpDto resendOtpDto)
+    {
+        var query = new ResendOtpQuery(resendOtpDto.OtpToken, null);
+        var result = await Sender.Send(query);
+
+        return result.Match(
+            s => StatusCode(StatusCodes.Status428PreconditionRequired, s),
+            f => Problem(f));
+    }
 
     [HttpGet("Captcha")]
     public async Task<ActionResult<string>> GetCaptcha()
