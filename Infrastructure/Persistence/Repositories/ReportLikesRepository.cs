@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
+using Domain.Models.Relational;
 using Domain.Models.Relational.IdentityAggregate;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,11 +7,11 @@ namespace Infrastructure.Persistence.Repositories;
 
 public class ReportLikesRepository : IReportLikesRepository
 {
-    private readonly ApplicationDbContext context;
+    private readonly DbContext context;
     public ReportLikesRepository(
-        ApplicationDbContext dbContext)
+        IUnitOfWork unitOfWork)
     {       
-        context = dbContext;
+        context = unitOfWork.DbContext;
     }
 
     public async Task<int> Count(Guid reportId)
@@ -38,12 +39,20 @@ public class ReportLikesRepository : IReportLikesRepository
         if(result && !isAlreadyLiked)
         {
             context.Set<ReportLikes>().Add(new ReportLikes { ReportId = reportId, LikedById = userId });
+            await context.Set<Report>()
+                .Where(r => r.Id == reportId)
+                .ExecuteUpdateAsync(r => r.SetProperty(e => e.Likes, e => e.Likes + 1));
+            await context.SaveChangesAsync();
             return result;
         }
         if(!result && isAlreadyLiked)
         {
             context.Set<ReportLikes>().Remove(alreadyLiked!);
-            return false;
+            await context.Set<Report>()
+                .Where(r => r.Id == reportId)
+                .ExecuteUpdateAsync(r => r.SetProperty(e => e.Likes, e => e.Likes - 1));
+            await context.SaveChangesAsync();
+            return result;
         }
 
         //Never get here
