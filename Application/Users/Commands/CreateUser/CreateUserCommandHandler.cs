@@ -1,11 +1,14 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
+using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
-using Microsoft.IdentityModel.Tokens;
+using Domain.Models.Relational.ProcessAggregate;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Users.Commands.CreateUser;
 
-internal class CreateUserCommandHandler(IUserRepository userRepository) : IRequestHandler<CreateUserCommand, Result<ApplicationUser>>
+internal class CreateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork) 
+    : IRequestHandler<CreateUserCommand, Result<ApplicationUser>>
 {
 
     public async Task<Result<ApplicationUser>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -25,8 +28,23 @@ internal class CreateUserCommandHandler(IUserRepository userRepository) : IReque
         {
             request.Roles.RemoveAll(r => r == RoleNames.PowerUser || r == RoleNames.GoldenUser);
             await userRepository.AddToRolesAsync(user, request.Roles.ToArray());
+
+            var needActorRoles = new List<string>() { RoleNames.Operator, RoleNames.Executive, RoleNames.Mayor };
+            if (request.Roles.Any(needActorRoles.Contains))
+            {
+                var regions = new List<Region>();
+                if(request.Regions is not null)
+                {
+                    regions = await unitOfWork.DbContext.Set<Region>().Where(r => request.Regions.Contains(r.Id)).ToListAsync();
+                }
+                
+                var actor = new Actor() { Identifier = user.Id, Type = ActorType.Person, Regions = regions };
+                unitOfWork.DbContext.Add(actor);
+                await unitOfWork.SaveAsync();
+            }
         }
 
+        
         return user;
     }
 }

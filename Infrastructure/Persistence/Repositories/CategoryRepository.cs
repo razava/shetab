@@ -58,6 +58,9 @@ public class CategoryRepository : GenericRepository<Category>, ICategoryReposito
             .AsNoTracking()
             .ToListAsync();
 
+        var orphanCategories = categories.Where(c => c.ParentId != null && !categories.Any(p => p.Id == c.ParentId)).ToList();
+        orphanCategories.ForEach(c => c.ParentId = null);
+
         categories.ForEach(x => 
         { 
             var children = categories.Where(c => c.ParentId == x.Id).ToList();

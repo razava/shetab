@@ -100,6 +100,7 @@ public record CreateUserDto(
         [Required] [MinLength(6)] [MaxLength(512)]
         string Password,
         List<string>? Roles,
+        List<int>? RegionIds,
         [MaxLength(32)]
         string FirstName = "",
         [MaxLength(32)]

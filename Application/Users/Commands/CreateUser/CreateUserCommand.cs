@@ -7,6 +7,7 @@ public record CreateUserCommand(
     string Username,
     string Password,
     List<string>? Roles,
+    List<int>? Regions,
     string FirstName = "",
     string LastName = "",
     string Title = "") :IRequest<Result<ApplicationUser>>;

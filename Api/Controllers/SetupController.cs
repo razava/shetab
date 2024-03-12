@@ -2,6 +2,7 @@
 using Api.ExtensionMethods;
 using Application.Common.Statics;
 using Application.Setup.Commands;
+using Application.Setup.Commands.AddDummyCategoriesForStaff;
 using Application.Setup.Commands.AddDummyDataCommand;
 using Application.Setup.Commands.AddGoldenUser;
 using MediatR;
@@ -58,6 +59,18 @@ public class SetupController : ApiController
             s => Ok(s),
             f => Problem(f));
     }
- }
+
+    [Authorize(Roles = RoleNames.PowerUser)]
+    [HttpPost("AddClerkRole")]
+    public async Task<ActionResult> AddGoldenUser()
+    {
+        var query = new AddDummyCategoriesForStaffCommand();
+
+        var result = await Sender.Send(query);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+}
 
 public record AddGoldenUserDto(int InstanceId, string Username, string Password);
