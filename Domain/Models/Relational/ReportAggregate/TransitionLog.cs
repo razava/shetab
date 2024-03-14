@@ -127,12 +127,12 @@ public class TransitionLog
         string actorIdentifier)
     {
         return new TransitionLog(
-            ReportOperationType.Created,
+            ReportOperationType.Approved,
             reportId,
             null,
             null,
             null,
-            ReportMessages.Created,
+            ReportMessages.Approved,
             ActorType.Person,
             actorIdentifier,
             null,
@@ -207,7 +207,7 @@ public class TransitionLog
         string userId)
     {
         return new TransitionLog(
-            ReportOperationType.Transition,
+            ReportOperationType.Objection,
             reportId,
             null,
             comment,

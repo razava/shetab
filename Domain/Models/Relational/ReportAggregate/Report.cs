@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Amazon.Auth.AccessControlPolicy;
 using Domain.Exceptions;
 using Domain.Messages;
 using Domain.Models.ComplaintAggregate.Events;
@@ -350,9 +351,25 @@ public class Report : Entity
             isExecutive,
             isContractor);
 
+        var now = DateTime.UtcNow;
+        var duration = (now - LastStatusDateTime).TotalSeconds;
+
+        var log = TransitionLog.CreateTransition(
+            Id,
+            transitionId,
+            comment,
+            attachments,
+            ReportMessages.Refered,
+            actorType,
+            actorIdentifier,
+            reasonId,
+            duration,
+            true);
+
+        TransitionLogs.Add(log);
+
         LastOperation = ReportOperationType.Transition;
 
-        var now = DateTime.UtcNow;
         
         if (ReportState == ReportState.Finished || ReportState == ReportState.AcceptedByCitizen)
         {
@@ -424,6 +441,18 @@ public class Report : Entity
             ActorType.Person,
             CitizenId,
             objectionStage.Actors.First().Id);
+
+        var now = DateTime.UtcNow;
+        var duration = (now - LastStatusDateTime).TotalSeconds;
+
+        var log = TransitionLog.CreateObjection(
+            Id,
+            comment,
+            attachments,
+            ReportMessages.Refered,
+            CitizenId);
+
+        TransitionLogs.Add(log);
 
         LastOperation = ReportOperationType.Objection;
 
@@ -631,23 +660,6 @@ public class Report : Entity
 
         //TODO: Check if toActorId is allowed
         CurrentActorId = toActorId;
-
-        var duration = (now - LastStatusDateTime).TotalSeconds;
-
-        var log = TransitionLog.CreateTransition(
-            Id,
-            transitionId,
-            comment,
-            attachments,
-            ReportMessages.Refered,
-            actorType,
-            actorIdentifier,
-            reasonId,
-            duration,
-            transition.IsTransitionLogPublic);
-
-        TransitionLogs.Add(log);
-
 
         autoTransition();
     }
