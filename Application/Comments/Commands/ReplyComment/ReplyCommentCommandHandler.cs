@@ -27,6 +27,7 @@ internal class ReplyCommentCommandHandler(ICommentRepository commentRepository, 
                 DateTime = DateTime.UtcNow,
                 ShahrbinInstanceId = comment.ShahrbinInstanceId,
                 Text = request.Content,
+                IsReply = true
             };
         }
         

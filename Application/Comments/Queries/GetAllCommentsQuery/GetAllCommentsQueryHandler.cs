@@ -1,6 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.ReportAggregate;
-using MediatR;
 
 namespace Application.Comments.Queries.GetAllCommentsQuery;
 
@@ -9,7 +8,7 @@ internal sealed class GetAllCommentsQueryHandler(ICommentRepository commentRepos
     public async Task<Result<PagedList<Comment>>> Handle(GetAllCommentsQuery request, CancellationToken cancellationToken)
     {
         System.Linq.Expressions.Expression<Func<Comment, bool>>? filter = c =>
-        c.ShahrbinInstanceId == request.InstanceId && c.IsSeen == request.IsSeen
+        c.ShahrbinInstanceId == request.InstanceId && c.IsSeen == request.IsSeen && !c.IsReply
         && ((request.FilterModel == null) ||
         (request.FilterModel.SentFromDate == null || c.DateTime >= request.FilterModel.SentFromDate)
         && (request.FilterModel.SentToDate == null || c.DateTime <= request.FilterModel.SentToDate)

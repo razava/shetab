@@ -3,7 +3,9 @@ using Application.Common.Interfaces.Persistence;
 using Application.Users.Common;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ProcessAggregate;
+using FluentResults;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Errors;
 
 namespace Infrastructure.Persistence.Repositories;
 
@@ -14,14 +16,14 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
     {       
     }
 
-    public async Task<List<IsInRegionModel>> GetUserRegionsAsync(int instanceId, string userId)
+    public async Task<Result<List<IsInRegionModel>>> GetUserRegionsAsync(int instanceId, string userId)
     {
         var instance = await context.Set<ShahrbinInstance>()
             .Where(si => si.Id == instanceId)
             .AsNoTracking()
             .SingleOrDefaultAsync();
         if (instance is null)
-            throw new ServerNotFoundException("خطایی رخ داد.", new InstanceNotFoundException());
+            return NotFoundErrors.Instance;
         var regions = await context.Set<Region>()
             .Where(r => r.CityId == instance.CityId)
             .AsNoTracking()
@@ -32,7 +34,7 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
             .Select(a => a.Regions.Select(r => r.Id))
             .SingleOrDefaultAsync();
         if (actorRegionIds is null)
-            throw new ServerNotFoundException("خطایی رخ داد.", new ActorNotFoundException());
+            return NotFoundErrors.Actor;
 
         var result = new List<IsInRegionModel>();
         foreach (var region in regions)
@@ -50,14 +52,14 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
         return result;
     }
 
-    public async Task<bool> UpdateUserRegionsAsync(int instanceId, string userId, List<IsInRegionModel> userRegions)
+    public async Task<Result<bool>> UpdateUserRegionsAsync(int instanceId, string userId, List<IsInRegionModel> userRegions)
     {
         var instance = await context.Set<ShahrbinInstance>()
             .Where(si => si.Id == instanceId)
             .AsNoTracking()
             .SingleOrDefaultAsync();
         if (instance is null)
-            throw new ServerNotFoundException("خطایی رخ داد.", new InstanceNotFoundException());
+            return NotFoundErrors.Instance;
         var regions = await context.Set<Region>()
             .Where(r => r.CityId == instance.CityId)
             .ToListAsync();
@@ -67,7 +69,7 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
             .Include(a => a.Regions)
             .SingleOrDefaultAsync();
         if (actor is null)
-            throw new ServerNotFoundException("خطایی رخ داد.", new ActorNotFoundException());
+            return NotFoundErrors.Actor;
 
         actor.Regions.Clear();
         foreach (var userRegion in userRegions)

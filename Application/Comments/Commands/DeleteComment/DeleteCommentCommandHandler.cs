@@ -1,8 +1,10 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
+using Domain.Models.Relational;
 using Domain.Models.Relational.ReportAggregate;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Comments.Commands.DeleteComment;
 
@@ -23,6 +25,9 @@ internal class DeleteCommentCommandHandler(ICommentRepository commentRepository,
         try
         {
             await unitOfWork.SaveAsync();
+            await unitOfWork.DbContext.Set<Report>()
+                .Where(r => r.Id == comment.ReportId)
+                .ExecuteUpdateAsync(r => r.SetProperty(e => e.CommentsCount, e => e.CommentsCount - 1));
         }
         catch
         {

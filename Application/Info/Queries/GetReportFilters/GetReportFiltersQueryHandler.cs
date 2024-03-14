@@ -34,9 +34,13 @@ internal class GetReportFiltersQueryHandler(
         var categoryRoot = await categoryRepository.GetStaffCategories(instanceId, request.UserId, request.UserRoles);
 
 
-        var regions = await actorRepository.GetUserRegionsAsync(instanceId, request.UserId);
-        var regionFilterItems = regions.Select(r => new FilterItem<int>(r.RegionName, r.RegionId)).ToList();
-
+        var regionFilterItems = new List<FilterItem<int>>();
+        var regionsResult = await actorRepository.GetUserRegionsAsync(instanceId, request.UserId);
+        if (regionsResult.IsSuccess)
+        {
+            regionFilterItems = regionsResult.Value.Select(r => new FilterItem<int>(r.RegionName, r.RegionId)).ToList();
+        }
+        
 
         var reportsToInclude = new List<FilterItem<int>>();
         foreach (var item in Enum.GetValues(typeof(ReportsToInclude)))

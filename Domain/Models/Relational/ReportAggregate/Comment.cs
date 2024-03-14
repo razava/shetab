@@ -15,5 +15,6 @@ public class Comment : BaseModel
     public bool IsSeen { get; set; }
     public Guid? ReplyId { get; set; }
     public Comment? Reply { get; set; }
+    public bool IsReply { get; set; }
     public ICollection<Violation> Violations { get; set; } = new List<Violation>();
 }

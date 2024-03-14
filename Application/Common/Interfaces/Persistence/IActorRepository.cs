@@ -5,6 +5,6 @@ namespace Application.Common.Interfaces.Persistence;
 
 public interface IActorRepository : IGenericRepository<Actor>
 {
-    public Task<List<IsInRegionModel>> GetUserRegionsAsync(int instanceId, string userId);
-    public Task<bool> UpdateUserRegionsAsync(int instanceId, string userId, List<IsInRegionModel> regions);
+    public Task<Result<List<IsInRegionModel>>> GetUserRegionsAsync(int instanceId, string userId);
+    public Task<Result<bool>> UpdateUserRegionsAsync(int instanceId, string userId, List<IsInRegionModel> regions);
 }

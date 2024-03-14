@@ -8,6 +8,9 @@ internal class GetUserRegionsQueryHandler(IActorRepository actorRepository) : IR
     public async Task<Result<List<IsInRegionModel>>> Handle(GetUserRegionsQuery request, CancellationToken cancellationToken)
     {
         var result = await actorRepository.GetUserRegionsAsync(request.InstanceId, request.UserId);
+        if (result.IsFailed)
+            return result.ToResult();
+
         return result;
     }
 }
