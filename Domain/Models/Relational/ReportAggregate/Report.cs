@@ -46,6 +46,7 @@ public class Report : Entity
     public int? CurrentActorId { get; set; }
     public Actor? CurrentActor { get; set; }
     public ICollection<TransitionLog> TransitionLogs { get; private set; } = new List<TransitionLog>();
+    public ReportOperationType? LastOperation { get; set; }
 
 
     //People
@@ -148,6 +149,7 @@ public class Report : Entity
         //TODO: Handle the case where need acceptance is false
         report.ReportState = ReportState.NeedAcceptance;
         report.LastStatus = ReportMessages.NeedAcceptance;
+        report.LastOperation = ReportOperationType.Created;
 
         if (!category.EditingAllowed)
         {
@@ -208,7 +210,9 @@ public class Report : Entity
         report.RegistrantId = operatorId;
 
         var log = TransitionLog.CreateNewReport(report.Id, ActorType.Person, operatorId);
-        
+
+        report.LastOperation = ReportOperationType.Created;
+
         report.TransitionLogs.Add(log);
         
         report.InitProcess();
@@ -261,6 +265,7 @@ public class Report : Entity
         ReportState = ReportState.Live;
         LastStatus = "تأیید درخواست در سامانه";
         LastStatusDateTime = DateTime.UtcNow;
+        LastOperation = ReportOperationType.Approved;
 
         InitProcess();
         var log = TransitionLog.CreateApproved(Id, operatorId);
@@ -281,7 +286,7 @@ public class Report : Entity
         //TODO: Log modified values
         var comment = "";
         var log = TransitionLog.CreateUpdate(Id, comment ?? "", operatorId);
-
+        LastOperation = ReportOperationType.Change;
         TransitionLogs.Add(log);
     }
 
@@ -297,6 +302,7 @@ public class Report : Entity
 
         var log = TransitionLog.CreateMessageToCitizen(Id, comment, attachments, actorIdentifier, ResponseDuration ?? 0);
 
+        LastOperation = ReportOperationType.MessageToCitizen;
         TransitionLogs.Add(log);
 
 
@@ -344,6 +350,7 @@ public class Report : Entity
             isExecutive,
             isContractor);
 
+        LastOperation = ReportOperationType.Transition;
 
         var now = DateTime.UtcNow;
         
@@ -418,6 +425,8 @@ public class Report : Entity
             CitizenId,
             objectionStage.Actors.First().Id);
 
+        LastOperation = ReportOperationType.Objection;
+
         Raise(new ReportDomainEvent(
                 Guid.NewGuid(),
                 ReportDomainEventTypes.Objectioned,
@@ -451,6 +460,8 @@ public class Report : Entity
             userId);
         TransitionLogs.Add(log);
 
+        LastOperation = ReportOperationType.Objection;
+
         Raise(new ReportDomainEvent(
                 Guid.NewGuid(),
                 ReportDomainEventTypes.Objectioned,
@@ -467,6 +478,7 @@ public class Report : Entity
         Visibility? visibility)
     {
         moveToStage(isAccepted, stageId, toActorId, comment, attachments, inspectorId, visibility);
+        LastOperation = ReportOperationType.MoveToStage;
     }
 
     public List<ProcessTransition> GetPossibleTransitions()
@@ -489,6 +501,7 @@ public class Report : Entity
             Id,
             CitizenId,
             $"ثبت بازخورد شهروند با امتیاز {rating}"));
+        LastOperation = ReportOperationType.Feedback;
     }
 
     #region Private methods

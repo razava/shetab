@@ -180,7 +180,7 @@ public enum ReasonMeaning
     Other
 }
 
-public enum ReportLogType
+public enum ReportOperationType
 {
     Transition,
     MessageToCitizen,
@@ -190,5 +190,6 @@ public enum ReportLogType
     Feedback,
     Created,
     Approved,
-    MoveToStage
+    MoveToStage,
+    Objection
 }

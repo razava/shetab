@@ -10,7 +10,7 @@ public class TransitionLog
     public DateTime DateTime { get; set; }
     public Guid ReportId { get; set; }
     public Report Report { get; set; } = null!;
-    public ReportLogType ReportLogType { get; set; }
+    public ReportOperationType ReportLogType { get; set; }
     public int? TransitionId { get; set; }
     public ProcessTransition? Transition { get; set; }
     public string Comment { get; set; } = string.Empty;
@@ -26,7 +26,7 @@ public class TransitionLog
     private TransitionLog() { }
 
     private TransitionLog(
-        ReportLogType type,
+        ReportOperationType type,
         Guid reportId,
         int? transitionId,
         string? comment,
@@ -66,7 +66,7 @@ public class TransitionLog
         bool isPublic)
     {
         return new TransitionLog(
-            ReportLogType.Transition,
+            ReportOperationType.Transition,
             reportId,
             transitionId,
             comment,
@@ -90,7 +90,7 @@ public class TransitionLog
         bool isPublic)
     {
         return new TransitionLog(
-            ReportLogType.MoveToStage,
+            ReportOperationType.MoveToStage,
             reportId,
             null,
             comment,
@@ -109,7 +109,7 @@ public class TransitionLog
         string actorIdentifier)
     {
         return new TransitionLog(
-            ReportLogType.Created,
+            ReportOperationType.Created,
             reportId,
             null,
             null,
@@ -127,7 +127,7 @@ public class TransitionLog
         string actorIdentifier)
     {
         return new TransitionLog(
-            ReportLogType.Created,
+            ReportOperationType.Created,
             reportId,
             null,
             null,
@@ -148,7 +148,7 @@ public class TransitionLog
             double duration)
     {
         return new TransitionLog(
-            ReportLogType.MessageToCitizen,
+            ReportOperationType.MessageToCitizen,
             reportId,
             null,
             comment,
@@ -167,7 +167,7 @@ public class TransitionLog
         string actorIdentifier)
     {
         return new TransitionLog(
-            ReportLogType.Change,
+            ReportOperationType.Change,
             reportId,
             null,
             comment,
@@ -186,7 +186,7 @@ public class TransitionLog
         string comment)
     {
         return new TransitionLog(
-            ReportLogType.Feedback,
+            ReportOperationType.Feedback,
             reportId,
             null,
             comment,
@@ -207,7 +207,7 @@ public class TransitionLog
         string userId)
     {
         return new TransitionLog(
-            ReportLogType.Transition,
+            ReportOperationType.Transition,
             reportId,
             null,
             comment,
