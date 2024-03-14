@@ -29,8 +29,8 @@ public record ReportFilters(
 
 public enum ReportsToInclude
 {
-    [Description("در انتظار بررسی")]
-    Interacted,
     [Description("ارجاع داده شده")]
+    Interacted,
+    [Description("در انتظار بررسی")]
     InCartable
 }

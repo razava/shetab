@@ -1277,6 +1277,7 @@ public class InfoService(
 
     private async Task<IQueryable<Report>> addRestrictions(IQueryable<Report> query, GetInfoQueryParameters queryParameters)
     {
+        bool returnAll = false;
         List<string> userIds = new List<string> { queryParameters.UserId };
 
         if (queryParameters.Roles.Contains(RoleNames.Manager))
@@ -1292,12 +1293,19 @@ public class InfoService(
 
             if (queryParameters.Roles.Contains(RoleNames.Operator))
             {
+                returnAll = true;
+                var categoryIds = unitOfWork.DbContext.Set<Category>()
+                    .Where(c => c.Users.Select(u => u.Id).Contains(queryParameters.UserId))
+                    .Select(c => c.Id);
+                query = query.Where(r => categoryIds.Contains(r.CategoryId));
             }
             else if (queryParameters.Roles.Contains(RoleNames.Mayor))
             {
+                returnAll = true;
             }
-            else
+            else if(queryParameters.Roles.Contains(RoleNames.Inspector))
             {
+                returnAll = true;
             }
         }
 
@@ -1305,14 +1313,17 @@ public class InfoService(
             .Where(tl => userIds.Contains(tl.ActorIdentifier))
             .Select(tl => tl.ReportId)
             .Distinct();
+        var roleIds = unitOfWork.DbContext.Set<ApplicationRole>()
+            .Where(r => queryParameters.Roles.Contains(r.Name!))
+            .Select(r => r.Id);
         var actorIds = unitOfWork.DbContext.Set<Actor>()
-            .Where(a => userIds.Contains(a.Identifier))
+            .Where(a => userIds.Contains(a.Identifier) || roleIds.Contains(a.Identifier))
             .Select(a => a.Id)
             .Distinct();
 
         if(queryParameters.ReportsToInclude is null || queryParameters.ReportsToInclude.Count() == 0)
         {
-            query = query.Where(r => reportIds.Contains(r.Id) ||
+            query = query.Where(r => reportIds.Contains(r.Id) || returnAll ||
                                      r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value));
         }
         else
@@ -1320,7 +1331,7 @@ public class InfoService(
             var reportsToInclude = queryParameters.ReportsToInclude;
             if (reportsToInclude.Contains(ReportsToInclude.Interacted) && reportsToInclude.Contains(ReportsToInclude.InCartable))
             {
-                query = query.Where(r => reportIds.Contains(r.Id) ||
+                query = query.Where(r => reportIds.Contains(r.Id) || returnAll ||
                                     r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value));
             }
             else if(reportsToInclude.Contains(ReportsToInclude.Interacted))
@@ -1329,7 +1340,7 @@ public class InfoService(
             }
             else if (reportsToInclude.Contains(ReportsToInclude.InCartable))
             {
-                query = query.Where(r => r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value));
+                query = query.Where(r => returnAll || r.CurrentActorId != null && actorIds.Contains(r.CurrentActorId.Value));
             }
 
         }
