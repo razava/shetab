@@ -1,7 +1,10 @@
 ﻿using Application.Categories.Common;
 using Application.Common.Interfaces.Persistence;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Domain.Models.Relational;
+using Domain.Models.Relational.IdentityAggregate;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Categories.Commands.AddCategory;
 
@@ -13,10 +16,19 @@ internal sealed class AddCategoryCommandHandler(IUnitOfWork unitOfWork, ICategor
     {
         var roleId = await unitOfWork.DbContext.Set<Category>()
             .Where(c => c.Id == request.ParentId)
-            .Select(c => c.Role.Id)
+            .Select(c => c.RoleId)
             .SingleOrDefaultAsync();
         if (roleId is null)
             return NotFoundErrors.Category;
+
+        var users = new List<ApplicationUser>();
+        if (request.OperatorIds is not null && request.OperatorIds.Count > 0)
+        {
+            users = await unitOfWork.DbContext.Set<ApplicationUser>()
+                .Where(u => request.OperatorIds.Contains(u.Id))
+                .ToListAsync();
+        }
+        
         //TODO: perform required operations
         var category = Category.Create(
             request.InstanceId,
@@ -28,6 +40,7 @@ internal sealed class AddCategoryCommandHandler(IUnitOfWork unitOfWork, ICategor
             roleId,
             request.Duration,
             request.ResponseDuration,
+            users,
             request.ProcessId,
             request.IsDeleted,
             request.ObjectionAllowed,

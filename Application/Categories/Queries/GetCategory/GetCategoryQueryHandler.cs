@@ -34,7 +34,7 @@ internal sealed class GetCategoryQueryHandler(IUnitOfWork unitOfWork)
             result = roots[0];
         else
         {
-            result = Category.Create(request.InstanceId, "", "ریشه", "", 0, -1, "", 0, 0);
+            result = Category.CreateDummy("ریشه", "");
             roots.Where(r => r.ParentId == null).ToList().ForEach(c => c.Parent = result);
         }
         var t = result.Adapt<CategoryResponse>();

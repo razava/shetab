@@ -87,6 +87,7 @@ public class Category : BaseModel
         string roleId,
         int duration,
         int responseDuration,
+        List<ApplicationUser> users,
         int? processId = null,
         bool isDeleted = false,
         bool objectionAllowed = true,
@@ -107,6 +108,7 @@ public class Category : BaseModel
             RoleId = roleId,
             Duration = duration,
             ResponseDuration = responseDuration,
+            Users = users,
             ProcessId = processId,
             IsDeleted = isDeleted,
             ObjectionAllowed = objectionAllowed,
@@ -115,6 +117,19 @@ public class Category : BaseModel
             AttachmentDescription = attachmentDescription,
             FormId = formId,
             DefaultPriority = defaultPriority
+        };
+
+        return category;
+    }
+
+    public static Category CreateDummy(
+        string title,
+        string description)
+    {
+        var category = new Category()
+        {
+            Title = title,
+            Description = description,
         };
 
         return category;

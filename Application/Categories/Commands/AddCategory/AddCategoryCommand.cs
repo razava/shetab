@@ -12,6 +12,7 @@ public sealed record AddCategoryCommand(
     int ParentId,
     int Duration,
     int ResponseDuration,
+    List<string>? OperatorIds = null,
     int? ProcessId = null,
     bool IsDeleted = false,
     bool ObjectionAllowed = true,

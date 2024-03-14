@@ -20,6 +20,7 @@ public class CategoryCreateDto
     public string AttachmentDescription { get; set; } = string.Empty;
     public int Duration { get; set; }
     public int ResponseDuration { get; set; }
+    public List<string>? OperatorIds { get; set; }
     public bool IsDeleted { get; set; }
     public Guid? FormId { get; set; }
     public bool ObjectionAllowed { get; set; }

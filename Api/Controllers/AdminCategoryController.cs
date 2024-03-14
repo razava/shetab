@@ -63,6 +63,7 @@ public class AdminCategoryController : ApiController
             categoryCreateDto.ParentId,
             categoryCreateDto.Duration,
             categoryCreateDto.ResponseDuration,
+            categoryCreateDto.OperatorIds,
             categoryCreateDto.ProcessId,
             categoryCreateDto.IsDeleted,
             categoryCreateDto.ObjectionAllowed,
