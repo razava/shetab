@@ -73,7 +73,11 @@ public class CategoryRepository : GenericRepository<Category>, ICategoryReposito
         var roots = categories.Where(x => x.ParentId == null).ToList();
 
         Category result;
-        if (roots.Count == 1)
+        if (!roots.Any())
+        {
+            return null;
+        }
+        else if (roots.Count == 1)
             result = roots[0];
         else
         {

@@ -68,7 +68,7 @@ internal class GetReportFiltersQueryHandler(
 
         var result = new ReportFiltersResponse(
             regionFilterItems,
-            categoryRoot.Adapt<FilterCategory>(),
+            categoryRoot?.Adapt<FilterCategory>(),
             statusFilterItems,
             priorityFilterItems,
             reportsToInclude,

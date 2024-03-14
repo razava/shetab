@@ -27,10 +27,7 @@ internal sealed class GetReportsQueryHandler(IUnitOfWork unitOfWork, IUserReposi
         if (request.Roles.Contains(RoleNames.Operator))
         {
             var categories = await userRepository.GetUserCategoriesAsync(request.UserId);
-            if (categories.Any())
-            {
-                query = query.Where(r => categories.Contains(r.CategoryId));
-            }
+            query = query.Where(r => categories.Contains(r.CategoryId));
             query = query.Where(r => r.ShahrbinInstanceId == request.InstanceId);
         }
 

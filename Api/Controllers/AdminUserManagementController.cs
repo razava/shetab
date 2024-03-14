@@ -205,7 +205,7 @@ public class AdminUserManagementController : ApiController
 
     [Authorize(Roles = RoleNames.Admin)]
     [HttpGet("UserReports/{id}")]
-    public async Task<ActionResult<AdminGetUserDetailsDto>> GetUserReportsById(PagingInfo pagingInfo, string id)
+    public async Task<ActionResult<AdminGetUserDetailsDto>> GetUserReportsById([FromQuery]PagingInfo pagingInfo, string id)
     {
         var query = new GetUserReportsQuery(pagingInfo, id);
         var result = await Sender.Send(query);
