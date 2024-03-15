@@ -5,7 +5,7 @@ using Application.Comments.Commands.CreateComment;
 using Application.Comments.Commands.DeleteComment;
 using Application.Common.Interfaces.Persistence;
 using Application.Feedbacks.Commands;
-using Application.QuickAccesses.Queries.GetQuickAccesses;
+using Application.QuickAccesses.Queries.GetCitizenQuickAccesses;
 using Application.Reports.Commands.CreateReportByCitizen;
 using Application.Reports.Commands.Like;
 using Application.Reports.Commands.MakeObjection;
@@ -185,8 +185,8 @@ public class CitizenReportController : ApiController
     [HttpGet("QuickAccesses")]
     public async Task<ActionResult<List<CitizenGetQuickAccess>>> GetQuickAccesses(int instanceId)
     {
-        //there is 2 query for get QuickAccess in application layer.
-        var query = new GetQuickAccessesQuery(instanceId);
+        var userRoles = User.GetUserRoles();
+        var query = new GetCitizenQuickAccessesQuery(instanceId, userRoles);
         var result = await Sender.Send(query);
 
         return result.Match(
@@ -197,7 +197,6 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpPut("Like/{id:Guid}")]
-    //in old version returns int for report Likes number. 
     public async Task<ActionResult> Like(Guid id, bool isLiked)
     {
         var userId = User.GetUserId();

@@ -31,6 +31,8 @@ public record GetPollsDto(
     string Question,
     List<PollChoiceDto> Choices,
     PollState PollState,
+    DateTime Creatted,
+    DateTime? Expiration,
     PollAnswerDto? Answer,
     bool IsDeleted);
 

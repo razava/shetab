@@ -1,5 +1,4 @@
 ﻿using Domain.Models.Relational.Common;
-using MediatR;
 
 namespace Application.Polls.Queries.GetPollsQuery;
 
@@ -11,6 +10,8 @@ public record GetPollsResponse(
     string Question,
     List<PollChoiceResponse> Choices,
     PollState PollState,
+    DateTime Creatted,
+    DateTime? Expiration,
     PollAnswerResponse? Answer,
     bool IsDeleted);
 public record PollChoiceResponse(int Id, string ShortTitle, string Text, int Order);

@@ -21,7 +21,7 @@ internal class GetPollResultQueryHandler(IUnitOfWork unitOfWork)
             return NotFoundErrors.Poll;
 
         var choices = await context.Set<Poll>()
-            .Where(p=>p.Id == request.PollId)
+            .Where(p => p.Id == request.PollId)
             .SelectMany(p => p.Answers.SelectMany(p => p.Choices))
             .GroupBy(pc => pc.Id)
             .Select(pacg => new { Id = pacg.Key, Count = pacg.LongCount() })
@@ -31,9 +31,10 @@ internal class GetPollResultQueryHandler(IUnitOfWork unitOfWork)
         total = total == 0 ? 1 : total;
 
         var info = new InfoModel();
-        info.Singletons.Add(new InfoSingleton(poll.Count.ToString(), "شرکت کنندگان", ""));
+        info.Singletons = [new InfoSingleton(poll.Count.ToString(), "شرکت کنندگان", "")];
         var chart = new InfoChart(poll.Title, "", false, false);
-        info.Charts.Add(chart);
+        info.Charts = [chart];
+
         var serie = new InfoSerie(poll.Title, "");
         chart.Add(serie);
 

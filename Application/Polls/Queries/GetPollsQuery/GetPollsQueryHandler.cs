@@ -1,7 +1,6 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.PollAggregate;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Polls.Queries.GetPollsQuery;
@@ -33,7 +32,17 @@ internal class GetPollsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<Ge
                 else
                     answerResponse = new PollAnswerResponse(poll.Answers.Single().Choices.Select(pac => pac.Id).ToList(), null);
             }
-            var pr = new GetPollsResponse(poll.Id, poll.Title, poll.PollType, poll.Question, choices, poll.Status, answerResponse, poll.IsDeleted);
+            var pr = new GetPollsResponse(
+                poll.Id,
+                poll.Title,
+                poll.PollType,
+                poll.Question,
+                choices,
+                poll.Status,
+                poll.Created,
+                poll.Expiration,
+                answerResponse,
+                poll.IsDeleted);
             result.Add(pr);
         }
 

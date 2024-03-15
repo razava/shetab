@@ -1,9 +1,7 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
 using Application.Polls.Queries.GetPollsQuery;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.PollAggregate;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Polls.Queries.GetPollsByIdQuery;
@@ -36,7 +34,17 @@ internal sealed class GetPollsByIdQueryHandler(IUnitOfWork unitOfWork) : IReques
             else
                 answerResponse = new PollAnswerResponse(poll.Answers.Single().Choices.Select(pac => pac.Id).ToList(), null);
         }
-        var result = new GetPollsResponse(poll.Id, poll.Title, poll.PollType, poll.Question, choices, poll.Status, answerResponse, poll.IsDeleted);
+        var result = new GetPollsResponse(
+            poll.Id,
+            poll.Title,
+            poll.PollType,
+            poll.Question,
+            choices,
+            poll.Status,
+            poll.Created,
+            poll.Expiration,
+            answerResponse,
+            poll.IsDeleted);
 
         return result;
 

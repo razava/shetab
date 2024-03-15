@@ -4,7 +4,6 @@ using Api.ExtensionMethods;
 using Application.Categories.Queries.GetCategory;
 using Application.Configurations.Queries.ShahrbinInstanceManagement;
 using Application.Configurations.Queries.ViolationTypes;
-using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Mapster;
 using MediatR;

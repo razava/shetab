@@ -9,7 +9,7 @@ internal class GetNewsQueryHandler(INewsRepository newsRepository) : IRequestHan
 
     public async Task<Result<List<News>>> Handle(GetNewsQuery request, CancellationToken cancellationToken)
     {
-        var result = await newsRepository.GetAsync(n => (request.ReturnAll || n.IsDeleted == false), false);
+        var result = await newsRepository.GetAsync(n => (request.ReturnAll || n.IsDeleted == false), false, null, "Image");
 
         return result.ToList();
     }
