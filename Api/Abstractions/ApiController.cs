@@ -19,4 +19,12 @@ public class ApiController : ControllerBase
             String.Join("\r\n", result.Errors.Select(e => e.Message).ToList()),
             statusCode: StatusCodes.Status500InternalServerError);
     }
+
+    protected ActionResult Ok<T>(Result<T> result)
+    {
+        var message = "This is a test for Hossein";
+        return Ok(new ResponseWrapper<T>(message, result.Value));
+    }
+
+    public record ResponseWrapper<T>(string Message, T Data);
 }

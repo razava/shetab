@@ -15,4 +15,5 @@ public record GetPollsResponse(
     PollAnswerResponse? Answer,
     bool IsDeleted);
 public record PollChoiceResponse(int Id, string ShortTitle, string Text, int Order);
-public record PollAnswerResponse(List<int>? Choices, string? Text);
+public record PollAnswerResponse(List<PollAnswerItemResponse>? Choices, string? Text);
+public record PollAnswerItemResponse(int Id);

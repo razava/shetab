@@ -39,7 +39,7 @@ public class AdminPollsController : ApiController
             createDto.IsActive);
         var result = await Sender.Send(command);
 
-        return result.Match(
+        return result.Match2(
             s => CreatedAtAction(nameof(GetPollById), new { id = s.Id, instanceId = instanceId }, s.Adapt<GetPollsDto>()),
             f => Problem(f));
     }

@@ -38,7 +38,7 @@ public class FilesController : ApiController
         var command = new AddUploadCommand(userId, upload.File, upload.AttachmentType);
         var result = await Sender.Send(command);
 
-        return result.Match(
+        return result.Match2(
             s => StatusCode(StatusCodes.Status201Created, new { id = s.Id }),
             f => Problem(f));
     }

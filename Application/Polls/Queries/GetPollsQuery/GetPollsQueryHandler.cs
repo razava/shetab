@@ -30,7 +30,9 @@ internal class GetPollsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<Ge
                 if (poll.PollType == PollType.Descriptive)
                     answerResponse = new PollAnswerResponse(null, poll.Answers.Single().Text);
                 else
-                    answerResponse = new PollAnswerResponse(poll.Answers.Single().Choices.Select(pac => pac.Id).ToList(), null);
+                    answerResponse = new PollAnswerResponse(
+                        poll.Answers.Single().Choices.Select(pac => new PollAnswerItemResponse(pac.Id)).ToList(),
+                        null);
             }
             var pr = new GetPollsResponse(
                 poll.Id,

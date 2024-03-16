@@ -23,27 +23,27 @@ public class CitizenPollsController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Polls")]
-    public async Task<ActionResult<List<GetPollsDto>>> GetPolls(int instanceId)
+    public async Task<ActionResult> GetPolls(int instanceId)
     {
         var userId = User.GetUserId();
         var query = new GetPollsQuery(instanceId, userId);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<GetPollsDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<GetPollsDto>> GetPollById(int id)
+    public async Task<ActionResult> GetPollById(int id)
     {
         var userId = User.GetUserId();
         var query = new GetPollsByIdQuery(id, userId);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<GetPollsDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 

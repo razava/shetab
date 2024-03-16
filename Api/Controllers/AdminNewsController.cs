@@ -63,7 +63,7 @@ public class AdminNewsController : ApiController
             createNewsDto.IsDeleted);
         var result = await Sender.Send(command);
 
-        return result.Match(
+        return result.Match2(
             s => CreatedAtAction(nameof(GetNewsById), new { id = s.Id, instanceId = instanceId }, s.Adapt<GetNewsDto>()),
             f => Problem(f));
     }

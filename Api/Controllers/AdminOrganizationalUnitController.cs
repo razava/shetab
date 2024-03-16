@@ -80,7 +80,7 @@ public class AdminOrganizationalUnitController : ApiController
             createDto.OrganizationalUnitsIds);
         var result = await Sender.Send(command);
 
-        return result.Match(
+        return result.Match2(
             s => CreatedAtAction(nameof(GetOrgaizationalUnitById), new { id = s.Id, instanceId = instanceId }, s.Adapt<GetOrganizationalUnitDto>()),
             f => Problem(f));
     }

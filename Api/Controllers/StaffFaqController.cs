@@ -61,7 +61,7 @@ public class StaffFaqController : ApiController
             createFaqDto.IsDeleted);
         var result = await Sender.Send(command);
 
-        return result.Match(
+        return result.Match2(
             s => CreatedAtAction(nameof(GetFaqById), new { id = s.Id, instanceId = instanceId }, s.Adapt<GetFaqsDto>()),
             f => Problem(f));
     }

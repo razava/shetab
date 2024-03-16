@@ -313,7 +313,7 @@ public class AuthenticateController : ApiController
             throw new Exception();
         Response.Headers.Append("Captcha-Key", result.Value.Key.ToString());
         //return "data:image/jpg;base64," + Convert.ToBase64String(result.Data);
-        return result.Match(
+        return result.Match2(
             s => File(s.Data, "image/jpg"),
             f => Problem(f));
     }

@@ -57,7 +57,7 @@ public class AdminFormsController : ApiController
             createFormDto.Elements);
         var result = await Sender.Send(command);
 
-        return result.Match(
+        return result.Match2(
             s => CreatedAtAction(nameof(GetFormById), new { id = s.Id, instanceId = instanceId }, s),
             f => Problem(f));
     }

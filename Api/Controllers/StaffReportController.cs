@@ -207,7 +207,7 @@ public class StaffReportController : ApiController
 
         var result = await Sender.Send(command);
 
-        return result.Match(
+        return result.Match2(
             s => CreatedAtAction(nameof(GetReportById), new { id = s.Id, instanceId = instanceId }, s),
             f => Problem(f));
     }

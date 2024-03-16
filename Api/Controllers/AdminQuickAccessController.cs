@@ -61,7 +61,7 @@ public class AdminQuickAccessController : ApiController
             false);
         var result = await Sender.Send(command);
 
-        return result.Match(
+        return result.Match2(
             s => CreatedAtAction(nameof(GetQuickAccessById), new { id = s.Id, instanceId = instanceId }, s.Adapt<AdminGetQuickAccess>()),
             f => Problem(f));
     }

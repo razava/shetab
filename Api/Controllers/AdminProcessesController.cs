@@ -51,7 +51,7 @@ public class AdminProcessesController : ApiController
             setProcessDto.ActorIds);
         var result = await Sender.Send(command);
 
-        return result.Match(
+        return result.Match2(
             s => CreatedAtAction(nameof(GetProcessById), new { id = s.Id, instanceId = InstanceId }, s.Adapt<GetProcessDto>()),
             f => Problem(f));
     }
