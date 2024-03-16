@@ -1,6 +1,4 @@
-﻿using Application.Common.Interfaces.Map.ParsiMap;
-using MediatR;
+﻿namespace Application.Maps.Queries.MapBackwardQuery;
 
-namespace Application.Maps.Queries.MapBackwardQuery;
-
-public record MapBackwardQuery(double Longitude, double Latitude):IRequest<Result<BackwardResultApplication>>;
+public record MapBackwardQuery(int instanceId, double Longitude, double Latitude):IRequest<Result<AddressResult>>;
+public record AddressResult(int InstanceId, string Address, int RegionId);

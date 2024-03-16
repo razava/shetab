@@ -30,7 +30,6 @@ internal sealed class AcceptByOperatorCommandHandler(
         if (request.Address is not null)
         {
             address = request.Address.GetAddress();
-            //address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
         }
 
         List<Media> medias = report.Medias.ToList();

@@ -18,11 +18,9 @@ internal sealed class CreateReportByCitizenCommandHandler(
         var category = await categoryRepository.GetByIDAsync(request.CategoryId);
         if(category is null)
         {
-            //TODO: Handle this error
             return NotFoundErrors.Category;
         }
         var address = request.Address.GetAddress();
-        //address.Location = new NetTopologySuite.Geometries.Point(request.Address.Longitude, request.Address.Latitude);
 
         List<Media> medias = new List<Media>();
         if (request.Attachments is not null)
@@ -54,9 +52,6 @@ internal sealed class CreateReportByCitizenCommandHandler(
 
         reportRepository.Insert(report);
         await unitOfWork.SaveAsync();
-
-        //TODO: Inform related users not all
-        //await _hub.Clients.All.Update();
         
         return GetReportByIdResponse.FromReport(report);
     }

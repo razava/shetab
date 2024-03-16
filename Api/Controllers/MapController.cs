@@ -33,13 +33,13 @@ namespace Shahrbin.Api.Controllers
 
 
         [Authorize]
-        [HttpGet("Backward/{lng}/{lat}")]
-        public async Task<ActionResult<BackwardResult>> Backward(double lng, double lat)
+        [HttpGet("Backward/{instanceId}/{lng}/{lat}")]
+        public async Task<ActionResult> Backward(int instanceId, double lng, double lat)
         {
-            var query = new MapBackwardQuery(lng, lat);
+            var query = new MapBackwardQuery(instanceId, lng, lat);
             var result = await Sender.Send(query);
             return result.Match(
-                s => Ok(s.Adapt<BackwardResult>()),
+                s => Ok(s),
                 f => Problem(f));
         }
     }
