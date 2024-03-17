@@ -1,5 +1,4 @@
-﻿using Application.Reports.Common;
-using Domain.Models.Relational.Common;
+﻿using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using System.Linq.Expressions;
 

@@ -12,6 +12,7 @@ internal class GetUserProfileQueryHandler(IUnitOfWork unitOfWork) : IRequestHand
         var result = await unitOfWork.DbContext.Set<ApplicationUser>()
             .Where(u => u.Id == request.UserId)
             .Select(GetProfileResponse.GetSelector())
+            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (result == null)
