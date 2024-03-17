@@ -1,8 +1,6 @@
 ﻿using Application.Common.Interfaces.Persistence;
-using Application.Reports.Common;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
-using MediatR;
 using System.Linq.Expressions;
 
 namespace Application.Users.Queries.GetUsers;

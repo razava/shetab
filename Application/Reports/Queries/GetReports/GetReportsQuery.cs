@@ -1,6 +1,6 @@
 ﻿using Application.Common.FilterModels;
 using Application.Common.Interfaces.Persistence;
-using Application.Info.Queries.GetInfoQuery;
+using Application.Info.Queries.GetInfo;
 using Application.Reports.Common;
 
 namespace Application.Reports.Queries.GetReports;

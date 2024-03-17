@@ -1,11 +1,11 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.ExtensionMethods;
-using Application.Forms.Commands.AddFormCommand;
-using Application.Forms.Commands.DeleteFormCommand;
-using Application.Forms.Commands.UpdateFormCommand;
-using Application.Forms.Queries.GetFormByIdQuery;
-using Application.Forms.Queries.GetFormQuery;
+using Application.Forms.Commands.AddForm;
+using Application.Forms.Commands.DeleteForm;
+using Application.Forms.Commands.UpdateForm;
+using Application.Forms.Queries.GetForm;
+using Application.Forms.Queries.GetFormById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -57,8 +57,8 @@ public class AdminFormsController : ApiController
             createFormDto.Elements);
         var result = await Sender.Send(command);
 
-        return result.Match2(
-            s => CreatedAtAction(nameof(GetFormById), new { id = s.Id, instanceId = instanceId }, s),
+        return result.Match(
+            s => CreatedAtAction(nameof(GetFormById), new { id = s.Value.Id, instanceId = instanceId }, s),
             f => Problem(f));
     }
 

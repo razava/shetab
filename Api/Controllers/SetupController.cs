@@ -1,10 +1,10 @@
 ﻿using Api.Abstractions;
 using Api.ExtensionMethods;
 using Application.Common.Statics;
-using Application.Setup.Commands;
 using Application.Setup.Commands.AddDummyCategoriesForStaff;
 using Application.Setup.Commands.AddDummyDataCommand;
 using Application.Setup.Commands.AddGoldenUser;
+using Application.Setup.Commands.AddInstance;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

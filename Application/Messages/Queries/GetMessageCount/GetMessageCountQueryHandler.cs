@@ -1,13 +1,12 @@
 ﻿using Application.Common.Interfaces.Persistence;
-using Application.Messages.Common;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ReportAggregate;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Messages.Queries.GetMessages;
+namespace Application.Messages.Queries.GetMessageCount;
 
 internal sealed class GetMessageCountQueryHandler(
-    IUnitOfWork unitOfWork) 
+    IUnitOfWork unitOfWork)
     : IRequestHandler<GetMessageCountQuery, Result<int>>
 {
     public async Task<Result<int>> Handle(

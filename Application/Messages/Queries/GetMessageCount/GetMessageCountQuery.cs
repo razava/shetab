@@ -1,4 +1,4 @@
-﻿namespace Application.Messages.Queries.GetMessages;
+﻿namespace Application.Messages.Queries.GetMessageCount;
 
 public sealed record GetMessageCountQuery(
     DateTime From,

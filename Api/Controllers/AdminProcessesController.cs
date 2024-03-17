@@ -2,12 +2,12 @@
 using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Common.FilterModels;
-using Application.Processes.Commands.AddProcessCommand;
-using Application.Processes.Commands.DeleteProcessCommand;
-using Application.Processes.Commands.UpdateProcessCommand;
-using Application.Processes.Queries.GetExecutiveActorsQuery;
-using Application.Processes.Queries.GetProcessByIdQuery;
-using Application.Processes.Queries.GetProcessesQuery;
+using Application.Processes.Commands.AddProcess;
+using Application.Processes.Commands.DeleteProcess;
+using Application.Processes.Commands.UpdateProcess;
+using Application.Processes.Queries.GetExecutiveActors;
+using Application.Processes.Queries.GetProcessById;
+using Application.Processes.Queries.GetProcesses;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -27,14 +27,14 @@ public class AdminProcessesController : ApiController
     //this endpoint is duplicate with GetProcesses in AdminCategoryController
     [Authorize(Roles = "Admin")]
     [HttpGet]
-    public async Task<ActionResult<List<GetProcessListDto>>> GetProcesses([FromQuery]QueryFilter queryFilter)
+    public async Task<ActionResult> GetProcesses([FromQuery]QueryFilter queryFilter)
     {
         var instanceId = User.GetUserInstanceId();
         var query = new GetProcessesQuery(instanceId, queryFilter.Adapt<QueryFilterModel>());
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<GetProcessListDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -51,21 +51,21 @@ public class AdminProcessesController : ApiController
             setProcessDto.ActorIds);
         var result = await Sender.Send(command);
 
-        return result.Match2(
-            s => CreatedAtAction(nameof(GetProcessById), new { id = s.Id, instanceId = InstanceId }, s.Adapt<GetProcessDto>()),
+        return result.Match(
+            s => CreatedAtAction(nameof(GetProcessById), new { id = s.Value.Id, instanceId = InstanceId }, s),
             f => Problem(f));
     }
 
 
     [Authorize(Roles = "Admin")]
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<GetProcessDto>> GetProcessById(int id)
+    public async Task<ActionResult> GetProcessById(int id)
     {
         var query = new GetProcessByIdQuery(id);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<GetProcessDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -89,14 +89,14 @@ public class AdminProcessesController : ApiController
     //TODO: Define access policies
     [Authorize]
     [HttpGet("Executives")]
-    public async Task<ActionResult<List<GetExecutiveListDto>>> GetExecutives()
+    public async Task<ActionResult> GetExecutives()
     {
         var instanceId = User.GetUserInstanceId();
         var query = new GetExecutiveActorsQuery(instanceId);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<GetExecutiveListDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 

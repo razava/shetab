@@ -1,6 +1,4 @@
-﻿using MediatR;
-
-namespace Application.Authentication.Commands.RevokeCommand;
+﻿namespace Application.Authentication.Commands.RevokeCommand;
 
 public sealed record RevokeCommand(
     string UserId,

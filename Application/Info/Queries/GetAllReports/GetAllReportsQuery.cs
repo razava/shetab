@@ -1,6 +1,6 @@
 ﻿using Application.Common.Interfaces.Info;
 using Application.Common.Interfaces.Persistence;
-using Application.Info.Queries.GetInfoQuery;
+using Application.Info.Queries.GetInfo;
 using Application.Reports.Common;
 
 namespace Application.Info.Queries.GetAllReports;

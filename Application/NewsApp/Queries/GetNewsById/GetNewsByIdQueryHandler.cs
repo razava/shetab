@@ -1,16 +1,19 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
+using Application.NewsApp.Common;
 using Domain.Models.Relational;
-using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.NewsApp.Queries.GetNewsById;
 
-internal sealed class GetNewsByIdQueryHandler(INewsRepository newsRepository) : IRequestHandler<GetNewsByIdQuery, Result<News>>
+internal sealed class GetNewsByIdQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetNewsByIdQuery, Result<GetNewsResponse>>
 {
 
-    public async Task<Result<News>> Handle(GetNewsByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetNewsResponse>> Handle(GetNewsByIdQuery request, CancellationToken cancellationToken)
     {
-        var result = await newsRepository.GetSingleAsync(n => n.Id == request.Id, false);
+        var result = await unitOfWork.DbContext.Set<News>()
+            .Where(n => n.Id == request.Id)
+            .Select(GetNewsResponse.GetSelector())
+            .FirstOrDefaultAsync();
         if (result is null)
             return NotFoundErrors.News;
 

@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Domain.Models.Relational.Common;
+﻿using Domain.Models.Relational.Common;
 
 namespace Application.Configurations.Queries.ShahrbinInstanceManagement;
 

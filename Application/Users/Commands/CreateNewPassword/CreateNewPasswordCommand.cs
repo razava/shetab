@@ -1,6 +1,4 @@
-﻿using MediatR;
-
-namespace Application.Users.Commands.CreateNewPassword;
+﻿namespace Application.Users.Commands.CreateNewPassword;
 
 public record CreateNewPasswordCommand(
     string UserId,

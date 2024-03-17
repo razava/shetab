@@ -12,8 +12,6 @@ public record LoginStaffDto(
     string Password,
     CaptchaValidateModel Captcha);
 
-public record LoginResultDto(string JwtToken, string RefreshToken);
-
 public record CitizenVerificationDto(
     string OtpToken,
     [Required] [MaxLength(8)]

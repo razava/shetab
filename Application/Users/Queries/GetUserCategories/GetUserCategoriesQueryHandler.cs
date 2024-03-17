@@ -1,6 +1,4 @@
 ﻿using Application.Common.Interfaces.Persistence;
-using Domain.Models.Relational;
-using MediatR;
 
 namespace Application.Users.Queries.GetUserCategories;
 

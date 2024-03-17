@@ -15,14 +15,14 @@ public static class FluentResultEstensionMethods
             return failure(result.ToResult());
     }
 
-    public static ActionResult Match2<TValue>(
-     this Result<TValue> result,
-     Func<TValue, ActionResult> success,
-     Func<Result, ActionResult> failure)
-    {
-        if (result.IsSuccess)
-            return success(result.Value);
-        else
-            return failure(result.ToResult());
-    }
+    //public static ActionResult Match2<TValue>(
+    // this Result<TValue> result,
+    // Func<TValue, ActionResult> success,
+    // Func<Result, ActionResult> failure)
+    //{
+    //    if (result.IsSuccess)
+    //        return success(result.Value);
+    //    else
+    //        return failure(result.ToResult());
+    //}
 }

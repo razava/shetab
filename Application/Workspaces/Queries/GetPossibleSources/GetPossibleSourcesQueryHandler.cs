@@ -3,7 +3,6 @@ using Application.Common.Statics;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Workspaces.Queries.GetPossibleSources;

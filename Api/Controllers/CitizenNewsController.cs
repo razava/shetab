@@ -1,6 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.ExtensionMethods;
+using Application.NewsApp.Common;
 using Application.NewsApp.Queries.GetNews;
 using Mapster;
 using MediatR;
@@ -20,13 +21,13 @@ public class CitizenNewsController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("News")]
-    public async Task<ActionResult<List<GetNewsDto>>> GetNews(int instanceId)
+    public async Task<ActionResult<List<GetNewsResponse>>> GetNews(int instanceId)
     {
         var query = new GetNewsQuery(instanceId);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<GetNewsDto>>()),
+            s => Ok(s.Adapt<List<GetNewsResponse>>()),
             f => Problem(f));
     }
 

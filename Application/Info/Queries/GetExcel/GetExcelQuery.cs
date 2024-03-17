@@ -1,5 +1,5 @@
 ﻿using Application.Common.Interfaces.Info;
-using Application.Info.Queries.GetInfoQuery;
+using Application.Info.Queries.GetInfo;
 
 namespace Application.Info.Queries.GetExcel;
 

@@ -1,6 +1,4 @@
-﻿using MediatR;
-
-namespace Application.Workspaces.Queries.GetPossibleSources;
+﻿namespace Application.Workspaces.Queries.GetPossibleSources;
 
 public sealed record GetPossibleSourcesQuery(
     string UserId,

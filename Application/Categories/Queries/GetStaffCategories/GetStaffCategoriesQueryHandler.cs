@@ -14,28 +14,3 @@ internal class GetStaffCategoriesQueryHandler(
 
     }
 }
-
-
-/*
- 
-var opCategories = await userRepository.GetUserCategoriesAsync(request.UserId);
-
-        var result = (await categoryRepository.GetAsync(p => 
-            p.ShahrbinInstanceId == request.InstanceId
-            && p.IsDeleted == false
-            && (!opCategories.Any() || opCategories.Contains(p.Id))
-            , false)).ToList();
-
-        var parentIds = result.Select(c => c.ParentId).ToList();
-
-        var parents = (await categoryRepository.GetAsync(e => parentIds.Contains(e.Id), false)).ToList();
-
-        var root = await categoryRepository.GetSingleAsync(c => 
-        c.ParentId == null && c.ShahrbinInstanceId == request.InstanceId, false);
-        result.AddRange(parents);
-        result.Add(root);
-        
-
-        return result.Distinct().ToList();
-
- */

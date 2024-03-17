@@ -1,7 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.ExtensionMethods;
-using Application.Faqs.Queries.GetFaqQuery;
+using Application.Faqs.Queries.GetFaq;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

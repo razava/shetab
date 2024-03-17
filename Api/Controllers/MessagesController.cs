@@ -3,6 +3,7 @@ using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Common.Interfaces.Persistence;
 using Application.Communications.Commands;
+using Application.Messages.Queries.GetMessageCount;
 using Application.Messages.Queries.GetMessages;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace Api.Abstractions;
 
@@ -26,5 +27,10 @@ public class ApiController : ControllerBase
         return Ok(new ResponseWrapper<T>(message, result.Value));
     }
 
-    public record ResponseWrapper<T>(string Message, T Data);
+    protected ActionResult CreatedAtAction<T>(string? actionName, object? routeValues, T? value)
+    {
+        var message = "This is a test for Hossein";
+        return CreatedAtAction(actionName, routeValues, new ResponseWrapper<T>(message, value));
+    }
+    public record ResponseWrapper<T>(string Message, T? Data);
 }

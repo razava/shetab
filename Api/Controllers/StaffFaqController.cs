@@ -1,10 +1,10 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.ExtensionMethods;
-using Application.Faqs.Commands.AddFaqCommand;
-using Application.Faqs.Commands.UpdateFaqCommand;
-using Application.Faqs.Queries.GetFaqByIdQuery;
-using Application.Faqs.Queries.GetFaqQuery;
+using Application.Faqs.Commands.AddFaq;
+using Application.Faqs.Commands.UpdateFaq;
+using Application.Faqs.Queries.GetFaq;
+using Application.Faqs.Queries.GetFaqById;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -61,8 +61,8 @@ public class StaffFaqController : ApiController
             createFaqDto.IsDeleted);
         var result = await Sender.Send(command);
 
-        return result.Match2(
-            s => CreatedAtAction(nameof(GetFaqById), new { id = s.Id, instanceId = instanceId }, s.Adapt<GetFaqsDto>()),
+        return result.Match(
+            s => CreatedAtAction(nameof(GetFaqById), new { id = s.Value.Id, instanceId = instanceId }, s.Adapt<GetFaqsDto>()),
             f => Problem(f));
     }
 

@@ -1,8 +1,7 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.Common;
-using MediatR;
 
-namespace Application.AdministrativeDivisions.Queries.GetProvince;
+namespace Application.AdministrativeDivisions.Queries.GetDistrict;
 
 internal sealed class GetDistrictQueryHandler(IDistrictRepository districtRepository) : IRequestHandler<GetDistrictQuery, Result<List<District>>>
 {

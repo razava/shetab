@@ -9,9 +9,9 @@ using Application.Authentication.Commands.RefreshCommand;
 using Application.Authentication.Commands.RegisterCitizenCommand;
 using Application.Authentication.Commands.ResetPasswordCommand;
 using Application.Authentication.Commands.RevokeCommand;
+using Application.Authentication.Commands.TwoFactorLogin;
 using Application.Authentication.Queries.ChangePhoneNumberQuery;
 using Application.Authentication.Queries.ForgotPasswordQuery;
-using Application.Authentication.Queries.GetResetPasswordTokenQuery;
 using Application.Authentication.Queries.ResendOtp;
 using Application.Common.Interfaces.Security;
 using Application.Medias.Commands.AddMedia;
@@ -48,26 +48,26 @@ public class AuthenticateController : ApiController
     }
 
     [HttpPost("VerifyStaff")]
-    public async Task<ActionResult<LoginResultDto>> Verify([FromBody] StaffVerificationDto verificationDto)
+    public async Task<ActionResult> Verify([FromBody] StaffVerificationDto verificationDto)
     {
         var command = new TwoFactorLoginCommand(
             verificationDto.OtpToken,
             verificationDto.VerificationCode);
         var result = await Sender.Send(command);
         return result.Match(
-            s => Ok(s.Adapt<LoginResultDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
     [HttpPost("Refresh")]
-    public async Task<ActionResult<LoginResultDto>> Refresh([FromBody] RefreshDto refreshDto)
+    public async Task<ActionResult> Refresh([FromBody] RefreshDto refreshDto)
     {
         var command = new RefreshCommand(
             refreshDto.Token,
             refreshDto.RefreshToken);
         var result = await Sender.Send(command);
         return result.Match(
-            s => Ok(s.Adapt<LoginResultDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -95,22 +95,22 @@ public class AuthenticateController : ApiController
     }
 
     [HttpPost("VerifyCitizen")]
-    public async Task<ActionResult<LoginResultDto>> VerifyCitizen([FromBody] CitizenVerificationDto logisterDto)
+    public async Task<ActionResult> VerifyCitizen([FromBody] CitizenVerificationDto logisterDto)
     {
         var command = new TwoFactorLoginCommand(logisterDto.OtpToken, logisterDto.VerificationCode);
         var result = await Sender.Send(command);
         return result.Match(
-            s => Ok(s.Adapt<LoginResultDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
     [HttpPost("LoginMyYazd")]
-    public async Task<ActionResult<LoginResultDto>> LoginMyYazd([FromBody] MyYazdSsoDto myYazdSso)
+    public async Task<ActionResult> LoginMyYazd([FromBody] MyYazdSsoDto myYazdSso)
     {
         var command = new LoginMyYazdCommand(myYazdSso.Code);
         var result = await Sender.Send(command);
         return result.Match(
-            s => Ok(s.Adapt<LoginResultDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -313,8 +313,8 @@ public class AuthenticateController : ApiController
             throw new Exception();
         Response.Headers.Append("Captcha-Key", result.Value.Key.ToString());
         //return "data:image/jpg;base64," + Convert.ToBase64String(result.Data);
-        return result.Match2(
-            s => File(s.Data, "image/jpg"),
+        return result.Match(
+            s => File(s.Value.Data, "image/jpg"),
             f => Problem(f));
     }
 

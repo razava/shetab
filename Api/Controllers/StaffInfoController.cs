@@ -5,16 +5,13 @@ using Application.Common.Interfaces.Info;
 using Application.Common.Interfaces.Persistence;
 using Application.Info.Queries.GetAllReports;
 using Application.Info.Queries.GetExcel;
-using Application.Info.Queries.GetInfoQuery;
-using Application.Info.Queries.GetListChartQuery;
+using Application.Info.Queries.GetInfo;
+using Application.Info.Queries.GetListChart;
 using Application.Reports.Common;
-using Infrastructure.Info;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NetTopologySuite.Geometries;
-using System.IO;
 
 namespace Api.Controllers;
 

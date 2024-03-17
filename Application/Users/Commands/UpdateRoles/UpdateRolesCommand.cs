@@ -1,5 +1,4 @@
 ﻿using Application.Users.Common;
-using MediatR;
 
 namespace Application.Users.Commands.UpdateRoles;
 

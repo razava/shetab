@@ -23,19 +23,6 @@ public record PollChoiceCreateDto(
     [Required]
     int Order);
 
-
-public record GetPollsDto(
-    int Id,
-    string Title,
-    PollType PollType,
-    string Question,
-    List<PollChoiceDto> Choices,
-    PollState PollState,
-    DateTime Creatted,
-    DateTime? Expiration,
-    PollAnswerDto? Answer,
-    bool IsDeleted);
-
 public record PollChoiceDto(int Id, string ShortTitle, string Text, int Order);
 public record PollAnswerDto(List<int>? Choices, string? Text);
 

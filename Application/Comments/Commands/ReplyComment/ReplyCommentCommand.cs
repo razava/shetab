@@ -1,6 +1,4 @@
-﻿using MediatR;
-
-namespace Application.Comments.Commands.ReplyComment;
+﻿namespace Application.Comments.Commands.ReplyComment;
 
 public record ReplyCommentCommand(
     string UserId,

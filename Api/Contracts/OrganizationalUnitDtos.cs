@@ -5,21 +5,6 @@ namespace Api.Contracts;
 
 
 
-public record GetOrganizationalUnitListDto(
-    int Id,
-    [MaxLength(32)]
-    string Title);
-
-
-public record GetOrganizationalUnitDto(
-    int Id,
-    [MaxLength(32)]
-    string Title,
-    int? ActorId,
-    OrganizationalUnitType? Type,
-    List<GetOrganizationalUnitDto> OrganizationalUnits);
-
-
 public record OrganizationalUnitCreateDto(
     [MaxLength(32)]
     string Title,

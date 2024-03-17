@@ -1,6 +1,4 @@
 ﻿using Application.Common.Interfaces.Persistence;
-using Application.Users.Commands.UpdateRoles;
-using MediatR;
 
 namespace Application.Users.Commands.UpdateRegions;
 

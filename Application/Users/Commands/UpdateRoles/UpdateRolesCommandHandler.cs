@@ -1,6 +1,4 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
-using MediatR;
+﻿using Application.Common.Interfaces.Persistence;
 
 namespace Application.Users.Commands.UpdateRoles;
 

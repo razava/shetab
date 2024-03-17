@@ -1,11 +1,7 @@
 ﻿using Api.Contracts;
-using Application.Processes.Queries.GetExecutiveActorsQuery;
-using Application.Reports.Common;
-using Domain.Models.Relational;
+using Application.Processes.Common;
 using Domain.Models.Relational.Common;
 using Mapster;
-using NetTopologySuite.Geometries;
-using Point = NetTopologySuite.Geometries.Point;
 
 namespace Api.Configurations;
 
@@ -21,10 +17,10 @@ public class MapsterConfigurations
             .Map(dest => dest.Latitude, src => src.Location!.Y)
             .Map(dest => dest.Longitude, src => src.Location!.X);
 
-        TypeAdapterConfig<GetExecutiveActorsResponse, GetExecutiveListDto>.NewConfig()
-            .Map(dest => dest.DisplayName, src => 
-            (src.FirstName == "" && src.LastName == "") ? 
-            $"{src.Title}" : $"{src.Title} ({src.FirstName} {src.LastName})");
+        //TypeAdapterConfig<GetExecutiveActorsResponse, GetExecutiveListDto>.NewConfig()
+        //    .Map(dest => dest.DisplayName, src => 
+        //    (src.FirstName == "" && src.LastName == "") ? 
+        //    $"{src.Title}" : $"{src.Title} ({src.FirstName} {src.LastName})");
 
 
         /*

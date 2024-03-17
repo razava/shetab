@@ -1,10 +1,8 @@
 ﻿using Application.Categories.Common;
 using Application.Common.Interfaces.Persistence;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Domain.Models.Relational;
 using Domain.Models.Relational.IdentityAggregate;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Categories.Commands.AddCategory;
 

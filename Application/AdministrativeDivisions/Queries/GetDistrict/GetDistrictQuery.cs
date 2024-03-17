@@ -1,7 +1,6 @@
 ﻿using Domain.Models.Relational.Common;
-using MediatR;
 
-namespace Application.AdministrativeDivisions.Queries.GetProvince;
+namespace Application.AdministrativeDivisions.Queries.GetDistrict;
 
 public sealed record GetDistrictQuery(int CountyId) : IRequest<Result<List<District>>>;
 

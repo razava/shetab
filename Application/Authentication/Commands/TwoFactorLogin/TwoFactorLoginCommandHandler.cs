@@ -1,7 +1,6 @@
 ﻿using Application.Common.Interfaces.Security;
-using MediatR;
 
-namespace Application.Authentication.Commands.LoginCommand;
+namespace Application.Authentication.Commands.TwoFactorLogin;
 
 internal sealed class TwoFactorLoginCommandHandler(IAuthenticationService authenticationService) : IRequestHandler<TwoFactorLoginCommand, Result<AuthToken>>
 {

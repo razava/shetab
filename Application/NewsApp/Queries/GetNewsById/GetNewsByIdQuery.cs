@@ -1,6 +1,5 @@
-﻿using Domain.Models.Relational;
-using MediatR;
+﻿using Application.NewsApp.Common;
 
 namespace Application.NewsApp.Queries.GetNewsById;
 
-public record GetNewsByIdQuery(int Id) : IRequest<Result<News>>;
+public record GetNewsByIdQuery(int Id) : IRequest<Result<GetNewsResponse>>;

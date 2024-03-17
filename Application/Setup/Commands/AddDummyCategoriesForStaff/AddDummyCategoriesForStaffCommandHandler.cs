@@ -1,6 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
-using Domain.Models.Relational;
 
 namespace Application.Setup.Commands.AddDummyCategoriesForStaff;
 

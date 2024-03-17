@@ -1,7 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.IdentityAggregate;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Users.Queries.GetContractors;
 

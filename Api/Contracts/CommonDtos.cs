@@ -73,12 +73,6 @@ public record GetUserRegionsDto(
     string RegionName);
 
 
-public record GetRegionDto(
-    int Id,
-    string Name,
-    string ParsimapCode);
-
-
 public record GetRolesDto(
     string RoleName,
     string RoleTitle);
@@ -147,15 +141,6 @@ public record GetMessageCountDto(
     DateTime DateTime);
 
 
-public record GetNewsDto(
-    int Id,
-    string Title,
-    string Description,
-    string Url,
-    MediaDto ImageFile,
-    DateTime Created,
-    bool IsDeleted);
-
 public record CreateNewsDto(
     [Required] [MaxLength(256)]
     string Title,
@@ -198,11 +183,6 @@ public record UpdateFaqDto(
     bool? IsDeleted);
 
 
-public record GetProcessListDto(
-    int Id,
-    string Title,
-    string Code);
-
 public record CreateProcessDto(
     [Required] [MaxLength(32)]
     string Title,
@@ -210,22 +190,13 @@ public record CreateProcessDto(
     string Code,
     List<int> ActorIds);
 
+
 public record UpdateProcessDto(
     [MaxLength(32)]
     string? Title,
     [MaxLength(16)]
     string? Code,
     List<int>? ActorIds);
-
-public record GetProcessDto(
-    int Id,
-    string Title,
-    List<int> ActorIds);
-
-public record GetExecutiveListDto(
-    int Id,
-    string Title,
-    string DisplayName);
 
 
 public record CreateFormDto(

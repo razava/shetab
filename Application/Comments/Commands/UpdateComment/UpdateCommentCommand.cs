@@ -1,6 +1,4 @@
-﻿using MediatR;
-
-namespace Application.Comments.Commands.UpdateComment;
+﻿namespace Application.Comments.Commands.UpdateComment;
 
 public record UpdateCommentCommand(
     string UserId,

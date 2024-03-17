@@ -1,8 +1,4 @@
-﻿using Application.Comments.Commands.ReplyComment;
-using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
-using Domain.Models.Relational.ReportAggregate;
-using MediatR;
+﻿using Application.Common.Interfaces.Persistence;
 
 namespace Application.Comments.Commands.UpdateComment;
 

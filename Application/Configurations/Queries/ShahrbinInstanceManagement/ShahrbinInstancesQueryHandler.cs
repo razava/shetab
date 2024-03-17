@@ -1,6 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.Common;
-using MediatR;
 
 namespace Application.Configurations.Queries.ShahrbinInstanceManagement;
 

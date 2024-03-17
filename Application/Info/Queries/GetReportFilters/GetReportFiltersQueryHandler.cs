@@ -2,7 +2,7 @@
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Application.Info.Common;
-using Application.Info.Queries.GetInfoQuery;
+using Application.Info.Queries.GetInfo;
 using Domain.Models.Relational.Common;
 using Mapster;
 using Microsoft.IdentityModel.Tokens;

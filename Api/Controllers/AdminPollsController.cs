@@ -1,12 +1,12 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.ExtensionMethods;
-using Application.Polls.Commands.AddPollCommand;
-using Application.Polls.Commands.UpdatePollCommand;
+using Application.Polls.Commands.AddPoll;
+using Application.Polls.Commands.UpdatePoll;
 using Application.Polls.Common;
-using Application.Polls.Queries.GetPollResultQuery;
-using Application.Polls.Queries.GetPollsByIdQuery;
-using Application.Polls.Queries.GetPollsQuery;
+using Application.Polls.Queries.GetPollResult;
+using Application.Polls.Queries.GetPolls;
+using Application.Polls.Queries.GetPollsById;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -39,15 +39,15 @@ public class AdminPollsController : ApiController
             createDto.IsActive);
         var result = await Sender.Send(command);
 
-        return result.Match2(
-            s => CreatedAtAction(nameof(GetPollById), new { id = s.Id, instanceId = instanceId }, s.Adapt<GetPollsDto>()),
+        return result.Match(
+            s => CreatedAtAction(nameof(GetPollById), new { id = s.Value.Id, instanceId = instanceId }, s),
             f => Problem(f));
     }
 
 
     [Authorize(Roles = "Admin")]
     [HttpGet("All")]
-    public async Task<ActionResult<List<GetPollsDto>>> GetAllPolls()
+    public async Task<ActionResult> GetAllPolls()
     {
         var userId = User.GetUserId();
         var instanceId = User.GetUserInstanceId();
@@ -55,21 +55,21 @@ public class AdminPollsController : ApiController
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<GetPollsDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
 
     [Authorize(Roles = "Admin")]
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<GetPollsDto>> GetPollById(int id)
+    public async Task<ActionResult> GetPollById(int id)
     {
         var userId = User.GetUserId();
         var query = new GetPollsByIdQuery(id, userId);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<GetPollsDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -107,7 +107,4 @@ public class AdminPollsController : ApiController
             s => NoContent(),
             f => Problem(f));
     }
-
-
-    
 }

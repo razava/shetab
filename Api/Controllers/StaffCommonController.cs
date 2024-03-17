@@ -93,13 +93,13 @@ public class StaffCommonController : ApiController
 
     [Authorize]
     [HttpGet("Regions/{id}")]
-    public async Task<ActionResult<List<GetRegionDto>>> GetRegionsByCityId(int id)
+    public async Task<ActionResult> GetRegionsByCityId(int id)
     {
         var query = new GetRegionQuery(id);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<GetRegionDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 

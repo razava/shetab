@@ -224,8 +224,8 @@ public class AdminUserManagementController : ApiController
         var command = new CreateUserCommand(instanceId, model.Username, model.Password, model.Roles, model.RegionIds, model.FirstName, model.LastName, model.Title);
         var user = await Sender.Send(command);
 
-        return user.Match2(
-            s => CreatedAtAction(nameof(GetUserById), new { id = s.Id, instanceId = instanceId }, s.Adapt<AdminGetUserDetailsDto>()),
+        return user.Match(
+            s => CreatedAtAction(nameof(GetUserById), new { id = s.Value.Id, instanceId = instanceId }, s.Adapt<AdminGetUserDetailsDto>()),
             f => Problem(f));
     }
 
@@ -248,8 +248,8 @@ public class AdminUserManagementController : ApiController
             model.Organization);
         var contractor = await Sender.Send(command);
 
-        return contractor.Match2(
-            s => CreatedAtAction(nameof(GetUserById), new { id = s.Id, instanceId = instanceId }, s.Adapt<GetContractorsList>()),
+        return contractor.Match(
+            s => CreatedAtAction(nameof(GetUserById), new { id = s.Value.Id, instanceId = instanceId }, s.Adapt<GetContractorsList>()),
             f => Problem(f));
         //TODO: Does executive have access to this endpoint?
     }

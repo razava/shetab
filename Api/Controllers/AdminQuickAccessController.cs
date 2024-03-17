@@ -2,9 +2,9 @@
 using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Common.FilterModels;
-using Application.QuickAccesses.Commands.AddQuickAccessCommand;
-using Application.QuickAccesses.Commands.UpdateQuickAccessCommand;
-using Application.QuickAccesses.Queries.GetQuickAccessByIdQuery;
+using Application.QuickAccesses.Commands.AddQuickAccess;
+using Application.QuickAccesses.Commands.UpdateQuickAccess;
+using Application.QuickAccesses.Queries.GetQuickAccessById;
 using Application.QuickAccesses.Queries.GetQuickAccesses;
 using Mapster;
 using MediatR;
@@ -61,8 +61,8 @@ public class AdminQuickAccessController : ApiController
             false);
         var result = await Sender.Send(command);
 
-        return result.Match2(
-            s => CreatedAtAction(nameof(GetQuickAccessById), new { id = s.Id, instanceId = instanceId }, s.Adapt<AdminGetQuickAccess>()),
+        return result.Match(
+            s => CreatedAtAction(nameof(GetQuickAccessById), new { id = s.Value.Id, instanceId = instanceId }, s.Adapt<AdminGetQuickAccess>()),
             f => Problem(f));
     }
 

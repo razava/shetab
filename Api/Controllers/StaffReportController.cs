@@ -7,7 +7,7 @@ using Application.Comments.Commands.UpdateComment;
 using Application.Comments.Queries.GetAllCommentsQuery;
 using Application.Common.FilterModels;
 using Application.Common.Interfaces.Persistence;
-using Application.Info.Queries.GetInfoQuery;
+using Application.Info.Queries.GetInfo;
 using Application.ReportNotes.Commands.AddReportNote;
 using Application.ReportNotes.Commands.DeleteReportNote;
 using Application.ReportNotes.Commands.UpdateReportNote;
@@ -207,8 +207,8 @@ public class StaffReportController : ApiController
 
         var result = await Sender.Send(command);
 
-        return result.Match2(
-            s => CreatedAtAction(nameof(GetReportById), new { id = s.Id, instanceId = instanceId }, s),
+        return result.Match(
+            s => CreatedAtAction(nameof(GetReportById), new { id = s.Value.Id, instanceId = instanceId }, s),
             f => Problem(f));
     }
 

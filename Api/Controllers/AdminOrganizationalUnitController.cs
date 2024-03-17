@@ -2,11 +2,11 @@
 using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Common.FilterModels;
-using Application.OrganizationalUnits.Commands.AddOrganizationalUnitCommand;
-using Application.OrganizationalUnits.Commands.DeleteOrganizationalUnitCommand;
-using Application.OrganizationalUnits.Commands.UpdateOrganizationalUnitCommand;
-using Application.OrganizationalUnits.Queries.GetOrganizationalUnitByIdQuery;
-using Application.OrganizationalUnits.Queries.GetOrganizationalUnitsQuery;
+using Application.OrganizationalUnits.Commands.AddOrganizationalUnit;
+using Application.OrganizationalUnits.Commands.DeleteOrganizationalUnit;
+using Application.OrganizationalUnits.Commands.UpdateOrganizationalUnit;
+using Application.OrganizationalUnits.Queries.GetOrganizationalUnitById;
+using Application.OrganizationalUnits.Queries.GetOrganizationalUnits;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -27,14 +27,14 @@ public class AdminOrganizationalUnitController : ApiController
 
     [Authorize]
     [HttpGet("All")]
-    public async Task<ActionResult<List<GetOrganizationalUnitListDto>>> GetAllOrgaizationalUnits([FromQuery]QueryFilter queryFilter)
+    public async Task<ActionResult> GetAllOrgaizationalUnits([FromQuery]QueryFilter queryFilter)
     {
         var instanceId = User.GetUserInstanceId();
         var query = new GetOrganizationalUnitsQuery(instanceId, queryFilter.Adapt<QueryFilterModel>());
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<GetOrganizationalUnitListDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -55,13 +55,13 @@ public class AdminOrganizationalUnitController : ApiController
 
     [Authorize]
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<GetOrganizationalUnitDto>> GetOrgaizationalUnitById(int id)
+    public async Task<ActionResult> GetOrgaizationalUnitById(int id)
     {
         var query = new GetOrganizationalUnitByIdQuery(id);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<GetOrganizationalUnitDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -80,8 +80,8 @@ public class AdminOrganizationalUnitController : ApiController
             createDto.OrganizationalUnitsIds);
         var result = await Sender.Send(command);
 
-        return result.Match2(
-            s => CreatedAtAction(nameof(GetOrgaizationalUnitById), new { id = s.Id, instanceId = instanceId }, s.Adapt<GetOrganizationalUnitDto>()),
+        return result.Match(
+            s => CreatedAtAction(nameof(GetOrgaizationalUnitById), new { id = s.Value.Id, instanceId = instanceId }, s),
             f => Problem(f));
     }
 

@@ -1,6 +1,4 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Security;
-using MediatR;
+﻿using Application.Common.Interfaces.Security;
 
 namespace Application.Authentication.Queries.GetResetPasswordTokenQuery;
 

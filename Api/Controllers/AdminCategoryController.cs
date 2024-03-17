@@ -75,10 +75,10 @@ public class AdminCategoryController : ApiController
 
         var result = await Sender.Send(command);
         
-        return result.Match2(
+        return result.Match(
             s => CreatedAtAction(
                 nameof(GetCategoryById),
-                new { id = s.Id, instanceId = instanceId },
+                new { id = s.Value.Id, instanceId = instanceId },
                 s),
             f => Problem(f));
     }

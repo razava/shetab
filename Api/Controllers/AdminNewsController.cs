@@ -1,8 +1,8 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.ExtensionMethods;
-using Application.NewsApp.Commands.AddNewsCommand;
-using Application.NewsApp.Commands.UpdateNewsCommand;
+using Application.NewsApp.Commands.AddNews;
+using Application.NewsApp.Commands.UpdateNews;
 using Application.NewsApp.Queries.GetNews;
 using Application.NewsApp.Queries.GetNewsById;
 using Mapster;
@@ -24,27 +24,27 @@ public class AdminNewsController : ApiController
     //TODO: Define access policy
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<GetNewsDto>>> GetNews()
+    public async Task<ActionResult> GetNews()
     {
         var instanceId = User.GetUserInstanceId();
         var query = new GetNewsQuery(instanceId, true);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<GetNewsDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
 
     [Authorize]
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<GetNewsDto>> GetNewsById(int id)
+    public async Task<ActionResult> GetNewsById(int id)
     {
         var query = new GetNewsByIdQuery(id);
         var result = await Sender.Send(query);
         
         return result.Match(
-            s => Ok(s.Adapt<GetNewsDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -63,8 +63,8 @@ public class AdminNewsController : ApiController
             createNewsDto.IsDeleted);
         var result = await Sender.Send(command);
 
-        return result.Match2(
-            s => CreatedAtAction(nameof(GetNewsById), new { id = s.Id, instanceId = instanceId }, s.Adapt<GetNewsDto>()),
+        return result.Match(
+            s => CreatedAtAction(nameof(GetNewsById), new { id = s.Value.Id, instanceId = instanceId }, s),
             f => Problem(f));
     }
 

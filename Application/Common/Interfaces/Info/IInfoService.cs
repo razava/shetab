@@ -1,6 +1,6 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Info.Common;
-using Application.Info.Queries.GetInfoQuery;
+using Application.Info.Queries.GetInfo;
 using Application.Reports.Common;
 using Domain.Models.Relational;
 using System.Linq.Expressions;

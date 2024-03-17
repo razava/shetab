@@ -1,10 +1,9 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.ExtensionMethods;
-using Application.Polls.Commands.AnswerPollCommand;
-using Application.Polls.Queries.GetPollsByIdQuery;
-using Application.Polls.Queries.GetPollsQuery;
-using Mapster;
+using Application.Polls.Commands.AnswerPoll;
+using Application.Polls.Queries.GetPolls;
+using Application.Polls.Queries.GetPollsById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

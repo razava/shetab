@@ -2,7 +2,7 @@
 using Domain.Models.Relational.Common;
 using MediatR;
 
-namespace Application.AdministrativeDivisions.Queries.GetProvince;
+namespace Application.AdministrativeDivisions.Queries.GetCity;
 
 internal sealed class GetCityQueryHandler(ICityRepository cityRepository) : IRequestHandler<GetCityQuery, Result<List<City>>>
 {

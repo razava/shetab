@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Security;
+﻿using Application.Authentication.Common;
+using Application.Common.Interfaces.Security;
 
 namespace Application.Authentication.Queries.ChangePhoneNumberQuery;
 

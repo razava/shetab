@@ -1,5 +1,4 @@
-﻿
-using Application.Common.Interfaces.Communication;
+﻿using Application.Common.Interfaces.Communication;
 
 namespace Application.Communications.Commands;
 

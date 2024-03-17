@@ -4,7 +4,7 @@ using Api.ExtensionMethods;
 using Application.Comments.Commands.CreateComment;
 using Application.Comments.Commands.DeleteComment;
 using Application.Common.Interfaces.Persistence;
-using Application.Feedbacks.Commands;
+using Application.Feedbacks.Commands.StoreFeedback;
 using Application.QuickAccesses.Queries.GetCitizenQuickAccesses;
 using Application.Reports.Commands.CreateReportByCitizen;
 using Application.Reports.Commands.Like;
@@ -175,8 +175,8 @@ public class CitizenReportController : ApiController
             model.IsIdentityVisible);
         var result = await Sender.Send(command);
 
-        return result.Match2(
-            s => CreatedAtAction(nameof(GetMyReportById), new { id = s.Id, instanceId = instanceId },  s),
+        return result.Match(
+            s => CreatedAtAction(nameof(GetMyReportById), new { id = s.Value.Id, instanceId = instanceId },  s),
             f => Problem(f));
     }
 

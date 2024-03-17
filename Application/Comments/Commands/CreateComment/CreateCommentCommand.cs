@@ -1,6 +1,4 @@
-﻿using MediatR;
-
-namespace Application.Comments.Commands.CreateComment;
+﻿namespace Application.Comments.Commands.CreateComment;
 
 public record CreateCommentCommand(
     int InstanceId,
