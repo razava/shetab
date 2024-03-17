@@ -1,7 +1,7 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.Common;
 
-namespace Application.Configurations.Queries.ShahrbinInstanceManagement;
+namespace Application.Configurations.Queries.ShahrbinInstances;
 
 internal sealed class ShahrbinInstancesQueryHandler(IShahrbinInstanceRepository shahrbinInstanceRepository) : IRequestHandler<ShahrbinInstancesQuery, Result<List<ShahrbinInstance>>>
 {

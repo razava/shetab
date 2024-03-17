@@ -1,5 +1,5 @@
 ﻿using Domain.Models.Relational.Common;
 
-namespace Application.Configurations.Queries.ShahrbinInstanceManagement;
+namespace Application.Configurations.Queries.ShahrbinInstances;
 
 public record ShahrbinInstancesQuery() : IRequest<Result<List<ShahrbinInstance>>>;

@@ -4,17 +4,16 @@ using Api.ExtensionMethods;
 using Application.AdministrativeDivisions.Queries.GetRegion;
 using Application.Categories.Queries.GetStaffCategories;
 using Application.Configurations.Queries.Roles;
-using Application.Configurations.Queries.ShahrbinInstanceManagement;
+using Application.Configurations.Queries.ShahrbinInstanceById;
+using Application.Configurations.Queries.ShahrbinInstances;
 using Application.Configurations.Queries.ViolationTypes;
 using Application.Info.Queries.GetReportFilters;
 using Application.Info.Queries.GetUserFilters;
 using Application.Users.Queries.GetUserRegions;
 using Domain.Models.Relational.Common;
-using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SharedKernel.Errors;
 
 namespace Api.Controllers;
 
@@ -30,7 +29,7 @@ public class StaffCommonController : ApiController
 
     [Authorize]
     [HttpGet("ShahrbinInstances")]
-    public async Task<ActionResult<List<ShahrbinInstance>>> GetInstances()
+    public async Task<ActionResult> GetInstances()
     {
         var query = new ShahrbinInstancesQuery();
         var result = await Sender.Send(query);
@@ -43,21 +42,16 @@ public class StaffCommonController : ApiController
     //todo : Define Access policy
     [Authorize]
     [HttpGet("MyShahrbinInstance")]
-    public async Task<ActionResult<List<ShahrbinInstance>>> GetMyShahrbinInstance()
+    public async Task<ActionResult> GetMyShahrbinInstance()
     {
         var instanceId = User.GetUserInstanceId();
 
-        var query = new ShahrbinInstancesQuery();
+        var query = new ShahrbinInstanceByIdQuery(instanceId);
         var result = await Sender.Send(query);
-        if(result.IsFailed)   //todo : needed?
-            return Problem(result.ToResult());
-
-        var resultValue = result.Value;
-        var instanceResult = resultValue.SingleOrDefault(result => result.Id == instanceId);
-
-        if (instanceResult == null)
-            return NotFound();
-        return Ok(instanceResult);
+        
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
 
@@ -72,6 +66,7 @@ public class StaffCommonController : ApiController
 
         var query = new GetStaffCategoriesQuery(userInstanceId, userId, userRoles);
         var result = await Sender.Send(query);
+
         return result.Match(
             s => Ok(s),
             f => Problem(f));
@@ -106,13 +101,13 @@ public class StaffCommonController : ApiController
 
     [Authorize]
     [HttpGet("Roles")]
-    public async Task<ActionResult<List<GetRolesDto>>> GetRoles()
+    public async Task<ActionResult> GetRoles()
     {
         var query = new GetRolesQuery();
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<GetRolesDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -126,7 +121,7 @@ public class StaffCommonController : ApiController
         {
             result.Add(new EducationDto((int)item, item.GetDescription()!));
         }
-        return Ok(result);
+        return Ok(Result.Ok(result));
     }
 
 
@@ -141,7 +136,7 @@ public class StaffCommonController : ApiController
 
     [Authorize]
     [HttpGet("UserRegions")]
-    public async Task<ActionResult<List<GetUserRegionsDto>>> GetUserRegions()
+    public async Task<ActionResult> GetUserRegions()
     {
         var instanceId = User.GetUserInstanceId();
         var userId = User.GetUserId();
@@ -149,7 +144,7 @@ public class StaffCommonController : ApiController
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<GetUserRegionsDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -159,17 +154,11 @@ public class StaffCommonController : ApiController
     {
         var userId = User.GetUserId();
         var userRoles = User.GetUserRoles();
-        int? instanceId = null;
-        try
-        {
-            instanceId = User.GetUserInstanceId();
-        }
-        catch
-        {
-        }
+        var instanceId = User.GetUserInstanceId();
 
         var query = new GetReportFiltersQuery(instanceId, userId, userRoles);
         var result = await Sender.Send(query);
+
         return result.Match(
             s => Ok(s),
             f => Problem(f));
@@ -179,19 +168,11 @@ public class StaffCommonController : ApiController
     [HttpGet("UserFilters")]
     public async Task<ActionResult> GetUserFilters()
     {
-        int? instanceId = null;
-        try
-        {
-            instanceId = User.GetUserInstanceId();
-        }
-        catch
-        {
-        }
-        if (instanceId is null)
-            return Problem(NotFoundErrors.Instance);
+        var instanceId = User.GetUserInstanceId();
 
-        var query = new GetUserFiltersQuery(instanceId.Value);
+        var query = new GetUserFiltersQuery(instanceId);
         var result = await Sender.Send(query);
+
         return result.Match(
             s => Ok(s),
             f => Problem(f));
