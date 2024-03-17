@@ -1,7 +1,7 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Api.ExtensionMethods;
+using Application.Common.Interfaces.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace Api.Abstractions;
 
@@ -26,6 +26,10 @@ public class ApiController : ControllerBase
     {
         var message = "This is a test for Hossein";
 
+        if(result.Value is IPagedList pagination)
+        {
+            Response.AddPaginationHeaders(pagination.Meta);
+        }
         return Ok(new ResponseWrapper<T>(message, result.Value));
     }
 

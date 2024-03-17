@@ -47,10 +47,6 @@ public class CitizenReportController : ApiController
 
         var result = await Sender.Send(query);
 
-        if (result.IsFailed)
-            return Problem(result.ToResult());
-
-        Response.AddPaginationHeaders(result.Value.Meta);
         return result.Match(
             s => Ok(s),
             f => Problem(f));
@@ -84,9 +80,6 @@ public class CitizenReportController : ApiController
         var query = new GetNearestReportsQuery(pagingInfo, instanceId, userId, locationDto.Longitude, locationDto.Latitude);
         var result = await Sender.Send(query);
 
-        if(result.IsFailed)
-            return Problem(result.ToResult());
-        Response.AddPaginationHeaders(result.Value.Meta);
         return result.Match(
             s => Ok(s),
             f => Problem(f));
@@ -126,9 +119,6 @@ public class CitizenReportController : ApiController
         var query = new GetUserReportsQuery(pagingInfo, userId);
         var result = await Sender.Send(query);
 
-        if (result.IsFailed)
-            return Problem(result.ToResult());
-        Response.AddPaginationHeaders(result.Value.Meta);
         return result.Match(
             s => Ok(s), 
             f => Problem(f));
@@ -237,26 +227,15 @@ public class CitizenReportController : ApiController
     
     [Authorize(Roles = "Citizen")]
     [HttpGet("Comments/{id:Guid}")]
-    public async Task<ActionResult<List<GetReportComments>>> GetComments(Guid id, [FromQuery] PagingInfo pagingInfo)
+    public async Task<ActionResult> GetComments(Guid id, [FromQuery] PagingInfo pagingInfo)
     {
         var userId = User.GetUserId();
-        var query = new GetCommentsQuery(id, pagingInfo);
+        var query = new GetCommentsQuery(id, userId, pagingInfo);
         var result = await Sender.Send(query);
 
-        if(result.IsFailed)
-            return Problem(result.ToResult());
-
-        var resultValue = result.Value;
-        Response.AddPaginationHeaders(resultValue.Meta);
-
-        var mappedResult = new List<GetReportComments>();
-        foreach (var item in resultValue)
-        {
-            var mapppedItem = item.Adapt<GetReportComments>();
-            mapppedItem.CanDelete = item.UserId == userId;
-            mappedResult.Add(mapppedItem);
-        }
-        return Ok(mappedResult);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
 

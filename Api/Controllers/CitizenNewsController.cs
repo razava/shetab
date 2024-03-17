@@ -19,12 +19,10 @@ public class CitizenNewsController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("News")]
-    public async Task<ActionResult> GetNews(PagingInfo pagingInfo, int instanceId)
+    public async Task<ActionResult> GetNews([FromQuery] PagingInfo pagingInfo, int instanceId)
     {
         var query = new GetNewsQuery(pagingInfo, instanceId);
         var result = await Sender.Send(query);
-
-        Response.AddPaginationHeaders(result.Value.Meta);
 
         return result.Match(
             s => Ok(s),

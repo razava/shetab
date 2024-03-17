@@ -5,7 +5,6 @@ using Application.Categories.Queries.GetCategory;
 using Application.Configurations.Queries.ShahrbinInstanceManagement;
 using Application.Configurations.Queries.ViolationTypes;
 using Domain.Models.Relational.Common;
-using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,20 +40,20 @@ public class CitizenCommonController : ApiController
     
     [Authorize]
     [HttpGet("ViolationTypes")]
-    public async Task<ActionResult<List<ViolationTypeDto>>> GetViolationTypes()
+    public async Task<ActionResult> GetViolationTypes()
     {
         var query = new ViolationTypesQuery();
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<ViolationTypeDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
 
     //[Authorize]
     [HttpGet("ShahrbinInstances")]
-    public async Task<ActionResult<List<ShahrbinInstance>>> GetShahrbinInstances()
+    public async Task<ActionResult> GetShahrbinInstances()
     {
         var query = new ShahrbinInstancesQuery();
         var result = await Sender.Send(query);
@@ -67,14 +66,14 @@ public class CitizenCommonController : ApiController
 
     [Authorize]
     [HttpGet("Educations")]
-    public ActionResult<List<EducationDto>> GetEducations()
+    public ActionResult GetEducations()
     {
         var result = new List<EducationDto>();
         foreach (var item in Enum.GetValues(typeof(Education)).Cast<Education>())
         {
             result.Add(new EducationDto((int)item, item.GetDescription()!));
         }
-        return Ok(result);
+        return Ok(Result.Ok(result));
     }
 
 

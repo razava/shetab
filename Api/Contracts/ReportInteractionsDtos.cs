@@ -42,18 +42,6 @@ public record CreateCommentViolationDto(
     string Description);
 
 
-public record GetReportComments(
-    Guid Id,
-    string Text,
-    DateTime DateTime,
-    RestrictedUserDto User,
-    Guid ReportId,
-    GetReportComments Reply,
-    bool CanDelete)
-{
-    public bool CanDelete { get; set; } = CanDelete;
-}
-
 
 public record CreateCommentDto(
     [Required] [MaxLength(1024)]
@@ -76,29 +64,15 @@ public record ViolationPutDto(
     string Comments);
 
 
-public record GetCommentsDto(
-    Guid Id,
-    GetShortUserDto User,
-    string Text,
-    Guid? ReportId);
-
-
-public record GetShortUserDto(
-    string FirstName,
-    string LastName,
-    string UserName,
-    MediaDto Avatar);
-
 
 public record GetViolationsDto(
     Guid? CommentId,
     Guid? ReportId,
-    ViolationTypeDto ViolationType,
+    ViolationType ViolationType,
     DateTime DateTime,
     string Discription);
 
-//todo : fix this later
-public class ViolationTypeDto : ViolationType { }
+
 
 
 //public record SatisfactionRatingDto(

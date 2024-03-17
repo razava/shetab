@@ -180,13 +180,9 @@ public class AdminUserManagementController : ApiController
         var query = new GetUsersQuery(pagingInfo, instanceId, filter);
         var result = await Sender.Send(query);
 
-        if (result.IsFailed)
-            return Problem(result.ToResult());
-
-        var resultValue = result.Value;
-        Response.AddPaginationHeaders(resultValue.Meta);
-
-        return Ok(resultValue);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
 
@@ -271,11 +267,9 @@ public class AdminUserManagementController : ApiController
             return Unauthorized();
         var query = new GetContractorsQuery(userId, pagingInfo);
         var result = await Sender.Send(query);
-        if (result.IsFailed)
-            return Problem(result.ToResult());
 
-        var resultValue = result.Value;
-        Response.AddPaginationHeaders(resultValue.Meta);
-        return Ok(resultValue);
+        return result.Match(
+            s => Ok(s), 
+            f => Problem(f));
     }
 }

@@ -25,13 +25,11 @@ public class AdminNewsController : ApiController
     //TODO: Define access policy
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult> GetNews(PagingInfo pagingInfo)
+    public async Task<ActionResult> GetNews([FromQuery] PagingInfo pagingInfo)
     {
         var instanceId = User.GetUserInstanceId();
         var query = new GetNewsQuery(pagingInfo, instanceId, true);
         var result = await Sender.Send(query);
-
-        Response.AddPaginationHeaders(result.Value.Meta);
 
         return result.Match(
             s => Ok(s),

@@ -11,7 +11,6 @@ using Application.Info.Queries.GetInfo;
 using Application.ReportNotes.Commands.AddReportNote;
 using Application.ReportNotes.Commands.DeleteReportNote;
 using Application.ReportNotes.Commands.UpdateReportNote;
-using Application.ReportNotes.Common;
 using Application.ReportNotes.Queries.GetAllReportNotes;
 using Application.ReportNotes.Queries.GetReportNotes;
 using Application.Reports.Commands.AcceptByOperator;
@@ -30,7 +29,6 @@ using Application.Satisfactions.Queries.GetSatisfaction;
 using Application.Users.Queries.GetUserById;
 using Application.Workspaces.Queries.GetPossibleSources;
 using Domain.Models.Relational.Common;
-using Infrastructure.Info;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -50,7 +48,7 @@ public class StaffReportController : ApiController
     
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<GetReportsResponse>>> GetTasks(
+    public async Task<ActionResult> GetTasks(
         string? fromRoleId,
         [FromQuery] PagingInfo pagingInfo,
         [FromQuery] ReportFilters reportFilters)
@@ -60,16 +58,15 @@ public class StaffReportController : ApiController
         var roles = User.GetUserRoles();
         var query = new GetReportsQuery(pagingInfo, userId, roles, fromRoleId, instanceId, reportFilters);
         var result = await Sender.Send(query);
-        
-        if(result.IsFailed)
-            return Problem(result.ToResult());
-        Response.AddPaginationHeaders(result.Value.Meta);
-        return Ok(result.Value);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
     [Authorize]
     [HttpGet("{id:Guid}")]
-    public async Task<ActionResult<GetReportByIdResponse>> GetReportById(Guid id, int instanceId)
+    public async Task<ActionResult> GetReportById(Guid id, int instanceId)
     {
         var userId = User.GetUserId();
         var query = new GetReportByIdQuery(id, userId, instanceId);
@@ -83,7 +80,7 @@ public class StaffReportController : ApiController
     //TODO: Define access policy
     [Authorize]
     [HttpGet("PossibleTransitions/{id:Guid}")]
-    public async Task<ActionResult<List<GetPossibleTransitionDto>>> GetPossibleTransitions(Guid id)
+    public async Task<ActionResult> GetPossibleTransitions(Guid id)
     {
         var userId = User.GetUserId();
         var instanceId = User.GetUserInstanceId();
@@ -92,7 +89,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<GetPossibleTransitionDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -143,7 +140,7 @@ public class StaffReportController : ApiController
     //TODO: Define access policy
     [Authorize]
     [HttpGet("PossibleSources")]
-    public async Task<ActionResult<List<GetPossibleSourceDto>>> GetPossibleSources()
+    public async Task<ActionResult> GetPossibleSources()
     {
         var userId = User.GetUserId();
         var userRoles = User.GetUserRoles();
@@ -151,7 +148,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<GetPossibleSourceDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -286,7 +283,7 @@ public class StaffReportController : ApiController
 
     [Authorize(Roles = "Operator")]
     [HttpGet("Comments")]
-    public async Task<ActionResult<List<GetCommentsDto>>> GetComments([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetCommentViolation filter)
+    public async Task<ActionResult> GetComments([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetCommentViolation filter)
     {
         //have FilterGetComments
         var instanceId = User.GetUserInstanceId();
@@ -294,33 +291,23 @@ public class StaffReportController : ApiController
         var query = new GetAllCommentsQuery(pagingInfo, instanceId, mappedFilter);
         var result = await Sender.Send(query);
 
-        if(result.IsFailed)
-            return Problem(result.ToResult());
-        Response.AddPaginationHeaders(result.Value.Meta);
-        return Ok(result.Value.Adapt<List<GetCommentsDto>>());
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
 
     [Authorize]
     [HttpGet("ReportComments/{ReportId:Guid}")]
-    public async Task<ActionResult<List<GetReportComments>>> GetReportComments(Guid ReportId, [FromQuery] PagingInfo pagingInfo)
+    public async Task<ActionResult> GetReportComments(Guid ReportId, [FromQuery] PagingInfo pagingInfo)
     {
         var userId = User.GetUserId();
-        var query = new GetCommentsQuery(ReportId, pagingInfo);
+        var query = new GetCommentsQuery(ReportId, userId, pagingInfo);
         var result = await Sender.Send(query);
 
-        if(result.IsFailed)
-            return Problem(result.ToResult());
-    
-        Response.AddPaginationHeaders(result.Value.Meta);
-        var mappedResult = new List<GetReportComments>();
-        foreach (var item in result.Value)
-        {
-            var mapppedItem = item.Adapt<GetReportComments>();
-            mapppedItem.CanDelete = item.UserId == userId;
-            mappedResult.Add(mapppedItem);
-        }
-        return Ok(mappedResult);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
                                                 
 
@@ -429,7 +416,7 @@ public class StaffReportController : ApiController
     //todo : define Access Policy
     [Authorize]
     [HttpGet("ReportHistory/{id:Guid}")]
-    public async Task<ActionResult<List<TransitionLogDto>>> GetReportHistory(Guid id)
+    public async Task<ActionResult> GetReportHistory(Guid id)
     {
         var userId = User.GetUserId();
         var instanceId = User.GetUserInstanceId();
@@ -437,14 +424,14 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<TransitionLogDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
 
     [Authorize]
     [HttpGet("Notes/{reportId:guid}")]
-    public async Task<ActionResult<List<ReportNoteResult>>> GetReportNotes(Guid reportId)
+    public async Task<ActionResult> GetReportNotes(Guid reportId)
     {
         var userId = User.GetUserId();
         var query = new GetReportNotesQuery(userId, reportId);
@@ -458,22 +445,21 @@ public class StaffReportController : ApiController
 
     [Authorize]
     [HttpGet("Notes")]
-    public async Task<ActionResult<List<ReportNoteResult>>> GetUserReportNotes(
+    public async Task<ActionResult> GetUserReportNotes(
         [FromQuery] PagingInfo pagingInfo)
     {
         var userId = User.GetUserId();
         var query = new GetAllReportNotesQuery(pagingInfo, userId);
         var result = await Sender.Send(query);
 
-        if (result.IsFailed)
-            return Problem(result.ToResult());
-        Response.AddPaginationHeaders(result.Value.Meta);
-        return Ok(result.Value);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
     [Authorize]
     [HttpPost("Notes/{reportId:guid}")]
-    public async Task<ActionResult<List<ReportNoteResult>>> CreateUserReportNotes
+    public async Task<ActionResult> CreateUserReportNotes
         (Guid reportId, CreateReportNoteDto reportNoteDto, int instanceId)
     {
         var userId = User.GetUserId();
@@ -487,7 +473,7 @@ public class StaffReportController : ApiController
 
     [Authorize]
     [HttpPut("Notes/{noteId:guid}")]
-    public async Task<ActionResult<List<ReportNoteResult>>> UpdateUserReportNotes
+    public async Task<ActionResult> UpdateUserReportNotes
         (Guid noteId, CreateReportNoteDto reportNoteDto)
     {
         var userId = User.GetUserId();
@@ -501,7 +487,7 @@ public class StaffReportController : ApiController
 
     [Authorize]
     [HttpDelete("Notes/{noteId:guid}")]
-    public async Task<ActionResult<List<ReportNoteResult>>> DeleteUserReportNotes
+    public async Task<ActionResult> DeleteUserReportNotes
         (Guid noteId)
     {
         var userId = User.GetUserId();

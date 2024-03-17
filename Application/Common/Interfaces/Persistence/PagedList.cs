@@ -2,7 +2,18 @@
 
 namespace Application.Common.Interfaces.Persistence;
 
-public class PagedList<T> : List<T>
+public interface IPagedList
+{
+    int CurrentPage { get; }
+    bool HasNext { get; }
+    bool HasPrevious { get; }
+    object Meta { get; }
+    int PageSize { get; }
+    int TotalCount { get; }
+    int TotalPages { get; }
+}
+
+public class PagedList<T> : List<T>, IPagedList
 {
     public int CurrentPage { get; private set; }
     public int TotalPages { get; private set; }

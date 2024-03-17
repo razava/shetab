@@ -26,7 +26,7 @@ public class StaffInfoController : ApiController
 
     [Authorize]
     [HttpGet("ListChart")]
-    public async Task<ActionResult<List<ChartDto>>> GetListChart()
+    public async Task<ActionResult> GetListChart()
     {
         var userRoles = User.GetUserRoles();
         var instanceId = User.GetUserInstanceId();
@@ -34,14 +34,14 @@ public class StaffInfoController : ApiController
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<ChartDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
 
     [Authorize]
     [HttpGet("Charts/{code}")]
-    public async Task<ActionResult<InfoDto>> GetChartsById(
+    public async Task<ActionResult> GetChartsById(
         int code,
         string? parameter,
         [FromQuery] List<double>? geometry,
@@ -74,7 +74,7 @@ public class StaffInfoController : ApiController
 
     [Authorize]
     [HttpGet("Reports")]
-    public async Task<ActionResult<List<GetReportsResponse>>> GetAllReports(
+    public async Task<ActionResult> GetAllReports(
         [FromQuery] PagingInfo pagingInfo,
         [FromQuery] List<double>? geometry,
         [FromQuery] List<ReportsToInclude>? reportsToInclude,
@@ -98,10 +98,9 @@ public class StaffInfoController : ApiController
         var query = new GetAllReportsQuery(pagingInfo, instanceId, userId, userRoles, geoPoints, reportsToInclude, reportFilters);
         var result = await Sender.Send(query);
 
-        if (result.IsFailed)
-            return Problem(result.ToResult());
-        Response.AddPaginationHeaders(result.Value.Meta);
-        return Ok(result.Value);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
     [Authorize]

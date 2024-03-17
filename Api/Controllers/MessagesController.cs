@@ -29,10 +29,10 @@ public class MessagesController : ApiController
         var userId = User.GetUserId();
         var query = new GetMessagesQuery(pagingInfo, userId);
         var result = await Sender.Send(query);
-        if (result.IsFailed)
-            return Problem(result.ToResult());
-        Response.AddPaginationHeaders(result.Value.Meta);
-        return Ok(result);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
 
@@ -43,6 +43,7 @@ public class MessagesController : ApiController
         var userId = User.GetUserId();
         var query = new GetMessageCountQuery(timeFilter.SentFromDate, userId);
         var result = await Sender.Send(query);
+
         return result.Match(
             s => Ok(s),
             f => Problem(f));
@@ -55,6 +56,7 @@ public class MessagesController : ApiController
         var userId = User.GetUserId();
         var command = new AddSignalRConnectionIdCommand(userId, connectionId);
         var result = await Sender.Send(command);
+
         return result.Match(
             s => Ok(s),
             f => Problem(f));

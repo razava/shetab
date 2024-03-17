@@ -246,15 +246,7 @@ public class ApplicationUserDto
     public AddressDto Address { get; set; }
 }
 
-public class ApplicationUserRestrictedDto
-{
-    public string Id { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Title { get; set; }
-    public string Organization { get; set; }
-    public Media Avatar { get; set; }
-}
+
 
 public class GetTaskDto
 {

@@ -80,13 +80,13 @@ public class StaffCommonController : ApiController
 
     [Authorize]
     [HttpGet("ViolationTypes")]
-    public async Task<ActionResult<List<ViolationTypeDto>>> GetViolationTypes()
+    public async Task<ActionResult> GetViolationTypes()
     {
         var query = new ViolationTypesQuery();
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<ViolationTypeDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
