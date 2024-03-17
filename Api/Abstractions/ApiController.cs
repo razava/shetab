@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Application.Common.Interfaces.Persistence;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
@@ -24,6 +25,7 @@ public class ApiController : ControllerBase
     protected ActionResult Ok<T>(Result<T> result)
     {
         var message = "This is a test for Hossein";
+
         return Ok(new ResponseWrapper<T>(message, result.Value));
     }
 

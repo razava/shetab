@@ -1,20 +1,19 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.NewsApp.Common;
 using Domain.Models.Relational;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.NewsApp.Queries.GetNews;
 
-internal class GetNewsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetNewsQuery, Result<List<GetNewsResponse>>>
+internal class GetNewsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetNewsQuery, Result<PagedList<GetNewsResponse>>>
 {
 
-    public async Task<Result<List<GetNewsResponse>>> Handle(GetNewsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PagedList<GetNewsResponse>>> Handle(GetNewsQuery request, CancellationToken cancellationToken)
     {
-        var result = await unitOfWork.DbContext.Set<News>()
+        var query = unitOfWork.DbContext.Set<News>()
             .Where(n => request.ReturnAll || n.IsDeleted == false)
-            .Select(GetNewsResponse.GetSelector())
-            .ToListAsync();
+            .Select(GetNewsResponse.GetSelector());
 
-        return result.ToList();
+        var result = await PagedList<GetNewsResponse>.ToPagedList(query, request.pagingInfo.PageNumber, request.pagingInfo.PageSize);
+        return result;
     }
 }

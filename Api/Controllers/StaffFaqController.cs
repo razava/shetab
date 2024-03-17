@@ -24,27 +24,27 @@ public class StaffFaqController : ApiController
 
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<GetFaqsDto>>> GetFaqs()
+    public async Task<ActionResult> GetFaqs()
     {
         var instanceId = User.GetUserInstanceId();
         var query = new GetFaqQuery(instanceId, true);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<GetFaqsDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
     
 
     [Authorize]
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<GetFaqsDto>> GetFaqById(int id)
+    public async Task<ActionResult> GetFaqById(int id)
     {
         var query = new GetFaqByIdQuery(id);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<GetFaqsDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -62,7 +62,7 @@ public class StaffFaqController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => CreatedAtAction(nameof(GetFaqById), new { id = s.Value.Id, instanceId = instanceId }, s.Adapt<GetFaqsDto>()),
+            s => CreatedAtAction(nameof(GetFaqById), new { id = s.Value.Id, instanceId = instanceId }, s),
             f => Problem(f));
     }
 

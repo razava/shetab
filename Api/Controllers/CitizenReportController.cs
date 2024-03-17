@@ -38,7 +38,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet]
-    public async Task<ActionResult<List<GetCitizenReportsResponse>>> GetReports(
+    public async Task<ActionResult> GetReports(
         int instanceId,
         [FromQuery] PagingInfo pagingInfo)
     {
@@ -51,14 +51,16 @@ public class CitizenReportController : ApiController
             return Problem(result.ToResult());
 
         Response.AddPaginationHeaders(result.Value.Meta);
-        return Ok(result.Value);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
 
     //todo : review returning Dto....................................
     [Authorize(Roles = "Citizen")]
     [HttpGet("ReportHistory/{id:Guid}")]
-    public async Task<ActionResult<List<TransitionLogDto>>> GetReportHistoryById(Guid id)
+    public async Task<ActionResult> GetReportHistoryById(Guid id)
     {
         var userId = User.GetUserId();
         var instanceId = User.GetUserInstanceId();
@@ -73,7 +75,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Nearest")]
-    public async Task<ActionResult<List<GetCitizenReportsResponse>>> GetNearest(
+    public async Task<ActionResult> GetNearest(
         int instanceId,
         [FromQuery] PagingInfo pagingInfo,
         [FromQuery] LocationDto locationDto)
@@ -85,7 +87,9 @@ public class CitizenReportController : ApiController
         if(result.IsFailed)
             return Problem(result.ToResult());
         Response.AddPaginationHeaders(result.Value.Meta);
-        return Ok(result.Value);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
 
@@ -111,7 +115,7 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Mine")]
-    public async Task<ActionResult<List<GetCitizenReportsResponse>>> GetMyReports(
+    public async Task<ActionResult> GetMyReports(
         [FromQuery] PagingInfo pagingInfo)
     {
         var userId = User.GetUserId();
@@ -125,13 +129,15 @@ public class CitizenReportController : ApiController
         if (result.IsFailed)
             return Problem(result.ToResult());
         Response.AddPaginationHeaders(result.Value.Meta);
-        return Ok(result.Value);
+        return result.Match(
+            s => Ok(s), 
+            f => Problem(f));
     }
 
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("Mine/{id:Guid}")]
-    public async Task<ActionResult<GetReportByIdResponse>> GetMyReportById(Guid id)
+    public async Task<ActionResult> GetMyReportById(Guid id)
     {
         var userId = User.GetUserId();
         if (userId == null)
@@ -183,14 +189,14 @@ public class CitizenReportController : ApiController
     
     [Authorize(Roles = "Citizen")]
     [HttpGet("QuickAccesses")]
-    public async Task<ActionResult<List<CitizenGetQuickAccess>>> GetQuickAccesses(int instanceId)
+    public async Task<ActionResult> GetQuickAccesses(int instanceId)
     {
         var userRoles = User.GetUserRoles();
         var query = new GetCitizenQuickAccessesQuery(instanceId, userRoles);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<CitizenGetQuickAccess>>()),
+            s => Ok(s),
             f => Problem(f));
     }
     

@@ -1,14 +1,18 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Faqs.Queries.GetFaq;
 
-internal class GetFaqQueryHandler(IFaqRepository faqRepository) : IRequestHandler<GetFaqQuery, Result<List<Faq>>>
+internal class GetFaqQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetFaqQuery, Result<List<GetFaqsResponse>>>
 {
-    public async Task<Result<List<Faq>>> Handle(GetFaqQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<GetFaqsResponse>>> Handle(GetFaqQuery request, CancellationToken cancellationToken)
     {
-        var result = await faqRepository.GetAsync(f => request.ReturnAll || f.IsDeleted == false, false);
+        var result = await unitOfWork.DbContext.Set<Faq>()
+            .Where(f => request.ReturnAll || f.IsDeleted == false)
+            .Select(GetFaqsResponse.GetSelector())
+            .ToListAsync();
 
-        return result.ToList();
+        return result;
     }
 }

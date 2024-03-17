@@ -1,6 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.Contracts;
 using Api.ExtensionMethods;
+using Application.Common.Interfaces.Persistence;
 using Application.NewsApp.Commands.AddNews;
 using Application.NewsApp.Commands.UpdateNews;
 using Application.NewsApp.Queries.GetNews;
@@ -24,11 +25,13 @@ public class AdminNewsController : ApiController
     //TODO: Define access policy
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult> GetNews()
+    public async Task<ActionResult> GetNews(PagingInfo pagingInfo)
     {
         var instanceId = User.GetUserInstanceId();
-        var query = new GetNewsQuery(instanceId, true);
+        var query = new GetNewsQuery(pagingInfo, instanceId, true);
         var result = await Sender.Send(query);
+
+        Response.AddPaginationHeaders(result.Value.Meta);
 
         return result.Match(
             s => Ok(s),

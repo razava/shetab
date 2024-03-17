@@ -1,9 +1,7 @@
 ﻿using Api.Abstractions;
-using Api.Contracts;
 using Api.ExtensionMethods;
-using Application.NewsApp.Common;
+using Application.Common.Interfaces.Persistence;
 using Application.NewsApp.Queries.GetNews;
-using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,13 +19,15 @@ public class CitizenNewsController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet("News")]
-    public async Task<ActionResult<List<GetNewsResponse>>> GetNews(int instanceId)
+    public async Task<ActionResult> GetNews(PagingInfo pagingInfo, int instanceId)
     {
-        var query = new GetNewsQuery(instanceId);
+        var query = new GetNewsQuery(pagingInfo, instanceId);
         var result = await Sender.Send(query);
 
+        Response.AddPaginationHeaders(result.Value.Meta);
+
         return result.Match(
-            s => Ok(s.Adapt<List<GetNewsResponse>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 

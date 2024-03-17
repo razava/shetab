@@ -72,16 +72,6 @@ public record GetRolesDto(
     string RoleTitle);
 
 
-
-public record CitizenGetQuickAccess(
-    int Id,
-    string Title,
-    int Order,
-    int CategoryId,
-    MediaDto Media);
-
-
-
 public record CreateQuickAccessDto(
     [Required]
     int CategoryId,
@@ -147,12 +137,6 @@ public record UpdateNewsDto(
     IFormFile? Image,
     bool? IsDeleted);
 
-
-public record GetFaqsDto(
-    int Id,
-    string Question,
-    string Answer,
-    bool IsDeleted);
 
 public record CreateFaqDto(
     [Required] [MaxLength(512)]

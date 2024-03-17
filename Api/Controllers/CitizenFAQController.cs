@@ -20,13 +20,13 @@ public class CitizenFAQController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpGet]
-    public async Task<ActionResult<List<GetFaqsDto>>> GetFaqs(int instanceId)
+    public async Task<ActionResult> GetFaqs(int instanceId)
     {
         var query = new GetFaqQuery(instanceId);
         var result = await Sender.Send(query);
         
         return result.Match(
-            s => Ok(s.Adapt<List<GetFaqsDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
