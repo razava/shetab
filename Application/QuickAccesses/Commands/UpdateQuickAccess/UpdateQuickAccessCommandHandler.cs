@@ -1,17 +1,18 @@
 ﻿using Application.Common.Interfaces.Persistence;
-using Domain.Models.Relational;
+using Application.QuickAccesses.Common;
 using Domain.Models.Relational.Common;
 using Infrastructure.Storage;
+using Mapster;
 
 namespace Application.QuickAccesses.Commands.UpdateQuickAccess;
 
 internal sealed class UpdateQuickAccessCommandHandler(
     IQuickAccessRepository quickAccessRepository,
     IUnitOfWork unitOfWork,
-    IStorageService storageService) : IRequestHandler<UpdateQuickAccessCommand, Result<QuickAccess>>
+    IStorageService storageService) : IRequestHandler<UpdateQuickAccessCommand, Result<AdminGetQuickAccessResponse>>
 {
 
-    public async Task<Result<QuickAccess>> Handle(UpdateQuickAccessCommand request, CancellationToken cancellationToken)
+    public async Task<Result<AdminGetQuickAccessResponse>> Handle(UpdateQuickAccessCommand request, CancellationToken cancellationToken)
     {
         Media? media = null;
         if (request.Image is not null)
@@ -35,6 +36,6 @@ internal sealed class UpdateQuickAccessCommandHandler(
         quickAccessRepository.Update(quickAccess);
         await unitOfWork.SaveAsync();
 
-        return quickAccess;
+        return quickAccess.Adapt<AdminGetQuickAccessResponse>();
     }
 }

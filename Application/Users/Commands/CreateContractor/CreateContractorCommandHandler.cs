@@ -1,14 +1,14 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
-using Domain.Models.Relational.IdentityAggregate;
+using Mapster;
 
 namespace Application.Users.Commands.CreateContractor;
 
 internal class CreateContractorCommandHandler(
-    IUserRepository userRepository) : IRequestHandler<CreateContractorCommand, Result<ApplicationUser>>
+    IUserRepository userRepository) : IRequestHandler<CreateContractorCommand, Result<GetContractorsListResponse>>
 {
     
-    public async Task<Result<ApplicationUser>> Handle(CreateContractorCommand request, CancellationToken cancellationToken)
+    public async Task<Result<GetContractorsListResponse>> Handle(CreateContractorCommand request, CancellationToken cancellationToken)
     {
         if (!request.UserRoles.Contains(RoleNames.Executive))
         {
@@ -22,6 +22,6 @@ internal class CreateContractorCommandHandler(
             request.Title,
             request.Organization);
 
-        return result;
+        return result.Adapt<GetContractorsListResponse>();
     }
 }

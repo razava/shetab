@@ -146,24 +146,6 @@ public record ResetPasswordDto(
     string NewPassword);
 
 
-public record GetProfileDto(
-    //string Id,
-    string UserName,
-    string FirstName,
-    string LastName,
-    string Title,
-    string Organization,
-    string PhoneNumber,
-    string PhoneNumber2,
-    string NationalId,
-    bool TwoFactorEnabled,
-    Gender Gender,
-    int Education,
-    DateTime? BirthDate,
-    AddressDto Address,
-    MediaDto Avatar);
-
-
 //todo : review for annotations
 public record GovLoginDto(
     string Code,

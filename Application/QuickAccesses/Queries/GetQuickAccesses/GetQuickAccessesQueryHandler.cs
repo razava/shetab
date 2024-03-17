@@ -1,20 +1,23 @@
 ﻿using Application.Common.Interfaces.Persistence;
+using Application.QuickAccesses.Common;
 using Domain.Models.Relational;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.QuickAccesses.Queries.GetQuickAccesses;
 
-internal class GetQuickAccessesQueryHandler(IQuickAccessRepository quickAccessRepository) 
-    : IRequestHandler<GetQuickAccessesQuery, Result<List<QuickAccess>>>
+internal class GetQuickAccessesQueryHandler(IUnitOfWork unitOfWork) 
+    : IRequestHandler<GetQuickAccessesQuery, Result<List<AdminGetQuickAccessResponse>>>
 {
 
-    public async Task<Result<List<QuickAccess>>> Handle(GetQuickAccessesQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<AdminGetQuickAccessResponse>>> Handle(GetQuickAccessesQuery request, CancellationToken cancellationToken)
     {   
-        var result = await quickAccessRepository
-            .GetAsync(q => q.IsDeleted == false &&
-            (request.FilterModel == null || request.FilterModel.Query == null || q.Title.Contains(request.FilterModel.Query)),
-            false,
-            o => o.OrderBy(q => q.Order));
+        var result = await unitOfWork.DbContext.Set<QuickAccess>()
+            .Where(q => q.IsDeleted == false &&
+                (request.FilterModel == null || request.FilterModel.Query == null || q.Title.Contains(request.FilterModel.Query)))
+            .OrderBy(q => q.Order)
+            .Select(AdminGetQuickAccessResponse.GetSelector())
+            .ToListAsync();
 
-        return result.ToList();
+        return result;
     }
 }

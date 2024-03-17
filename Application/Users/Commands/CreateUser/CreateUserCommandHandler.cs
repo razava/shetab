@@ -1,17 +1,19 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
+using Application.Users.Queries.GetUserById;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Users.Commands.CreateUser;
 
 internal class CreateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork) 
-    : IRequestHandler<CreateUserCommand, Result<ApplicationUser>>
+    : IRequestHandler<CreateUserCommand, Result<AdminGetUserDetailsResponse>>
 {
 
-    public async Task<Result<ApplicationUser>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result<AdminGetUserDetailsResponse>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         ApplicationUser user = new()
         {
@@ -45,6 +47,6 @@ internal class CreateUserCommandHandler(IUserRepository userRepository, IUnitOfW
         }
 
         
-        return user;
+        return user.Adapt<AdminGetUserDetailsResponse>();
     }
 }

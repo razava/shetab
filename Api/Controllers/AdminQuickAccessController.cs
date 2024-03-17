@@ -24,26 +24,26 @@ public class AdminQuickAccessController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpGet]
-    public async Task<ActionResult<List<AdminGetQuickAccess>>> GetQuickAccesses(int instanceId, [FromQuery] QueryFilter queryFilter)
+    public async Task<ActionResult> GetQuickAccesses(int instanceId, [FromQuery] QueryFilter queryFilter)
     {
         var query = new GetQuickAccessesQuery(instanceId, queryFilter.Adapt<QueryFilterModel>());
         var result = await Sender.Send(query);
         
         return result.Match(
-            s => Ok(s.Adapt<List<AdminGetQuickAccess>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
 
     [Authorize(Roles = "Admin")]
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<AdminGetQuickAccess>> GetQuickAccessById(int id)
+    public async Task<ActionResult> GetQuickAccessById(int id)
     {
         var query = new GetQuickAccessByIdQuery(id);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<AdminGetQuickAccess>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -62,7 +62,7 @@ public class AdminQuickAccessController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => CreatedAtAction(nameof(GetQuickAccessById), new { id = s.Value.Id, instanceId = instanceId }, s.Adapt<AdminGetQuickAccess>()),
+            s => CreatedAtAction(nameof(GetQuickAccessById), new { id = s.Value.Id, instanceId = instanceId }, s),
             f => Problem(f));
     }
 

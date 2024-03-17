@@ -39,13 +39,7 @@ public class AddressDto
     public double Latitude { get; set; }
     public double Longitude { get; set; }
     [MaxLength(512)]
-    public string Detail { get; set; } = string.Empty;//todo : nullable?
-
-    //public string Street { get; set; } = string.Empty;
-    //public string Valley { get; set; } = string.Empty;
-    //public string Number { get; set; } = string.Empty;
-    //public string PostalCode { get; set; } = string.Empty;
-    //public double? Elevation { get; set; }
+    public string Detail { get; set; } = string.Empty;
 }
 
 public record AddressDetailDto(
@@ -86,14 +80,6 @@ public record CitizenGetQuickAccess(
     int CategoryId,
     MediaDto Media);
 
-
-public record AdminGetQuickAccess(
-    int Id,
-    string Title,
-    int Order,
-    int CategoryId,
-    MediaDto Media,
-    bool IsDeleted);
 
 
 public record CreateQuickAccessDto(

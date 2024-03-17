@@ -1,4 +1,4 @@
-﻿using Domain.Models.Relational;
+﻿using Application.QuickAccesses.Common;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.QuickAccesses.Commands.UpdateQuickAccess;
@@ -9,4 +9,4 @@ public sealed record UpdateQuickAccessCommand(
     string? Title,
     IFormFile? Image,
     int? Order,
-    bool? IsDeleted) : IRequest<Result<QuickAccess>>;
+    bool? IsDeleted) : IRequest<Result<AdminGetQuickAccessResponse>>;

@@ -77,22 +77,7 @@ public record AdminGetUserList(
             */);
 
 
-public record AdminGetUserDetailsDto(
-    string Id,
-    string UserName,
-    string FirstName,
-    string LastName,
-    string Title,
-    string Organization,
-    string NationalId,
-    bool TwoFactorEnabled,
-    MediaDto Avatar,
-    string PhoneNumber,
-    string PhoneNumber2,
-    Gender Gender,
-    Education Education,
-    DateTime? BirthDate,
-    AddressDto Address);
+
 
 public record CreateUserDto(
         [Required] [MaxLength(32)]
@@ -117,15 +102,6 @@ public record CreateContractorDto(
        string Title = "",
        string Organization = "");
 
-
-
-public record GetContractorsList(
-    string Id,
-    string UserName,
-    string FirstName,
-    string LastName,
-    MediaDto Avatar,
-    string Organization);
 
 
 public record GetCitizenDto(

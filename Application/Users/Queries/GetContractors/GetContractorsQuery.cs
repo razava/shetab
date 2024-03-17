@@ -1,8 +1,8 @@
 ﻿using Application.Common.Interfaces.Persistence;
-using Domain.Models.Relational.IdentityAggregate;
+using Application.Users.Commands.CreateContractor;
 
 namespace Application.Users.Queries.GetContractors;
 
 public record GetContractorsQuery(
     string ExecutiveId,
-    PagingInfo PagingInfo) : IRequest<Result<PagedList<ApplicationUser>>>;
+    PagingInfo PagingInfo) : IRequest<Result<PagedList<GetContractorsListResponse>>>;

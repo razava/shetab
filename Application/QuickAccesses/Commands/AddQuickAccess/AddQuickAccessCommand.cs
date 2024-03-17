@@ -1,4 +1,5 @@
-﻿using Domain.Models.Relational;
+﻿using Application.QuickAccesses.Common;
+using Domain.Models.Relational;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.QuickAccesses.Commands.AddQuickAccess;
@@ -9,4 +10,4 @@ public sealed record AddQuickAccessCommand(
     string Title,
     IFormFile Image,
     int Order,
-    bool IsDeleted) : IRequest<Result<QuickAccess>>;
+    bool IsDeleted) : IRequest<Result<AdminGetQuickAccessResponse>>;

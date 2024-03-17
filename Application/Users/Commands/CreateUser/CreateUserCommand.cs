@@ -1,4 +1,4 @@
-﻿using Domain.Models.Relational.IdentityAggregate;
+﻿using Application.Users.Queries.GetUserById;
 
 namespace Application.Users.Commands.CreateUser;
 
@@ -10,4 +10,4 @@ public record CreateUserCommand(
     List<int>? Regions,
     string FirstName = "",
     string LastName = "",
-    string Title = "") :IRequest<Result<ApplicationUser>>;
+    string Title = "") :IRequest<Result<AdminGetUserDetailsResponse>>;

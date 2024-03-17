@@ -18,7 +18,6 @@ using Application.Users.Queries.GetUserCategories;
 using Application.Users.Queries.GetUserRegions;
 using Application.Users.Queries.GetUserRoles;
 using Application.Users.Queries.GetUsers;
-using Domain.Models.Relational.IdentityAggregate;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -94,19 +93,19 @@ public class AdminUserManagementController : ApiController
 
     [Authorize(Roles = RoleNames.Admin)]
     [HttpGet("Roles/{id}")]
-    public async Task<ActionResult<List<IsInRoleDto>>> GetUserRoles(string id)
+    public async Task<ActionResult> GetUserRoles(string id)
     {
         var query = new GetUserRolesQuery(id);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<IsInRoleDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
     [Authorize(Roles = RoleNames.Admin)]
     [HttpGet("Roles")]
-    public async Task<ActionResult<List<IsInRoleDto>>> GetRolesForCreate()
+    public async Task<ActionResult> GetRolesForCreate()
     {
         var query = new GetRolesQuery();
         var result = await Sender.Send(query);
@@ -118,7 +117,7 @@ public class AdminUserManagementController : ApiController
 
     [Authorize(Roles = RoleNames.Admin)]
     [HttpPut("Regions/{id}")]
-    public async Task<IActionResult> SetUserRegions(string id, List<IsInRegionDto> regions)
+    public async Task<ActionResult> SetUserRegions(string id, List<IsInRegionDto> regions)
     {
         var instanceId = User.GetUserInstanceId();
         var mappedRegions = regions.Adapt<List<IsInRegionModel>>();
@@ -133,14 +132,14 @@ public class AdminUserManagementController : ApiController
 
     [Authorize(Roles = RoleNames.Admin)]
     [HttpGet("Regions/{id}")]
-    public async Task<ActionResult<List<IsInRegionDto>>> GetUserRegions(string id)
+    public async Task<ActionResult> GetUserRegions(string id)
     {
         var instanceId = User.GetUserInstanceId();
         var query = new GetUserRegionsQuery(instanceId, id);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<IsInRegionDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -160,7 +159,7 @@ public class AdminUserManagementController : ApiController
 
     [Authorize(Roles = RoleNames.Admin)]
     [HttpGet("Categories/{id}")]
-    public async Task<ActionResult<List<int>>> GetUserCategories(string id)
+    public async Task<ActionResult> GetUserCategories(string id)
     {
         var query = new GetUserCategoriesQuery(id);
         var result = await Sender.Send(query);
@@ -173,7 +172,7 @@ public class AdminUserManagementController : ApiController
 
     [Authorize]
     [HttpGet("AllUsers")]
-    public async Task<ActionResult<List<AdminGetUserList>>> GetAllUsers(
+    public async Task<ActionResult> GetAllUsers(
         [FromQuery] PagingInfo pagingInfo,
         [FromQuery] UserFilters filter)
     {
@@ -193,19 +192,19 @@ public class AdminUserManagementController : ApiController
 
     [Authorize(Roles = RoleNames.Admin)]
     [HttpGet("User/{id}")]
-    public async Task<ActionResult<AdminGetUserDetailsDto>> GetUserById(string id)
+    public async Task<ActionResult> GetUserById(string id)
     {
         var query = new GetUserByIdQuery(id);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<AdminGetUserDetailsDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
     [Authorize(Roles = RoleNames.Admin)]
     [HttpGet("UserReports/{id}")]
-    public async Task<ActionResult<AdminGetUserDetailsDto>> GetUserReportsById([FromQuery]PagingInfo pagingInfo, string id)
+    public async Task<ActionResult> GetUserReportsById([FromQuery]PagingInfo pagingInfo, string id)
     {
         var query = new GetUserReportsQuery(pagingInfo, id);
         var result = await Sender.Send(query);
@@ -218,21 +217,29 @@ public class AdminUserManagementController : ApiController
 
     [Authorize(Roles = RoleNames.Admin)]
     [HttpPost]
-    public async Task<ActionResult<ApplicationUser>> CreateUser(CreateUserDto model)
+    public async Task<ActionResult> CreateUser(CreateUserDto model)
     {
         var instanceId = User.GetUserInstanceId();
-        var command = new CreateUserCommand(instanceId, model.Username, model.Password, model.Roles, model.RegionIds, model.FirstName, model.LastName, model.Title);
+        var command = new CreateUserCommand(
+            instanceId,
+            model.Username,
+            model.Password,
+            model.Roles,
+            model.RegionIds,
+            model.FirstName,
+            model.LastName,
+            model.Title);
         var user = await Sender.Send(command);
 
         return user.Match(
-            s => CreatedAtAction(nameof(GetUserById), new { id = s.Value.Id, instanceId = instanceId }, s.Adapt<AdminGetUserDetailsDto>()),
+            s => CreatedAtAction(nameof(GetUserById), new { id = s.Value.Id, instanceId = instanceId }, s),
             f => Problem(f));
     }
 
 
     [Authorize(Roles = RoleNames.Executive)]
     [HttpPost("RegisterContractor")]
-    public async Task<IActionResult> RegisterContractor(int instanceId, CreateContractorDto model)
+    public async Task<ActionResult> RegisterContractor(int instanceId, CreateContractorDto model)
     {
         var userId = User.GetUserId();
         var userRoles = User.GetUserRoles();
@@ -249,7 +256,7 @@ public class AdminUserManagementController : ApiController
         var contractor = await Sender.Send(command);
 
         return contractor.Match(
-            s => CreatedAtAction(nameof(GetUserById), new { id = s.Value.Id, instanceId = instanceId }, s.Adapt<GetContractorsList>()),
+            s => CreatedAtAction(nameof(GetUserById), new { id = s.Value.Id, instanceId = instanceId }, s),
             f => Problem(f));
         //TODO: Does executive have access to this endpoint?
     }
@@ -257,7 +264,7 @@ public class AdminUserManagementController : ApiController
 
     [Authorize(Roles = RoleNames.Executive)]
     [HttpGet("GetContractors")]
-    public async Task<ActionResult<List<GetContractorsList>>> GetContractors([FromQuery] PagingInfo pagingInfo)
+    public async Task<ActionResult> GetContractors([FromQuery] PagingInfo pagingInfo)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
@@ -269,6 +276,6 @@ public class AdminUserManagementController : ApiController
 
         var resultValue = result.Value;
         Response.AddPaginationHeaders(resultValue.Meta);
-        return Ok(resultValue.Adapt<List<GetContractorsList>>());
+        return Ok(resultValue);
     }
 }

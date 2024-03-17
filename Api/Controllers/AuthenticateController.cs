@@ -170,7 +170,7 @@ public class AuthenticateController : ApiController
 
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<GetProfileDto>> GetUser()
+    public async Task<ActionResult> GetUser()
     {
         var userId = User.GetUserId();
         if (userId == null)
@@ -179,14 +179,14 @@ public class AuthenticateController : ApiController
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<GetProfileDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 
 
     [Authorize]
     [HttpPut]
-    public async Task<IActionResult> UpdateUser(UpdateProfileDto updateDto)
+    public async Task<ActionResult> UpdateUser(UpdateProfileDto updateDto)
     {
         var userId = User.GetUserId();
         if (userId == null)
@@ -294,7 +294,7 @@ public class AuthenticateController : ApiController
     }
 
     [HttpPost("ResendOtp")]
-    public async Task<IActionResult> ForgotPassword([FromBody] ResendOtpDto resendOtpDto)
+    public async Task<ActionResult> ForgotPassword([FromBody] ResendOtpDto resendOtpDto)
     {
         var query = new ResendOtpQuery(resendOtpDto.OtpToken, null);
         var result = await Sender.Send(query);
