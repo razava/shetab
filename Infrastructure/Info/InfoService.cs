@@ -678,8 +678,8 @@ public class InfoService(
         var averageRating = (double)groupedQuery.Sum(s => s.Key * s.Count) / total;
 
         var result = new InfoModel();
-        result.Singletons.Add(new InfoSingleton(total.ToString(), "تعداد کل", ""));
-        result.Singletons.Add(new InfoSingleton(averageRating.ToString("0.00"), "متوسط امتیاز", ""));
+        result.Add(new InfoSingleton(total.ToString(), "تعداد کل", ""));
+        result.Add(new InfoSingleton(averageRating.ToString("0.00"), "متوسط امتیاز", ""));
 
         var ratingChart = new InfoChart("فراوانی امتیازهای خشنودی سنجی", "", false, false);
         var ratingSerie = new InfoSerie("تعداد", "");
@@ -690,12 +690,12 @@ public class InfoService(
             ratingSerie.Add(new DataItem(i.ToString(), count.ToString(), GetPercent(count, total)));
         }
 
-        result.Charts.Add(ratingChart);
+        result.Add(ratingChart);
 
         var objectionedCount = await unitOfWork.DbContext.Set<Report>()
             .Where(r => r.ShahrbinInstanceId == queryParameters.InstanceId && r.IsObjectioned)
             .LongCountAsync();
-        result.Singletons.Add(new InfoSingleton(objectionedCount.ToString(), "ارجاع به بازرسی", ""));
+        result.Add(new InfoSingleton(objectionedCount.ToString(), "ارجاع به بازرسی", ""));
 
         return result;
     }
@@ -723,7 +723,7 @@ public class InfoService(
 
         var result = new InfoModel();
         var chart = new InfoChart("شهروندترین ها", "", false, false);
-        result.Charts.Add(chart);
+        result.Add(chart);
         var serie = new InfoSerie("تعداد درخواست", "");
         chart.Add(serie);
 

@@ -33,16 +33,16 @@ public class ApiController : ControllerBase
         return base.Ok(new ResponseWrapper<T>(message, result.Value));
     }
 
-    protected ActionResult CreatedAtAction<T>(string? actionName, object? routeValues, T? value)
+    protected ActionResult CreatedAtAction<T>(string? actionName, object? routeValues, Result<T> result)
     {
         var message = "This is a test for Hossein";
-        return base.CreatedAtAction(actionName, routeValues, new ResponseWrapper<T>(message, value));
+        return base.CreatedAtAction(actionName, routeValues, new ResponseWrapper<T>(message, result.Value));
     }
 
-    protected ActionResult StatusCode<T>(int statusCode, T? value)
+    protected ActionResult StatusCode<T>(int statusCode, Result<T> result)
     {
         var message = "This is a test for Hossein";
-        return base.StatusCode(statusCode, new ResponseWrapper<T>(message, value));
+        return base.StatusCode(statusCode, new ResponseWrapper<T>(message, result.Value));
     }
     public record ResponseWrapper<T>(string Message, T? Data);
 }

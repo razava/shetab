@@ -18,7 +18,8 @@ internal class GetExecutiveActorsQueryHandler(IUserRepository userRepository, IA
         foreach (var actor in executiveActors)
         {
             var user = executives.Where(e => e.Id == actor.Identifier).Single();
-            result.Add(new GetExecutiveActorsResponse(actor.Id, user.FirstName, user.LastName, user.Title));
+            var displayName = $"{user.Title} ({user.FirstName} {user.LastName})".Replace("()", "");
+            result.Add(new GetExecutiveActorsResponse(actor.Id, user.FirstName, user.LastName, user.Title, displayName));
         }
 
         return result;

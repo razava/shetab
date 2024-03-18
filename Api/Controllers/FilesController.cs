@@ -39,7 +39,7 @@ public class FilesController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => StatusCode(StatusCodes.Status201Created, new { id = s.Value.Id }),
+            s => StatusCode(StatusCodes.Status201Created, Result.Ok(new { id = s.Value.Id })),
             f => Problem(f));
     }
 }

@@ -39,7 +39,8 @@ public class Poll : BaseModel
             PollType = pollType,
             Question = question,
             Choices = choices,
-            IsDeleted = isDeleted
+            IsDeleted = isDeleted,
+            Created = DateTime.UtcNow
         };
 
         return poll;

@@ -4,4 +4,5 @@ public record GetExecutiveActorsResponse(
     int Id,
     string FirstName,
     string LastName,
-    string Title);
+    string Title,
+    string DisplayName);

@@ -1,5 +1,4 @@
 ﻿using Application.Polls.Common;
-using Application.Polls.Queries.GetPolls;
 using Domain.Models.Relational.Common;
 
 namespace Application.Polls.Commands.AddPoll;
