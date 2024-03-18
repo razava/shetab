@@ -402,13 +402,13 @@ public class StaffReportController : ApiController
     //todo : define Access Policy
     [Authorize]
     [HttpGet("Citizen/{id}")]
-    public async Task<ActionResult<GetCitizenDto>> GetCitizenById(string id)
+    public async Task<ActionResult> GetCitizenById(string id)
     {
         var query = new GetUserByIdQuery(id);
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<GetCitizenDto>()),
+            s => Ok(s),
             f => Problem(f));
     }
 

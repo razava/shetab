@@ -23,9 +23,6 @@ public record PollChoiceCreateDto(
     [Required]
     int Order);
 
-public record PollChoiceDto(int Id, string ShortTitle, string Text, int Order);
-public record PollAnswerDto(List<int>? Choices, string? Text);
-
 
 public record PollUpdateDto(
     [MaxLength(256)]

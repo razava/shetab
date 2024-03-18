@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Api.Abstractions;
-using Api.Dtos.ParsiMap;
 using Application.Maps.Queries.MapForwardQuery;
-using Mapster;
 using MediatR;
 using Api.ExtensionMethods;
 using Microsoft.AspNetCore.Authorization;
@@ -20,13 +18,13 @@ namespace Shahrbin.Api.Controllers
 
         [Authorize]
         [HttpGet("Forward/{address}")]
-        public async Task<ActionResult<ForwardResult>> Forward(string address)
+        public async Task<ActionResult> Forward(string address)
         {
             var query = new MapForwardQuery(address);
             var result = await Sender.Send(query);
 
             return result.Match(
-                s => Ok(s.Adapt<ForwardResult>()),
+                s => Ok(s),
                 f => Problem(f));
             
         }

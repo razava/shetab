@@ -51,9 +51,3 @@ public class CategoryUpdateDto
     public bool? HideMap { get; set; }
     public Priority? DefaultPriority { get; set; }
 }
-
-
-
-
-
-

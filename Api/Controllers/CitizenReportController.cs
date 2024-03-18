@@ -17,7 +17,6 @@ using Application.Reports.Queries.GetNearestReports;
 using Application.Reports.Queries.GetRecentReports;
 using Application.Reports.Queries.GetReportById;
 using Application.Reports.Queries.GetUserReports;
-using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

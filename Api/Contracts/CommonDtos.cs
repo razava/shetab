@@ -1,5 +1,4 @@
 ﻿using Application.Forms.Common;
-using Domain.Models.Relational.Common;
 using System.ComponentModel.DataAnnotations;
 
 namespace Api.Contracts;
@@ -10,26 +9,6 @@ public class LocationDto
     public double Latitude { get; set; }
     public double Longitude { get; set; }
 }
-
-
-public record GetEnum(
-    int Value,
-    string Title);
-
-
-//todo: Review this
-public class MediaDto
-{
-    public Guid Id { get; set; }
-    public string Url { get; set; } = string.Empty;
-    public string Url2 { get; set; } = string.Empty;
-    public string Url3 { get; set; } = string.Empty;
-    public string Url4 { get; set; } = string.Empty;
-    public string AlternateText { get; set; } = string.Empty;
-    public string Title { get; set; } = string.Empty;
-    public MediaType MediaType { get; set; }
-}
-
 
 
 public class AddressDto
@@ -62,16 +41,6 @@ public record RegionName(
     string Name);
 
 
-public record GetUserRegionsDto(
-    int RegionId,
-    string RegionName);
-
-
-public record GetRolesDto(
-    string RoleName,
-    string RoleTitle);
-
-
 public record CreateQuickAccessDto(
     [Required]
     int CategoryId,
@@ -93,28 +62,11 @@ public record EducationDto(
     int Id,
     string Title);
 
-public record TaradodReason(
-    int Id,
-    string Name);
-
 
 public record GetExecutiveDto(
     int Id,
     string Title);
 
-
-public record GetMessageDto(
-    Guid Id,
-    string Title,
-    string Content,
-    DateTime DateTime,
-    MessageSubject MessageType,
-    Guid SubjectId,
-    string FromId);
-
-public record GetMessageCountDto(
-    long Count,
-    DateTime DateTime);
 
 
 public record CreateNewsDto(
@@ -178,8 +130,4 @@ public record UpdateFormDto(
     [MaxLength(256)]
     string? Title,
     List<FormElementModel>? Elements);
-
-
-
-
 

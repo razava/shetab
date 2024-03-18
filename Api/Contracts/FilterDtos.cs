@@ -1,5 +1,4 @@
-﻿using Domain.Models.Relational.Common;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Api.Contracts;
 
@@ -15,50 +14,11 @@ public record TimeFilter(
 
 
 
-public record FilterGetReports(
-    DateTime? SentFromDate,
-    DateTime? SentToDate,
-    List<ReportState>? CurrentStates,
-    //[MaxLength(64)] this query is for searching TrackingNumbers
-    [MinLength(3)] [MaxLength(16)]
-    string? Query,
-    [MaxLength(11)] [Phone]
-    string? PhoneNumber);
-
-
-public record FilterGetAllReports(
-    DateTime? SentFromDate,
-    DateTime? SentToDate,
-    //todo : annotation for strings?
-    List<string>? RoleNames,
-    List<int>? CategoryIds,
-    List<int>? RegionIds,
-    List<ReportState>? CurrentStates,
-    bool? HasSatisfaction,  //?........todo : report model haven't satisfaction field
-    int? MinSatisfaction,   //?...........
-    int? MaxSatisfaction,  //?.............
-    [MinLength(3)] [MaxLength(16)]
-    string? Query,
-    [MaxLength(11)] [Phone]
-    string? PhoneNumber);
-
-
-
 public record FilterGetCommentViolation(
     DateTime? SentFromDate,
     DateTime? SentToDate,
     List<int>? CategoryIds,
     [MinLength(3)] [MaxLength(16)]
     string? Query);
-
-
-public record FilterGetUsers(
-    List<string>? RoleNames,
-    List<int>? RegionIds,
-    [MaxLength(64)]
-    string? Query);
-
-
-
 
 

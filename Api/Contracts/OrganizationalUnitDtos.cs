@@ -1,5 +1,4 @@
-﻿using Domain.Models.Relational.Common;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Api.Contracts;
 

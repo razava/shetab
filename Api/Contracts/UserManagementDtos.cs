@@ -1,6 +1,4 @@
-﻿using Api.Dtos;
-using Application.Users.Common;
-using Domain.Models.Relational.Common;
+﻿using Domain.Models.Relational.Common;
 using System.ComponentModel.DataAnnotations;
 
 namespace Api.Contracts;
@@ -9,9 +7,6 @@ namespace Api.Contracts;
 public record NewPasswordDto(
     [Required] [MinLength(6)] [MaxLength(512)]
     string NewPassword);
-
-public record SetRegionsDto(
-     List<int>? RegionIds);
 
 public record UpdateRolesDto(
     //List<IsInRoleModel> Roles);
@@ -58,27 +53,6 @@ public record UpdateUserDto(
     bool? TwoFactorEnabled);
 
 
-public record AdminGetUserList(
-    string Id,
-    string UserName,
-    string FirstName,
-    string LastName,
-    string Title,
-    MediaDto Avatar,
-    string PhoneNumber
-           /*
-           string Organization,
-           string PhoneNumber2,
-           string NationalId,
-           Gender Gender,
-           Education Education,
-           DateTime? BirthDate,
-           AddressDto Address
-            */);
-
-
-
-
 public record CreateUserDto(
         [Required] [MaxLength(32)]
         string Username,
@@ -104,11 +78,4 @@ public record CreateContractorDto(
 
 
 
-public record GetCitizenDto(
-    string UserName,
-    string FirstName,
-    string LastName,
-    MediaDto Avatar,
-    string PhoneNumber,
-    AddressDetailDto Address);
 

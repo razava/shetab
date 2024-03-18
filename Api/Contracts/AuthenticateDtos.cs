@@ -45,55 +45,11 @@ public record ChangePhoneNumberDto(
     string Token2,
     string Code2);
 
-public record VerificationDto(
-    [Required] [MaxLength(11)] [Phone]
-    string Username,
-    [Required] [MinLength(6)] [MaxLength(512)]
-    string Password,
-    [Required] [MaxLength(8)]
-    string VerificationCode);
-
-
 
 public record CaptchaValidateDto(
     Guid Key, 
     [MaxLength(8)]
     string Value);
-
-//public record CaptchaResultDto(
-//    Guid Key,
-//    byte[] Data);
-
-
-public record LoginDto(
-    [Required] [MaxLength(11)] [Phone]
-    string Username,
-    [Required] [MinLength(6)] [MaxLength(512)]
-    string Password,
-    CaptchaValidateDto Captcha);
-
-
-//[RegularExpression("^09[0-9]{9}$", ErrorMessage = "PhoneNumber Is in Invalid Format.")]
-public record LoginAppDto(
-    [Required] [MaxLength(11)] [Phone]
-    string Username,
-    [Required] [MinLength(6)] [MaxLength(512)]
-    string Password);
-
-
-public record RegisterDto(
-    [Required] [MaxLength(11)] [Phone]
-    string Username,
-    [Required] [MinLength(6)] [MaxLength(512)]
-    string Password,
-    CaptchaValidateDto Captcha);
-
-public record RegisterAppDto(
-    [Required] [MaxLength(11)] [Phone]
-    string Username,
-    [Required] [MinLength(6)] [MaxLength(512)]
-    string Password);
-
 
 public record UpdateProfileDto(
     [MaxLength(32)]

@@ -48,13 +48,6 @@ public record CreateCommentDto(
     string Comment);
 
 
-public record RestrictedUserDto(
-    string FirstName,
-    string LastName,
-    string Title,
-    string Organization,
-    MediaDto Avatar);
-
 
 public record ViolationPutDto(
     Guid Id,
@@ -71,10 +64,4 @@ public record GetViolationsDto(
     ViolationType ViolationType,
     DateTime DateTime,
     string Discription);
-
-
-
-
-//public record SatisfactionRatingDto(
-//    int Rating);
 

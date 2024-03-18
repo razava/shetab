@@ -77,46 +77,6 @@ public record MakeTransitionDto(
 }
 
 
-public class TransitionLogDto
-{
-    public Guid Id { get; set; }
-    public DateTime DateTime { get; set; }
-    public string Comment { get; set; } = string.Empty;
-    public string Message { get; set; } = string.Empty;
-    public List<MediaDto> Attachments { get; set; } = new List<MediaDto>();
-    public ReasonDto Reason { get; set; } = default!;
-    public ActorType ActorType { get; set; }
-    public string ActorIdentifier { get; set; } = string.Empty;
-    public bool IsPublic { get; set; }
-    public ActorShortDto Actor { get; set; } = default!;   //todo : Handle from Application Layer
-}
-
-public class ActorShortDto
-{
-    //todo : is this correct that set ? for fix warnings here?
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
-    public string? Title { get; set; }
-    public string DisplayName { get { return Title + ((FirstName + LastName).Length > 0 ? " (" + FirstName + " " + LastName + ")" : ""); } }
-}
-
-
-public class GetPossibleTransitionDto
-{
-    public string StageTitle { get; set; } = string.Empty;
-    public int TransitionId { get; set; }
-    public IEnumerable<ReasonDto> ReasonList { get; set; } = new List<ReasonDto>();
-    public IEnumerable<ActorDto> Actors { get; set; } = new List<ActorDto>();
-    public bool CanSendMessageToCitizen { get; set; }
-    public TransitionType TransitionType { get; set; }
-}
-
-public class ReasonDto
-{
-    public int Id { get; set; }
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-}
 public class ActorDto
 {
     public int Id { get; set; }
@@ -131,27 +91,7 @@ public class ActorDto
     public List<ActorDto> Actors { get; set; } = new List<ActorDto>();
 }
 
-//todo : review annotations
-public record InspectorTransitionDto(
-    [Required]
-    bool IsAccepted,
-    List<Guid> Attachments,
-    [Required][MaxLength(512)]
-    string Comment,
-    [Required]
-    int ToActorId,
-    [Required]
-    int StageId,
-    Visibility? Visibility);
 
-
-public record GetPossibleSourceDto(
-    string RoleId,
-    string RoleName,
-    string RoleTitle);
-
-
-//todo : review annotations
 public record MessageToCitizenDto(
     List<Guid> Attachments,
     [MaxLength(512)]

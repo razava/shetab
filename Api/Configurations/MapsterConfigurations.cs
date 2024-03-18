@@ -1,5 +1,4 @@
 ﻿using Api.Contracts;
-using Application.Processes.Common;
 using Domain.Models.Relational.Common;
 using Mapster;
 
@@ -16,19 +15,6 @@ public class MapsterConfigurations
         TypeAdapterConfig<Address, AddressReportGet>.NewConfig()
             .Map(dest => dest.Latitude, src => src.Location!.Y)
             .Map(dest => dest.Longitude, src => src.Location!.X);
-
-        //TypeAdapterConfig<GetExecutiveActorsResponse, GetExecutiveListDto>.NewConfig()
-        //    .Map(dest => dest.DisplayName, src => 
-        //    (src.FirstName == "" && src.LastName == "") ? 
-        //    $"{src.Title}" : $"{src.Title} ({src.FirstName} {src.LastName})");
-
-
-        /*
-        TypeAdapterConfig<AddressInfo, Address>.NewConfig()
-            .Map(dest => dest.Location, src => new Point(new Coordinate(src.Longitude, src.Latitude)));
-        */
-        //.Map(dest => dest.Location, src => new Point(src.Longitude, src.Latitude));
-        //var t = new Point(53.285548763070665, 31.132678978675045);
 
     }
 }
