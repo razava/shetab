@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.ReportAggregate;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Comments.Queries.GetAllCommentsQuery;
 
@@ -17,6 +18,7 @@ internal sealed class GetAllCommentsQueryHandler(IUnitOfWork unitOfWork) : IRequ
 
         var query = unitOfWork.DbContext.Set<Comment>()
             .Where(filter)
+            .AsNoTracking()
             .OrderBy(c => c.DateTime)
             .Select(GetCommentsResponse.GetSelector());
 

@@ -13,6 +13,7 @@ internal sealed class GetQuickAccessByIdQueryHandler(IUnitOfWork unitOfWork)
     {
         var result = await unitOfWork.DbContext.Set<QuickAccess>()
             .Where(q => q.Id == request.id)
+            .AsNoTracking()
             .Select(AdminGetQuickAccessResponse.GetSelector())
             .FirstOrDefaultAsync();
 

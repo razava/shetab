@@ -64,7 +64,7 @@ public class CitizenReportController : ApiController
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => Ok(s.Adapt<List<TransitionLogDto>>()),
+            s => Ok(s),
             f => Problem(f));
     }
 

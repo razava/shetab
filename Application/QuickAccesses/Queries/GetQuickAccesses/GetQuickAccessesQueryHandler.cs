@@ -14,6 +14,7 @@ internal class GetQuickAccessesQueryHandler(IUnitOfWork unitOfWork)
         var result = await unitOfWork.DbContext.Set<QuickAccess>()
             .Where(q => q.IsDeleted == false &&
                 (request.FilterModel == null || request.FilterModel.Query == null || q.Title.Contains(request.FilterModel.Query)))
+            .AsNoTracking()
             .OrderBy(q => q.Order)
             .Select(AdminGetQuickAccessResponse.GetSelector())
             .ToListAsync();

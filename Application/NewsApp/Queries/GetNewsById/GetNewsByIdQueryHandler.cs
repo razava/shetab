@@ -12,6 +12,7 @@ internal sealed class GetNewsByIdQueryHandler(IUnitOfWork unitOfWork) : IRequest
     {
         var result = await unitOfWork.DbContext.Set<News>()
             .Where(n => n.Id == request.Id)
+            .AsNoTracking()
             .Select(GetNewsResponse.GetSelector())
             .FirstOrDefaultAsync();
         if (result is null)

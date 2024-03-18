@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.NewsApp.Common;
 using Domain.Models.Relational;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.NewsApp.Queries.GetNews;
 
@@ -11,6 +12,7 @@ internal class GetNewsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<Get
     {
         var query = unitOfWork.DbContext.Set<News>()
             .Where(n => request.ReturnAll || n.IsDeleted == false)
+            .AsNoTracking()
             .Select(GetNewsResponse.GetSelector());
 
         var result = await PagedList<GetNewsResponse>.ToPagedList(query, request.pagingInfo.PageNumber, request.pagingInfo.PageSize);

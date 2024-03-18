@@ -13,6 +13,7 @@ internal class GetCitizenQuickAccessesQueryHandler(IUnitOfWork unitOfWork)
     {
         var roleIds = await unitOfWork.DbContext.Set<ApplicationRole>()
             .Where(r => request.Roles.Contains(r.Name!))
+            .AsNoTracking()
             .Select(r => r.Id)
             .ToListAsync();
 
