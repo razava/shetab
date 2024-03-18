@@ -17,7 +17,7 @@ public class ApiController : ControllerBase
 
     protected ActionResult Problem(Result result)
     {
-        return Problem(
+        return base.Problem(
             String.Join("\r\n", result.Errors.Select(e => e.Message).ToList()),
             statusCode: StatusCodes.Status500InternalServerError);
     }
@@ -30,13 +30,13 @@ public class ApiController : ControllerBase
         {
             Response.AddPaginationHeaders(pagination.Meta);
         }
-        return Ok(new ResponseWrapper<T>(message, result.Value));
+        return base.Ok(new ResponseWrapper<T>(message, result.Value));
     }
 
     protected ActionResult CreatedAtAction<T>(string? actionName, object? routeValues, T? value)
     {
         var message = "This is a test for Hossein";
-        return CreatedAtAction(actionName, routeValues, new ResponseWrapper<T>(message, value));
+        return base.CreatedAtAction(actionName, routeValues, new ResponseWrapper<T>(message, value));
     }
     public record ResponseWrapper<T>(string Message, T? Data);
 }
