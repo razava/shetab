@@ -12,7 +12,7 @@ internal class GetQuickAccessesQueryHandler(IUnitOfWork unitOfWork)
     public async Task<Result<List<AdminGetQuickAccessResponse>>> Handle(GetQuickAccessesQuery request, CancellationToken cancellationToken)
     {   
         var result = await unitOfWork.DbContext.Set<QuickAccess>()
-            .Where(q => q.IsDeleted == false &&
+            .Where(q => (request.ReturnAll || q.IsDeleted == false) &&
                 (request.FilterModel == null || request.FilterModel.Query == null || q.Title.Contains(request.FilterModel.Query)))
             .AsNoTracking()
             .OrderBy(q => q.Order)

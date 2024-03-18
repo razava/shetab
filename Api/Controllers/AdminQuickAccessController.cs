@@ -26,7 +26,7 @@ public class AdminQuickAccessController : ApiController
     [HttpGet]
     public async Task<ActionResult> GetQuickAccesses(int instanceId, [FromQuery] QueryFilter queryFilter)
     {
-        var query = new GetQuickAccessesQuery(instanceId, queryFilter.Adapt<QueryFilterModel>());
+        var query = new GetQuickAccessesQuery(instanceId, true, queryFilter.Adapt<QueryFilterModel>());
         var result = await Sender.Send(query);
         
         return result.Match(
@@ -84,6 +84,4 @@ public class AdminQuickAccessController : ApiController
             s => NoContent(),
             f => Problem(f));
     }
-
-
 }
