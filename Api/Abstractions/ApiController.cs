@@ -38,5 +38,11 @@ public class ApiController : ControllerBase
         var message = "This is a test for Hossein";
         return base.CreatedAtAction(actionName, routeValues, new ResponseWrapper<T>(message, value));
     }
+
+    protected ActionResult StatusCode<T>(int statusCode, T? value)
+    {
+        var message = "This is a test for Hossein";
+        return base.StatusCode(statusCode, new ResponseWrapper<T>(message, value));
+    }
     public record ResponseWrapper<T>(string Message, T? Data);
 }
