@@ -7,6 +7,7 @@ using Application.Comments.Commands.UpdateComment;
 using Application.Comments.Queries.GetAllCommentsQuery;
 using Application.Common.FilterModels;
 using Application.Common.Interfaces.Persistence;
+using Application.Common.Statics;
 using Application.Info.Queries.GetInfo;
 using Application.ReportNotes.Commands.AddReportNote;
 using Application.ReportNotes.Commands.DeleteReportNote;
@@ -27,6 +28,8 @@ using Application.Reports.Queries.GetReports;
 using Application.Satisfactions.Commands.UpsertSatisfaction;
 using Application.Satisfactions.Queries.GetSatisfaction;
 using Application.Users.Queries.GetUserById;
+using Application.Violations.Commands.CheckViolation;
+using Application.Violations.Queries.GetReportViolations;
 using Application.Workspaces.Queries.GetPossibleSources;
 using Domain.Models.Relational.Common;
 using Mapster;
@@ -383,11 +386,35 @@ public class StaffReportController : ApiController
     }
 
     [Authorize(Roles = "Operator")]
-    [HttpGet("Violations")]
-    public async Task<ActionResult<List<GetViolationsDto>>> GetViolations([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetCommentViolation filter)
+    [HttpGet("ReportViolations")]
+    public async Task<ActionResult> GetViolations([FromQuery] PagingInfo pagingInfo)
     {
-        await Task.CompletedTask;//.......................................
-        return Ok();
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetReportViolationsQuery(instanceId, pagingInfo);
+        var result = await Sender.Send(query);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+
+    [Authorize(Roles = RoleNames.Operator)]
+    [HttpPut("ReportViolations")]
+    public async Task<ActionResult> CheckViolation(CheckReportViolationDto checkReportViolationDto)
+    {
+        var userId = User.GetUserId();
+        var query = new CheckViolationCommand(
+            checkReportViolationDto.ReportId,
+            userId,
+            checkReportViolationDto.Action,
+            checkReportViolationDto.Comments,
+            checkReportViolationDto.Attachments);
+
+        var result = await Sender.Send(query);
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
 
@@ -503,3 +530,8 @@ public class StaffReportController : ApiController
 public record CreateReportNoteDto(string Text);
 public record UpsertSatisfactionDto(string Comments, int Rating);
 
+public record CheckReportViolationDto(
+    Guid ReportId,
+    ViolationCheckResult Action,
+    string? Comments,
+    List<Guid>? Attachments);

@@ -1,13 +1,11 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
-using Domain.Models.Relational.Common;
-using MediatR;
 
-namespace Application.Reports.Commands.ReportViolation;
+namespace Application.Violations.Commands.ReportViolation;
 
 internal sealed class ReportViolationCommandHandler(IViolationRepository violationRepository, IUnitOfWork unitOfWork) : IRequestHandler<ReportViolationCommand, Result<Violation>>
 {
-    
+
     public async Task<Result<Violation>> Handle(ReportViolationCommand request, CancellationToken cancellationToken)
     {
         var violation = new Violation()

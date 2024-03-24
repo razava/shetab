@@ -7,7 +7,7 @@ public class PossibleTransitionResponse
 {
     public string StageTitle { get; set; } = string.Empty;
     public int TransitionId { get; set; }
-    public IEnumerable<ProcessReason> ReasonList { get; set; } = new List<ProcessReason>();
+    public IEnumerable<ProcessReasonResponse> ReasonList { get; set; } = new List<ProcessReasonResponse>();
     public IEnumerable<ActorWithName> Actors { get; set; } = new List<ActorWithName>();
     public bool CanSendMessageToCitizen { get; set; }
     public TransitionType TransitionType { get; set; }
@@ -29,3 +29,5 @@ public class ActorWithName
     public string Organization { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
 }
+
+public record ProcessReasonResponse(int Id, string Title, string Description, ReasonMeaning ReasonMeaning);

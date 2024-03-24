@@ -1,7 +1,6 @@
 ﻿using Domain.Models.Relational;
-using MediatR;
 
-namespace Application.Reports.Commands.ReportViolation;
+namespace Application.Violations.Commands.ReportViolation;
 
 public sealed record ReportViolationCommand(
     int InstanceId,

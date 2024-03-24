@@ -1,9 +1,8 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Persistence;
-using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
-using Microsoft.EntityFrameworkCore;
+using Mapster;
 
 namespace Application.Reports.Queries.GetPossibleTransitions;
 
@@ -51,7 +50,7 @@ internal sealed class GetPossibleTransitionsQueryHandler(
             var t = new PossibleTransitionResponse()
             {
                 StageTitle = transition.To.DisplayName,
-                ReasonList = transition.ReasonList.ToList(),
+                ReasonList = transition.ReasonList.ToList().Adapt<List<ProcessReasonResponse>>(),
                 TransitionId = transition.Id,
                 CanSendMessageToCitizen = transition.CanSendMessageToCitizen
             };

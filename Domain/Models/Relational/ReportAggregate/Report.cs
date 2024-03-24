@@ -86,6 +86,7 @@ public class Report : Entity
     public bool IsIdentityVisible { get; private set; }
     public bool IsObjectioned { get; private set; }
     public bool IsFeedbacked { get; private set; }
+    public bool IsDeleted { get; private set; }
 
 
     #region Constructors
@@ -531,6 +532,11 @@ public class Report : Entity
             CitizenId,
             $"ثبت بازخورد شهروند با امتیاز {rating}"));
         LastOperation = ReportOperationType.Feedback;
+    }
+
+    public void Delete()
+    {
+        IsDeleted = true;
     }
 
     #region Private methods

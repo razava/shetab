@@ -29,11 +29,6 @@ public static class DependencyInjection
         services.AddIdentification(configuration);
         services.AddAuthorization(CustomPolicies.AddPolicies);
 
-
-
-        //AutoMapper
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
         //Config Mapster
         MapsterConfigurations.Config();
 
