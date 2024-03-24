@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Violations.Commands.ReportViolation;
 
@@ -18,6 +19,13 @@ internal sealed class ReportViolationCommandHandler(IViolationRepository violati
         };
         violationRepository.Insert(violation);
         await unitOfWork.SaveAsync();
+
+        await unitOfWork.DbContext.Set<Report>()
+            .Where(r => r.Id == request.ReportId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(r => r.ViolationCount, r => r.ViolationCount + 1)
+                .SetProperty(r => r.IsViolationChecked, false));
+
         return violation;
     }
 }

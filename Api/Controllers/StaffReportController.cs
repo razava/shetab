@@ -28,8 +28,9 @@ using Application.Reports.Queries.GetReports;
 using Application.Satisfactions.Commands.UpsertSatisfaction;
 using Application.Satisfactions.Queries.GetSatisfaction;
 using Application.Users.Queries.GetUserById;
-using Application.Violations.Commands.CheckViolation;
+using Application.Violations.Commands.CheckReportViolation;
 using Application.Violations.Queries.GetReportViolations;
+using Application.Violations.Queries.GetReportViolationsList;
 using Application.Workspaces.Queries.GetPossibleSources;
 using Domain.Models.Relational.Common;
 using Mapster;
@@ -387,10 +388,23 @@ public class StaffReportController : ApiController
 
     [Authorize(Roles = "Operator")]
     [HttpGet("ReportViolations")]
-    public async Task<ActionResult> GetViolations([FromQuery] PagingInfo pagingInfo)
+    public async Task<ActionResult> GetViolationsList([FromQuery] PagingInfo pagingInfo)
     {
         var instanceId = User.GetUserInstanceId();
-        var query = new GetReportViolationsQuery(instanceId, pagingInfo);
+        var query = new GetReportViolationsListQuery(instanceId, pagingInfo);
+        var result = await Sender.Send(query);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+
+    [Authorize(Roles = "Operator")]
+    [HttpGet("ReportViolations/{id:guid}")]
+    public async Task<ActionResult> GetViolations(Guid id, [FromQuery] PagingInfo pagingInfo)
+    {
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetReportViolationsQuery(id, pagingInfo);
         var result = await Sender.Send(query);
 
         return result.Match(
@@ -403,7 +417,7 @@ public class StaffReportController : ApiController
     public async Task<ActionResult> CheckViolation(Guid id, CheckReportViolationDto checkReportViolationDto)
     {
         var userId = User.GetUserId();
-        var query = new CheckViolationCommand(
+        var query = new CheckReportViolationCommand(
             id,
             userId,
             checkReportViolationDto.Action,

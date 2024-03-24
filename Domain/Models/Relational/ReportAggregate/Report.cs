@@ -79,6 +79,8 @@ public class Report : Entity
     public Feedback? Feedback { get; private set; }
     public int? Rating { get; private set; }
     public Satisfaction? Satisfaction { get; set; }
+    public int ViolationCount { get; private set; }
+    public bool IsViolationChecked { get; private set; }
 
 
     //Status
@@ -537,6 +539,11 @@ public class Report : Entity
     public void Delete()
     {
         IsDeleted = true;
+    }
+
+    public void ViolationChecked()
+    {
+        IsViolationChecked = true;
     }
 
     #region Private methods

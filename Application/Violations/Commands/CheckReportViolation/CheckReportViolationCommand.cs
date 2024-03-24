@@ -1,8 +1,8 @@
 ﻿using Domain.Models.Relational.Common;
 
-namespace Application.Violations.Commands.CheckViolation;
+namespace Application.Violations.Commands.CheckReportViolation;
 
-public record CheckViolationCommand(
+public record CheckReportViolationCommand(
     Guid ReportId,
     string OperatorId,
     ViolationCheckResult Action,
