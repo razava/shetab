@@ -399,12 +399,12 @@ public class StaffReportController : ApiController
     }
 
     [Authorize(Roles = RoleNames.Operator)]
-    [HttpPut("ReportViolations")]
-    public async Task<ActionResult> CheckViolation(CheckReportViolationDto checkReportViolationDto)
+    [HttpPut("ReportViolations/{id:Guid}")]
+    public async Task<ActionResult> CheckViolation(Guid id, CheckReportViolationDto checkReportViolationDto)
     {
         var userId = User.GetUserId();
         var query = new CheckViolationCommand(
-            checkReportViolationDto.ReportId,
+            id,
             userId,
             checkReportViolationDto.Action,
             checkReportViolationDto.Comments,
@@ -531,7 +531,6 @@ public record CreateReportNoteDto(string Text);
 public record UpsertSatisfactionDto(string Comments, int Rating);
 
 public record CheckReportViolationDto(
-    Guid ReportId,
     ViolationCheckResult Action,
     string? Comments,
     List<Guid>? Attachments);

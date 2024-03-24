@@ -4,7 +4,8 @@ using System.Linq.Expressions;
 
 namespace Application.Violations.Queries.GetReportViolations;
 
-public record GetReportViolationsQuery(int InstanceId, PagingInfo PagingInfo) : IRequest<Result<PagedList<ReportViolationResponse>>>;
+public record GetReportViolationsQuery(int InstanceId, PagingInfo PagingInfo) 
+    : IRequest<Result<PagedList<ReportViolationResponse>>>;
 
 
 public record ReportViolationResponse(
