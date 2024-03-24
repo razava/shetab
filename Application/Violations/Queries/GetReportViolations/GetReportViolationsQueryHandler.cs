@@ -11,6 +11,7 @@ internal class GetReportViolationsQueryHandler(IUnitOfWork unitOfWork)
     {
         var query = unitOfWork.DbContext.Set<Violation>()
             .AsSingleQuery()
+            .AsNoTracking()
             .Where(v => v.ShahrbinInstanceId == request.InstanceId && v.ReportId != null && v.ViolationCheckResult == null)
             .GroupBy(v => v.ReportId)
             .Select(ReportViolationResponse.GetSelector());
