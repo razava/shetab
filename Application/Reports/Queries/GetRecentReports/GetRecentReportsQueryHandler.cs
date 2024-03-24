@@ -17,7 +17,8 @@ internal sealed class GetRecentReportsQueryHandler(IUnitOfWork unitOfWork)
         var context = unitOfWork.DbContext.Set<Report>();
         var query = context.Where(r => r.ReportState != ReportState.NeedAcceptance
                                        && r.Visibility == Visibility.EveryOne
-                                       && r.ShahrbinInstanceId == request.InstanceId);
+                                       && r.ShahrbinInstanceId == request.InstanceId
+                                       && !r.IsDeleted);
         var query2 = query
             .OrderByDescending(r => r.LastStatusDateTime)
             .AsNoTracking()

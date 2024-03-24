@@ -21,7 +21,8 @@ internal sealed class GetNearestReportsQueryHandler(IUnitOfWork unitOfWork)
         var query = context.Where(r => r.ReportState != ReportState.NeedAcceptance
                                        && r.Visibility == Visibility.EveryOne
                                        && r.ShahrbinInstanceId == request.InstanceId
-                                       && r.Address.Location != null);
+                                       && r.Address.Location != null
+                                       && !r.IsDeleted);
         var query2 = query
             .OrderBy(r => r.Address.Location!.Distance(currentLocation))
             .AsNoTracking()
