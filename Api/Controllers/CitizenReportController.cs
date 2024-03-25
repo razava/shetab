@@ -16,6 +16,7 @@ using Application.Reports.Queries.GetNearestReports;
 using Application.Reports.Queries.GetRecentReports;
 using Application.Reports.Queries.GetReportById;
 using Application.Reports.Queries.GetUserReports;
+using Application.Violations.Commands.CommentViolation;
 using Application.Violations.Commands.ReportViolation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -315,10 +316,17 @@ public class CitizenReportController : ApiController
 
     [Authorize(Roles = "Citizen")]
     [HttpPost("CommentViolation/{id:Guid}")]
-    public async Task<ActionResult> CreateCommentViolation(Guid id, CreateCommentViolationDto createViolationDto)
+    public async Task<ActionResult> CreateCommentViolation(Guid id, int instanceId, CreateCommentViolationDto createViolationDto)
     {
-        await Task.CompletedTask;//............................................
-        return Ok("Not Implemented");
+        var userId = User.GetUserId();
+        if (userId is null)
+            return Unauthorized();
+        var command = new CommentViolationCommand(instanceId, id, userId, createViolationDto.ViolationTypeId, createViolationDto.Description);
+        var result = await Sender.Send(command);
+
+        return result.Match(
+            s => Ok(),
+            f => Problem(f));
     }
 
 }
