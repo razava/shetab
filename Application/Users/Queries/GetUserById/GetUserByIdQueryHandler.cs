@@ -13,6 +13,7 @@ internal class GetUserByIdQueryHandler(IUnitOfWork unitOfWork)
         var user = await unitOfWork.DbContext.Set<ApplicationUser>()
             .Where(u => u.Id == request.UserId)
             .Select(AdminGetUserDetailsResponse.GetSelector())
+            .AsNoTracking()
             .FirstOrDefaultAsync();
         if (user is null)
             return NotFoundErrors.User;
