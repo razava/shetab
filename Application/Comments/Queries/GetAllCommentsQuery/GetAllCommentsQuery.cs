@@ -15,7 +15,8 @@ public record GetCommentsResponse(
     Guid Id,
     GetShortUserResponse User,
     string Text,
-    Guid? ReportId)
+    Guid? ReportId,
+    DateTime DateTime)
 {
     public static Expression<Func<Comment, GetCommentsResponse>> GetSelector()
     {
@@ -24,7 +25,8 @@ public record GetCommentsResponse(
                 comment.Id,
                 new GetShortUserResponse(comment.User.FirstName, comment.User.LastName, comment.User.UserName!, comment.User.Avatar),
                 comment.Text,
-                comment.ReportId);
+                comment.ReportId,
+                comment.DateTime);
 
         return selector;
     }

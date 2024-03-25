@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Users.Commands.CreateContractor;
 using Domain.Models.Relational.IdentityAggregate;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Users.Queries.GetContractors;
 
@@ -11,6 +12,7 @@ internal class GetContractorsQueryHandler(IUnitOfWork unitOfWork) : IRequestHand
     {
         var context = unitOfWork.DbContext;
         var query = context.Set<ExecutiveContractor>().Where(ec => ec.ExecutiveId == request.ExecutiveId)
+            .AsNoTracking()
             .Select(ec => ec.Contractor)
             .Select(GetContractorsListResponse.GetSelector());
 
