@@ -28,7 +28,10 @@ using Application.Reports.Queries.GetReports;
 using Application.Satisfactions.Commands.UpsertSatisfaction;
 using Application.Satisfactions.Queries.GetSatisfaction;
 using Application.Users.Queries.GetUserById;
+using Application.Violations.Commands.CheckCommentViolation;
 using Application.Violations.Commands.CheckReportViolation;
+using Application.Violations.Queries.GetCommentViolations;
+using Application.Violations.Queries.GetCommentViolationsList;
 using Application.Violations.Queries.GetReportViolations;
 using Application.Violations.Queries.GetReportViolationsList;
 using Application.Workspaces.Queries.GetPossibleSources;
@@ -388,7 +391,7 @@ public class StaffReportController : ApiController
 
     [Authorize(Roles = "Operator")]
     [HttpGet("ReportViolations")]
-    public async Task<ActionResult> GetViolationsList([FromQuery] PagingInfo pagingInfo)
+    public async Task<ActionResult> GetReportViolationsList([FromQuery] PagingInfo pagingInfo)
     {
         var instanceId = User.GetUserInstanceId();
         var query = new GetReportViolationsListQuery(instanceId, pagingInfo);
@@ -401,7 +404,7 @@ public class StaffReportController : ApiController
 
     [Authorize(Roles = "Operator")]
     [HttpGet("ReportViolations/{id:guid}")]
-    public async Task<ActionResult> GetViolations(Guid id, [FromQuery] PagingInfo pagingInfo)
+    public async Task<ActionResult> GetReportViolations(Guid id, [FromQuery] PagingInfo pagingInfo)
     {
         var instanceId = User.GetUserInstanceId();
         var query = new GetReportViolationsQuery(id, pagingInfo);
@@ -414,7 +417,7 @@ public class StaffReportController : ApiController
 
     [Authorize(Roles = RoleNames.Operator)]
     [HttpPut("ReportViolations/{id:Guid}")]
-    public async Task<ActionResult> CheckViolation(Guid id, CheckReportViolationDto checkReportViolationDto)
+    public async Task<ActionResult> CheckReportViolation(Guid id, CheckReportViolationDto checkReportViolationDto)
     {
         var userId = User.GetUserId();
         var query = new CheckReportViolationCommand(
@@ -433,11 +436,47 @@ public class StaffReportController : ApiController
 
 
     [Authorize(Roles = "Operator")]
-    [HttpPut("Violation/{id:Guid}")]
-    public async Task<ActionResult> PutViolation(Guid id, ViolationPutDto violationPutDto)
+    [HttpGet("CommentViolations")]
+    public async Task<ActionResult> GetCommentViolationsList([FromQuery] PagingInfo pagingInfo)
     {
-        await Task.CompletedTask;//.......................................
-        return NoContent();
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetCommentViolationsListQuery(instanceId, pagingInfo);
+        var result = await Sender.Send(query);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+
+    [Authorize(Roles = "Operator")]
+    [HttpGet("CommentViolations/{id:guid}")]
+    public async Task<ActionResult> GetCommentViolations(Guid id, [FromQuery] PagingInfo pagingInfo)
+    {
+        var instanceId = User.GetUserInstanceId();
+        var query = new GetCommentViolationsQuery(id, pagingInfo);
+        var result = await Sender.Send(query);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+
+    [Authorize(Roles = RoleNames.Operator)]
+    [HttpPut("CommentViolations/{id:Guid}")]
+    public async Task<ActionResult> CheckCommentViolation(Guid id, CheckCommentViolationDto checkCommentViolationDto)
+    {
+        var userId = User.GetUserId();
+        var query = new CheckCommentViolationCommand(
+            id,
+            userId,
+            checkCommentViolationDto.Action,
+            checkCommentViolationDto.Text);
+
+        var result = await Sender.Send(query);
+
+        return result.Match(
+            s => NoContent(),
+            f => Problem(f));
     }
 
     //todo : define Access Policy
@@ -548,3 +587,7 @@ public record CheckReportViolationDto(
     ViolationCheckResult Action,
     string? Comments,
     List<Guid>? Attachments);
+
+public record CheckCommentViolationDto(
+    ViolationCheckResult Action,
+    string? Text);
