@@ -23,6 +23,7 @@ internal class GetCitizenQuickAccessesQueryHandler(IUnitOfWork unitOfWork)
                 (request.FilterModel == null || request.FilterModel.Query == null || q.Title.Contains(request.FilterModel.Query)))
             .OrderBy(q => q.Order)
             .Select(CitizenGetQuickAccessResponse.GetSelector())
+            .AsNoTracking()
             .ToListAsync();
 
         return result;
