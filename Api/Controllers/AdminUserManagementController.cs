@@ -53,7 +53,8 @@ public class AdminUserManagementController : ApiController
             updateUserDto.Gender,
             updateUserDto.Education,
             updateUserDto.BirthDate,
-            updateUserDto.PhoneNumber2);
+            updateUserDto.PhoneNumber2,
+            updateUserDto.SmsAlert);
 
         var result = await Sender.Send(command);
 

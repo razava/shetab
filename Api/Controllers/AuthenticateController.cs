@@ -203,7 +203,8 @@ public class AuthenticateController : ApiController
             updateDto.Gender,
             updateDto.Education,
             updateDto.BirthDate,
-            updateDto.PhoneNumber2);
+            updateDto.PhoneNumber2,
+            updateDto.SmsAlert);
 
         var result = await Sender.Send(command);
 

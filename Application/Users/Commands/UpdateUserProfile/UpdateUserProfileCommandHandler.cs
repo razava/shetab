@@ -31,6 +31,7 @@ internal class UpdateUserProfileCommandHandler(
         user.Education = request.Education ?? user.Education;
         user.BirthDate = request.BirthDate ?? user.BirthDate;
         user.PhoneNumber2 = request.PhoneNumber2 ?? user.PhoneNumber2;
+        user.SmsAlert = request.SmsAlert ?? user.SmsAlert;
 
         userRepository.Update(user);
         await unitOfWork.SaveAsync();

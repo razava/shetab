@@ -14,5 +14,6 @@ public record UpdateUserProfileCommand(
     Gender? Gender = null,
     Education? Education = null,
     DateTime? BirthDate = null,
-    string? PhoneNumber2 = null
+    string? PhoneNumber2 = null,
+    bool? SmsAlert = null
     ) : IRequest<Result<ApplicationUser>>;

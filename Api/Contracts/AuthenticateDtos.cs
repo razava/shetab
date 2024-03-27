@@ -68,7 +68,8 @@ public record UpdateProfileDto(
     //AddressDto Address,
     [MaxLength(16)]
     string? NationalId,
-    bool? TwoFactorEnabled);
+    bool? TwoFactorEnabled,
+    bool? SmsAlert);
 
 public record ChangePasswordDto(
     //string Username,
