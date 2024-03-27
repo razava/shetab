@@ -186,11 +186,19 @@ public static class DependencyInjection
     {
         services.AddQuartz(options =>
         {
-            var jobKey = JobKey.Create(nameof(SendingSmsBackgroundJob));
-            options.AddJob<SendingSmsBackgroundJob>(jobKey)
+            var smsJobKey = JobKey.Create(nameof(SendingSmsBackgroundJob));
+            options.AddJob<SendingSmsBackgroundJob>(smsJobKey)
                 .AddTrigger(trigger => 
                     trigger
-                        .ForJob(jobKey)
+                        .ForJob(smsJobKey)
+                        .WithSimpleSchedule(schedule =>
+                            schedule.WithIntervalInMinutes(5).RepeatForever()));
+
+            var feedbackJobKey = JobKey.Create(nameof(SendingFeedbackBackgroundJob));
+            options.AddJob<SendingFeedbackBackgroundJob>(smsJobKey)
+                .AddTrigger(trigger =>
+                    trigger
+                        .ForJob(feedbackJobKey)
                         .WithSimpleSchedule(schedule =>
                             schedule.WithIntervalInMinutes(5).RepeatForever()));
         });

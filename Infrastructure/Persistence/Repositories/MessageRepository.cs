@@ -35,7 +35,7 @@ public class MessageRepository : GenericRepository<Message>, IMessageRepository
         return result;
     }
 
-    public async Task SetAsSend(List<Guid> ids)
+    public async Task SetAsSent(List<Guid> ids)
     {
         var now = DateTime.UtcNow;
         await context.Set<Message>()

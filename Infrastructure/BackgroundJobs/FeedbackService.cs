@@ -1,7 +1,4 @@
-﻿using Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
-
-namespace Infrastructure.BackgroundJobs;
+﻿namespace Infrastructure.BackgroundJobs;
 
 /*
 public class FeedbackService

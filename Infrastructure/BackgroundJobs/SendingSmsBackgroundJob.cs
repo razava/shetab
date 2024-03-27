@@ -19,7 +19,7 @@ public class SendingSmsBackgroundJob(
         var messageIds = smses.Select(s => s.MessageId).ToList();
         if (messageIds.Any())
         {
-            await messageRepository.SetAsSend(messageIds);
+            await messageRepository.SetAsSent(messageIds);
         }
     }
 }
