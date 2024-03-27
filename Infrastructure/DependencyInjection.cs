@@ -187,7 +187,7 @@ public static class DependencyInjection
         services.AddQuartz(options =>
         {
             var smsJobKey = JobKey.Create(nameof(SendingSmsBackgroundJob));
-            options.AddJob<SendingSmsBackgroundJob>(smsJobKey)
+            options.AddJob<SendingSmsBackgroundJob>(smsJobKey, j => j.StoreDurably())
                 .AddTrigger(trigger => 
                     trigger
                         .ForJob(smsJobKey)
@@ -195,12 +195,18 @@ public static class DependencyInjection
                             schedule.WithIntervalInMinutes(5).RepeatForever()));
 
             var feedbackJobKey = JobKey.Create(nameof(SendingFeedbackBackgroundJob));
-            options.AddJob<SendingFeedbackBackgroundJob>(smsJobKey)
+            options.AddJob<SendingFeedbackBackgroundJob>(feedbackJobKey, j => j.StoreDurably())
                 .AddTrigger(trigger =>
                     trigger
                         .ForJob(feedbackJobKey)
-                        .WithSimpleSchedule(schedule =>
-                            schedule.WithIntervalInMinutes(5).RepeatForever()));
+                        .WithCronSchedule(CronScheduleBuilder.DailyAtHourAndMinute(19, 0)));
+
+            var statisticsJobKey = JobKey.Create(nameof(SendingStatisticsBackgroundJob));
+            options.AddJob<SendingStatisticsBackgroundJob>(statisticsJobKey, j => j.StoreDurably())
+                .AddTrigger(trigger =>
+                    trigger
+                        .ForJob(statisticsJobKey)
+                        .WithCronSchedule(CronScheduleBuilder.DailyAtHourAndMinute(7, 0)));
         });
 
         services.AddQuartzHostedService(options =>
