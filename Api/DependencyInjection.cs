@@ -1,10 +1,7 @@
-﻿using Api.Configurations;
-using Api.Services;
-using Api.Services.Filters;
+﻿using Api.Services.Filters;
 using Api.Services.Tools;
 using Application.Common.Statics;
 using Domain.Models.Relational.IdentityAggregate;
-using Infrastructure.Communications.PushNotification;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -29,44 +26,8 @@ public static class DependencyInjection
         services.AddIdentification(configuration);
         services.AddAuthorization(CustomPolicies.AddPolicies);
 
-        //Config Mapster
-        MapsterConfigurations.Config();
-
-        //Configurations
-
-        services.Configure<GeneralSettings>(configuration.GetSection(GeneralSettings.Name));
-        services.Configure<FirebaseProxyOptions>(configuration.GetSection(FirebaseProxyOptions.Name));
-        services.Configure<FeedbackOptions>(configuration.GetSection(FeedbackOptions.Name));
-        services.Configure<List<AppVersion>>(configuration.GetSection("AppVersions"));
-
-        services.AddSignalR();
-        // ReCaptcha
-        //builder.Services.AddOptions<CaptchaSettings>().BindConfiguration("Captcha");
-        //builder.Services.AddTransient<CaptchaVerificationService>();
-
-        //Firebase Cloud Messaging
-        var generalSettings = configuration.GetSection(GeneralSettings.Name).Get<GeneralSettings>();
-        if (generalSettings == null)
-            throw new Exception("General settings cannot be null.");
-        if (generalSettings.UseProxy)
-        {
-            //builder.Services.AddSingleton<IFirebaseCloudMessaging>(new FirebaseCloudMessagingProxy(generalSettings.ProxyUrl));
-        }
-        else
-        {
-            services.AddSingleton<IFirebaseCloudMessaging>(new FirebaseCloudMessaging());
-        }
-
-        //Captcha provider
-        //builder.Services.AddSingleton<ICaptchaProvider, CaptchaProvider>();
-
-
-        //NotificationHostedService
-        //builder.Services.AddHostedService<SendNotificationsHostedService>();
-
-        //Adding static settings
+        //TODO: Do we need this?
         services.AddMemoryCache();
-        //builder.Services.AddMediatR();
 
         return services;
     }
