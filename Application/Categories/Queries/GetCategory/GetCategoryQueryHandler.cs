@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Categories.Queries.GetCategory;
 
-internal sealed class GetCategoryQueryHandler(IUnitOfWork unitOfWork) 
+internal sealed class GetCategoryQueryHandler(ICategoryRepository categoryRepository) 
     : IRequestHandler<GetCategoryQuery, Result<CategoryResponse>>
 {
    
@@ -14,30 +14,8 @@ internal sealed class GetCategoryQueryHandler(IUnitOfWork unitOfWork)
         GetCategoryQuery request,
         CancellationToken cancellationToken)
     {
-        var query = unitOfWork.DbContext.Set<Category>()
-            .Where(c => c.ShahrbinInstanceId == request.InstanceId
-                        && (request.ReturnAll || !c.IsDeleted));
 
-        if (request.Roles is not null)
-            query = query.Where(c => request.Roles.Contains(c.Role.Name!));
-
-        var categories = await query
-            .Include(c => c.Form)
-            .AsNoTracking()
-            .ToListAsync();
-
-        categories.ForEach(x => x.Categories = categories.Where(c => c.ParentId == x.Id).ToList());
-        var roots = categories.Where(x => x.ParentId == null).ToList();
-
-        Category result;
-        if (roots.Count == 1)
-            result = roots[0];
-        else
-        {
-            result = Category.CreateDummy("ریشه", "");
-            roots.Where(r => r.ParentId == null).ToList().ForEach(c => c.Parent = result);
-        }
-        var t = result.Adapt<CategoryResponse>();
-        return t;
+        var result = await categoryRepository.GetCategories(request.InstanceId, request.Roles, request.ReturnAll);
+        return result.Adapt<CategoryResponse>();
     }
 }

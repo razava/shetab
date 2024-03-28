@@ -28,6 +28,26 @@ public class CategoryRepository : GenericRepository<Category>, ICategoryReposito
         return result;
     }
 
+
+    public async Task<Category?> GetById(int id, string includeProperties = "", bool trackChanges = false)
+    {
+        var query = context.Category.Where(c => c.Id == id);
+
+        if(!trackChanges)
+            query = query.AsNoTracking();
+
+        foreach (var includeProperty in includeProperties.Split
+            (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            query = query.Include(includeProperty);
+        }
+
+        var result = await query.SingleOrDefaultAsync();
+        return result;
+
+    }
+
+
     public async Task<Category?> GetByIDNoTrackingAsync(object id)
     {
         var categoryId = (int)id;
@@ -88,4 +108,37 @@ public class CategoryRepository : GenericRepository<Category>, ICategoryReposito
 
         return result;
     }
+
+
+
+    public async Task<Category?> GetCategories(int instanceId, List<string>? roles, bool returnAll)
+    {
+        var query = context.Category
+            .Where(c => c.ShahrbinInstanceId == instanceId
+                        && (returnAll || !c.IsDeleted));
+
+        if (roles is not null)
+            query = query.Where(c => roles.Contains(c.Role.Name!));
+
+        var categories = await query
+            .Include(c => c.Form)
+            .AsNoTracking()
+            .ToListAsync();
+
+        categories.ForEach(x => x.Categories = categories.Where(c => c.ParentId == x.Id).ToList());
+        var roots = categories.Where(x => x.ParentId == null).ToList();
+
+        Category result;
+        if (roots.Count == 1)
+            result = roots[0];
+        else
+        {
+            result = Category.CreateDummy("ریشه", "");
+            roots.Where(r => r.ParentId == null).ToList().ForEach(c => c.Parent = result);
+        }
+
+        return result;
+    }
+
+
 }

@@ -6,17 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Categories.Queries.GetCategoryById;
 
-internal sealed class GetCategoryByIdQueryHandler(IUnitOfWork unitOfWork) 
+internal sealed class GetCategoryByIdQueryHandler(ICategoryRepository categoryRepository) 
     : IRequestHandler<GetCategoryByIdQuery, Result<CategoryDetailResponse>>
 {
 
     public async Task<Result<CategoryDetailResponse>> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
     {
-        //TODO: perform required filtering
-        var result = await unitOfWork.DbContext.Set<Category>()
-            .Where(c => c.Id == request.Id)
-            .Include(c => c.Form)
-            .SingleOrDefaultAsync();
+        //TODO: perform instanceId check
+
+        var result =await categoryRepository.GetById(request.Id, "Form", false);
 
         if (result is null)
             return NotFoundErrors.Category;
