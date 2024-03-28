@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Comments.Queries.GetAllCommentsQuery;
 
-internal sealed class GetAllCommentsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetAllCommentsQuery, Result<PagedList<GetCommentsResponse>>>
+internal sealed class GetAllCommentsQueryHandler(ICommentRepository commentRepository) : IRequestHandler<GetAllCommentsQuery, Result<PagedList<GetCommentsResponse>>>
 {
     public async Task<Result<PagedList<GetCommentsResponse>>> Handle(GetAllCommentsQuery request, CancellationToken cancellationToken)
     {
@@ -16,13 +16,8 @@ internal sealed class GetAllCommentsQueryHandler(IUnitOfWork unitOfWork) : IRequ
         && (request.FilterModel.CategoryIds == null || c.Report == null || request.FilterModel.CategoryIds.Contains(c.Report.CategoryId))
         && (request.FilterModel.Query == null || c.Report == null || c.Report.TrackingNumber.Contains(request.FilterModel.Query)));
 
-        var query = unitOfWork.DbContext.Set<Comment>()
-            .Where(filter)
-            .AsNoTracking()
-            .OrderBy(c => c.DateTime)
-            .Select(GetCommentsResponse.GetSelector());
-
-        var result = await PagedList<GetCommentsResponse>.ToPagedList(query, request.PagingInfo.PageNumber, request.PagingInfo.PageSize);
+        
+        var result = await commentRepository.GetAll(filter, request.PagingInfo, GetCommentsResponse.GetSelector());
 
         return result;
     }
