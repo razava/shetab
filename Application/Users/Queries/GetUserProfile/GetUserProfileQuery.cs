@@ -21,7 +21,8 @@ public record GetProfileResponse(
     Gender Gender,
     Education Education,
     DateTime? BirthDate,
-    Media? Avatar)
+    Media? Avatar,
+    bool SmsAlert)
 {
     public static Expression<Func<ApplicationUser, GetProfileResponse>> GetSelector()
     {
@@ -39,7 +40,8 @@ public record GetProfileResponse(
                 user.Gender,
                 user.Education,
                 user.BirthDate,
-                user.Avatar);
+                user.Avatar,
+                user.SmsAlert);
                 
         return selector;
     }
