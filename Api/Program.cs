@@ -1,4 +1,3 @@
-using Api.Hubs;
 using Microsoft.EntityFrameworkCore;
 using Application;
 using Infrastructure;
@@ -47,9 +46,6 @@ app.UseAuthorization();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseStaticFiles();
 app.MapControllers();
-//app.MapControllerRoute(name: "default", pattern: "api/{controller}/{instanceId?}/{action}/{id?}");
-app.MapHub<NewEventHub>("/eventhub");
-
 
 app.Run();
 

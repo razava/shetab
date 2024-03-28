@@ -10,6 +10,7 @@ using Infrastructure.BackgroundJobs;
 using Infrastructure.Caching;
 using Infrastructure.Captcha;
 using Infrastructure.Communications;
+using Infrastructure.Communications.PushNotification;
 using Infrastructure.Exceptions;
 using Infrastructure.Info;
 using Infrastructure.Map;
@@ -38,7 +39,7 @@ public static class DependencyInjection
         services.AddCommunication(configuration);
         services.AddMap(configuration);
         services.AddCache();
-        services.AddBackgroundJobs();
+        services.AddBackgroundJobs(configuration);
         services.AddMyYazd(configuration);
         services.AddScoped<IInfoService, InfoService>();
         return services;
@@ -145,10 +146,6 @@ public static class DependencyInjection
 
             busConfigurator.UsingRabbitMq((context, configurator) =>
             {
-                //configurator.Message<MessageBrokerMessage>(x =>
-                //{
-                //    x.SetEntityName("shahrbin-communication");
-                //});
                 configurator.Host(new Uri(host), h =>
                 {
                     h.Username(username);
@@ -159,11 +156,8 @@ public static class DependencyInjection
         });
 
         services.AddScoped<ICommunicationService, CommunicationServiceUsingMessageBroker>();
-        //services.AddSingleton<ISmsService>(x => new KaveNegarSms(
-        //    new KaveNegarInfo(
-        //        "10008000600033",
-        //        "6367746F52314D6A52574C4E5766372F76653278365466334B6F777A35463764732F765667653332396F593D",
-        //        "Namay")));
+
+        services.AddSingleton<IFirebaseCloudMessaging>(new FirebaseCloudMessaging());
 
         return services;
     }
@@ -182,31 +176,34 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddBackgroundJobs(this IServiceCollection services)
+    public static IServiceCollection AddBackgroundJobs(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddQuartz(options =>
         {
+            var smsCronSchedule = configuration.GetValue<string>("JobScheduleOptions:Sms") ?? "0 0/5 * ? * * *";
             var smsJobKey = JobKey.Create(nameof(SendingSmsBackgroundJob));
             options.AddJob<SendingSmsBackgroundJob>(smsJobKey, j => j.StoreDurably())
                 .AddTrigger(trigger => 
                     trigger
                         .ForJob(smsJobKey)
-                        .WithSimpleSchedule(schedule =>
-                            schedule.WithIntervalInMinutes(5).RepeatForever()));
+                        .WithCronSchedule(smsCronSchedule));
 
+            services.Configure<FeedbackOptions>(configuration.GetSection(FeedbackOptions.Name));
+            var feedbackCronSchedule = configuration.GetValue<string>("JobScheduleOptions:Feedback") ?? "0 0 19 ? * * *";
             var feedbackJobKey = JobKey.Create(nameof(SendingFeedbackBackgroundJob));
             options.AddJob<SendingFeedbackBackgroundJob>(feedbackJobKey, j => j.StoreDurably())
                 .AddTrigger(trigger =>
                     trigger
                         .ForJob(feedbackJobKey)
-                        .WithCronSchedule(CronScheduleBuilder.DailyAtHourAndMinute(19, 0)));
+                        .WithCronSchedule(feedbackCronSchedule));
 
+            var statisticsCronSchedule = configuration.GetValue<string>("JobScheduleOptions:Statistics") ?? "0 0 7 ? * * *";
             var statisticsJobKey = JobKey.Create(nameof(SendingStatisticsBackgroundJob));
             options.AddJob<SendingStatisticsBackgroundJob>(statisticsJobKey, j => j.StoreDurably())
                 .AddTrigger(trigger =>
                     trigger
                         .ForJob(statisticsJobKey)
-                        .WithCronSchedule(CronScheduleBuilder.DailyAtHourAndMinute(7, 0)));
+                        .WithCronSchedule(statisticsCronSchedule));
         });
 
         services.AddQuartzHostedService(options =>
