@@ -11,6 +11,7 @@ using Infrastructure.Caching;
 using Infrastructure.Captcha;
 using Infrastructure.Communications;
 using Infrastructure.Communications.PushNotification;
+using Infrastructure.Communications.UrlShortener;
 using Infrastructure.Exceptions;
 using Infrastructure.Info;
 using Infrastructure.Map;
@@ -158,6 +159,17 @@ public static class DependencyInjection
         services.AddScoped<ICommunicationService, CommunicationServiceUsingMessageBroker>();
 
         services.AddSingleton<IFirebaseCloudMessaging>(new FirebaseCloudMessaging());
+
+
+        services.Configure<UrlShortenerOptions>(
+            configuration.GetSection(UrlShortenerOptions.Name));
+
+        services.AddHttpClient<IUrlShortenerService, UrlShortenerService>(
+            client =>
+            {
+                client.BaseAddress = new Uri(configuration.GetSection(UrlShortenerOptions.Name).GetValue<string>("Url") ??
+                    throw new Exception("Url shortener url not specified."));
+            });
 
         return services;
     }

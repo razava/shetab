@@ -1,8 +1,6 @@
 ﻿using Application.Common.Interfaces.MyYazd;
-using Application.Common.Interfaces.Persistence;
 using Domain.Models.MyYazd;
 using FluentResults;
-using Infrastructure.Storage;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SharedKernel.Errors;

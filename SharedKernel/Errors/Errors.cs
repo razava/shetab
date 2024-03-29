@@ -106,6 +106,11 @@ public static class MyYazdErrors
     public static readonly Error General = new Error("ارتباط با یزد من ناموفق بود.");
 }
 
+public static class UrlShortenerErrors
+{
+    public static readonly Error General = new Error("ارتباط با کوتاه کننده آدرس ناموفق بود.");
+}
+
 public static class MapErrors
 {
     public static readonly Error AddressResolutionFailed = new Error("خطا در دریافت آدرس");
