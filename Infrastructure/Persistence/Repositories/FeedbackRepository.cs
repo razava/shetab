@@ -16,7 +16,7 @@ public class FeedbackRepository : GenericRepository<Feedback>, IFeedbackReposito
             .Where(f => f.LastSent == null)
             .Take(count)
             .Select(f => new FeedbackWithReciepient(
-                f.Id,
+                f.ReportId,
                 f.User.PhoneNumber ?? ""))
             .ToListAsync();
 

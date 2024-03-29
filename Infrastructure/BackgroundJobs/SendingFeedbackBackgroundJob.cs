@@ -23,17 +23,17 @@ public class SendingFeedbackBackgroundJob(
             return;
 
         var urlsResult = await urlShortenerService.UrlShortener(
-            feedbacks.Select(f => new ShortenUrlRequest("FEEDBACK", f.FeedbackId.ToString())).ToList());
+            feedbacks.Select(f => new ShortenUrlRequest("FEEDBACK", f.ReportId.ToString())).ToList());
         if (urlsResult.IsFailed)
             return;
 
         foreach (var sms in feedbacks)
         {
-            var url = urlsResult.Value.Where(u => u.Path == sms.FeedbackId.ToString()).First();
+            var url = urlsResult.Value.Where(u => u.Path == sms.ReportId.ToString()).First();
             var message = $"{messageDescription}\n{url}";
             await communicationService.SendAsync(sms.PhoneNumber, message);
         }
-        var messageIds = feedbacks.Select(s => s.FeedbackId).ToList();
+        var messageIds = feedbacks.Select(s => s.ReportId).ToList();
         if (messageIds.Any())
         {
             await feedbackRepository.SetAsSent(messageIds);

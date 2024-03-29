@@ -8,4 +8,4 @@ public interface IFeedbackRepository : IGenericRepository<Feedback>
     Task SetAsSent(List<Guid> ids);
 }
 
-public record FeedbackWithReciepient(Guid FeedbackId, string PhoneNumber);
+public record FeedbackWithReciepient(Guid ReportId, string PhoneNumber);
