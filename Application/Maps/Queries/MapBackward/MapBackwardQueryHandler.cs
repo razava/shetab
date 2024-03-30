@@ -1,8 +1,6 @@
 ﻿using Application.Common.Interfaces.Map;
 using Application.Common.Interfaces.Map.ParsiMap;
 using Application.Common.Interfaces.Persistence;
-using Domain.Models.Relational.Common;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Maps.Queries.MapBackward;
 

@@ -1,7 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Forms.Common;
-using Domain.Models.Relational.ReportAggregate;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Forms.Queries.GetForm;
 
