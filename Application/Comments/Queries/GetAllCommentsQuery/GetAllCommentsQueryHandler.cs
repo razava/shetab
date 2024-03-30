@@ -1,6 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.ReportAggregate;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Comments.Queries.GetAllCommentsQuery;
 

@@ -3,6 +3,7 @@ using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ReportAggregate;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Persistence.Repositories;
 
@@ -12,6 +13,28 @@ public class MessageRepository : GenericRepository<Message>, IMessageRepository
     public MessageRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
         context = dbContext;
+    }
+
+    public async Task<int> GetMessageCount(string userId, DateTime from)
+    {
+        var result = await context.Message.AsNoTracking()
+            .Where(m => m.Recepient.Type == RecepientType.Person
+                && m.Recepient.ToId == userId
+                && m.DateTime > from)
+            .CountAsync();
+
+        return result;
+    }
+
+    public async Task<PagedList<T>> GetMessages<T>(string userId, Expression<Func<Message, T>> selector, PagingInfo pagingInfo)
+    {
+        var query = context.Message.AsNoTracking()
+            .Where(m => m.Recepient.Type == RecepientType.Person
+                && m.Recepient.ToId == userId)
+            .OrderByDescending(m => m.DateTime)
+            .Select(selector);
+
+        return await PagedList<T>.ToPagedList(query, pagingInfo.PageNumber, pagingInfo.PageSize);
     }
 
     public async Task<List<MessageWithReciepient>> GetToSendSms(int count)

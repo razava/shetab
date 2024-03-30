@@ -11,6 +11,9 @@ public class ServerNotFoundException : Exception
     }
 }
 
+//ShahrbinInstance
+public class ShahrbinInstanceNotFoundException : Exception { }
+
 
 //Generic Repository
 public class MethodNotFoundException : Exception { }
