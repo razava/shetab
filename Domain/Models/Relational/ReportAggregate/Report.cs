@@ -249,7 +249,7 @@ public class Report : Entity
     public void InitProcess()
     {
         var now = DateTime.UtcNow;
-        var firstStage = Process.Stages.OrderBy(p => p.Id).First();
+        var firstStage = Process.Stages.Where(p => p.Name == "Citizen").First();
         CurrentStageId = firstStage.Id;
         LastStatus = firstStage.Status;
         LastStatusDateTime = now;
