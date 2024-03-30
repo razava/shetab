@@ -5,17 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Forms.Queries.GetForm;
 
-internal class GetFormQueryHandler(IUnitOfWork unitOfWork)
+internal class GetFormQueryHandler(IFormRepository formRepository)
     : IRequestHandler<GetFormQuery, Result<List<FormListItemResponse>>>
 {
     public async Task<Result<List<FormListItemResponse>>> Handle(
         GetFormQuery request,
         CancellationToken cancellationToken)
     {
-        var result = await unitOfWork.DbContext.Set<Form>()
-            .Select(f => new FormListItemResponse(f.Id, f.Title))
-            .ToListAsync();
 
+        var result = await formRepository.GetForms(request.InstanceId, FormListItemResponse.GetSelector());
         return result;
     }
 }
