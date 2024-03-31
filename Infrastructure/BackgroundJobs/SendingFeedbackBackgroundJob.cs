@@ -30,7 +30,9 @@ public class SendingFeedbackBackgroundJob(
         foreach (var sms in feedbacks)
         {
             var url = urlsResult.Value.Where(u => u.Path == sms.ReportId.ToString()).First();
-            var message = $"{messageDescription}\n{url}";
+            if(url is null)
+                continue;
+            var message = $"{messageDescription}\n{url.Url}";
             await communicationService.SendAsync(sms.PhoneNumber, message);
         }
         var messageIds = feedbacks.Select(s => s.ReportId).ToList();
