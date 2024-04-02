@@ -1,4 +1,5 @@
-﻿using Domain.Models.Relational;
+﻿using Application.Violations.Queries.GetReportViolations;
+using Domain.Models.Relational;
 
 namespace Application.Violations.Commands.CommentViolation;
 
@@ -7,5 +8,5 @@ public sealed record CommentViolationCommand(
     Guid CommentId,
     string UserId,
     int ViolationTypeId,
-    string Description) : IRequest<Result<Violation>>;
+    string Description) : IRequest<Result<ViolationResponse>>;
 

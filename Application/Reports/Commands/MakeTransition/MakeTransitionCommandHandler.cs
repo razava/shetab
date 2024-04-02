@@ -1,7 +1,9 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Persistence;
+using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
+using Mapster;
 using MediatR;
 
 namespace Application.Reports.Commands.MakeTransition;
@@ -10,10 +12,10 @@ internal sealed class MakeTransitionCommandHandler(
     IUnitOfWork unitOfWork,
     IReportRepository reportRepository,
     IUserRepository userRepository,
-    IUploadRepository uploadRepository) : IRequestHandler<MakeTransitionCommand, Result<Report>>
+    IUploadRepository uploadRepository) : IRequestHandler<MakeTransitionCommand, Result<GetReportByIdResponse>>
 {
     
-    public async Task<Result<Report>> Handle(MakeTransitionCommand request, CancellationToken cancellationToken)
+    public async Task<Result<GetReportByIdResponse>> Handle(MakeTransitionCommand request, CancellationToken cancellationToken)
     {
         var report = await reportRepository.GetByIDAsync(request.ReportId);
         if (report == null)
@@ -54,6 +56,6 @@ internal sealed class MakeTransitionCommandHandler(
 
         //TODO: Inform related users not all
         //await _hub.Clients.All.Update();
-        return report;
+        return report.Adapt<GetReportByIdResponse>();
     }
 }

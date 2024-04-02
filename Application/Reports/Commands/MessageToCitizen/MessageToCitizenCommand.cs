@@ -10,5 +10,5 @@ public sealed record MessageToCitizenCommand(
     string UserId,
     List<string> UserRoles,
     List<Guid> Attachments,
-    string Comment) : IRequest<Result<Report>>; //TODO: Fix the return typd
+    string Comment) : IRequest<Result<GetReportByIdResponse>>; //TODO: Fix the return typd
 

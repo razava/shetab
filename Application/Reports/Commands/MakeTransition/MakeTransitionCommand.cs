@@ -14,5 +14,5 @@ public sealed record MakeTransitionCommand(
     string ActorIdentifier,
     int ToActorId,
     bool IsExecutive = false,
-    bool IsContractor = false) : IRequest<Result<Report>>;
+    bool IsContractor = false) : IRequest<Result<GetReportByIdResponse>>;
 

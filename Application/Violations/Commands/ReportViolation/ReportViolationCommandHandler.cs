@@ -1,13 +1,15 @@
 ﻿using Application.Common.Interfaces.Persistence;
+using Application.Violations.Queries.GetReportViolations;
 using Domain.Models.Relational;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Violations.Commands.ReportViolation;
 
-internal sealed class ReportViolationCommandHandler(IViolationRepository violationRepository, IUnitOfWork unitOfWork) : IRequestHandler<ReportViolationCommand, Result<Violation>>
+internal sealed class ReportViolationCommandHandler(IViolationRepository violationRepository, IUnitOfWork unitOfWork) : IRequestHandler<ReportViolationCommand, Result<ViolationResponse>>
 {
 
-    public async Task<Result<Violation>> Handle(ReportViolationCommand request, CancellationToken cancellationToken)
+    public async Task<Result<ViolationResponse>> Handle(ReportViolationCommand request, CancellationToken cancellationToken)
     {
         var violation = new Violation()
         {
@@ -26,6 +28,6 @@ internal sealed class ReportViolationCommandHandler(IViolationRepository violati
                 .SetProperty(r => r.ViolationCount, r => r.ViolationCount + 1)
                 .SetProperty(r => r.IsViolationChecked, false));
 
-        return violation;
+        return violation.Adapt<ViolationResponse>();
     }
 }

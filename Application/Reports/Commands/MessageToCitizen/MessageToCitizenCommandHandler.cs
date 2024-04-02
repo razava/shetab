@@ -2,8 +2,10 @@
 using Application.Common.Interfaces.Communication;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
+using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
+using Mapster;
 using MediatR;
 
 namespace Application.Reports.Commands.MessageToCitizen;
@@ -13,9 +15,9 @@ internal sealed class MessageToCitizenCommandHandler(
     IReportRepository reportRepository,
     ICommunicationService communication,
     IActorRepository actorRepository,
-    IUploadRepository uploadRepository) : IRequestHandler<MessageToCitizenCommand, Result<Report>>
+    IUploadRepository uploadRepository) : IRequestHandler<MessageToCitizenCommand, Result<GetReportByIdResponse>>
 {
-    public async Task<Result<Report>> Handle(MessageToCitizenCommand request, CancellationToken cancellationToken)
+    public async Task<Result<GetReportByIdResponse>> Handle(MessageToCitizenCommand request, CancellationToken cancellationToken)
     {
         if (!request.UserRoles.Contains(RoleNames.Executive))
         {
@@ -52,6 +54,6 @@ internal sealed class MessageToCitizenCommandHandler(
         report.MessageToCitizen(actor.Identifier, medias, request.Comment);
         await unitOfWork.SaveAsync();
 
-        return report;
+        return report.Adapt<GetReportByIdResponse>();
     }
 }

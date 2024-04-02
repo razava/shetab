@@ -1,15 +1,17 @@
 ﻿using Application.Common.Interfaces.Persistence;
+using Application.Violations.Queries.GetReportViolations;
 using Domain.Models.Relational;
 using Domain.Models.Relational.ReportAggregate;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Violations.Commands.CommentViolation;
 
 internal sealed class CommentViolationCommandHandler(IViolationRepository violationRepository, IUnitOfWork unitOfWork) 
-    : IRequestHandler<CommentViolationCommand, Result<Violation>>
+    : IRequestHandler<CommentViolationCommand, Result<ViolationResponse>>
 {
 
-    public async Task<Result<Violation>> Handle(CommentViolationCommand request, CancellationToken cancellationToken)
+    public async Task<Result<ViolationResponse>> Handle(CommentViolationCommand request, CancellationToken cancellationToken)
     {
         var violation = new Violation()
         {
@@ -28,6 +30,6 @@ internal sealed class CommentViolationCommandHandler(IViolationRepository violat
                 .SetProperty(r => r.ViolationCount, r => r.ViolationCount + 1)
                 .SetProperty(r => r.IsViolationChecked, false));
 
-        return violation;
+        return violation.Adapt<ViolationResponse>();
     }
 }
