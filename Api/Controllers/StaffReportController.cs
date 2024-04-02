@@ -121,7 +121,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => Ok(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -178,7 +178,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-           s => Ok(),
+           s => Ok(s),
            f => Problem(f));
     }
 
@@ -327,7 +327,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => Ok(),
+            s => Ok(s),
             f => Problem(f));
     }
 
