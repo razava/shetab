@@ -62,9 +62,9 @@ public class SetupController : ApiController
 
     [Authorize(Roles = RoleNames.PowerUser)]
     [HttpPost("AddClerkRole")]
-    public async Task<ActionResult> AddGoldenUser()
+    public async Task<ActionResult> AddGoldenUser(int instanceId)
     {
-        var query = new AddDummyCategoriesForStaffCommand();
+        var query = new AddDummyCategoriesForStaffCommand(instanceId);
 
         var result = await Sender.Send(query);
         return result.Match(

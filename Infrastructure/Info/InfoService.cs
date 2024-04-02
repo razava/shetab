@@ -1352,7 +1352,7 @@ public class InfoService(
             var geometryFactory = new GeometryFactory();
             var coordinates = queryParameters.Geometry.Select(g => new Coordinate(g.Longitude, g.Latitude)).ToList();
             var geometry = geometryFactory.CreatePolygon(coordinates.ToArray());
-            if (geometry.Shell.IsCCW)
+            if (!geometry.Shell.IsCCW)
             {
                 coordinates.Reverse();
                 geometry = geometryFactory.CreatePolygon(coordinates.ToArray());
