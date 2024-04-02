@@ -8,7 +8,7 @@ public record PollCreateDto(
     string Title,
     [Required]
     PollType PollType,
-    [Required] [MaxLength(5120)]
+    [Required] [MaxLength(5*1024*1024)]
     string Question,
     [Required]
     List<PollChoiceCreateDto> Choices,
@@ -18,7 +18,7 @@ public record PollCreateDto(
 public record PollChoiceCreateDto(
     [Required] [MaxLength(64)]
     string ShortTitle,
-    [Required] [MaxLength(5120)]
+    [Required] [MaxLength(5*1024*1024)]
     string Text,
     [Required]
     int Order);

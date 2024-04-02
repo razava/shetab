@@ -3,6 +3,7 @@ using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ProcessAggregate;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Persistence.Repositories;
 
@@ -421,5 +422,26 @@ public class ProcessRepository : GenericRepository<Process>, IProcessRepository
         //context.Process.Remove(process);
 
         return true;
+    }
+
+    public async Task<T?> GetProcessById<T>(int id, Expression<Func<Process, T>> selector)
+    {
+        var result = await context.Process.AsNoTracking()
+            .Where(p => p.Id == id && p.IsDeleted == false)
+            .Select(selector)
+            .SingleOrDefaultAsync();
+
+        return result;
+    }
+
+    public async Task<List<T>> GetProcesses<T>(int instanceId, Expression<Func<Process, T>> selector, Expression<Func<Process, bool>> filter)
+    {
+        var result = await context.Process.AsNoTracking()
+            .Where(p => p.ShahrbinInstanceId == instanceId && p.IsDeleted == false)
+            .Where(filter)
+            .Select (selector)
+            .ToListAsync();
+
+        return result;
     }
 }
