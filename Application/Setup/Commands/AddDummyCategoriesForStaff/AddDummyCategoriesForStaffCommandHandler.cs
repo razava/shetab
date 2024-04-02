@@ -40,6 +40,7 @@ internal class AddDummyCategoriesForStaffCommandHandler(
                     Title = "ریشه",
                     Order = 0,
                     Duration = 0,
+                    Code = "",
                     CategoryType = Domain.Models.Relational.Common.CategoryType.Root,
                     RoleId = citizenRoleId!
                 };
@@ -55,6 +56,7 @@ internal class AddDummyCategoriesForStaffCommandHandler(
                         Title = "کارمند ها",
                         Order = 0,
                         Duration = 0,
+                        Code = "",
                         CategoryType = Domain.Models.Relational.Common.CategoryType.Root,
                         RoleId = clerkRoleId!,
                         ParentId = newRoot.Id
