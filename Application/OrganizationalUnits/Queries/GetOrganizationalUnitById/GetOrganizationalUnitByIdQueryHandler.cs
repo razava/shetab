@@ -9,11 +9,6 @@ internal class GetOrganizationalUnitByIdQueryHandler(IOrganizationalUnitReposito
 
     public async Task<Result<GetOrganizationalUnitResponse>> Handle(GetOrganizationalUnitByIdQuery request, CancellationToken cancellationToken)
     {
-        //var result = await unitOfWork.DbContext.Set<OrganizationalUnit>()
-        //    .Where(ou => ou.Id == request.OrganizationalUnitId)
-        //    .Select(GetOrganizationalUnitResponse.GetSelector())
-        //    .FirstOrDefaultAsync();
-
         var result = await organizationalUnitRepository.GetOrganizationalUnitById(
             request.OrganizationalUnitId,
             GetOrganizationalUnitResponse.GetSelector());
