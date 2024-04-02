@@ -67,7 +67,7 @@ public class CitizenPollsController : ApiController
         var result = await Sender.Send(commad);
 
         return result.Match(
-            s => Ok(),
+            s => Ok(s),
             f => Problem(f));
     }
 

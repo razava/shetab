@@ -50,7 +50,8 @@ public class AdminOrganizationalUnitController : ApiController
     //    var query = new GetOrganizationalUnitByUserIdQuery(userId);
     //    var result = await Sender.Send(query);
     //    //var mappedResult = result.Adapt<>
-    //    return Ok();
+    //    return
+    //    ;
     //}
 
     [Authorize]
