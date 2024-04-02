@@ -387,7 +387,8 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
                         u.LastName.Contains(phrase) ||
                         u.NationalId.Contains(phrase) ||
                         u.UserName != null && u.UserName.Contains(phrase) ||
-                        u.PhoneNumber != null && u.PhoneNumber.Contains(phrase));
+                        u.PhoneNumber != null && u.PhoneNumber.Contains(phrase) ||
+                        u.Title.Contains(phrase));
             }
         }
 
