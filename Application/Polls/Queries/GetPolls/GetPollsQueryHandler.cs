@@ -9,7 +9,7 @@ internal class GetPollsQueryHandler(IPollRepository pollRepository) : IRequestHa
 
     public async Task<Result<List<GetPollsResponse>>> Handle(GetPollsQuery request, CancellationToken cancellationToken)
     {
-        var polls = await pollRepository.GetAll(request.UserId, request.ReturnAll)
+        var polls = await pollRepository.GetAll(request.UserId, request.ReturnAll);
 
         var result = new List<GetPollsResponse>();
         foreach (var poll in polls)

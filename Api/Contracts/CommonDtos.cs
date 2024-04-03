@@ -72,7 +72,7 @@ public record GetExecutiveDto(
 public record CreateNewsDto(
     [Required] [MaxLength(256)]
     string Title,
-    [Required] [MaxLength(2048)]
+    [Required] [MaxLength(5*1024*1024)]
     string Description,
     [Required] [MaxLength(512)]
     string Url,
@@ -82,7 +82,7 @@ public record CreateNewsDto(
 public record UpdateNewsDto(
     [MaxLength(256)]
     string? Title,
-    [MaxLength(2048)]
+    [MaxLength(5*1024*1024)]
     string? Description,
     [MaxLength(512)]
     string? Url,
