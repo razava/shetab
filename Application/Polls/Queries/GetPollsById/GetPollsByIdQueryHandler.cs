@@ -1,24 +1,15 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Polls.Common;
 using Domain.Models.Relational.Common;
-using Domain.Models.Relational.PollAggregate;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Polls.Queries.GetPollsById;
 
-internal sealed class GetPollsByIdQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetPollsByIdQuery, Result<GetPollsResponse>>
+internal sealed class GetPollsByIdQueryHandler(IPollRepository pollRepository) : IRequestHandler<GetPollsByIdQuery, Result<GetPollsResponse>>
 {
 
     public async Task<Result<GetPollsResponse>> Handle(GetPollsByIdQuery request, CancellationToken cancellationToken)
     {
-        var context = unitOfWork.DbContext;
-
-        var poll = await context.Set<Poll>()
-            .Where(p => p.Id == request.Id)
-            .Include(p => p.Choices)
-            .Include(p => p.Answers.Where(pa => pa.UserId == request.userId))
-            .ThenInclude(pa => pa.Choices)
-            .SingleOrDefaultAsync();
+        var poll = await pollRepository.GetByIdNoTracking(request.Id, request.userId);
 
         if (poll == null)
             return NotFoundErrors.Poll;

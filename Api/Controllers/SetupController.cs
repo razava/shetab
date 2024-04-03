@@ -58,11 +58,11 @@ public class SetupController : ApiController
         return result.Match(
             s => Ok(s),
             f => Problem(f));
-    }
+    } 
 
     [Authorize(Roles = RoleNames.PowerUser)]
     [HttpPost("AddClerkRole")]
-    public async Task<ActionResult> AddGoldenUser(int instanceId)
+    public async Task<ActionResult> AddClerkRole(int instanceId)
     {
         var query = new AddDummyCategoriesForStaffCommand(instanceId);
 

@@ -1,24 +1,15 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Polls.Common;
 using Domain.Models.Relational.Common;
-using Domain.Models.Relational.PollAggregate;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Polls.Queries.GetPolls;
 
-internal class GetPollsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetPollsQuery, Result<List<GetPollsResponse>>>
+internal class GetPollsQueryHandler(IPollRepository pollRepository) : IRequestHandler<GetPollsQuery, Result<List<GetPollsResponse>>>
 {
 
     public async Task<Result<List<GetPollsResponse>>> Handle(GetPollsQuery request, CancellationToken cancellationToken)
     {
-        var context = unitOfWork.DbContext;
-
-        var polls = await context.Set<Poll>()
-            .Where(p => request.ReturnAll || p.IsDeleted == false)
-            .Include(p => p.Choices)
-            .Include(p => p.Answers.Where(pa => pa.UserId == request.UserId))
-            .ThenInclude(pa => pa.Choices)
-            .ToListAsync();
+        var polls = await pollRepository.GetAll(request.UserId, request.ReturnAll)
 
         var result = new List<GetPollsResponse>();
         foreach (var poll in polls)

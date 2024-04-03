@@ -78,40 +78,6 @@ public class CitizenCommonController : ApiController
 
 
 
-    /*
-    [Authorize]
-    [HttpGet("Enumeration/{name}")]
-    public async Task<ActionResult<List<GetEnum>>> GetEnumeration(string name)
-    {
-        //object tempList = new List<Enum>();
-
-        //switch (name)
-        //{
-        //    case "Education":
-        //        tempList = Enum.GetValues(typeof(Education)).Cast<Education>();
-        //        break;
-
-        //    default:
-        //        break;
-        //}
-
-        ////var tmp1 = "enum";
-        ////var t22 = Type.GetType(tmp1);
-        ////var tmp2 = tmp1.GetType();
-        ////var temp = Enum.GetValues(t22);
-
-        //var result = new List<GetEnum>();
-        //foreach (var item in temp)
-        //{
-        //    result.Add(new GetEnum((int)item, item.GetDescription()!));
-        //}
-        //return Ok(result);
-        await Task.CompletedTask;
-        return Ok();
-    }
-    */
-
-
 }
 
 
