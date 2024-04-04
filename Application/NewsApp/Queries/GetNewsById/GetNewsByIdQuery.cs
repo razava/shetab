@@ -2,4 +2,4 @@
 
 namespace Application.NewsApp.Queries.GetNewsById;
 
-public record GetNewsByIdQuery(int Id) : IRequest<Result<GetNewsResponse>>;
+public record GetNewsByIdQuery(int Id) : IRequest<Result<GetNewsByIdResponse>>;

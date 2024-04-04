@@ -2,6 +2,7 @@
 using Api.ExtensionMethods;
 using Application.Common.Interfaces.Persistence;
 using Application.NewsApp.Queries.GetNews;
+using Application.NewsApp.Queries.GetNewsById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,18 @@ public class CitizenNewsController : ApiController
             f => Problem(f));
     }
 
+
+    [Authorize]
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult> GetNewsById(int id)
+    {
+        var query = new GetNewsByIdQuery(id);
+        var result = await Sender.Send(query);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
 
 
 }
