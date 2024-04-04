@@ -2,11 +2,11 @@
 using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
-using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Application.Reports.Queries.GetRecentReports;
 
-internal sealed class GetRecentReportsQueryHandler(IUnitOfWork unitOfWork) 
+internal sealed class GetRecentReportsQueryHandler(IReportRepository reportRepository) 
     : IRequestHandler<GetRecentReportsQuery, Result<PagedList<GetCitizenReportsResponse>>>
 {
     
@@ -14,21 +14,18 @@ internal sealed class GetRecentReportsQueryHandler(IUnitOfWork unitOfWork)
         GetRecentReportsQuery request,
         CancellationToken cancellationToken)
     {
-        var context = unitOfWork.DbContext.Set<Report>();
-        var query = context.Where(r => r.ReportState != ReportState.NeedAcceptance
-                                       && r.Visibility == Visibility.EveryOne
-                                       && r.ShahrbinInstanceId == request.InstanceId
-                                       && !r.IsDeleted);
-        var query2 = query
-            .OrderByDescending(r => r.LastStatusDateTime)
-            .AsNoTracking()
-            .Select(GetCitizenReportsResponse.GetSelector(request.UserId));
 
-        var reports = await PagedList<GetCitizenReportsResponse>.ToPagedList(
-           query2,
-           request.PagingInfo.PageNumber,
-           request.PagingInfo.PageSize);
+        Expression<Func<Report, bool>> filter = r =>
+            r.ReportState != ReportState.NeedAcceptance
+            && r.Visibility == Visibility.EveryOne
+            && r.ShahrbinInstanceId == request.InstanceId
+            && !r.IsDeleted;
 
-        return reports;
+        var result = await reportRepository.GetRecentReports(
+            filter,
+            GetCitizenReportsResponse.GetSelector(request.UserId),
+            request.PagingInfo);
+
+        return result;
     }
 }

@@ -1,29 +1,20 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Reports.Common;
-using Domain.Models.Relational;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Reports.Queries.GetUserReports;
 
-internal sealed class GetUserReportsQueryHandler(IUnitOfWork unitOfWork) 
+internal sealed class GetUserReportsQueryHandler(IReportRepository reportRepository) 
     : IRequestHandler<GetUserReportsQuery, Result<PagedList<GetCitizenReportsResponse>>>
 {
     public async Task<Result<PagedList<GetCitizenReportsResponse>>> Handle(
         GetUserReportsQuery request,
         CancellationToken cancellationToken)
     {
-        var context = unitOfWork.DbContext.Set<Report>();
-        var query = context.Where(r => r.CitizenId == request.UserId);
-        var query2 = query
-            .OrderByDescending(r => r.LastStatusDateTime)
-            .AsNoTracking()
-            .Select(GetCitizenReportsResponse.GetSelector(request.UserId));
+        var result = await reportRepository.GetCitizenReports(
+            request.UserId,
+            GetCitizenReportsResponse.GetSelector(request.UserId),
+            request.PagingInfo);
 
-        var reports = await PagedList<GetCitizenReportsResponse>.ToPagedList(
-           query2,
-           request.PagingInfo.PageNumber,
-           request.PagingInfo.PageSize);
-
-        return reports;
+        return result;
     }
 }
