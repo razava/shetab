@@ -74,11 +74,12 @@ public class ReportRepository : GenericRepository<Report>, IReportRepository
     }
 
 
-    public async Task<PagedList<T>> GetRecentReports<T>(Expression<Func<Report, bool>> filter, Expression<Func<Report, T>> selector, PagingInfo pagingInfo)
+    public async Task<PagedList<T>> GetRecentReports<T>(List<string> roles, Expression<Func<Report, bool>> filter, Expression<Func<Report, T>> selector, PagingInfo pagingInfo)
     {
         var query = _context.Set<Report>()
             .AsNoTracking()
             .Where(filter)
+            .Where(r => (r.Category.Role.Name != null) && roles.Contains(r.Category.Role.Name))
             .OrderByDescending(r => r.LastStatusDateTime)
             .Select(selector);
 

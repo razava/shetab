@@ -2,6 +2,7 @@
 using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
+using SharedKernel.Successes;
 
 namespace Application.Reports.Commands.CreateReportByCitizen;
 
@@ -52,7 +53,12 @@ internal sealed class CreateReportByCitizenCommandHandler(
 
         reportRepository.Insert(report);
         await unitOfWork.SaveAsync();
+
         
-        return GetReportByIdResponse.FromReport(report);
+        var result = new Result<GetReportByIdResponse>()
+            .WithValue(GetReportByIdResponse.FromReport(report))
+            .WithSuccess(CreationSuccess.Report);
+        
+        return result;
     }
 }

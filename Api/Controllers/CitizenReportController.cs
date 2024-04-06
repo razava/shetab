@@ -43,7 +43,9 @@ public class CitizenReportController : ApiController
         [FromQuery] PagingInfo pagingInfo)
     {
         var userId = User.GetUserId();
-        var query = new GetRecentReportsQuery(pagingInfo, instanceId, userId);
+        var userRoles = User.GetUserRoles();
+
+        var query = new GetRecentReportsQuery(pagingInfo, instanceId, userId, userRoles);
 
         var result = await Sender.Send(query);
 

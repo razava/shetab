@@ -6,5 +6,6 @@ namespace Application.Reports.Queries.GetRecentReports;
 public sealed record GetRecentReportsQuery(
     PagingInfo PagingInfo,
     int InstanceId,
-    string UserId) : IRequest<Result<PagedList<GetCitizenReportsResponse>>>;
+    string UserId,
+    List<string> Roles) : IRequest<Result<PagedList<GetCitizenReportsResponse>>>;
 

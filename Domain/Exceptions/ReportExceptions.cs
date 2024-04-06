@@ -2,7 +2,7 @@
 
 public class CategoryHaveNoAssignedProcess : Exception
 {
-    public CategoryHaveNoAssignedProcess() : base(" برای دسته بندی باید یک فرایند مشخص شود.")
+    public CategoryHaveNoAssignedProcess() : base(" امکان ثبت درخواست با این دسته بندی وجود ندارد.")
     {
         
     }
