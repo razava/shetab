@@ -1,7 +1,7 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
 using Application.Users.Common;
 using Domain.Models.Relational.Common;
+using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +14,24 @@ public class ActorRepository : GenericRepository<Actor>, IActorRepository
     public ActorRepository(
         ApplicationDbContext dbContext) : base(dbContext)
     {       
+    }
+
+    public async Task<Result<ActorIdentityResponse>> GetActorIdentityAsync(int actorId)
+    {
+        var actor = await context.Set<Actor>()
+            .Where(a => a.Id == actorId)
+            .Select(a =>
+                a.Type == ActorType.Person ? context.Set<ApplicationUser>().Where(u => u.Id == a.Identifier)
+                    .Select(u => new ActorIdentityResponse(a.Type, u.Title, u.FirstName, u.LastName)).FirstOrDefault() :
+                a.Type == ActorType.Role ? context.Set<ApplicationRole>().Where(r => r.Id == a.Identifier)
+                    .Select(u => new ActorIdentityResponse(a.Type, u.Title, "", "")).FirstOrDefault() :
+                new ActorIdentityResponse(a.Type, "ارجاع خودکار", "", ""))
+            .FirstOrDefaultAsync();
+
+        if (actor is null)
+            return NotFoundErrors.Actor;
+
+        return actor;
     }
 
     public async Task<Result<List<IsInRegionModel>>> GetUserRegionsAsync(int instanceId, string userId)

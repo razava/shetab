@@ -1,4 +1,5 @@
-﻿using Application.Forms.Common;
+﻿using Application.Common.Interfaces.Persistence;
+using Application.Forms.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using System.Linq.Expressions;
@@ -27,9 +28,11 @@ public record GetReportByIdResponse(
     bool IsFeedbacked,
     int CommentsCount,
     IEnumerable<Media> Medias,
-    FormResponse? Form
+    FormResponse? Form,
+    int? CurrentActorId
     )
 {
+    public ActorIdentityResponse? CurrentActor { get; set; }
     public static GetReportByIdResponse FromReport(Report report)
     {
         return new GetReportByIdResponse(
@@ -54,7 +57,8 @@ public record GetReportByIdResponse(
             report.IsFeedbacked,
             report.CommentsCount,
             report.Medias,
-            FormResponse.FromForm(report.Category.Form));
+            FormResponse.FromForm(report.Category.Form),
+            report.CurrentActorId);
     }
 
     public static Expression<Func<Report, GetReportByIdResponse>> GetSelector()
@@ -87,7 +91,8 @@ public record GetReportByIdResponse(
             report.IsFeedbacked,
             report.CommentsCount,
             report.Medias,
-            FormResponse.FromForm(report.Category.Form));
+            FormResponse.FromForm(report.Category.Form),
+            report.CurrentActorId);
         return selector;
     }
 };
