@@ -32,6 +32,7 @@ public class ReportRepository : GenericRepository<Report>, IReportRepository
         _processRepository = processRepository;
         _context = dbContext;
         _userRepository = userRepository;
+        _infoService = infoService;
     }
 
     public async Task<Report?> GetByIDAsync(Guid id, bool trackChanges = true)
