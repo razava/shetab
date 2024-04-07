@@ -8,7 +8,7 @@ namespace Application.Comments.Queries.GetAllCommentsQuery;
 
 public record GetAllCommentsQuery(PagingInfo PagingInfo,
     int InstanceId,
-    FilterGetCommentViolationModel? FilterModel = default!,
+    CommentFilters? FilterModel = default!,
     bool IsSeen = false) : IRequest<Result<PagedList<GetCommentsResponse>>>;
 
 public record GetCommentsResponse(
@@ -37,3 +37,9 @@ public record GetShortUserResponse(
     string LastName,
     string UserName,
     Media? Avatar);
+
+public record CommentFilters(
+    string? Query,
+    List<int>? Categories,
+    DateTime? FromDate,
+    DateTime? ToDate);

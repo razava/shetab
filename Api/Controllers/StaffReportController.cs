@@ -290,12 +290,11 @@ public class StaffReportController : ApiController
 
     [Authorize(Roles = "Operator")]
     [HttpGet("Comments")]
-    public async Task<ActionResult> GetComments([FromQuery] PagingInfo pagingInfo, [FromQuery] FilterGetCommentViolation filter)
+    public async Task<ActionResult> GetComments([FromQuery] PagingInfo pagingInfo, [FromQuery] CommentFilters filter)
     {
         //have FilterGetComments
         var instanceId = User.GetUserInstanceId();
-        var mappedFilter = filter.Adapt<FilterGetCommentViolationModel>();
-        var query = new GetAllCommentsQuery(pagingInfo, instanceId, mappedFilter);
+        var query = new GetAllCommentsQuery(pagingInfo, instanceId, filter);
         var result = await Sender.Send(query);
 
         return result.Match(
