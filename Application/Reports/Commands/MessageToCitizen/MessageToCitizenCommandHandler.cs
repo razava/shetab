@@ -54,6 +54,6 @@ internal sealed class MessageToCitizenCommandHandler(
         report.MessageToCitizen(actor.Identifier, medias, request.Comment);
         await unitOfWork.SaveAsync();
 
-        return report.Adapt<GetReportByIdResponse>();
+        return GetReportByIdResponse.FromReport(report);
     }
 }

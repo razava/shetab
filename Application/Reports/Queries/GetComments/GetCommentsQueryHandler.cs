@@ -12,7 +12,7 @@ internal sealed class GetCommentsQueryHandler(IUnitOfWork unitOfWork)
         var context = unitOfWork.DbContext;
         var query = context.Set<Comment>()
             .AsNoTracking()
-            .Where(c => c.ReportId == request.ReportId).Include(e => e.User)
+            .Where(c => c.ReportId == request.ReportId && !c.IsReply).Include(e => e.User)
             .Select(GetReportCommentsResponse.GetSelector(request.UserId));
         var result = await PagedList<GetReportCommentsResponse>.ToPagedList(query, request.PagingInfo.PageNumber, request.PagingInfo.PageSize);
 

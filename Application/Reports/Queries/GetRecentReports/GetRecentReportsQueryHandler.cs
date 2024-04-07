@@ -22,6 +22,7 @@ internal sealed class GetRecentReportsQueryHandler(IReportRepository reportRepos
             && !r.IsDeleted;
 
         var result = await reportRepository.GetRecentReports(
+            request.Roles,
             filter,
             GetCitizenReportsResponse.GetSelector(request.UserId),
             request.PagingInfo);

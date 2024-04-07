@@ -5,6 +5,7 @@ using Application.Setup.Commands.AddDummyCategoriesForStaff;
 using Application.Setup.Commands.AddDummyDataCommand;
 using Application.Setup.Commands.AddGoldenUser;
 using Application.Setup.Commands.AddInstance;
+using Application.Setup.Commands.SpecifyReplyComments;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -71,6 +72,20 @@ public class SetupController : ApiController
             s => Ok(s),
             f => Problem(f));
     }
+
+
+    [Authorize(Roles = RoleNames.PowerUser)]
+    [HttpPost("SpecifiyReplyComments")]
+    public async Task<ActionResult> SpecifiyReplyComments(int instanceId)
+    {
+        var query = new SpecifiyReplyCommand(instanceId);
+
+        var result = await Sender.Send(query);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+
 }
 
 public record AddGoldenUserDto(int InstanceId, string Username, string Password);

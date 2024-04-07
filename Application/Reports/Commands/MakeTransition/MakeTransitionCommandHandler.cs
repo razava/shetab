@@ -56,6 +56,6 @@ internal sealed class MakeTransitionCommandHandler(
 
         //TODO: Inform related users not all
         //await _hub.Clients.All.Update();
-        return report.Adapt<GetReportByIdResponse>();
+        return GetReportByIdResponse.FromReport(report);
     }
 }
