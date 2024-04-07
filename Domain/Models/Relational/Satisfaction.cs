@@ -25,6 +25,7 @@ public class Satisfaction : Entity
             Comments = Comments,
             Rating = rating,
             DateTime = DateTime.UtcNow,
+            History = ""
         };
     }
 
