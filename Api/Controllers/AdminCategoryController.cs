@@ -6,6 +6,8 @@ using Application.Categories.Commands.DeleteCategory;
 using Application.Categories.Commands.UpdateCategory;
 using Application.Categories.Queries.GetCategory;
 using Application.Categories.Queries.GetCategoryById;
+using Application.Common.Statics;
+using Application.Users.Queries.GetOperators;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -127,5 +129,18 @@ public class AdminCategoryController : ApiController
             f => Problem(f));
     }
 
+    [Authorize(Roles = RoleNames.Operator)]
+    [HttpGet("Operators")]
+    public async Task<ActionResult> GetOperators()
+    {
+        var instanceId = User.GetUserInstanceId();
+
+        var query = new GetOperatorsQuery(instanceId);
+        var result = await Sender.Send(query);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
 
 }
