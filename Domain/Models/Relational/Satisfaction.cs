@@ -9,6 +9,7 @@ public class Satisfaction : Entity
     public Report Report { get; set; } = null!;
     public int Rating { get; set; }
     public string Comments { get; set; } = string.Empty;
+    public string History { get; set; } = string.Empty;
     public DateTime DateTime { get; set; }
     public string ActorId { get; set; } = null!;
     public ApplicationUser Actor { get; set; } = null!;
@@ -29,7 +30,8 @@ public class Satisfaction : Entity
 
     public void Update(string userId, string comments, int rating)
     {
-        Comments = $"{comments}\r\n##########\r\n{DateTime}#{ActorId}#{Rating}\r\n{Comments}";
+        History = $"{ActorId}\r\n{DateTime.ToLocalTime()}#{Rating}\r\n{Comments}\r\n##########\r\n{History}\r\n";
+        Comments = comments;
         Rating = rating;
         DateTime = DateTime.UtcNow;
         ActorId = userId;
