@@ -129,7 +129,7 @@ public class AdminCategoryController : ApiController
             f => Problem(f));
     }
 
-    [Authorize(Roles = RoleNames.Operator)]
+    [Authorize(Roles = RoleNames.Admin)]
     [HttpGet("Operators")]
     public async Task<ActionResult> GetOperators()
     {
