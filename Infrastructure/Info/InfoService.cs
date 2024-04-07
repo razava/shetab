@@ -803,12 +803,12 @@ public class InfoService(
             var duration = groupedQuery
                 .Where(g => decendantIds.Contains(g.Id))
                 .Select(g => g.Duration)
-                .SingleOrDefault();
+                .Average();
 
             var responseDuration = groupedQuery
                 .Where(g => decendantIds.Contains(g.Id))
                 .Select(g => g.ResponseDuration)
-                .SingleOrDefault();
+                .Average();
 
             if (duration is null && responseDuration is null)
                 continue;
@@ -822,12 +822,14 @@ public class InfoService(
             doneSerie.Add(new DataItem(
                 category.Title,
                 durationTimeSpan.ToHoursValue(),
-                durationTimeSpan.ToPersianString()));
+                durationTimeSpan.ToPersianString(),
+                category.Categories.Any() ? category.Id.ToString() : null));
 
             responseSerie.Add(new DataItem(
                 category.Title,
                 responseDurationTimeSpan.ToHoursValue(),
-                responseDurationTimeSpan.ToPersianString()));
+                responseDurationTimeSpan.ToPersianString(),
+                category.Categories.Any() ? category.Id.ToString() : null));
         }
 
         result.Add(infoChart.Sort());
