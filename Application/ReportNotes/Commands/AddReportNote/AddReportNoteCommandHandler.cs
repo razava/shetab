@@ -1,7 +1,9 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.ReportNotes.Common;
+using Application.Reports.Common;
 using Domain.Models.Relational.ReportAggregate;
 using Mapster;
+using SharedKernel.Successes;
 
 namespace Application.ReportNotes.Commands.AddReportNote;
 
@@ -16,6 +18,10 @@ internal class AddReportNoteCommandHandler(
         reportNoteRepository.Insert(note);
         await unitOfWork.SaveAsync();
 
-        return note.Adapt<ReportNoteResult>();
+        var result = new Result<ReportNoteResult>()
+            .WithValue(note.Adapt<ReportNoteResult>())
+            .WithSuccess(Registration.ReportNote);
+
+        return result;
     }
 }

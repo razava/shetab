@@ -83,7 +83,7 @@ public class CategoryRepository : GenericRepository<Category>, ICategoryReposito
 
         categories.ForEach(x => 
         { 
-            var children = categories.Where(c => c.ParentId == x.Id).ToList();
+            var children = categories.Where(c => c.ParentId == x.Id && !c.IsDeleted).ToList();
             x.Categories = children;
             children.ForEach(child => child.ParentId = x.Id);
         });

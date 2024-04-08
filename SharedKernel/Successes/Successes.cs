@@ -19,4 +19,11 @@ public static class CreationSuccess
 public static class Registration
 {
     public static readonly Success PollResponse = new Success("نظر شما با موفقیت ثبت شد.");
+    public static readonly Success ReportNote = new Success("یادداشت شما با موفقیت ثبت شد.");
+}
+
+
+public class SuccessOperation
+{
+    public static readonly Success MessageToCitizen = new Success("پیام به شهروند با موفقیت ارسال شد");
 }

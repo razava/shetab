@@ -7,6 +7,7 @@ using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Mapster;
 using MediatR;
+using SharedKernel.Successes;
 
 namespace Application.Reports.Commands.MessageToCitizen;
 
@@ -54,6 +55,10 @@ internal sealed class MessageToCitizenCommandHandler(
         report.MessageToCitizen(actor.Identifier, medias, request.Comment);
         await unitOfWork.SaveAsync();
 
-        return GetReportByIdResponse.FromReport(report);
+        var result = new Result<GetReportByIdResponse>()
+            .WithValue(GetReportByIdResponse.FromReport(report))
+            .WithSuccess(SuccessOperation.MessageToCitizen);
+
+        return result;
     }
 }
