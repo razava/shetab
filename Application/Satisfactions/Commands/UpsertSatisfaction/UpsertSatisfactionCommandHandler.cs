@@ -15,10 +15,10 @@ internal sealed class UpsertSatisfactionCommandHandler(
         if (satisfaction is null)
         {
             satisfaction = Satisfaction.Create(
-            request.ReportId,
-            request.UserId,
-            request.Comment,
-            request.Rating);
+                request.ReportId,
+                request.UserId,
+                request.Comment,
+                request.Rating);
 
             satisfactionRepository.Insert(satisfaction);
         }
@@ -30,6 +30,6 @@ internal sealed class UpsertSatisfactionCommandHandler(
 
         await unitOfWork.SaveAsync();
 
-        return new SatisfactionResponse(satisfaction.ActorId, satisfaction.Comments, satisfaction.Rating);
+        return new SatisfactionResponse(satisfaction.ActorId, satisfaction.Comments, satisfaction.Rating, satisfaction.History);
     }
 }

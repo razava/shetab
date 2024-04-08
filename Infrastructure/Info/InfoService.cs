@@ -746,7 +746,6 @@ public class InfoService(
     public async Task<InfoModel> GetReportsTimePerCategory(GetInfoQueryParameters queryParameters)
     {
         int parentCategoryId;
-
         var result = new InfoModel();
 
         if (int.TryParse(queryParameters.Parameter, out int id))
@@ -799,15 +798,17 @@ public class InfoService(
         infoChart.Add(responseSerie);
         foreach (var category in parentNode.Categories)
         {
+            var decendantIds = category.Decendants;
+
             var duration = groupedQuery
-                .Where(g => g.Id == category.Id)
+                .Where(g => decendantIds.Contains(g.Id))
                 .Select(g => g.Duration)
-                .SingleOrDefault();
+                .Average();
 
             var responseDuration = groupedQuery
-                .Where(g => g.Id == category.Id)
+                .Where(g => decendantIds.Contains(g.Id))
                 .Select(g => g.ResponseDuration)
-                .SingleOrDefault();
+                .Average();
 
             if (duration is null && responseDuration is null)
                 continue;
@@ -821,12 +822,14 @@ public class InfoService(
             doneSerie.Add(new DataItem(
                 category.Title,
                 durationTimeSpan.ToHoursValue(),
-                durationTimeSpan.ToPersianString()));
+                durationTimeSpan.ToPersianString(),
+                category.Categories.Any() ? category.Id.ToString() : null));
 
             responseSerie.Add(new DataItem(
                 category.Title,
                 responseDurationTimeSpan.ToHoursValue(),
-                responseDurationTimeSpan.ToPersianString()));
+                responseDurationTimeSpan.ToPersianString(),
+                category.Categories.Any() ? category.Id.ToString() : null));
         }
 
         result.Add(infoChart.Sort());
@@ -1020,7 +1023,7 @@ public class InfoService(
             .Include(p => p.TransitionLogs)
             .OrderByDescending(p => p.Sent);
 
-        var result = await query.ToListAsync();
+        var result = await query.Take(1000).ToListAsync();
         int i = 1, j = 1;
         int headerRows = 1;
         int rowNum;

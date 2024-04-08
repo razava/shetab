@@ -10,9 +10,9 @@ internal sealed class GetAllCommentsQueryHandler(ICommentRepository commentRepos
         System.Linq.Expressions.Expression<Func<Comment, bool>>? filter = c =>
         c.ShahrbinInstanceId == request.InstanceId && c.IsSeen == request.IsSeen && !c.IsReply
         && ((request.FilterModel == null) ||
-        (request.FilterModel.SentFromDate == null || c.DateTime >= request.FilterModel.SentFromDate)
-        && (request.FilterModel.SentToDate == null || c.DateTime <= request.FilterModel.SentToDate)
-        && (request.FilterModel.CategoryIds == null || c.Report == null || request.FilterModel.CategoryIds.Contains(c.Report.CategoryId))
+        (request.FilterModel.FromDate == null || c.DateTime >= request.FilterModel.FromDate)
+        && (request.FilterModel.ToDate == null || c.DateTime <= request.FilterModel.ToDate)
+        && (request.FilterModel.Categories == null || c.Report == null || request.FilterModel.Categories.Contains(c.Report.CategoryId))
         && (request.FilterModel.Query == null || c.Report == null || c.Report.TrackingNumber.Contains(request.FilterModel.Query)));
 
         

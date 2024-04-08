@@ -11,8 +11,8 @@ internal sealed class GetSatisfactionQueryHandler(
     {
         var result = await satisfactionRepository.GetSingleAsync(s => s.ReportId == request.ReportId);
         if (result is null)
-            return new SatisfactionResponse("", "", 0);
+            return new SatisfactionResponse("", "", 0, "");
 
-        return new SatisfactionResponse(result.ActorId, result.Comments, result.Rating);
+        return new SatisfactionResponse(result.ActorId, result.Comments, result.Rating, result.History);
     }
 }
