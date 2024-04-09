@@ -54,4 +54,5 @@ public class Form : Entity
     public DateTime Created { get; private set; }
     public List<FormElement> Elements { get; private set; } = new List<FormElement>();
     public List<Category> Categories { get; private set; } = new List<Category>();
+    public bool IsDeleted { get; set; }
 }

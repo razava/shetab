@@ -7,6 +7,7 @@ using Application.Configurations.Queries.Roles;
 using Application.Configurations.Queries.ShahrbinInstanceById;
 using Application.Configurations.Queries.ShahrbinInstances;
 using Application.Configurations.Queries.ViolationTypes;
+using Application.Forms.Queries.GetFormById;
 using Application.Info.Queries.GetReportFilters;
 using Application.Info.Queries.GetUserFilters;
 using Application.Users.Queries.GetUserRegions;
@@ -65,6 +66,19 @@ public class StaffCommonController : ApiController
         var userRoles = User.GetUserRoles();
 
         var query = new GetStaffCategoriesQuery(userInstanceId, userId, userRoles);
+        var result = await Sender.Send(query);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+
+
+    [Authorize]
+    [HttpGet("Form/{id:guid}")]
+    public async Task<ActionResult> GetFormById(Guid id)
+    {
+        var query = new GetFormByIdQuery(id);
         var result = await Sender.Send(query);
 
         return result.Match(

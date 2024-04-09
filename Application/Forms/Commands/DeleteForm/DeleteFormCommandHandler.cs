@@ -19,7 +19,7 @@ internal sealed class DeleteFormCommandHandler(
         if (isUsed)
             return OperationErrors.FormIsInUse;
 
-        formRepository.Delete(form);
+        await formRepository.LogicalDelete(form.Id);
         await unitOfWork.SaveAsync();
 
         return true;

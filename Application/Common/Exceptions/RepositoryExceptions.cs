@@ -25,7 +25,9 @@ public class PropertyInfoNotFoundException : Exception { }
 public class InstanceNotFoundException : Exception { }
 public class ActorNotFoundException : Exception { }
 
-
+//Form Repository
+public class FormNotFoundException : Exception { }
+ 
 //Process Repository
 public class ForbidNullRoleException : Exception
 {

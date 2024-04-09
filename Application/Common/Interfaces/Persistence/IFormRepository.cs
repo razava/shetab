@@ -7,4 +7,5 @@ public interface IFormRepository : IGenericRepository<Form>
 {
     public Task<List<T>> GetForms<T>(int instanceId, Expression<Func<Form, T>> selector); 
     public Task<T?> GetFormById<T>(Guid id, Expression<Func<Form, T>> selector); 
+    public Task LogicalDelete(Guid id);
 }
