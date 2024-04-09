@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Application.Common.Interfaces.Persistence;
 
 namespace Application.Reports.Queries.GetPossibleTransitions;
 

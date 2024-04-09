@@ -1,7 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Reports.Common;
-using Domain.Models.Relational;
-using MediatR;
 
 namespace Application.Reports.Queries.GetNearestReports;
 

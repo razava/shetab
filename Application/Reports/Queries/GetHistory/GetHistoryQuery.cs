@@ -1,6 +1,4 @@
-﻿using Application.Reports.Queries.GetHistory;
-using Domain.Models.Relational;
-using MediatR;
+﻿using Application.Common.Interfaces.Persistence;
 
 namespace Application.Reports.Queries.GetReportById;
 

@@ -18,8 +18,8 @@ public class ShahrbinInstanceNotFoundException : Exception { }
 //Generic Repository
 public class MethodNotFoundException : Exception { }
 public class PropertyInfoNotFoundException : Exception { }
-
-
+//Report Repository
+public class ReportNotFoundException : Exception { }
 
 //Actor Repository
 public class InstanceNotFoundException : Exception { }

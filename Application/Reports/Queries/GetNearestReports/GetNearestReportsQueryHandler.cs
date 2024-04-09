@@ -1,13 +1,9 @@
 ﻿using Application.Common.Interfaces.Persistence;
 using Application.Reports.Common;
-using Domain.Models.Relational;
-using Domain.Models.Relational.Common;
-using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Geometries;
 
 namespace Application.Reports.Queries.GetNearestReports;
 
-internal sealed class GetNearestReportsQueryHandler(IUnitOfWork unitOfWork) 
+internal sealed class GetNearestReportsQueryHandler(IReportRepository reportRepository) 
     : IRequestHandler<GetNearestReportsQuery, Result<PagedList<GetCitizenReportsResponse>>>
 {
 
@@ -15,24 +11,13 @@ internal sealed class GetNearestReportsQueryHandler(IUnitOfWork unitOfWork)
         GetNearestReportsQuery request,
         CancellationToken cancellationToken)
     {
-        var currentLocation = new Point(request.Longitude, request.Latitude) { SRID = 4326 };
+        var result = await reportRepository.GetNearest(
+            request.InstanceId,
+            request.Longitude,
+            request.Latitude,
+            GetCitizenReportsResponse.GetSelector(request.UserId),
+            request.PagingInfo);
 
-        var context = unitOfWork.DbContext.Set<Report>();
-        var query = context.Where(r => r.ReportState != ReportState.NeedAcceptance
-                                       && r.Visibility == Visibility.EveryOne
-                                       && r.ShahrbinInstanceId == request.InstanceId
-                                       && r.Address.Location != null
-                                       && !r.IsDeleted);
-        var query2 = query
-            .OrderBy(r => r.Address.Location!.Distance(currentLocation))
-            .AsNoTracking()
-            .Select(GetCitizenReportsResponse.GetSelector(request.UserId));
-
-        var reports = await PagedList<GetCitizenReportsResponse>.ToPagedList(
-           query2,
-           request.PagingInfo.PageNumber,
-           request.PagingInfo.PageSize);
-
-        return reports;
+        return result;
     }
 }
