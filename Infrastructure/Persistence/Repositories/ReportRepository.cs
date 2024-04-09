@@ -2,12 +2,8 @@
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Application.Info.Queries.GetInfo;
-using Application.Reports.Common;
-using DocumentFormat.OpenXml.ExtendedProperties;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
-using Domain.Models.Relational.ReportAggregate;
-using Infrastructure.Info;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -62,11 +58,11 @@ public class ReportRepository : GenericRepository<Report>, IReportRepository
 
 
 
-    public async Task<PagedList<T>> GetCitizenReports<T>(string userId, Expression<Func<Report, T>> selector, PagingInfo pagingInfo)
+    public async Task<PagedList<T>> GetCitizenReports<T>(string userId, int? instanceId, Expression<Func<Report, T>> selector, PagingInfo pagingInfo)
     {
         var query = _context.Set<Report>()
             .AsNoTracking()
-            .Where(r => r.CitizenId == userId)
+            .Where(r => r.CitizenId == userId && (instanceId == null || r.ShahrbinInstanceId == instanceId))
             .OrderByDescending(r => r.LastStatusDateTime)
             .Select(selector);
 

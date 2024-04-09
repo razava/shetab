@@ -3,7 +3,9 @@ using Application.Reports.Common;
 
 namespace Application.Reports.Queries.GetUserReports;
 
+//todo : add instanceId nullable for use in admin
 public sealed record GetUserReportsQuery(
     PagingInfo PagingInfo,
-    string UserId) : IRequest<Result<PagedList<GetCitizenReportsResponse>>>;
+    string UserId,
+    int? instanceId) : IRequest<Result<PagedList<GetCitizenReportsResponse>>>;
 

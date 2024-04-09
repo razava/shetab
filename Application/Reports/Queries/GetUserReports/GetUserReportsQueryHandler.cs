@@ -12,6 +12,7 @@ internal sealed class GetUserReportsQueryHandler(IReportRepository reportReposit
     {
         var result = await reportRepository.GetCitizenReports(
             request.UserId,
+            request.instanceId,
             GetCitizenReportsResponse.GetSelector(request.UserId),
             request.PagingInfo);
 

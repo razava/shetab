@@ -118,7 +118,7 @@ public class CitizenReportController : ApiController
         {
             return Unauthorized();
         }
-        var query = new GetUserReportsQuery(pagingInfo, userId);
+        var query = new GetUserReportsQuery(pagingInfo, userId, null);
         var result = await Sender.Send(query);
 
         return result.Match(
