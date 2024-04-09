@@ -27,6 +27,8 @@ public interface IUserRepository : IGenericRepository<ApplicationUser>
         string lastName,
         string title,
         string organization);
+    public Task<PagedList<T>> GetContractors<T>(
+        string executiveId, Expression<Func<ApplicationUser, T>> selector, PagingInfo pagingInfo);
     public Task<IdentityResult> DeleteAsync(ApplicationUser user);
 
     public Task<IdentityResult> AddToRolesAsync(ApplicationUser user, string[] roles);
@@ -44,4 +46,5 @@ public interface IUserRepository : IGenericRepository<ApplicationUser>
     public Task<List<int>> GetUserCategoriesAsync(string userId);
     public Task<PagedList<T>> GetUsersAsync<T>(
         int instanceId, PagingInfo pagingInfo, UserFilters filters, Expression<Func<ApplicationUser, T>> selector);
+    public Task<T?> GetUserById<T>(string userId, Expression<Func<ApplicationUser, T>> selector);
 }

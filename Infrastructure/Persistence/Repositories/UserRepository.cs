@@ -418,5 +418,28 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
 
         return await PagedList<T>.ToPagedList(query2, pagingInfo.PageNumber, pagingInfo.PageSize);
     }
+
+    public async Task<PagedList<T>> GetContractors<T>(string executiveId, Expression<Func<ApplicationUser, T>> selector, PagingInfo pagingInfo)
+    {
+        var query = _dbContext.Set<ExecutiveContractor>()
+            .Where(ec => ec.ExecutiveId == executiveId)
+            .AsNoTracking()
+            .Select(ec => ec.Contractor)
+            .Select(selector);
+
+        return await PagedList<T>.ToPagedList(query, pagingInfo.PageNumber, pagingInfo.PageSize);
+    }
+
+    public async Task<T?> GetUserById<T>(string userId, Expression<Func<ApplicationUser, T>> selector)
+    {
+        var user = await _dbContext.Set<ApplicationUser>()
+            .AsNoTracking()
+            .Where(u => u.Id ==  userId)
+            .Select(selector)
+            .SingleOrDefaultAsync();
+
+        return user;
+    }
+
 }
 
