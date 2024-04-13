@@ -1280,6 +1280,7 @@ public class InfoService(
 
     private async Task<IQueryable<Report>> addRestrictions(IQueryable<Report> query, GetInfoQueryParameters queryParameters)
     {
+        query = query.Where(r => !r.IsDeleted);
         bool returnAll = false;
         List<string> userIds = new List<string> { queryParameters.UserId };
 

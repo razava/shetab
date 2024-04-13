@@ -39,6 +39,7 @@ public interface IReportRepository : IGenericRepository<Report>
         Expression<Func<Report, T>> selector,
         PagingInfo pagingInfo);
 
+    public Task<List<PossibleSourceResponse>> GetPossibleSources(string userId, List<string> roleNames);
     public Task<List<PossibleTransitionResponse>> GetPossibleTransition(Guid reportId, string userId);
 
 }
@@ -69,6 +70,7 @@ public class ActorResponse
 }
 
 //....
+public sealed record PossibleSourceResponse(string RoleId, string RoleName, string RoleTitle);
 
 public class PossibleTransitionResponse
 {

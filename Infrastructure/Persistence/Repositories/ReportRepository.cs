@@ -6,6 +6,7 @@ using Application.Info.Queries.GetInfo;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
+using Domain.Models.Relational.ProcessAggregate;
 using Domain.Models.Relational.ReportAggregate;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
@@ -57,7 +58,7 @@ public class ReportRepository : GenericRepository<Report>, IReportRepository
     {
         var result = await _context.Set<Report>()
             .AsNoTracking()
-            .Where(r => r.Id == id)
+            .Where(r => r.Id == id && !r.IsDeleted)
             .Where(filter)
             .Select(selector)
             .SingleOrDefaultAsync();
@@ -70,7 +71,7 @@ public class ReportRepository : GenericRepository<Report>, IReportRepository
     {
         var query = _context.Set<Report>()
             .AsNoTracking()
-            .Where(r => r.CitizenId == userId && (instanceId == null || r.ShahrbinInstanceId == instanceId))
+            .Where(r => r.CitizenId == userId && !r.IsDeleted && (instanceId == null || r.ShahrbinInstanceId == instanceId))
             .OrderByDescending(r => r.LastStatusDateTime)
             .Select(selector);
 
@@ -184,7 +185,7 @@ public class ReportRepository : GenericRepository<Report>, IReportRepository
         var actors = await _userRepository.GetActorsAsync(userId);
         var actorIds = actors.Select(a => a.Id).ToList();
 
-        var query = context.Set<Report>().Where(t => true);
+        var query = context.Set<Report>().Where(t => !t.IsDeleted);
 
 
         if (roles.Contains(RoleNames.Operator))
@@ -379,4 +380,42 @@ public class ReportRepository : GenericRepository<Report>, IReportRepository
         return result;
     }
 
+
+    public async Task<List<PossibleSourceResponse>> GetPossibleSources(string userId, List<string> roleNames)
+    {
+        var roleIds = await context.Set<ApplicationRole>()
+            .Where(r => r.Name != null && roleNames.Contains(r.Name))
+            .Select(r => r.Id)
+            .ToListAsync();
+
+        var stagesIds = await context.Set<ProcessStage>()
+            .Where(ps => ps.Actors.Any(
+                a => a.Type == ActorType.Person && a.Identifier == userId ||
+                     a.Type == ActorType.Role && roleIds.Contains(a.Identifier)))
+            .Select(ps => ps.Id)
+            .ToListAsync();
+
+        var possibleSources = await context.Set<ProcessTransition>()
+            .Where(t => stagesIds.Contains(t.ToId))
+            .Select(t => t.From.DisplayRole)
+            .GroupBy(dr => dr.Id)
+            .Select(p => new PossibleSourceResponse(
+                p.Key,
+                p.Select(q => q.Name).FirstOrDefault() ?? "",
+                p.Select(q => q.Title).FirstOrDefault() ?? ""))
+            .ToListAsync();
+        if (roleNames.Contains(RoleNames.Operator))
+        {
+            possibleSources.Insert(0, new PossibleSourceResponse("NEW", "جدید", "جدید"));
+        }
+        if (roleNames.Contains(RoleNames.Executive))
+        {
+            possibleSources.Add(new PossibleSourceResponse("RESPONSED", "در دست اقدام", "در دست اقدام"));
+        }
+        if (roleNames.Contains(RoleNames.Inspector))
+        {
+            possibleSources.Add(new PossibleSourceResponse("INSPECTOR", "واحد بازرسی", "واحد بازرسی"));
+        }
+        return possibleSources;
+    }
 }
