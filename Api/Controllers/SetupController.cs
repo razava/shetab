@@ -5,6 +5,7 @@ using Application.Setup.Commands.AddDummyCategoriesForStaff;
 using Application.Setup.Commands.AddDummyDataCommand;
 using Application.Setup.Commands.AddGoldenUser;
 using Application.Setup.Commands.AddInstance;
+using Application.Setup.Commands.FormatReportComments;
 using Application.Setup.Commands.SpecifyReplyComments;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -79,6 +80,19 @@ public class SetupController : ApiController
     public async Task<ActionResult> SpecifiyReplyComments(int instanceId)
     {
         var query = new SpecifiyReplyCommand(instanceId);
+
+        var result = await Sender.Send(query);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+
+
+    [Authorize(Roles = RoleNames.PowerUser)]
+    [HttpPost("FormatReportComments")]
+    public async Task<ActionResult> FormatReportComments()
+    {
+        var query = new FormatReportCommentsCommand();
 
         var result = await Sender.Send(query);
         return result.Match(
