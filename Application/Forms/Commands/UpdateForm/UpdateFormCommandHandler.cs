@@ -1,5 +1,7 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Application.Forms.Common;
+using SharedKernel.Successes;
 
 namespace Application.Forms.Commands.UpdateForm;
 
@@ -19,6 +21,6 @@ internal sealed class UpdateFormCommandHandler(
         formRepository.Update(form);
         await unitOfWork.SaveAsync();
 
-        return FormResponse.FromForm(form)!;
+        return ResultMethods.GetResult(FormResponse.FromForm(form)!, UpdateSuccess.Form);
     }
 }

@@ -1,5 +1,7 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.PollAggregate;
+using SharedKernel.Successes;
 
 namespace Application.Polls.Commands.UpdatePoll;
 
@@ -24,6 +26,6 @@ internal class UpdatePollCommandHandler(IPollRepository pollRepository, IUnitOfW
 
         await unitOfWork.SaveAsync();
 
-        return poll;
+        return ResultMethods.GetResult(poll, UpdateSuccess.Poll);
     }
 }

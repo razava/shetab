@@ -1,7 +1,9 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Application.Polls.Common;
 using Domain.Models.Relational.PollAggregate;
 using Mapster;
+using SharedKernel.Successes;
 
 namespace Application.Polls.Commands.AddPoll;
 
@@ -26,6 +28,6 @@ internal class AddPollCommandHandler(IPollRepository pollRepository, IUnitOfWork
         pollRepository.Add(poll);
         await unitOfWork.SaveAsync();
 
-        return poll.Adapt<GetPollsResponse>();
+        return ResultMethods.GetResult(poll.Adapt<GetPollsResponse>(), CreationSuccess.Poll);
     }
 }

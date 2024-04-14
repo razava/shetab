@@ -1,7 +1,8 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Application.Forms.Common;
 using Domain.Models.Relational.ReportAggregate;
-using Mapster;
+using SharedKernel.Successes;
 
 namespace Application.Forms.Commands.AddForm;
 
@@ -20,6 +21,6 @@ internal sealed class AddFormCommandHandler(
         formRepository.Insert(form);
         await unitOfWork.SaveAsync();
 
-        return FormResponse.FromForm(form)!;
+        return ResultMethods.GetResult(FormResponse.FromForm(form)!, CreationSuccess.Form);
     }
 }

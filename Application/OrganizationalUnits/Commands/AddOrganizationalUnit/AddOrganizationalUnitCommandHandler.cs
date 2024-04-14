@@ -1,8 +1,10 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
+using SharedKernel.Successes;
 
 namespace Application.OrganizationalUnits.Commands.AddOrganizationalUnit;
 internal class AddOrganizationalUnitCommandHandler(
@@ -72,6 +74,6 @@ internal class AddOrganizationalUnitCommandHandler(
         organizationalUnitRepository.Insert(result);
         await unitOfWork.SaveAsync();
 
-        return result;
+        return ResultMethods.GetResult(result, CreationSuccess.OrganizationalUnit);
     }
 }

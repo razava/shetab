@@ -19,6 +19,16 @@ public static class UpdateSuccess
 {
     public static readonly Success CategoryStatus = new Success("وضعیت دسته بندی به روز شد.");
     public static readonly Success Category = new Success(" دسته بندی به روز شد.");
+    public static readonly Success Form = new Success(" فرم به روز شد.");
+    public static readonly Success News = new Success(" خبر به روز شد.");
+    public static readonly Success OrganizationalUnit = new Success(" واحد سازمانی به روز شد.");
+    public static readonly Success Poll = new Success(" نظرسنجی به روز شد.");
+}
+
+public static class DeleteSuccess
+{
+    public static readonly Success Form = new Success(" فرم حذف شد.");
+    public static readonly Success OrganizationalUnit = new Success(" واحد سازمانی حذف شد.");
 }
 
 public static class RegistrationSuccess

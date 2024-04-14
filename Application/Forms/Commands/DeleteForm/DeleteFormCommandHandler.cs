@@ -1,6 +1,8 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Successes;
 
 namespace Application.Forms.Commands.DeleteForm;
 
@@ -22,6 +24,6 @@ internal sealed class DeleteFormCommandHandler(
         await formRepository.LogicalDelete(form.Id);
         await unitOfWork.SaveAsync();
 
-        return true;
+        return ResultMethods.GetResult(true, DeleteSuccess.Form);
     }
 }

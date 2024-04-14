@@ -1,7 +1,9 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Successes;
 
 namespace Application.OrganizationalUnits.Commands.UpdateOrganizationalUnit;
 internal class UpdateOrganizationalUnitCommandHandler(
@@ -85,6 +87,6 @@ internal class UpdateOrganizationalUnitCommandHandler(
         organizationalUnitRepository.Update(organizationalUnit);
         await unitOfWork.SaveAsync();
 
-        return organizationalUnit;
+        return ResultMethods.GetResult(organizationalUnit, UpdateSuccess.OrganizationalUnit);
     }
 }

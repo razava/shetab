@@ -1,8 +1,10 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Application.NewsApp.Common;
 using Domain.Models.Relational;
 using Infrastructure.Storage;
 using Mapster;
+using SharedKernel.Successes;
 
 namespace Application.NewsApp.Commands.AddNews;
 
@@ -22,6 +24,6 @@ internal sealed class AddNewsCommandHandler(
         newsRepository.Insert(news);
         await unitOfWork.SaveAsync();
 
-        return news.Adapt<GetNewsResponse>();
+        return ResultMethods.GetResult(news.Adapt<GetNewsResponse>(), CreationSuccess.News);
     }
 }

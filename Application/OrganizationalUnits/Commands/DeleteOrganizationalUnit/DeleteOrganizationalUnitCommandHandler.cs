@@ -1,4 +1,6 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
+using SharedKernel.Successes;
 
 namespace Application.OrganizationalUnits.Commands.DeleteOrganizationalUnit;
 
@@ -13,6 +15,6 @@ internal class DeleteOrganizationalUnitCommandHandler(
         await organizationalUnitRepository.PhysicalDelete(request.Id);
         await unitOfWork.SaveAsync();
 
-        return true;
+        return ResultMethods.GetResult(true, DeleteSuccess.OrganizationalUnit);
     }
 }
