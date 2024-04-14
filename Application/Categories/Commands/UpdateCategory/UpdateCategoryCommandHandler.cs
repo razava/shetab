@@ -2,6 +2,8 @@
 using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Successes;
+using Application.Common.Helper;
 
 namespace Application.Categories.Commands.UpdateCategory;
 
@@ -48,6 +50,7 @@ internal sealed class UpdateCategoryCommandHandler(
         categoryRepository.Update(category);
 
         await unitOfWork.SaveAsync();
-        return CategoryDetailResponse.FromCategory(category);
+
+        return ResultMethods.GetResult(CategoryDetailResponse.FromCategory(category), UpdateSuccess.Category);
     }
 }

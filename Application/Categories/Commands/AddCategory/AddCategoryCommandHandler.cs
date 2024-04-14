@@ -1,8 +1,10 @@
 ﻿using Application.Categories.Common;
+using Application.Common.Helper;
 using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Domain.Models.Relational.IdentityAggregate;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Successes;
 
 namespace Application.Categories.Commands.AddCategory;
 
@@ -51,6 +53,6 @@ internal sealed class AddCategoryCommandHandler(IUnitOfWork unitOfWork, ICategor
         categoryRepository.Insert(category);
         await unitOfWork.SaveAsync();
 
-        return CategoryDetailResponse.FromCategory(category);
+        return ResultMethods.GetResult(CategoryDetailResponse.FromCategory(category), CreationSuccess.Category);
     }
 }

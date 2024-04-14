@@ -1,5 +1,7 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.ReportAggregate;
+using SharedKernel.Successes;
 
 namespace Application.Feedbacks.Commands.StoreFeedback;
 
@@ -41,6 +43,6 @@ internal sealed class StoreFeedbackCommandHandler(
 
         await unitOfWork.SaveAsync();
 
-        return true;
+        return ResultMethods.GetResult(true, RegistrationSuccess.Feedback);
     }
 }

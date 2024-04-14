@@ -1,4 +1,6 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
+using SharedKernel.Successes;
 
 namespace Application.Categories.Commands.DeleteCategory;
 
@@ -17,6 +19,7 @@ internal sealed class DeleteCategoryCommandHandler(IUnitOfWork unitOfWork, ICate
         categoryRepository.Update(category);
 
         await unitOfWork.SaveAsync();
-        return true;
+
+        return ResultMethods.GetResult(true, UpdateSuccess.CategoryStatus);
     }
 }

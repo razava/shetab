@@ -18,6 +18,6 @@ internal class AnswerPollCommandHandler(IPollRepository pollRepository, IUnitOfW
 
         await unitOfWork.SaveAsync();
 
-        return new Result<bool>().WithValue(true).WithSuccess(Registration.PollResponse);
+        return new Result<bool>().WithValue(true).WithSuccess(RegistrationSuccess.PollResponse);
     }
 }

@@ -1,3 +1,3 @@
 ﻿namespace Application.Setup.Commands.FormatReportComments;
 
-public record FormatReportCommentsCommand() : IRequest<Result<bool>>;
+public record FormatReportCommentsCommand(int instanceId) : IRequest<Result<bool>>;

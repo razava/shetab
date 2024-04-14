@@ -294,6 +294,11 @@ public class Report : Entity
         TransitionLogs.Add(log);
     }
 
+    public void UpdateComments(string comments)
+    {
+        Comments = comments;
+    }
+
     public Message MessageToCitizen(
         string actorIdentifier,
         List<Media> attachments,

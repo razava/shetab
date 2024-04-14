@@ -1,6 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.ExtensionMethods;
 using Application.Common.Statics;
+using Application.Setup.Commands.AddDefaultFormToAllCategories;
 using Application.Setup.Commands.AddDummyCategoriesForStaff;
 using Application.Setup.Commands.AddDummyDataCommand;
 using Application.Setup.Commands.AddGoldenUser;
@@ -76,10 +77,24 @@ public class SetupController : ApiController
 
 
     [Authorize(Roles = RoleNames.PowerUser)]
-    [HttpPost("SpecifiyReplyComments")]
-    public async Task<ActionResult> SpecifiyReplyComments(int instanceId)
+    [HttpPost("SpecifyReplyComments")]
+    public async Task<ActionResult> SpecifyReplyComments(int instanceId)
     {
-        var query = new SpecifiyReplyCommand(instanceId);
+        var query = new SpecifyReplyCommand(instanceId);
+
+        var result = await Sender.Send(query);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+
+
+
+    [Authorize(Roles = RoleNames.PowerUser)]
+    [HttpPost("AddDefaultFormToAllCategories")]
+    public async Task<ActionResult> AddDefaultFormToAllCategories(int instanceId)
+    {
+        var query = new AddDefaultFormToAllCatCommand(instanceId);
 
         var result = await Sender.Send(query);
         return result.Match(
@@ -90,9 +105,12 @@ public class SetupController : ApiController
 
     [Authorize(Roles = RoleNames.PowerUser)]
     [HttpPost("FormatReportComments")]
-    public async Task<ActionResult> FormatReportComments()
+    public async Task<ActionResult> FormatReportComments(int instanceId)
     {
-        var query = new FormatReportCommentsCommand();
+        //warning : for run on shahrdari server make sure the default form exist in related database!
+        //todo : or get the formId form related datebase
+        //TODO : remove added metods in report model for update comments.
+        var query = new FormatReportCommentsCommand(instanceId);
 
         var result = await Sender.Send(query);
         return result.Match(

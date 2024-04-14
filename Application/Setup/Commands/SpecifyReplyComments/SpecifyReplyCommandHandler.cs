@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Setup.Commands.SpecifyReplyComments;
 
-internal class SpecifiyReplyCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<SpecifiyReplyCommand, Result<bool>>
+internal class SpecifyReplyCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<SpecifyReplyCommand, Result<bool>>
 {
-    public async Task<Result<bool>> Handle(SpecifiyReplyCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(SpecifyReplyCommand request, CancellationToken cancellationToken)
     {
         var context = unitOfWork.DbContext;
         var replyCommentIds = await context.Set<Comment>()

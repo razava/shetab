@@ -20,8 +20,9 @@ internal class AddReportNoteCommandHandler(
 
         var result = new Result<ReportNoteResult>()
             .WithValue(note.Adapt<ReportNoteResult>())
-            .WithSuccess(Registration.ReportNote);
+            .WithSuccess(RegistrationSuccess.ReportNote);
 
         return result;
     }
 }
+ 
