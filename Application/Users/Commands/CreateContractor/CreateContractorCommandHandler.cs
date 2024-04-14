@@ -1,6 +1,8 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Mapster;
+using SharedKernel.Successes;
 
 namespace Application.Users.Commands.CreateContractor;
 
@@ -22,6 +24,6 @@ internal class CreateContractorCommandHandler(
             request.Title,
             request.Organization);
 
-        return result.Adapt<GetContractorsListResponse>();
+        return ResultMethods.GetResult(result.Adapt<GetContractorsListResponse>(), CreationSuccess.Contractor);
     }
 }

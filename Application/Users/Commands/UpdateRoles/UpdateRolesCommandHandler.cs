@@ -1,4 +1,6 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
+using SharedKernel.Successes;
 
 namespace Application.Users.Commands.UpdateRoles;
 
@@ -14,6 +16,6 @@ internal class UpdateRolesCommandHandler(IUserRepository userRepository) : IRequ
         if (!result)
             return AuthenticateErrors.RoleAssignmentFailed;
 
-        return result;
+        return ResultMethods.GetResult(result, UpdateSuccess.Roles);
     }
 }

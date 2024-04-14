@@ -1,6 +1,8 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Application.Processes.Common;
 using Mapster;
+using SharedKernel.Successes;
 
 namespace Application.Processes.Commands.AddProcess;
 
@@ -14,6 +16,6 @@ internal class AddProcessCommandHandler(IProcessRepository processRepository, IU
         if (process == null)
             return CreationFailedErrors.Process;
 
-        return process.Adapt<GetProcessResponse>();
+        return ResultMethods.GetResult(process.Adapt<GetProcessResponse>(), CreationSuccess.Process);
     }
 }

@@ -1,6 +1,8 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.IdentityAggregate;
 using Microsoft.IdentityModel.Tokens;
+using SharedKernel.Successes;
 
 namespace Application.Users.Commands.UpdateUserProfile;
 
@@ -36,6 +38,6 @@ internal class UpdateUserProfileCommandHandler(
         userRepository.Update(user);
         await unitOfWork.SaveAsync();
 
-        return user;
+        return ResultMethods.GetResult(user, UpdateSuccess.UserProfile);
     }
 }

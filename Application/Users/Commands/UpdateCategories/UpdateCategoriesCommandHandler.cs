@@ -1,4 +1,6 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
+using SharedKernel.Successes;
 
 namespace Application.Users.Commands.UpdateCategories;
 
@@ -8,6 +10,6 @@ internal class UpdateCategoriesCommandHandler(IUnitOfWork unitOfWork, IUserRepos
     {
         var result = await userRepository.UpdateCategoriesAsync(request.id, request.CategoryIds);
         await unitOfWork.SaveAsync();
-        return true;
+        return ResultMethods.GetResult(true, UpdateSuccess.OperatorCategories);
     }
 }

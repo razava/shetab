@@ -1,4 +1,6 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
+using SharedKernel.Successes;
 
 namespace Application.Processes.Commands.UpdateProcess;
 
@@ -9,6 +11,6 @@ internal class UpdateProcessCommandHandler(IProcessRepository processRepository,
     {
         await processRepository.UpdateTypicalProcess(request.Id, request.Code, request.Title, request.ActorIds);
         await unitOfWork.SaveAsync();
-        return true;
+        return ResultMethods.GetResult(true, UpdateSuccess.Process);
     }
 }

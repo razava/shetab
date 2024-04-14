@@ -1,8 +1,10 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Application.QuickAccesses.Common;
 using Domain.Models.Relational.Common;
 using Infrastructure.Storage;
 using Mapster;
+using SharedKernel.Successes;
 
 namespace Application.QuickAccesses.Commands.UpdateQuickAccess;
 
@@ -36,6 +38,6 @@ internal sealed class UpdateQuickAccessCommandHandler(
         quickAccessRepository.Update(quickAccess);
         await unitOfWork.SaveAsync();
 
-        return quickAccess.Adapt<AdminGetQuickAccessResponse>();
+        return ResultMethods.GetResult(quickAccess.Adapt<AdminGetQuickAccessResponse>(), UpdateSuccess.QuickAccess);
     }
 }

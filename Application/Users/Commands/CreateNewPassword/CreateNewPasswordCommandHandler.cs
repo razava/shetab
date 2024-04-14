@@ -1,4 +1,6 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
+using SharedKernel.Successes;
 
 namespace Application.Users.Commands.CreateNewPassword;
 
@@ -10,6 +12,6 @@ internal class CreateNewPasswordCommandHandler(IUserRepository userRepository) :
         if (!result)
             return AuthenticateErrors.ChangePasswordFailed;
 
-        return result;
+        return ResultMethods.GetResult(result, UpdateSuccess.Password);
     }
 }

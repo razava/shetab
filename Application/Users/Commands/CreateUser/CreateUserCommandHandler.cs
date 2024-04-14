@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Application.Users.Queries.GetUserById;
 using Domain.Models.Relational.Common;
@@ -6,6 +7,7 @@ using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Successes;
 
 namespace Application.Users.Commands.CreateUser;
 
@@ -47,6 +49,6 @@ internal class CreateUserCommandHandler(IUserRepository userRepository, IUnitOfW
         }
 
         
-        return user.Adapt<AdminGetUserDetailsResponse>();
+        return ResultMethods.GetResult(user.Adapt<AdminGetUserDetailsResponse>(), CreationSuccess.User);
     }
 }
