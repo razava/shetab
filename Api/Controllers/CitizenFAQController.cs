@@ -1,8 +1,6 @@
 ﻿using Api.Abstractions;
-using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Faqs.Queries.GetFaq;
-using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
 
 
-[Route("api/{instanceId}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class CitizenFAQController : ApiController
 {
@@ -19,7 +17,7 @@ public class CitizenFAQController : ApiController
     }
 
     [Authorize(Roles = "Citizen")]
-    [HttpGet("/{instanceId:int}")]
+    [HttpGet("{instanceId:int}")]
     public async Task<ActionResult> GetFaqs(int instanceId)
     {
         var query = new GetFaqQuery(instanceId);

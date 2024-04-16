@@ -37,7 +37,7 @@ public class CitizenReportController : ApiController
 
 
     [Authorize(Roles = "Citizen")]
-    [HttpGet("/{instanceId:int}")]
+    [HttpGet("{instanceId:int}")]
     public async Task<ActionResult> GetReports(
         int instanceId,
         [FromQuery] PagingInfo pagingInfo)
