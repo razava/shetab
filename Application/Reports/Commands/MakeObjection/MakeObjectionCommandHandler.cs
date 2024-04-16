@@ -1,7 +1,7 @@
 ﻿using Application.Common.Helper;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
-using Domain.Models.Relational;
+using Application.Reports.Common;
 using Domain.Models.Relational.Common;
 using SharedKernel.Successes;
 
@@ -10,10 +10,10 @@ namespace Application.Reports.Commands.MakeObjection;
 internal sealed class MakeObjectionCommandHandler(
     IUnitOfWork unitOfWork,
     IReportRepository reportRepository,
-    IUploadRepository uploadRepository) : IRequestHandler<MakeObjectionCommand, Result<Report>>
+    IUploadRepository uploadRepository) : IRequestHandler<MakeObjectionCommand, Result<GetReportByIdResponse>>
 {
 
-    public async Task<Result<Report>> Handle(MakeObjectionCommand request, CancellationToken cancellationToken)
+    public async Task<Result<GetReportByIdResponse>> Handle(MakeObjectionCommand request, CancellationToken cancellationToken)
     {
         var report = await reportRepository.GetByIDAsync(request.ReportId);
         if (report == null)
@@ -59,6 +59,6 @@ internal sealed class MakeObjectionCommandHandler(
         reportRepository.Update(report);
         await unitOfWork.SaveAsync();
 
-        return ResultMethods.GetResult(report, OperationSuccess.MakeObjection);
+        return ResultMethods.GetResult(GetReportByIdResponse.FromReport(report), OperationSuccess.MakeObjection);
     }
 }

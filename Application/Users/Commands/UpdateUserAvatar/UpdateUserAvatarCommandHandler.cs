@@ -1,6 +1,5 @@
 ﻿using Application.Common.Helper;
 using Application.Common.Interfaces.Persistence;
-using Domain.Models.Relational.Common;
 using Infrastructure.Storage;
 using SharedKernel.Successes;
 
@@ -9,10 +8,10 @@ namespace Application.Users.Commands.UpdateUserAvatar;
 internal class UpdateUserAvatarCommandHandler(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
-    IStorageService storageService) : IRequestHandler<UpdateUserAvatarCommand, Result<Media>>
+    IStorageService storageService) : IRequestHandler<UpdateUserAvatarCommand, Result<bool>>
 {
     
-    public async Task<Result<Media>> Handle(UpdateUserAvatarCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(UpdateUserAvatarCommand request, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetSingleAsync(u => u.Id == request.UserId);
         if (user is null)
@@ -24,6 +23,6 @@ internal class UpdateUserAvatarCommandHandler(
         userRepository.Update(user);
         await unitOfWork.SaveAsync();
 
-        return ResultMethods.GetResult(avatar, UpdateSuccess.Avatar);
+        return ResultMethods.GetResult(true, UpdateSuccess.Avatar);
     }
 }

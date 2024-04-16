@@ -6,7 +6,6 @@ using Application.NewsApp.Commands.AddNews;
 using Application.NewsApp.Commands.UpdateNews;
 using Application.NewsApp.Queries.GetNews;
 using Application.NewsApp.Queries.GetNewsById;
-using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -83,7 +82,7 @@ public class AdminNewsController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 

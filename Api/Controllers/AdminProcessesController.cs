@@ -24,7 +24,6 @@ public class AdminProcessesController : ApiController
     }
 
 
-    //this endpoint is duplicate with GetProcesses in AdminCategoryController
     [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<ActionResult> GetProcesses([FromQuery]QueryFilter queryFilter)
@@ -82,7 +81,7 @@ public class AdminProcessesController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -108,7 +107,7 @@ public class AdminProcessesController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 

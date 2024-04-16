@@ -1,6 +1,5 @@
 ﻿using Application.Common.Helper;
 using Application.Common.Interfaces.Persistence;
-using Domain.Models.Relational.IdentityAggregate;
 using Microsoft.IdentityModel.Tokens;
 using SharedKernel.Successes;
 
@@ -8,10 +7,10 @@ namespace Application.Users.Commands.UpdateUserProfile;
 
 internal class UpdateUserProfileCommandHandler(
     IUserRepository userRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<UpdateUserProfileCommand, Result<ApplicationUser>>
+    IUnitOfWork unitOfWork) : IRequestHandler<UpdateUserProfileCommand, Result<bool>>
 {
     
-    public async Task<Result<ApplicationUser>> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetSingleAsync(u => u.Id == request.UserId);
         if (user is null)
@@ -38,6 +37,6 @@ internal class UpdateUserProfileCommandHandler(
         userRepository.Update(user);
         await unitOfWork.SaveAsync();
 
-        return ResultMethods.GetResult(user, UpdateSuccess.UserProfile);
+        return ResultMethods.GetResult(true, UpdateSuccess.UserProfile);
     }
 }

@@ -7,10 +7,10 @@ namespace Application.Faqs.Commands.UpdateFaq;
 
 internal sealed class UpdateFaqCommandHandler(
     IFaqRepository faqRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<UpdateFaqCommand, Result<Faq>>
+    IUnitOfWork unitOfWork) : IRequestHandler<UpdateFaqCommand, Result<bool>>
 {
 
-    public async Task<Result<Faq>> Handle(UpdateFaqCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(UpdateFaqCommand request, CancellationToken cancellationToken)
     {
         var faq = await faqRepository.GetSingleAsync(q => q.Id == request.Id);
         if (faq is null)
@@ -21,6 +21,6 @@ internal sealed class UpdateFaqCommandHandler(
         faqRepository.Update(faq);
         await unitOfWork.SaveAsync();
 
-        return ResultMethods.GetResult(faq, UpdateSuccess.Faq);
+        return ResultMethods.GetResult(true, UpdateSuccess.Faq);
     }
 }

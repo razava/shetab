@@ -10,10 +10,10 @@ internal class UpdateOrganizationalUnitCommandHandler(
     IUserRepository userRepository,
     IOrganizationalUnitRepository organizationalUnitRepository,
     IActorRepository actorRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<UpdateOrganizationalUnitCommand, Result<OrganizationalUnit>>
+    IUnitOfWork unitOfWork) : IRequestHandler<UpdateOrganizationalUnitCommand, Result<bool>>
 {
 
-    public async Task<Result<OrganizationalUnit>> Handle(UpdateOrganizationalUnitCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(UpdateOrganizationalUnitCommand request, CancellationToken cancellationToken)
     {
         //TODO: CHECK AND REVISE ORGANIZATIONAL UNIT COMMANDS ASAP!
         var organizationalUnit = await organizationalUnitRepository.GetSingleAsync(ou => ou.Id == request.OrganizationalUnitId, true, "OrganizationalUnits");
@@ -87,6 +87,6 @@ internal class UpdateOrganizationalUnitCommandHandler(
         organizationalUnitRepository.Update(organizationalUnit);
         await unitOfWork.SaveAsync();
 
-        return ResultMethods.GetResult(organizationalUnit, UpdateSuccess.OrganizationalUnit);
+        return ResultMethods.GetResult(true, UpdateSuccess.OrganizationalUnit);
     }
 }

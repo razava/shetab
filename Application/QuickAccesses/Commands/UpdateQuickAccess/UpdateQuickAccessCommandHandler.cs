@@ -1,9 +1,7 @@
 ﻿using Application.Common.Helper;
 using Application.Common.Interfaces.Persistence;
-using Application.QuickAccesses.Common;
 using Domain.Models.Relational.Common;
 using Infrastructure.Storage;
-using Mapster;
 using SharedKernel.Successes;
 
 namespace Application.QuickAccesses.Commands.UpdateQuickAccess;
@@ -11,10 +9,10 @@ namespace Application.QuickAccesses.Commands.UpdateQuickAccess;
 internal sealed class UpdateQuickAccessCommandHandler(
     IQuickAccessRepository quickAccessRepository,
     IUnitOfWork unitOfWork,
-    IStorageService storageService) : IRequestHandler<UpdateQuickAccessCommand, Result<AdminGetQuickAccessResponse>>
+    IStorageService storageService) : IRequestHandler<UpdateQuickAccessCommand, Result<bool>>
 {
 
-    public async Task<Result<AdminGetQuickAccessResponse>> Handle(UpdateQuickAccessCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(UpdateQuickAccessCommand request, CancellationToken cancellationToken)
     {
         Media? media = null;
         if (request.Image is not null)
@@ -38,6 +36,6 @@ internal sealed class UpdateQuickAccessCommandHandler(
         quickAccessRepository.Update(quickAccess);
         await unitOfWork.SaveAsync();
 
-        return ResultMethods.GetResult(quickAccess.Adapt<AdminGetQuickAccessResponse>(), UpdateSuccess.QuickAccess);
+        return ResultMethods.GetResult(true, UpdateSuccess.QuickAccess);
     }
 }

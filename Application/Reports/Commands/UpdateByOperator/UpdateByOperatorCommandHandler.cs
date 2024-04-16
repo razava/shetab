@@ -1,6 +1,5 @@
 ﻿using Application.Common.Helper;
 using Application.Common.Interfaces.Persistence;
-using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using SharedKernel.Successes;
@@ -11,9 +10,9 @@ internal sealed class UpdateByOperatorCommandHandler(
     IUnitOfWork unitOfWork,
     IReportRepository reportRepository,
     ICategoryRepository categoryRepository,
-    IUploadRepository uploadRepository) : IRequestHandler<UpdateByOperatorCommand, Result<GetReportByIdResponse>>
+    IUploadRepository uploadRepository) : IRequestHandler<UpdateByOperatorCommand, Result<bool>>
 {
-    public async Task<Result<GetReportByIdResponse>> Handle(UpdateByOperatorCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(UpdateByOperatorCommand request, CancellationToken cancellationToken)
     {
         var report = await reportRepository.GetByIDAsync(request.reportId);
         if (report == null)
@@ -63,6 +62,6 @@ internal sealed class UpdateByOperatorCommandHandler(
 
         await unitOfWork.SaveAsync();
 
-        return ResultMethods.GetResult(GetReportByIdResponse.FromReport(report), UpdateSuccess.Report);
+        return ResultMethods.GetResult(true, UpdateSuccess.Report);
     }
 }

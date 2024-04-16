@@ -11,5 +11,5 @@ public sealed record UpdateByOperatorCommand(
     AddressInfoRequest? Address,
     List<Guid>? Attachments,
     Priority? Priority,
-    Visibility? Visibility) : IRequest<Result<GetReportByIdResponse>>;
+    Visibility? Visibility) : IRequest<Result<bool>>;
 

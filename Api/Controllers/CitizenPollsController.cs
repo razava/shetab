@@ -46,14 +46,7 @@ public class CitizenPollsController : ApiController
             f => Problem(f));
     }
 
-    //[Authorize(Roles = "Citizen")]
-    //[HttpGet("Polls/{id:int}")]
-    //public async Task<ActionResult> GetPollById(int id)
-    //{
-    //    await Task.CompletedTask;
-    //    return Ok();
-    //}
-
+    
     [Authorize(Roles = "Citizen")]
     [HttpPost("Polls/Answer/{id:int}")]
     public async Task<ActionResult> AnswerPoll(int id, AnswerToPollDto answerDto)

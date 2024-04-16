@@ -1,5 +1,4 @@
-﻿using Application.Common.FilterModels;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ReportAggregate;
 using System.Linq.Expressions;

@@ -19,5 +19,5 @@ public sealed record UpdateCategoryCommand(
     bool? HideMap = null,
     string? AttachmentDescription = null,
     Guid? FormId = null,
-    Priority? DefaultPriority = null) : IRequest<Result<CategoryDetailResponse>>;
+    Priority? DefaultPriority = null) : IRequest<Result<bool>>;
 

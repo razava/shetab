@@ -1,5 +1,4 @@
-﻿using Application.Categories.Common;
-using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Successes;
@@ -10,9 +9,9 @@ namespace Application.Categories.Commands.UpdateCategory;
 internal sealed class UpdateCategoryCommandHandler(
     IUnitOfWork unitOfWork,
     ICategoryRepository categoryRepository) 
-    : IRequestHandler<UpdateCategoryCommand, Result<CategoryDetailResponse>>
+    : IRequestHandler<UpdateCategoryCommand, Result<bool>>
 {
-    public async Task<Result<CategoryDetailResponse>> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
     {
         //TODO: perform required operations
         var category = await categoryRepository.GetSingleAsync(c => c.Id == request.Id);
@@ -51,6 +50,6 @@ internal sealed class UpdateCategoryCommandHandler(
 
         await unitOfWork.SaveAsync();
 
-        return ResultMethods.GetResult(CategoryDetailResponse.FromCategory(category), UpdateSuccess.Category);
+        return ResultMethods.GetResult(true, UpdateSuccess.Category);
     }
 }

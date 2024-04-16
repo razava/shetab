@@ -5,10 +5,10 @@ using SharedKernel.Successes;
 
 namespace Application.Polls.Commands.UpdatePoll;
 
-internal class UpdatePollCommandHandler(IPollRepository pollRepository, IUnitOfWork unitOfWork) : IRequestHandler<UpdatePollCommand, Result<Poll>>
+internal class UpdatePollCommandHandler(IPollRepository pollRepository, IUnitOfWork unitOfWork) : IRequestHandler<UpdatePollCommand, Result<bool>>
 {
 
-    public async Task<Result<Poll>> Handle(UpdatePollCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(UpdatePollCommand request, CancellationToken cancellationToken)
     {
         var poll = await pollRepository.GetById(request.Id);
         if (poll is null)
@@ -26,6 +26,6 @@ internal class UpdatePollCommandHandler(IPollRepository pollRepository, IUnitOfW
 
         await unitOfWork.SaveAsync();
 
-        return ResultMethods.GetResult(poll, UpdateSuccess.Poll);
+        return ResultMethods.GetResult(true, UpdateSuccess.Poll);
     }
 }

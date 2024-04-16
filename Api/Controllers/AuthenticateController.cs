@@ -126,7 +126,7 @@ public class AuthenticateController : ApiController
         var command = new ChangePasswordCommand(userName, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
         var result = await Sender.Send(command);
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -164,7 +164,7 @@ public class AuthenticateController : ApiController
 
         var result = await Sender.Send(command);
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -209,7 +209,7 @@ public class AuthenticateController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -228,7 +228,7 @@ public class AuthenticateController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-           s => NoContent(),
+           s => Ok(s),
            f => Problem(f));
     }
 
@@ -247,7 +247,7 @@ public class AuthenticateController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -265,7 +265,7 @@ public class AuthenticateController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 

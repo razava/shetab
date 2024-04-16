@@ -1,16 +1,15 @@
 ﻿using Application.Common.Helper;
 using Application.Common.Interfaces.Persistence;
-using Application.Forms.Common;
 using SharedKernel.Successes;
 
 namespace Application.Forms.Commands.UpdateForm;
 
 internal sealed class UpdateFormCommandHandler(
     IFormRepository formRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<UpdateFormCommand, Result<FormResponse>>
+    IUnitOfWork unitOfWork) : IRequestHandler<UpdateFormCommand, Result<bool>>
 {
 
-    public async Task<Result<FormResponse>> Handle(UpdateFormCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(UpdateFormCommand request, CancellationToken cancellationToken)
     {
         var form = await formRepository.GetSingleAsync(q => q.Id == request.Id);
         if (form is null)
@@ -21,6 +20,6 @@ internal sealed class UpdateFormCommandHandler(
         formRepository.Update(form);
         await unitOfWork.SaveAsync();
 
-        return ResultMethods.GetResult(FormResponse.FromForm(form)!, UpdateSuccess.Form);
+        return ResultMethods.GetResult(true, UpdateSuccess.Form);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Application.Common.Interfaces.Persistence;
-using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 
@@ -10,9 +9,9 @@ internal sealed class AcceptByOperatorCommandHandler(
     IReportRepository reportRepository,
     ICategoryRepository categoryRepository,
     IUploadRepository uploadRepository) 
-    : IRequestHandler<AcceptByOperatorCommand, Result<GetReportByIdResponse>>
+    : IRequestHandler<AcceptByOperatorCommand, Result<bool>>
 {
-    public async Task<Result<GetReportByIdResponse>> Handle(AcceptByOperatorCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(AcceptByOperatorCommand request, CancellationToken cancellationToken)
     {
         var report = await reportRepository.GetByIDAsync(request.reportId);
         if (report == null)
@@ -57,6 +56,6 @@ internal sealed class AcceptByOperatorCommandHandler(
 
         await unitOfWork.SaveAsync();
 
-        return GetReportByIdResponse.FromReport(report);
+        return true;
     }
 }

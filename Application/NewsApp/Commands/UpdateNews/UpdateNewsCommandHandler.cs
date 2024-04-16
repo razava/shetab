@@ -11,10 +11,10 @@ namespace Application.NewsApp.Commands.UpdateNews;
 internal sealed class UpdateNewsCommandHandler(
     INewsRepository newsRepository,
     IUnitOfWork unitOfWork,
-    IStorageService storageService) : IRequestHandler<UpdateNewsCommand, Result<GetNewsResponse>>
+    IStorageService storageService) : IRequestHandler<UpdateNewsCommand, Result<bool>>
 {
 
-    public async Task<Result<GetNewsResponse>> Handle(UpdateNewsCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(UpdateNewsCommand request, CancellationToken cancellationToken)
     {
         Media? media = null;
         if (request.Image is not null)
@@ -34,6 +34,6 @@ internal sealed class UpdateNewsCommandHandler(
         newsRepository.Update(news);
         await unitOfWork.SaveAsync();
 
-        return ResultMethods.GetResult(news.Adapt<GetNewsResponse>(), UpdateSuccess.News);
+        return ResultMethods.GetResult(true, UpdateSuccess.News);
     }
 }

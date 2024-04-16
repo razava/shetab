@@ -59,7 +59,7 @@ public class AdminUserManagementController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -73,7 +73,7 @@ public class AdminUserManagementController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -87,7 +87,7 @@ public class AdminUserManagementController : ApiController
         var result = await Sender.Send(commond);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -126,7 +126,7 @@ public class AdminUserManagementController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -153,7 +153,7 @@ public class AdminUserManagementController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 

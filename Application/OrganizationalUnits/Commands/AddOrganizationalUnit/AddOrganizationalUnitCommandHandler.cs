@@ -1,9 +1,11 @@
 ﻿using Application.Common.Helper;
 using Application.Common.Interfaces.Persistence;
+using Application.OrganizationalUnits.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
 using Domain.Models.Relational.ProcessAggregate;
+using Mapster;
 using SharedKernel.Successes;
 
 namespace Application.OrganizationalUnits.Commands.AddOrganizationalUnit;
@@ -11,9 +13,9 @@ internal class AddOrganizationalUnitCommandHandler(
     IUserRepository userRepository,
     IOrganizationalUnitRepository organizationalUnitRepository,
     IActorRepository actorRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<AddOrganizationalUnitCommand, Result<OrganizationalUnit>>
+    IUnitOfWork unitOfWork) : IRequestHandler<AddOrganizationalUnitCommand, Result<GetOrganizationalUnitResponse>>
 {
-    public async Task<Result<OrganizationalUnit>> Handle(AddOrganizationalUnitCommand request, CancellationToken cancellationToken)
+    public async Task<Result<GetOrganizationalUnitResponse>> Handle(AddOrganizationalUnitCommand request, CancellationToken cancellationToken)
     {
         var user = new ApplicationUser()
         {
@@ -74,6 +76,6 @@ internal class AddOrganizationalUnitCommandHandler(
         organizationalUnitRepository.Insert(result);
         await unitOfWork.SaveAsync();
 
-        return ResultMethods.GetResult(result, CreationSuccess.OrganizationalUnit);
+        return ResultMethods.GetResult(result.Adapt<GetOrganizationalUnitResponse>(), CreationSuccess.OrganizationalUnit);
     }
 }

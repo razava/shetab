@@ -1,4 +1,4 @@
-﻿using Domain.Models.Relational;
+﻿using Application.Reports.Common;
 
 namespace Application.Reports.Commands.MakeObjection;
 
@@ -7,5 +7,5 @@ public sealed record MakeObjectionCommand(
     List<string> UserRoles,
     Guid ReportId,
     List<Guid> Attachments,
-    string Comment) : IRequest<Result<Report>>;
+    string Comment) : IRequest<Result<GetReportByIdResponse>>;
 

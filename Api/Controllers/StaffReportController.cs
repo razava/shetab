@@ -138,7 +138,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -245,7 +245,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -280,7 +280,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => Ok(id),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -338,7 +338,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -352,7 +352,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -427,7 +427,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -472,7 +472,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(query);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -558,7 +558,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -572,7 +572,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 }

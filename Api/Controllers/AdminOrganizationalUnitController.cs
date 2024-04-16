@@ -39,21 +39,6 @@ public class AdminOrganizationalUnitController : ApiController
     }
 
 
-    //todo : can move to Authenticate (??) cause relate to current User.
-    //todo : ............check usage........................................not used :))
-    //[Authorize]
-    //[HttpGet]
-    //public async Task<ActionResult> GetOrgaizationalUnitsOfUser()
-    //{
-    //    //...........todo : query shoul return a list?
-    //    var userId = User.GetUserId();
-    //    var query = new GetOrganizationalUnitByUserIdQuery(userId);
-    //    var result = await Sender.Send(query);
-    //    //var mappedResult = result.Adapt<>
-    //    return
-    //    ;
-    //}
-
     [Authorize]
     [HttpGet("{id:int}")]
     public async Task<ActionResult> GetOrgaizationalUnitById(int id)
@@ -98,7 +83,7 @@ public class AdminOrganizationalUnitController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 
@@ -112,7 +97,7 @@ public class AdminOrganizationalUnitController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => NoContent(),
+            s => Ok(s),
             f => Problem(f));
     }
 

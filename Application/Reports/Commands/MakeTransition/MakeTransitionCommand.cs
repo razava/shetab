@@ -1,7 +1,4 @@
 ﻿using Application.Reports.Common;
-using Domain.Models.Relational;
-using Domain.Models.Relational.Common;
-using MediatR;
 
 namespace Application.Reports.Commands.MakeTransition;
 
