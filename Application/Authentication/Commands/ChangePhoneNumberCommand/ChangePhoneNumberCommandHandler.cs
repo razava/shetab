@@ -1,4 +1,6 @@
-﻿using Application.Common.Interfaces.Security;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Security;
+using SharedKernel.Successes;
 
 namespace Application.Authentication.Commands.ChangePhoneNumberCommand;
 
@@ -18,6 +20,6 @@ internal sealed class ChangePasswordCommandHandler(
         if (result.IsFailed)
             return result.ToResult();
         
-        return result.Value;
+        return ResultMethods.GetResult(result.Value, UpdateSuccess.PhoneNumber);
     }
 }

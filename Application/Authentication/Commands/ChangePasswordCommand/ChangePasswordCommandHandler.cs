@@ -1,4 +1,6 @@
-﻿using Application.Common.Interfaces.Security;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Security;
+using SharedKernel.Successes;
 
 namespace Application.Authentication.Commands.ChangePasswordCommand;
 
@@ -24,6 +26,6 @@ internal sealed class ChangePasswordCommandHandler(
             request.OldPassword,
             request.NewPassword);
         
-        return result;
+        return ResultMethods.GetResult(result.Value, UpdateSuccess.Password);
     }
 }

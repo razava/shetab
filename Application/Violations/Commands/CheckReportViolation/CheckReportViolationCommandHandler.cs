@@ -1,7 +1,9 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Successes;
 
 namespace Application.Violations.Commands.CheckReportViolation;
 
@@ -55,6 +57,6 @@ internal class CheckReportViolationCommandHandler(IUnitOfWork unitOfWork, IUploa
                     .SetProperty(a => a.ViolationCheckResult, request.Action)
                     .SetProperty(a => a.ViolatoinCheckDateTime, now));
 
-        return true;
+        return ResultMethods.GetResult(true, OperationSuccess.ViolationReview);
     }
 }

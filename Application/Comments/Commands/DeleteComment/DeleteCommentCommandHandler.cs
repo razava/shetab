@@ -1,7 +1,9 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Domain.Models.Relational;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Successes;
 
 namespace Application.Comments.Commands.DeleteComment;
 
@@ -31,6 +33,6 @@ internal class DeleteCommentCommandHandler(ICommentRepository commentRepository,
             return OperationErrors.General;
         }
 
-        return true;
+        return ResultMethods.GetResult(true, DeleteSuccess.Comment);
     }
 }

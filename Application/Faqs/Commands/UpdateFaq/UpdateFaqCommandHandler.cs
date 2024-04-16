@@ -1,5 +1,7 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
+using SharedKernel.Successes;
 
 namespace Application.Faqs.Commands.UpdateFaq;
 
@@ -19,6 +21,6 @@ internal sealed class UpdateFaqCommandHandler(
         faqRepository.Update(faq);
         await unitOfWork.SaveAsync();
 
-        return faq;
+        return ResultMethods.GetResult(faq, UpdateSuccess.Faq);
     }
 }

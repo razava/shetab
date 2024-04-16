@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
@@ -54,11 +55,6 @@ internal sealed class CreateReportByCitizenCommandHandler(
         reportRepository.Insert(report);
         await unitOfWork.SaveAsync();
 
-        
-        var result = new Result<GetReportByIdResponse>()
-            .WithValue(GetReportByIdResponse.FromReport(report))
-            .WithSuccess(CreationSuccess.Report);
-        
-        return result;
+        return ResultMethods.GetResult(GetReportByIdResponse.FromReport(report), CreationSuccess.Report);
     }
 }

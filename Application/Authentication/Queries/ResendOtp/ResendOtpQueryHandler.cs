@@ -1,4 +1,6 @@
-﻿using Application.Common.Interfaces.Security;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Security;
+using SharedKernel.Successes;
 
 namespace Application.Authentication.Queries.ResendOtp;
 
@@ -21,6 +23,6 @@ internal sealed class ResendOtpQueryHandler(IAuthenticationService authenticatio
         if (resentOtpResult.IsFailed)
             return resentOtpResult.ToResult();
 
-        return resentOtpResult.Value.Token;
+        return ResultMethods.GetResult(resentOtpResult.Value.Token, OperationSuccess.ResendOtp);
     }
 }

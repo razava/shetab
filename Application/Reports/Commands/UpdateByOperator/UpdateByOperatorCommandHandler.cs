@@ -1,7 +1,9 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
+using SharedKernel.Successes;
 
 namespace Application.Reports.Commands.UpdateByOperator;
 
@@ -61,6 +63,6 @@ internal sealed class UpdateByOperatorCommandHandler(
 
         await unitOfWork.SaveAsync();
 
-        return GetReportByIdResponse.FromReport(report);
+        return ResultMethods.GetResult(GetReportByIdResponse.FromReport(report), UpdateSuccess.Report);
     }
 }

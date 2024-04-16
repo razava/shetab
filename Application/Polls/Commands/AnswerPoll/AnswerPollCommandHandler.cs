@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using SharedKernel.Successes;
 
 namespace Application.Polls.Commands.AnswerPoll;
@@ -18,6 +19,6 @@ internal class AnswerPollCommandHandler(IPollRepository pollRepository, IUnitOfW
 
         await unitOfWork.SaveAsync();
 
-        return new Result<bool>().WithValue(true).WithSuccess(RegistrationSuccess.PollResponse);
+        return ResultMethods.GetResult(true, RegistrationSuccess.PollResponse);
     }
 }

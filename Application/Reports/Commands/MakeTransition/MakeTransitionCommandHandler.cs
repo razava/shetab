@@ -1,10 +1,8 @@
-﻿using Application.Common.Exceptions;
+﻿using Application.Common.Helper;
 using Application.Common.Interfaces.Persistence;
 using Application.Reports.Common;
-using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
-using Mapster;
-using MediatR;
+using SharedKernel.Successes;
 
 namespace Application.Reports.Commands.MakeTransition;
 
@@ -56,6 +54,6 @@ internal sealed class MakeTransitionCommandHandler(
 
         //TODO: Inform related users not all
         //await _hub.Clients.All.Update();
-        return GetReportByIdResponse.FromReport(report);
+        return ResultMethods.GetResult(GetReportByIdResponse.FromReport(report), OperationSuccess.MakeTransition);
     }
 }

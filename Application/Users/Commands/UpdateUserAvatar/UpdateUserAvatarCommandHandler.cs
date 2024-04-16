@@ -1,6 +1,8 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational.Common;
 using Infrastructure.Storage;
+using SharedKernel.Successes;
 
 namespace Application.Users.Commands.UpdateUserAvatar;
 
@@ -22,6 +24,6 @@ internal class UpdateUserAvatarCommandHandler(
         userRepository.Update(user);
         await unitOfWork.SaveAsync();
 
-        return avatar;
+        return ResultMethods.GetResult(avatar, UpdateSuccess.Avatar);
     }
 }

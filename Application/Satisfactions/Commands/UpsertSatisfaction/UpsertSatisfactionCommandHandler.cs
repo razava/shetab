@@ -1,5 +1,7 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
+using SharedKernel.Successes;
 
 namespace Application.Satisfactions.Commands.UpsertSatisfaction;
 
@@ -30,6 +32,12 @@ internal sealed class UpsertSatisfactionCommandHandler(
 
         await unitOfWork.SaveAsync();
 
-        return new SatisfactionResponse(satisfaction.ActorId, satisfaction.Comments, satisfaction.Rating, satisfaction.History);
+        return ResultMethods.GetResult(
+            new SatisfactionResponse(
+            satisfaction.ActorId,
+            satisfaction.Comments,
+            satisfaction.Rating,
+            satisfaction.History),
+            CreationSuccess.Satisfaction);
     }
 }

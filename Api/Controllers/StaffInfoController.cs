@@ -1,5 +1,4 @@
 ﻿using Api.Abstractions;
-using Api.Contracts;
 using Api.ExtensionMethods;
 using Application.Common.Interfaces.Info;
 using Application.Common.Interfaces.Persistence;
@@ -7,8 +6,6 @@ using Application.Info.Queries.GetAllReports;
 using Application.Info.Queries.GetExcel;
 using Application.Info.Queries.GetInfo;
 using Application.Info.Queries.GetListChart;
-using Application.Reports.Common;
-using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

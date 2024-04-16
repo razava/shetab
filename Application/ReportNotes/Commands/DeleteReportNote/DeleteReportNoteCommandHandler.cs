@@ -1,4 +1,6 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
+using SharedKernel.Successes;
 
 namespace Application.ReportNotes.Commands.DeleteReportNote;
 
@@ -20,6 +22,6 @@ internal class DeleteReportNoteCommandHandler(
         reportNoteRepository.Update(note);
         await unitOfWork.SaveAsync();
 
-        return true;
+        return ResultMethods.GetResult(true, DeleteSuccess.ReportNote);
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Application.Authentication.Common;
+using Application.Common.Helper;
 using Application.Common.Interfaces.Security;
+using SharedKernel.Successes;
 
 namespace Application.Authentication.Queries.ChangePhoneNumberQuery;
 
@@ -27,8 +29,10 @@ internal sealed class ChangePhoneNumberQueryHandler(
             return tokenResult.ToResult();
         var result = tokenResult.Value;
 
-        return new ChangePhoneNumberQueryResponse(
+        return ResultMethods.GetResult(
+            new ChangePhoneNumberQueryResponse(
             result.Token1.PhoneNumber, result.Token1.Token,
-            result.Token2.PhoneNumber, result.Token2.Token);
+            result.Token2.PhoneNumber, result.Token2.Token),
+            CreationSuccess.PhoneNumber);
     }
 }

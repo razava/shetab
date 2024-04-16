@@ -1,8 +1,10 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.ReportAggregate;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Successes;
 
 namespace Application.Violations.Commands.CheckCommentViolation;
 
@@ -42,6 +44,6 @@ internal class CheckCommentViolationCommandHandler(IUnitOfWork unitOfWork)
                     .SetProperty(a => a.ViolationCheckResult, request.Action)
                     .SetProperty(a => a.ViolatoinCheckDateTime, now));
 
-        return true;
+        return ResultMethods.GetResult(true, OperationSuccess.ViolationReview);
     }
 }

@@ -1,7 +1,9 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Persistence;
 using Application.Reports.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
+using SharedKernel.Successes;
 
 namespace Application.Reports.Commands.CreateReportByOperator;
 
@@ -60,6 +62,6 @@ internal sealed class CreateReportByOperatorCommandHandler(
 
         //TODO: Inform related users not all
         //await _hub.Clients.All.Update();
-        return GetReportByIdResponse.FromReport(report);
+        return ResultMethods.GetResult(GetReportByIdResponse.FromReport(report), CreationSuccess.Report);
     }
 }

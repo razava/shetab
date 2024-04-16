@@ -1,4 +1,6 @@
-﻿using Application.Common.Interfaces.Security;
+﻿using Application.Common.Helper;
+using Application.Common.Interfaces.Security;
+using SharedKernel.Successes;
 
 namespace Application.Authentication.Commands.ResetPasswordCommand;
 
@@ -24,6 +26,6 @@ internal sealed class ResetPasswordCommandHandler(
         if (resetPasswordResult.IsFailed)
             return resetPasswordResult.ToResult();
 
-        return resetPasswordResult.Value;
+        return ResultMethods.GetResult(resetPasswordResult.Value, UpdateSuccess.Password);
     }
 }

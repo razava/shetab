@@ -1,12 +1,9 @@
-﻿using Application.Common.Exceptions;
+﻿using Application.Common.Helper;
 using Application.Common.Interfaces.Communication;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Application.Reports.Common;
-using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
-using Mapster;
-using MediatR;
 using SharedKernel.Successes;
 
 namespace Application.Reports.Commands.MessageToCitizen;
@@ -55,10 +52,6 @@ internal sealed class MessageToCitizenCommandHandler(
         report.MessageToCitizen(actor.Identifier, medias, request.Comment);
         await unitOfWork.SaveAsync();
 
-        var result = new Result<GetReportByIdResponse>()
-            .WithValue(GetReportByIdResponse.FromReport(report))
-            .WithSuccess(SuccessOperation.MessageToCitizen);
-
-        return result;
+        return ResultMethods.GetResult(GetReportByIdResponse.FromReport(report), OperationSuccess.MessageToCitizen);
     }
 }

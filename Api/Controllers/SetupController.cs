@@ -109,7 +109,7 @@ public class SetupController : ApiController
     {
         //warning : for run on shahrdari server make sure the default form exist in related database!
         //todo : or get the formId form related datebase
-        //TODO : remove added metods in report model for update comments.
+        //TODO : later remove added metods in report model for update comments.
         var query = new FormatReportCommentsCommand(instanceId);
 
         var result = await Sender.Send(query);
