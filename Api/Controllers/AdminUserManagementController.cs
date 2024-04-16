@@ -199,7 +199,7 @@ public class AdminUserManagementController : ApiController
             f => Problem(f));
     }
 
-    [Authorize(Roles = RoleNames.Admin)]
+    [Authorize(Roles = RoleNames.Operator)]
     [HttpGet("UserReports/{id}")]
     public async Task<ActionResult> GetUserReportsById([FromQuery]PagingInfo pagingInfo, string id)
     {
