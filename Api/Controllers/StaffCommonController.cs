@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("api/{instanceId:int}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class StaffCommonController : ApiController
 {

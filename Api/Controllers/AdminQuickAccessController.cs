@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("api/{instanceId}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class AdminQuickAccessController : ApiController
 {
@@ -24,8 +24,9 @@ public class AdminQuickAccessController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpGet]
-    public async Task<ActionResult> GetQuickAccesses(int instanceId, [FromQuery] QueryFilter queryFilter)
+    public async Task<ActionResult> GetQuickAccesses( [FromQuery] QueryFilter queryFilter)
     {
+        var instanceId = User.GetUserInstanceId();
         var query = new GetQuickAccessesQuery(instanceId, true, queryFilter.Adapt<QueryFilterModel>());
         var result = await Sender.Send(query);
         
@@ -50,8 +51,9 @@ public class AdminQuickAccessController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<ActionResult> CreateQuickAccess(int instanceId, [FromForm] CreateQuickAccessDto setDto)
+    public async Task<ActionResult> CreateQuickAccess([FromForm] CreateQuickAccessDto setDto)
     {
+        var instanceId = User.GetUserInstanceId();
         var command = new AddQuickAccessCommand(
             instanceId,
             setDto.CategoryId,
@@ -62,7 +64,7 @@ public class AdminQuickAccessController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => CreatedAtAction(nameof(GetQuickAccessById), new { id = s.Value.Id, instanceId = instanceId }, s),
+            s => CreatedAtAction(nameof(GetQuickAccessById), new { id = s.Value.Id }, s),
             f => Problem(f));
     }
 

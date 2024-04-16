@@ -27,7 +27,7 @@ using System.Security.Claims;
 namespace Api.Controllers;
 
 
-[Route("api/{instanceId}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class AdminUserManagementController : ApiController
 {
@@ -230,15 +230,16 @@ public class AdminUserManagementController : ApiController
         var user = await Sender.Send(command);
 
         return user.Match(
-            s => CreatedAtAction(nameof(GetUserById), new { id = s.Value.Id, instanceId = instanceId }, s),
+            s => CreatedAtAction(nameof(GetUserById), new { id = s.Value.Id }, s),
             f => Problem(f));
     }
 
 
     [Authorize(Roles = RoleNames.Executive)]
     [HttpPost("RegisterContractor")]
-    public async Task<ActionResult> RegisterContractor(int instanceId, CreateContractorDto model)
+    public async Task<ActionResult> RegisterContractor(CreateContractorDto model)
     {
+        var instanceId = User.GetUserInstanceId();
         var userId = User.GetUserId();
         var userRoles = User.GetUserRoles();
         if (userId is null)
@@ -254,7 +255,7 @@ public class AdminUserManagementController : ApiController
         var contractor = await Sender.Send(command);
 
         return contractor.Match(
-            s => CreatedAtAction(nameof(GetUserById), new { id = s.Value.Id, instanceId = instanceId }, s),
+            s => CreatedAtAction(nameof(GetUserById), new { id = s.Value.Id }, s),
             f => Problem(f));
         //TODO: Does executive have access to this endpoint?
     }

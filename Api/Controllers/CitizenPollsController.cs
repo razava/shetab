@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("api/{instanceId}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class CitizenPollsController : ApiController
 {
@@ -21,7 +21,7 @@ public class CitizenPollsController : ApiController
     //todo : Define & Set Dtos
 
     [Authorize(Roles = "Citizen")]
-    [HttpGet("Polls")]
+    [HttpGet("Polls/{instanceId:int}")]
     public async Task<ActionResult> GetPolls(int instanceId)
     {
         var userId = User.GetUserId();

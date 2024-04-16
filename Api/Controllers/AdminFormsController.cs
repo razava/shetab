@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("api/{instanceId}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class AdminFormsController : ApiController
 {
@@ -58,7 +58,7 @@ public class AdminFormsController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => CreatedAtAction(nameof(GetFormById), new { id = s.Value.Id, instanceId = instanceId }, s),
+            s => CreatedAtAction(nameof(GetFormById), new { id = s.Value.Id }, s),
             f => Problem(f));
     }
 

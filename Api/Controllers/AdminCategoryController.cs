@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("api/{instanceId}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class AdminCategoryController : ApiController
 {
@@ -80,7 +80,7 @@ public class AdminCategoryController : ApiController
         return result.Match(
             s => CreatedAtAction(
                 nameof(GetCategoryById),
-                new { id = s.Value.Id, instanceId = instanceId },
+                new { id = s.Value.Id },
                 s),
             f => Problem(f));
     }

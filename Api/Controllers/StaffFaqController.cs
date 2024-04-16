@@ -5,14 +5,13 @@ using Application.Faqs.Commands.AddFaq;
 using Application.Faqs.Commands.UpdateFaq;
 using Application.Faqs.Queries.GetFaq;
 using Application.Faqs.Queries.GetFaqById;
-using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("api/{instanceId}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 
 public class StaffFaqController : ApiController
@@ -62,7 +61,7 @@ public class StaffFaqController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => CreatedAtAction(nameof(GetFaqById), new { id = s.Value.Id, instanceId = instanceId }, s),
+            s => CreatedAtAction(nameof(GetFaqById), new { id = s.Value.Id }, s),
             f => Problem(f));
     }
 

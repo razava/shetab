@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("api/{instanceId}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class CitizenNewsController : ApiController
 {
@@ -19,8 +19,8 @@ public class CitizenNewsController : ApiController
 
 
     [Authorize(Roles = "Citizen")]
-    [HttpGet("News")]
-    public async Task<ActionResult> GetNews([FromQuery] PagingInfo pagingInfo, int instanceId)
+    [HttpGet("News/{instanceId:int}")]
+    public async Task<ActionResult> GetNews(int instanceId, [FromQuery] PagingInfo pagingInfo)
     {
         var query = new GetNewsQuery(pagingInfo, instanceId);
         var result = await Sender.Send(query);

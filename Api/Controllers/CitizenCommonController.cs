@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("api/{instanceId:int}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class CitizenCommonController : ApiController
 {
@@ -24,13 +24,11 @@ public class CitizenCommonController : ApiController
 
 
     [Authorize]
-    [HttpGet("Categories")]
-    public async Task<ActionResult> GetCategories(int? instanceId)
+    [HttpGet("Categories/{instanceId:int}")]
+    public async Task<ActionResult> GetCategories(int instanceId)
     {
-        if (instanceId is null)
-            return BadRequest();
         var roles = User.GetUserRoles();
-        var query = new GetCategoryQuery(instanceId.Value, roles);
+        var query = new GetCategoryQuery(instanceId, roles);
         var result = await Sender.Send(query);
         return result.Match(
             s => Ok(s),

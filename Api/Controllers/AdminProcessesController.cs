@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("api/{instanceId}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class AdminProcessesController : ApiController
 {
@@ -51,7 +51,7 @@ public class AdminProcessesController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => CreatedAtAction(nameof(GetProcessById), new { id = s.Value.Id, instanceId = InstanceId }, s),
+            s => CreatedAtAction(nameof(GetProcessById), new { id = s.Value.Id }, s),
             f => Problem(f));
     }
 

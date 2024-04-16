@@ -41,7 +41,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("api/{instanceId}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 
 public class StaffReportController : ApiController
@@ -71,8 +71,9 @@ public class StaffReportController : ApiController
 
     [Authorize]
     [HttpGet("{id:Guid}")]
-    public async Task<ActionResult> GetReportById(Guid id, int instanceId)
+    public async Task<ActionResult> GetReportById(Guid id)
     {
+        var instanceId = User.GetUserInstanceId();
         var userId = User.GetUserId();
         var query = new GetReportByIdQuery(id, userId, instanceId);
         var result = await Sender.Send(query);
@@ -210,7 +211,7 @@ public class StaffReportController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => CreatedAtAction(nameof(GetReportById), new { id = s.Value.Id, instanceId = instanceId }, s),
+            s => CreatedAtAction(nameof(GetReportById), new { id = s.Value.Id }, s),
             f => Problem(f));
     }
 
@@ -359,8 +360,9 @@ public class StaffReportController : ApiController
 
     [Authorize(Roles = "Operator")]
     [HttpPost("Satisfaction/{reportId:Guid}")]
-    public async Task<ActionResult> UpsertSatisfaction(Guid reportId, int instanceId, UpsertSatisfactionDto satisfactionDto)
+    public async Task<ActionResult> UpsertSatisfaction(Guid reportId, UpsertSatisfactionDto satisfactionDto)
     {
+        var instanceId = User.GetUserInstanceId();
         var userId = User.GetUserId();
         var command = new UpsertSatisfactionCommand(
             reportId,
@@ -370,7 +372,7 @@ public class StaffReportController : ApiController
 
         var result = await Sender.Send(command);
         return result.Match(
-            s => CreatedAtAction(nameof(GetSatisfaction), new { instanceId = instanceId, reportId = reportId }, s),
+            s => CreatedAtAction(nameof(GetSatisfaction), new { reportId = reportId }, s),
             f => Problem(f));
     }
 
@@ -537,14 +539,15 @@ public class StaffReportController : ApiController
     [Authorize]
     [HttpPost("Notes/{reportId:guid}")]
     public async Task<ActionResult> CreateUserReportNotes
-        (Guid reportId, CreateReportNoteDto reportNoteDto, int instanceId)
+        (Guid reportId, CreateReportNoteDto reportNoteDto)
     {
+        var instanceId = User.GetUserInstanceId();
         var userId = User.GetUserId();
         var command = new AddReportNoteCommand(userId, reportId, reportNoteDto.Text);
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => CreatedAtAction(nameof(GetReportNotes), new { reportId, instanceId }, s),
+            s => CreatedAtAction(nameof(GetReportNotes), new { reportId }, s),
             f => Problem(f));
     }
 

@@ -25,7 +25,7 @@ using System.Security.Claims;
 
 namespace Api.Controllers;
 
-[Route("api/{instanceId}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class CitizenReportController : ApiController
 {
@@ -37,7 +37,7 @@ public class CitizenReportController : ApiController
 
 
     [Authorize(Roles = "Citizen")]
-    [HttpGet]
+    [HttpGet("/{instanceId:int}")]
     public async Task<ActionResult> GetReports(
         int instanceId,
         [FromQuery] PagingInfo pagingInfo)
@@ -72,7 +72,7 @@ public class CitizenReportController : ApiController
 
 
     [Authorize(Roles = "Citizen")]
-    [HttpGet("Nearest")]
+    [HttpGet("Nearest/{instanceId:int}")]
     public async Task<ActionResult> GetNearest(
         int instanceId,
         [FromQuery] PagingInfo pagingInfo,
@@ -145,7 +145,7 @@ public class CitizenReportController : ApiController
 
 
     [Authorize(Roles = "Citizen")]
-    [HttpPost]
+    [HttpPost("/{instanceId:int}")]
     public async Task<ActionResult> CreateReport(int instanceId, CitizenCreateReportDto model)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -174,13 +174,13 @@ public class CitizenReportController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => CreatedAtAction(nameof(GetMyReportById), new { id = s.Value.Id, instanceId = instanceId },  s),
+            s => CreatedAtAction(nameof(GetMyReportById), new { id = s.Value.Id },  s),
             f => Problem(f));
     }
 
     
     [Authorize(Roles = "Citizen")]
-    [HttpGet("QuickAccesses")]
+    [HttpGet("QuickAccesses/{instanceId:int}")]
     public async Task<ActionResult> GetQuickAccesses(int instanceId)
     {
         var userRoles = User.GetUserRoles();
@@ -301,7 +301,7 @@ public class CitizenReportController : ApiController
     }
 
     [Authorize(Roles = "Citizen")]
-    [HttpPost("ReportViolation/{id:Guid}")]
+    [HttpPost("ReportViolation/{id:Guid}/{instanceId:int}")]
     public async Task<ActionResult> CreateRepotrViolation(Guid id, int instanceId, CreateReportViolationDto createDto)
     {
         var userId = User.GetUserId();
@@ -317,7 +317,7 @@ public class CitizenReportController : ApiController
 
 
     [Authorize(Roles = "Citizen")]
-    [HttpPost("CommentViolation/{id:Guid}")]
+    [HttpPost("CommentViolation/{id:Guid}/{instanceId:int}")]
     public async Task<ActionResult> CreateCommentViolation(Guid id, int instanceId, CreateCommentViolationDto createViolationDto)
     {
         var userId = User.GetUserId();

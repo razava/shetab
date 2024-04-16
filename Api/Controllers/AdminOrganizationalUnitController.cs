@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("api/{instanceId}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class AdminOrganizationalUnitController : ApiController
 {
@@ -67,7 +67,7 @@ public class AdminOrganizationalUnitController : ApiController
         var result = await Sender.Send(command);
 
         return result.Match(
-            s => CreatedAtAction(nameof(GetOrgaizationalUnitById), new { id = s.Value.Id, instanceId = instanceId }, s),
+            s => CreatedAtAction(nameof(GetOrgaizationalUnitById), new { id = s.Value.Id }, s),
             f => Problem(f));
     }
 
