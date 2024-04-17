@@ -145,7 +145,7 @@ public class CitizenReportController : ApiController
 
 
     [Authorize(Roles = "Citizen")]
-    [HttpPost("/{instanceId:int}")]
+    [HttpPost("{instanceId:int}")]
     public async Task<ActionResult> CreateReport(int instanceId, CitizenCreateReportDto model)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
