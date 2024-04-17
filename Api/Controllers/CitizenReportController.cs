@@ -11,6 +11,7 @@ using Application.Reports.Commands.Like;
 using Application.Reports.Commands.MakeObjection;
 using Application.Reports.Common;
 using Application.Reports.Queries.GetCitizenReportById;
+using Application.Reports.Queries.GetCitizenReports;
 using Application.Reports.Queries.GetComments;
 using Application.Reports.Queries.GetNearestReports;
 using Application.Reports.Queries.GetRecentReports;
@@ -118,7 +119,7 @@ public class CitizenReportController : ApiController
         {
             return Unauthorized();
         }
-        var query = new GetUserReportsQuery(pagingInfo, userId, null);
+        var query = new GetCitizenReportsQuery(pagingInfo, userId, null);
         var result = await Sender.Send(query);
 
         return result.Match(

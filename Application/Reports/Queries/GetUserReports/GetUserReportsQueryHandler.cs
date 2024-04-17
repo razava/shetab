@@ -4,16 +4,16 @@ using Application.Reports.Common;
 namespace Application.Reports.Queries.GetUserReports;
 
 internal sealed class GetUserReportsQueryHandler(IReportRepository reportRepository) 
-    : IRequestHandler<GetUserReportsQuery, Result<PagedList<GetCitizenReportsResponse>>>
+    : IRequestHandler<GetUserReportsQuery, Result<PagedList<GetUserReportsResponse>>>
 {
-    public async Task<Result<PagedList<GetCitizenReportsResponse>>> Handle(
+    public async Task<Result<PagedList<GetUserReportsResponse>>> Handle(
         GetUserReportsQuery request,
         CancellationToken cancellationToken)
     {
         var result = await reportRepository.GetCitizenReports(
             request.UserId,
             request.instanceId,
-            GetCitizenReportsResponse.GetSelector(request.UserId),
+            GetUserReportsResponse.GetSelector(),
             request.PagingInfo);
 
         return result;
