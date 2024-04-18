@@ -10,6 +10,7 @@ using Application.Reports.Commands.Like;
 using Application.Reports.Commands.MakeObjection;
 using Application.Reports.Common;
 using Application.Reports.Queries.GetCitizenReportById;
+using Application.Reports.Queries.GetCitizenReportLocations;
 using Application.Reports.Queries.GetCitizenReports;
 using Application.Reports.Queries.GetComments;
 using Application.Reports.Queries.GetNearestReports;
@@ -92,8 +93,12 @@ public class CitizenReportController : ApiController
     [HttpGet("Locations")]
     public async Task<ActionResult> GetLocations(int instanceId)
     {
-        await Task.CompletedTask;//.......................
-        return Ok("Not Implemented");
+        var userRoles = User.GetUserRoles();
+        var query = new GetCitizenReportLocationsQuery(instanceId, userRoles);
+        var result = await Sender.Send(query);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
     }
 
     //todo : check usage

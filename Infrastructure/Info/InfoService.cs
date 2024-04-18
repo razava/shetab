@@ -978,6 +978,33 @@ public class InfoService(
         return result;
     }
 
+
+    public async Task<InfoModel> GetCitizenReportLocations(int instanceId, List<string> roles)
+    {
+        var result = new InfoModel();
+        var locationsQuery = unitOfWork.DbContext.Set<Report>()
+            .AsNoTracking()
+            .Where(r => r.ShahrbinInstanceId == instanceId)
+            .Where(r => r.Address.Location != null)
+            .Where(r => (r.Category.Role.Name != null) && roles.Contains(r.Category.Role.Name))
+            .OrderByDescending(r => r.LastStatusDateTime)
+            .Take(100);
+
+
+        List<LocationItem> locations;
+        locations = await locationsQuery
+            .Select(r => new LocationItem(r.Id, r.Address.Location!.Y, r.Address.Location!.X))
+            .ToListAsync();
+
+        if (locations is null)
+            locations = new List<LocationItem>();
+
+        result.Add(new LocationInfo(locations));
+
+        return result;
+    }
+
+
     //Reports
     public async Task<PagedList<T>> GetReports<T>(
         GetInfoQueryParameters queryParameters,
@@ -1278,6 +1305,7 @@ public class InfoService(
         return userIds;
     }
 
+
     private async Task<IQueryable<Report>> addRestrictions(IQueryable<Report> query, GetInfoQueryParameters queryParameters)
     {
         query = query.Where(r => !r.IsDeleted);
@@ -1312,7 +1340,7 @@ public class InfoService(
                 returnAll = true;
             }
         }
-
+         
         var reportIds = unitOfWork.DbContext.Set<TransitionLog>()
             .Where(tl => userIds.Contains(tl.ActorIdentifier))
             .Select(tl => tl.ReportId)

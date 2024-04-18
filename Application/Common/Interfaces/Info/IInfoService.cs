@@ -28,6 +28,7 @@ public interface IInfoService
     Task<InfoModel> GetRequestsPerRegistrantType(GetInfoQueryParameters queryParameters);
 
     Task<InfoModel> GetLocations(GetInfoQueryParameters queryParameters);
+    Task<InfoModel> GetCitizenReportLocations(int instanceId, List<string> roles);
 
 
     Task<PagedList<T>> GetReports<T>(GetInfoQueryParameters queryParameters, Expression<Func<Report, T>> selector, PagingInfo pagingInfo);
