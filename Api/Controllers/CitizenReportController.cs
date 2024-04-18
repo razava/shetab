@@ -5,7 +5,6 @@ using Application.Comments.Commands.CreateComment;
 using Application.Comments.Commands.DeleteComment;
 using Application.Common.Interfaces.Persistence;
 using Application.Feedbacks.Commands.StoreFeedback;
-using Application.QuickAccesses.Queries.GetCitizenQuickAccesses;
 using Application.Reports.Commands.CreateReportByCitizen;
 using Application.Reports.Commands.Like;
 using Application.Reports.Commands.MakeObjection;
@@ -16,7 +15,6 @@ using Application.Reports.Queries.GetComments;
 using Application.Reports.Queries.GetNearestReports;
 using Application.Reports.Queries.GetRecentReports;
 using Application.Reports.Queries.GetReportById;
-using Application.Reports.Queries.GetUserReports;
 using Application.Violations.Commands.CommentViolation;
 using Application.Violations.Commands.ReportViolation;
 using MediatR;
@@ -38,7 +36,7 @@ public class CitizenReportController : ApiController
 
 
     [Authorize(Roles = "Citizen")]
-    [HttpGet("{instanceId:int}")]
+    [HttpGet]
     public async Task<ActionResult> GetReports(
         int instanceId,
         [FromQuery] PagingInfo pagingInfo)
@@ -73,7 +71,7 @@ public class CitizenReportController : ApiController
 
 
     [Authorize(Roles = "Citizen")]
-    [HttpGet("Nearest/{instanceId:int}")]
+    [HttpGet("Nearest")]
     public async Task<ActionResult> GetNearest(
         int instanceId,
         [FromQuery] PagingInfo pagingInfo,
@@ -92,7 +90,7 @@ public class CitizenReportController : ApiController
     //todo : define & set dtos
     [Authorize(Roles = "Citizen")]
     [HttpGet("Locations")]
-    public async Task<ActionResult> GetLocations()
+    public async Task<ActionResult> GetLocations(int instanceId)
     {
         await Task.CompletedTask;//.......................
         return Ok("Not Implemented");
@@ -146,8 +144,8 @@ public class CitizenReportController : ApiController
 
 
     [Authorize(Roles = "Citizen")]
-    [HttpPost("{instanceId:int}")]
-    public async Task<ActionResult> CreateReport(int instanceId, CitizenCreateReportDto model)
+    [HttpPost]
+    public async Task<ActionResult> CreateReport(CitizenCreateReportDto model)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var username = User.FindFirstValue(ClaimTypes.Name);
@@ -164,7 +162,7 @@ public class CitizenReportController : ApiController
             model.Address.Detail);
 
         var command = new CreateReportByCitizenCommand(
-            instanceId,
+            model.instanceId,
             userId,
             phoneNumber,
             model.CategoryId,
@@ -179,19 +177,6 @@ public class CitizenReportController : ApiController
             f => Problem(f));
     }
 
-    
-    [Authorize(Roles = "Citizen")]
-    [HttpGet("QuickAccesses/{instanceId:int}")]
-    public async Task<ActionResult> GetQuickAccesses(int instanceId)
-    {
-        var userRoles = User.GetUserRoles();
-        var query = new GetCitizenQuickAccessesQuery(instanceId, userRoles);
-        var result = await Sender.Send(query);
-
-        return result.Match(
-            s => Ok(s),
-            f => Problem(f));
-    }
     
 
     [Authorize(Roles = "Citizen")]
@@ -212,14 +197,14 @@ public class CitizenReportController : ApiController
      
     [Authorize(Roles = "Citizen")]
     [HttpPost("Comment/{id:Guid}")]
-    public async Task<ActionResult> CreateComment(int instanceId, Guid id, CreateCommentDto commentDto)
+    public async Task<ActionResult> CreateComment(Guid id, CreateCommentDto commentDto)
     {
         var userId = User.GetUserId();
         if (userId == null)
         {
             return Unauthorized();
         }
-        var command = new CreateCommentCommand(instanceId, userId, id, commentDto.Comment);
+        var command = new CreateCommentCommand(userId, id, commentDto.Comment);
         var result = await Sender.Send(command);
         
         return result.Match(
@@ -290,6 +275,7 @@ public class CitizenReportController : ApiController
             f => Problem(f));
     }
 
+
     [HttpPost("FeedbackUnAuthorized/{token}")]
     public async Task<ActionResult> Feedback(string token, [FromBody] CreateFeedbackDto createFeedbackDto)
     {
@@ -302,13 +288,18 @@ public class CitizenReportController : ApiController
     }
 
     [Authorize(Roles = "Citizen")]
-    [HttpPost("ReportViolation/{id:Guid}/{instanceId:int}")]
-    public async Task<ActionResult> CreateRepotrViolation(Guid id, int instanceId, CreateReportViolationDto createDto)
+    [HttpPost("ReportViolation/{id:Guid}")]
+    public async Task<ActionResult> CreateRepotrViolation(Guid id, CreateReportViolationDto createDto)
     {
         var userId = User.GetUserId();
         if (userId is null)
             return Unauthorized();
-        var command = new ReportViolationCommand(instanceId, id, userId, createDto.ViolationTypeId, createDto.Description);
+        var command = new ReportViolationCommand(
+            createDto.instanceId,
+            id,
+            userId,
+            createDto.ViolationTypeId,
+            createDto.Description);
         var result = await Sender.Send(command);
 
         return result.Match(
@@ -318,13 +309,17 @@ public class CitizenReportController : ApiController
 
 
     [Authorize(Roles = "Citizen")]
-    [HttpPost("CommentViolation/{id:Guid}/{instanceId:int}")]
-    public async Task<ActionResult> CreateCommentViolation(Guid id, int instanceId, CreateCommentViolationDto createViolationDto)
+    [HttpPost("CommentViolation/{id:Guid}")]
+    public async Task<ActionResult> CreateCommentViolation(Guid id, CreateCommentViolationDto createViolationDto)
     {
         var userId = User.GetUserId();
         if (userId is null)
             return Unauthorized();
-        var command = new CommentViolationCommand(instanceId, id, userId, createViolationDto.ViolationTypeId, createViolationDto.Description);
+        var command = new CommentViolationCommand(
+            createViolationDto.instanceId,
+            id, userId,
+            createViolationDto.ViolationTypeId,
+            createViolationDto.Description);
         var result = await Sender.Send(command);
 
         return result.Match(

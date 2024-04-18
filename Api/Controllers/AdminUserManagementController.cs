@@ -199,19 +199,6 @@ public class AdminUserManagementController : ApiController
             f => Problem(f));
     }
 
-    [Authorize(Roles = RoleNames.Operator)]
-    [HttpGet("UserReports/{id}")]
-    public async Task<ActionResult> GetUserReportsById([FromQuery]PagingInfo pagingInfo, string id)
-    {
-        var instanceId = User.GetUserInstanceId();
-        var query = new GetUserReportsQuery(pagingInfo, id, instanceId);
-        var result = await Sender.Send(query);
-
-        return result.Match(
-            s => Ok(s),
-            f => Problem(f));
-    }
-
 
     [Authorize(Roles = RoleNames.Admin)]
     [HttpPost]

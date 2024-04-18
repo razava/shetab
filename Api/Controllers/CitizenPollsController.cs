@@ -21,7 +21,7 @@ public class CitizenPollsController : ApiController
     //todo : Define & Set Dtos
 
     [Authorize(Roles = "Citizen")]
-    [HttpGet("Polls/{instanceId:int}")]
+    [HttpGet("Polls")]
     public async Task<ActionResult> GetPolls(int instanceId)
     {
         var userId = User.GetUserId();

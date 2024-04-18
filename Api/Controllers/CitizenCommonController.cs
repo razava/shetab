@@ -4,6 +4,7 @@ using Api.ExtensionMethods;
 using Application.Categories.Queries.GetCategory;
 using Application.Configurations.Queries.ShahrbinInstances;
 using Application.Configurations.Queries.ViolationTypes;
+using Application.QuickAccesses.Queries.GetCitizenQuickAccesses;
 using Domain.Models.Relational.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -24,7 +25,7 @@ public class CitizenCommonController : ApiController
 
 
     [Authorize]
-    [HttpGet("Categories/{instanceId:int}")]
+    [HttpGet("Categories")]
     public async Task<ActionResult> GetCategories(int instanceId)
     {
         var roles = User.GetUserRoles();
@@ -35,7 +36,21 @@ public class CitizenCommonController : ApiController
             f => Problem(f));
     }
 
-    
+
+    [Authorize(Roles = "Citizen")]
+    [HttpGet("QuickAccesses")]
+    public async Task<ActionResult> GetQuickAccesses(int instanceId)
+    {
+        var userRoles = User.GetUserRoles();
+        var query = new GetCitizenQuickAccessesQuery(instanceId, userRoles);
+        var result = await Sender.Send(query);
+
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+
+
     [Authorize]
     [HttpGet("ViolationTypes")]
     public async Task<ActionResult> GetViolationTypes()

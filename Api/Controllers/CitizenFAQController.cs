@@ -17,7 +17,7 @@ public class CitizenFAQController : ApiController
     }
 
     [Authorize(Roles = "Citizen")]
-    [HttpGet("{instanceId:int}")]
+    [HttpGet]
     public async Task<ActionResult> GetFaqs(int instanceId)
     {
         var query = new GetFaqQuery(instanceId);

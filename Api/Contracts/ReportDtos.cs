@@ -7,6 +7,8 @@ namespace Api.Contracts;
 
 public record CitizenCreateReportDto(
     [Required]
+    int instanceId,
+    [Required]
     int CategoryId,
     [MaxLength(1024)]
     string Comments,

@@ -41,7 +41,7 @@ public interface IReportRepository : IGenericRepository<Report>
 
     public Task<List<PossibleSourceResponse>> GetPossibleSources(string userId, List<string> roleNames);
     public Task<List<PossibleTransitionResponse>> GetPossibleTransition(Guid reportId, string userId);
-
+    public Task<int> GetInstanceId(Guid reportId);
 }
 
 

@@ -26,12 +26,16 @@ public record PutSatisfactionDto(
 
 public record CreateReportViolationDto(
     [Required]
+    int instanceId,
+    [Required]
     int ViolationTypeId,
     [MaxLength(512)]
     string Description);
 
 
 public record CreateCommentViolationDto(
+    [Required]
+    int instanceId,
     [Required]
     int ViolationTypeId,
     [MaxLength(512)]

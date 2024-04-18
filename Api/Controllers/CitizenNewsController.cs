@@ -19,7 +19,7 @@ public class CitizenNewsController : ApiController
 
 
     [Authorize(Roles = "Citizen")]
-    [HttpGet("News/{instanceId:int}")]
+    [HttpGet("News")]
     public async Task<ActionResult> GetNews(int instanceId, [FromQuery] PagingInfo pagingInfo)
     {
         var query = new GetNewsQuery(pagingInfo, instanceId);

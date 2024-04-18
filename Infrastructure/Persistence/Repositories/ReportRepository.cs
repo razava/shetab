@@ -3,6 +3,7 @@ using Application.Common.Interfaces.Info;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Statics;
 using Application.Info.Queries.GetInfo;
+using DocumentFormat.OpenXml.ExtendedProperties;
 using Domain.Models.Relational;
 using Domain.Models.Relational.Common;
 using Domain.Models.Relational.IdentityAggregate;
@@ -417,5 +418,17 @@ public class ReportRepository : GenericRepository<Report>, IReportRepository
             possibleSources.Add(new PossibleSourceResponse("INSPECTOR", "واحد بازرسی", "واحد بازرسی"));
         }
         return possibleSources;
+    }
+
+    public async Task<int> GetInstanceId(Guid reportId)
+    {
+        var result = await context.Set<Report>()
+            .AsNoTracking()
+            .Where(r => r.Id == reportId)
+            .Select(r => r.ShahrbinInstanceId)
+            .SingleOrDefaultAsync();
+        if (result == 0)
+            throw new ServerNotFoundException("خطایی رخ داد.", new ReportNotFoundException());
+        return result;
     }
 }

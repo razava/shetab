@@ -5,15 +5,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Comments.Commands.CreateComment;
 
-internal class CreateCommentCommandHandler(ICommentRepository commentRepository, IUnitOfWork unitOfWork) : IRequestHandler<CreateCommentCommand, Result<bool>>
+internal class CreateCommentCommandHandler(ICommentRepository commentRepository, IReportRepository reportRepository, IUnitOfWork unitOfWork) : IRequestHandler<CreateCommentCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
     {
+        var instanceId = await reportRepository.GetInstanceId(request.ReportId);
+
         var comment = new Comment()
         {
             ReportId = request.ReportId,
             Text = request.Content,
-            ShahrbinInstanceId = request.InstanceId,
+            ShahrbinInstanceId = instanceId,
             UserId = request.UserId,
             DateTime = DateTime.UtcNow
         };
