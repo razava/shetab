@@ -53,7 +53,7 @@ internal sealed class CreateReportByOperatorCommandHandler(
             address,
             medias,
             Visibility.EveryOne,
-            Priority.Normal,
+            request.Priority,
             request.IsIdentityVisible);
 
         reportRepository.Insert(report);

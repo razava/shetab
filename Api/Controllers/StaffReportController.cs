@@ -206,6 +206,7 @@ public class StaffReportController : ApiController
             model.Comments,
             addressInfo,
             model.Attachments,
+            model.Priority,
             model.IsIdentityVisible,
             model.Visibility == Visibility.EveryOne);
 

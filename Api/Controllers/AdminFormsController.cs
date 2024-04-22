@@ -64,7 +64,7 @@ public class AdminFormsController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
-    public async Task<ActionResult> EditNews(Guid id, UpdateFormDto updateFormDto)
+    public async Task<ActionResult> EditForm(Guid id, UpdateFormDto updateFormDto)
     {
         var command = new UpdateFormCommand(
             id,
@@ -79,7 +79,7 @@ public class AdminFormsController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:guid}")]
-    public async Task<ActionResult> DeleteNews(Guid id)
+    public async Task<ActionResult> DeleteForm(Guid id)
     {
         var command = new DeleteFormCommand(id);
         var result = await Sender.Send(command);

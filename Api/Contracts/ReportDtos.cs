@@ -46,6 +46,7 @@ public class OperatorCreateReportDto
     //public ICollection<MediaDto> Medias { get; set; } = new List<MediaDto>();
 
     public Visibility Visibility { get; set; } = Visibility.Operators;
+    public Priority Priority { get; set; } = Priority.Normal;
 }
 
 

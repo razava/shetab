@@ -1315,6 +1315,7 @@ public class InfoService(
         if (queryParameters.Roles.Contains(RoleNames.Manager))
         {
             userIds.AddRange(await GetUserIdsOfOrganizationalUnit(queryParameters.UserId));
+            query = query.Where(r => r.Address.RegionId != null);
         }
         else
         {
