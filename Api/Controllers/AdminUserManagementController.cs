@@ -262,4 +262,24 @@ public class AdminUserManagementController : ApiController
             s => Ok(s), 
             f => Problem(f));
     }
+
+    [Authorize(Roles = RoleNames.ComplaintAdmin)]
+    [HttpPost("ComplaintInspectorUser")]
+    public async Task<ActionResult> CreateComplaintInspectorUser(CreateComplaintInspectorUserDto model)
+    {
+        var command = new CreateUserCommand(
+            model.InstanceId,
+            model.Username,
+            model.Password,
+            model.Roles,
+            null,
+            "",
+            "",
+            model.Title);
+        var user = await Sender.Send(command);
+
+        return user.Match(
+            s => CreatedAtAction(nameof(GetUserById), new { id = s.Value.Id }, s),
+            f => Problem(f));
+    }
 }

@@ -69,6 +69,18 @@ public record CreateUserDto(
         string Title = "");
 
 
+public record CreateComplaintInspectorUserDto(
+        [Required]
+        int InstanceId,
+        [Required] [MaxLength(32)]
+        string Username,
+        [Required] [MinLength(6)] [MaxLength(512)]
+        string Password,
+        List<string>? Roles,
+        [MaxLength(32)]
+        string Title = "");
+
+
 public record CreateContractorDto(
        [Required] [MaxLength(11)] [Phone]
        string PhoneNumber,

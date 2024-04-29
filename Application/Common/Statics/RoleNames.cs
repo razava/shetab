@@ -14,4 +14,6 @@ public static class RoleNames
     public const string Inspector = "Inspector";
     public const string Citizen = "Citizen";
     public const string Clerk = "Clerk";
+    public const string ComplaintAdmin = "ComplaintAdmin";
+    public const string ComplaintInspector = "ComplaintInspector";
 }
