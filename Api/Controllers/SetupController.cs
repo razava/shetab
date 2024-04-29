@@ -1,6 +1,7 @@
 ﻿using Api.Abstractions;
 using Api.ExtensionMethods;
 using Application.Common.Statics;
+using Application.Setup.Commands.AddComplaintRoles;
 using Application.Setup.Commands.AddDefaultFormToAllCategories;
 using Application.Setup.Commands.AddDummyCategoriesForStaff;
 using Application.Setup.Commands.AddDummyDataCommand;
@@ -118,6 +119,19 @@ public class SetupController : ApiController
             f => Problem(f));
     }
 
+
+    [Authorize(Roles = RoleNames.PowerUser)]
+    [HttpPost("AddComplaintUserRoles")]
+    public async Task<ActionResult> AddComplaintUserRoles()
+    {
+        var command = new AddComplaintRolesCommand();
+        var result = await Sender.Send(command);
+        return result.Match(
+            s => Ok(s),
+            f => Problem(f));
+    }
+
 }
+
 
 public record AddGoldenUserDto(int InstanceId, string Username, string Password);
