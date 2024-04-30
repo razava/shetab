@@ -13,9 +13,9 @@ public record UpdateRolesDto(
     List<IsInRoleDto> Roles);
 //todo : no need for roleTitle(or display name) in roles list above
 public record IsInRoleDto(
-    [Required] [MaxLength(32)]
+    [Required] [MaxLength(256)]
     string RoleName,
-    [MaxLength(32)]
+    [MaxLength(256)]
     string RoleTitle,
     [Required]
     bool IsIn);
@@ -23,7 +23,7 @@ public record IsInRoleDto(
 public record IsInRegionDto(
     [Required]
     int RegionId,
-    [MaxLength(64)]
+    [MaxLength(256)]
     string RegionName,
     [Required]
     bool IsIn);
@@ -34,13 +34,13 @@ public record UpdateUserCategories(
 
 
 public record UpdateUserDto(
-    [MaxLength(32)]
+    [MaxLength(256)]
     string? FirstName,
-    [MaxLength(32)]
+    [MaxLength(256)]
     string? LastName,
-    [MaxLength(32)]
+    [MaxLength(256)]
     string? Title,
-    [MaxLength(64)]
+    [MaxLength(256)]
     string? Organization,
     Gender? Gender,
     Education? Education,
@@ -55,29 +55,29 @@ public record UpdateUserDto(
 
 
 public record CreateUserDto(
-        [Required] [MaxLength(32)]
+        [Required] [MaxLength(256)]
         string Username,
         [Required] [MinLength(6)] [MaxLength(512)]
         string Password,
         List<string>? Roles,
         List<int>? RegionIds,
-        [MaxLength(32)]
+        [MaxLength(256)]
         string FirstName = "",
-        [MaxLength(32)]
+        [MaxLength(256)]
         string LastName = "",
-        [MaxLength(32)]
+        [MaxLength(256)]
         string Title = "");
 
 
 public record CreateComplaintInspectorUserDto(
         [Required]
         int InstanceId,
-        [Required] [MaxLength(32)]
+        [Required] [MaxLength(256)]
         string Username,
         [Required] [MinLength(6)] [MaxLength(512)]
         string Password,
         List<string>? Roles,
-        [MaxLength(32)]
+        [MaxLength(256)]
         string Title = "");
 
 

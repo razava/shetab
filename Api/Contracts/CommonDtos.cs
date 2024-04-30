@@ -17,7 +17,7 @@ public class AddressDto
     public int RegionId { get; set; }
     public double Latitude { get; set; }
     public double Longitude { get; set; }
-    [MaxLength(512)]
+    [MaxLength(1024)]
     public string Detail { get; set; } = string.Empty;
 }
 
@@ -106,17 +106,17 @@ public record UpdateFaqDto(
 
 
 public record CreateProcessDto(
-    [Required] [MaxLength(32)]
+    [Required] [MaxLength(256)]
     string Title,
-    [Required] [MaxLength(16)]
+    [Required] [MaxLength(64)]
     string Code,
     List<int> ActorIds);
 
 
 public record UpdateProcessDto(
-    [MaxLength(32)]
+    [MaxLength(256)]
     string? Title,
-    [MaxLength(16)]
+    [MaxLength(64)]
     string? Code,
     List<int>? ActorIds);
 

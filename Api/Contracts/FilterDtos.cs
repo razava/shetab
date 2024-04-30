@@ -4,7 +4,7 @@ namespace Api.Contracts;
 
 
 public record QueryFilter(
-    [MaxLength(64)]
+    [MaxLength(256)]
     string? Query);
 
 
@@ -18,7 +18,7 @@ public record FilterGetCommentViolation(
     DateTime? SentFromDate,
     DateTime? SentToDate,
     List<int>? CategoryIds,
-    [MinLength(3)] [MaxLength(16)]
+    [MinLength(3)] [MaxLength(256)]
     string? Query);
 
 

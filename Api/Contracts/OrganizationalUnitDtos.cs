@@ -5,9 +5,9 @@ namespace Api.Contracts;
 
 
 public record OrganizationalUnitCreateDto(
-    [MaxLength(32)]
+    [MaxLength(256)]
     string Title,
-    [Required] [MaxLength(32)]
+    [Required] [MaxLength(256)]
     string Username,
     [Required] [MinLength(6)] [MaxLength(512)]
     string Password,
@@ -16,7 +16,7 @@ public record OrganizationalUnitCreateDto(
 
 
 public record OrganizationalUnitUpdateDto(
-    [MaxLength(32)]
+    [MaxLength(256)]
     string Title,
     List<int> ExecutiveActorsIds,
     List<int> OrganizationalUnitsIds);

@@ -32,9 +32,9 @@ public class OperatorCreateReportDto
     public string Comments { get; set; } = null!;
     [Required] [MaxLength(16)]
     public string PhoneNumber { get; set; } = null!;
-    [MaxLength(32)]
+    [MaxLength(64)]
     public string FirstName { get; set; } = string.Empty;
-    [MaxLength(32)]
+    [MaxLength(64)]
     public string LastName { get; set; } = string.Empty;
     public bool IsIdentityVisible { get; set; }
     public AddressDto Address { get; set; } = null!;

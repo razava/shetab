@@ -6,7 +6,7 @@ namespace Api.Contracts;
 
 
 public record LoginStaffDto(
-    [Required] [MaxLength(32)]
+    [Required] [MaxLength(256)]
     string Username,
     [Required] [MinLength(6)] [MaxLength(512)]
     string Password,
@@ -52,13 +52,13 @@ public record CaptchaValidateDto(
     string Value);
 
 public record UpdateProfileDto(
-    [MaxLength(32)]
+    [MaxLength(256)]
     string? FirstName,
-    [MaxLength(32)]
+    [MaxLength(256)]
     string? LastName,
-    [MaxLength(32)]
+    [MaxLength(256)]
     string? Title,
-    [MaxLength(64)]
+    [MaxLength(256)]
     string? Organization,
     Gender? Gender,
     Education? Education,
