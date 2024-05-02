@@ -170,7 +170,7 @@ public class Report : Entity
             {
                 ShahrbinInstanceId = report.ShahrbinInstanceId,
                 Title = "ثبت درخواست" + " - " + report.TrackingNumber,
-                Content = ReportMessages.Created,
+                Content = $"درخواست شما با کد رهگیری {report.TrackingNumber} در سامانه ثبت شد.",
                 DateTime = report.Sent,
                 MessageSubject = MessageSubject.Report,
                 MessageSendingType = MessageSendingType.Both,
@@ -226,7 +226,7 @@ public class Report : Entity
             {
                 ShahrbinInstanceId = report.ShahrbinInstanceId,
                 Title = "ثبت درخواست" + " - " + report.TrackingNumber,
-                Content = ReportMessages.Created,
+                Content = $"درخواست شما با کد رهگیری {report.TrackingNumber} در سامانه ثبت شد.",
                 DateTime = report.Sent,
                 MessageSubject = MessageSubject.Report,
                 MessageSendingType = MessageSendingType.Both,
@@ -319,7 +319,7 @@ public class Report : Entity
         {
             ShahrbinInstanceId = ShahrbinInstanceId,
             Title = "پاسخ به شهروند" + " - " + TrackingNumber,
-            Content = comment,
+            Content = "پاسخ به شهروند" + " - " + TrackingNumber + "\n" + comment,
             DateTime = now,
             MessageSubject = MessageSubject.Report,
             MessageSendingType = MessageSendingType.Both,

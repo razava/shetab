@@ -52,7 +52,7 @@ public class MessageRepository : GenericRepository<Message>, IMessageRepository
                     .Where(u => u.Id == m.Recepient.ToId)
                     .Select(u => u.PhoneNumber)
                     .FirstOrDefault() ?? "",
-                $"سامانه شهربین \n {m.Title} \n {m.Content}"))
+                $"سامانه شهربین \n {m.Content}"))
             .ToListAsync();
 
         return result;
