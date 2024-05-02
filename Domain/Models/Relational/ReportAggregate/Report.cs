@@ -152,7 +152,7 @@ public class Report : Entity
 
         //TODO: Handle the case where need acceptance is false
         report.ReportState = ReportState.NeedAcceptance;
-        report.LastStatus = ReportMessages.NeedAcceptance;
+        report.LastStatus = TransitionMessages.NeedAcceptance;
         report.LastOperation = ReportOperationType.Created;
 
         if (!category.EditingAllowed)
@@ -367,7 +367,7 @@ public class Report : Entity
             transitionId,
             comment,
             attachments,
-            ReportMessages.Refered,
+            TransitionMessages.Refered,
             actorType,
             actorIdentifier,
             reasonId,
@@ -457,7 +457,7 @@ public class Report : Entity
             Id,
             comment,
             attachments,
-            ReportMessages.Refered,
+            TransitionMessages.Refered,
             CitizenId);
 
         TransitionLogs.Add(log);
