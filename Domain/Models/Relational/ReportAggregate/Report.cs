@@ -322,7 +322,7 @@ public class Report : Entity
             Content = "پاسخ به شهروند" + " - " + TrackingNumber + "\n" + comment,
             DateTime = now,
             MessageSubject = MessageSubject.Report,
-            MessageSendingType = MessageSendingType.Both,
+            MessageSendingType = MessageSendingType.Push,
             SubjectId = Id,
             Recepient = MessageRecepient.Create(RecepientType.Person, CitizenId)
         };
