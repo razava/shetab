@@ -20,6 +20,7 @@ public static class NotFoundErrors
     public static readonly Error ReportNote = new Error("یادداشت یافت نشد.");
     public static readonly Error Instance = new Error("نمونه مورد نظر یافت نشد.");
     public static readonly Error Actor = new Error("کنشگر مورد نظر یافت نشد.");
+    public static readonly Error Media = new Error("مدیا یافت نشد.");
 }
 
 

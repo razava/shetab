@@ -37,7 +37,7 @@ internal class CheckReportViolationCommandHandler(IUnitOfWork unitOfWork, IUploa
                 deletedAttachments.RemoveAll(request.Attachments.Contains);
 
                 var attachments = (await uploadRepository
-                    .GetAsync(u => deletedAttachments.Contains(u.Media.Id) && u.UserId == report.CitizenId))
+                    .GetAsync(u => deletedAttachments.Contains(u.Media.Id)))
                     .ToList() ?? new List<Upload>();
 
                 attachments.ForEach(a => a.IsUsed = false);
