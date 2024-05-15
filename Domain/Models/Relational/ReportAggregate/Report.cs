@@ -390,6 +390,23 @@ public class Report : Entity
             Random random = new Random();
             Duration = (now - Sent).TotalSeconds;
             LastStatus = "پایان یافته";
+
+
+            var message = new Message()
+            {
+                ShahrbinInstanceId = ShahrbinInstanceId,
+                Title = "پایان درخواست" + " - " + TrackingNumber,
+                Content = "رسیدگی درخواست شما با کد پیگیری  " + TrackingNumber + "به پایان رسید.",
+                DateTime = now,
+                MessageSubject = MessageSubject.Report,
+                MessageSendingType = MessageSendingType.None,
+                SubjectId = Id,
+                Recepient = MessageRecepient.Create(RecepientType.Person, CitizenId)
+            };
+
+            Messages.Add(message);
+
+
             if (Feedback != null)
             {
                 Feedback.Creation = now;
@@ -412,20 +429,6 @@ public class Report : Entity
                 };
             }
 
-
-            var message = new Message()
-            {
-                ShahrbinInstanceId = ShahrbinInstanceId,
-                Title = "ارجاع درخواست" + " - " + TrackingNumber,
-                Content = "درخواست شما با کد پیگیری  " +  TrackingNumber + "ارجاع داده شد." ,
-                DateTime = now,
-                MessageSubject = MessageSubject.Report,
-                MessageSendingType = MessageSendingType.None,
-                SubjectId = Id,
-                Recepient = MessageRecepient.Create(RecepientType.Person, CitizenId)
-            };
-
-            Messages.Add(message);
 
 
             Raise(new ReportDomainEvent(
