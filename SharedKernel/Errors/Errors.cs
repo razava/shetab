@@ -57,7 +57,8 @@ public static class AttachmentErrors
 
 public static class ServerNotFoundErrors
 {
-    //public static readonly Error OrganizationalUnit = new Error("");
+    //public static readonly Error OrganizationalUnit = new Error(""); 
+    public static readonly Error General = new Error("خطایی رخ داد.");
     public static readonly Error ExecutiveUser = new Error("خطایی رخ داد.");
     public static readonly Error Feedback = new Error("خطایی رخ داد.");
     public static readonly Error Actor = new Error("خطایی رخ داد.");

@@ -70,7 +70,7 @@ public class ActorResponse
 }
 
 //....
-public sealed record PossibleSourceResponse(string RoleId, string RoleName, string RoleTitle);
+public sealed record PossibleSourceResponse(string RoleId, string RoleName, string RoleTitle, bool CanRefer = true);
 
 public class PossibleTransitionResponse
 {

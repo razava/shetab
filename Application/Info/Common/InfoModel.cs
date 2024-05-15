@@ -63,16 +63,30 @@ public record InfoChart(string ChartTitle, string ChartIcon, bool IsStacked, boo
         return this;
     }
 
-    public InfoChart Sort()
+    public InfoChart Sort(int index)
     {
         if (Series.Count == 0)
             return this;
         if(!Series.SelectMany(s => s.Values).Any())
             return this;
-        Series = Series.OrderByDescending(s => double.Parse(s.Values[0].Value)).ToList();
+
+        var keys = Series[index].Values.Select(v => Double.Parse(v.Value)).ToList();
+        for (var i  = 0; i < Series.Count; i++)
+        {
+            Series[i].Values = sortLike(Series[i].Values, keys);
+        }
+
         return this;
     }
 
+    private List<T> sortLike<T, T2>(List<T> sourceList, List<T2> sortKeys)
+    {
+        var t = sourceList.ToArray();
+        var k = sortKeys.ToArray();
+
+        Array.Sort(k, t);
+        return t.Reverse().ToList();
+    }
     public record LocationInfo(Guid ReportId, double Latitude, double Longitude);
     /*
     public InfoChart Sort(int serieIndex = 0)

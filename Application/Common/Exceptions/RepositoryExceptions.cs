@@ -14,6 +14,9 @@ public class ServerNotFoundException : Exception
 //ShahrbinInstance
 public class ShahrbinInstanceNotFoundException : Exception { }
 
+//Role
+public class RoleNotFoundException : Exception { }
+
 
 //Generic Repository
 public class MethodNotFoundException : Exception { }

@@ -12,6 +12,7 @@ using Domain.Models.Relational.ReportAggregate;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using SharedKernel.Errors;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Persistence.Repositories;
@@ -202,8 +203,20 @@ public class ReportRepository : GenericRepository<Report>, IReportRepository
         }
         else
         {
-            query = query.Where(r => r.CurrentActorId != null &&
+            if (roles.Contains(RoleNames.Executive) && fromRoleId == "INPROGRESS")
+            {
+                var contractorRole = await _userRepository.FindRoleByNameAsync(RoleNames.Contractor);
+                if (contractorRole == null)
+                    throw new ServerNotFoundException("خطایی رخ داد.", new RoleNotFoundException());
+
+                query = query.Where(r => r.ExecutiveId == userId && (r.CurrentStage == null || r.CurrentStage.DisplayRoleId == contractorRole.Id));
+            }
+            else
+            {
+                query = query.Where(r => r.CurrentActorId != null &&
                                      actorIds.Contains(r.CurrentActorId.Value));
+            }
+            
             if (roles.Contains(RoleNames.Executive) && fromRoleId == "RESPONSED")
             {
                 query = query.Where(r => r.LastOperation == ReportOperationType.MessageToCitizen);
@@ -211,6 +224,10 @@ public class ReportRepository : GenericRepository<Report>, IReportRepository
             else if (roles.Contains(RoleNames.Inspector) && fromRoleId == "INSPECTOR")
             {
                 query = query.Where(r => r.LastTransitionId == null);
+            }
+            else if (roles.Contains(RoleNames.Executive) && fromRoleId == "INPROGRESS")
+            {
+
             }
             else
             {
@@ -247,6 +264,14 @@ public class ReportRepository : GenericRepository<Report>, IReportRepository
         var report = await GetByIDAsync(reportId);
         if (report == null)
             throw new ServerNotFoundException("خطایی رخ داد.", new ReportNotFoundException());
+
+        if(report.CurrentActorId != null)
+        {
+            var userActors = await _userRepository.GetActorsAsync(userId);
+            var userActorIds = userActors.Select(a => a.Id).ToList();
+            if (!userActorIds.Contains((int)report.CurrentActorId))
+                throw new AccessDeniedException("محدودیت دسترسی!");
+        }
 
         //if (report.ShahrbinInstanceId != request.instanceId)
         //    return AccessDeniedErrors.General;
@@ -403,7 +428,8 @@ public class ReportRepository : GenericRepository<Report>, IReportRepository
             .Select(p => new PossibleSourceResponse(
                 p.Key,
                 p.Select(q => q.Name).FirstOrDefault() ?? "",
-                p.Select(q => q.Title).FirstOrDefault() ?? ""))
+                p.Select(q => q.Title).FirstOrDefault() ?? "",
+                true))
             .ToListAsync();
         if (roleNames.Contains(RoleNames.Operator))
         {
@@ -411,7 +437,8 @@ public class ReportRepository : GenericRepository<Report>, IReportRepository
         }
         if (roleNames.Contains(RoleNames.Executive))
         {
-            possibleSources.Add(new PossibleSourceResponse("RESPONSED", "در دست اقدام", "در دست اقدام"));
+            possibleSources.Add(new PossibleSourceResponse("RESPONSED", "پاسخ داده شده", "پاسخ داده شده"));
+            possibleSources.Add(new PossibleSourceResponse("INPROGRESS", "در دست اقدام", "در دست اقدام", false));
         }
         if (roleNames.Contains(RoleNames.Inspector))
         {

@@ -412,6 +412,22 @@ public class Report : Entity
                 };
             }
 
+
+            var message = new Message()
+            {
+                ShahrbinInstanceId = ShahrbinInstanceId,
+                Title = "ارجاع درخواست" + " - " + TrackingNumber,
+                Content = "درخواست شما با کد پیگیری  " +  TrackingNumber + "ارجاع داده شد." ,
+                DateTime = now,
+                MessageSubject = MessageSubject.Report,
+                MessageSendingType = MessageSendingType.None,
+                SubjectId = Id,
+                Recepient = MessageRecepient.Create(RecepientType.Person, CitizenId)
+            };
+
+            Messages.Add(message);
+
+
             Raise(new ReportDomainEvent(
                 Guid.NewGuid(),
                 ReportDomainEventTypes.Refered,

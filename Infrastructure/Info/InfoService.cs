@@ -149,7 +149,7 @@ public class InfoService(
                 category.Categories.Any() ? category.Id.ToString() : null));
         }
 
-        result.Add(infoChart.Sort());
+        result.Add(infoChart.Sort(0));
 
         return result;
     }
@@ -258,7 +258,7 @@ public class InfoService(
                 GetPercent(objectioned, total)));
         }
 
-        result.Add(infoChart.Sort());
+        result.Add(infoChart.Sort(0));
 
         return result;
     }
@@ -367,7 +367,7 @@ public class InfoService(
                 GetPercent(objectioned, total)));
         }
 
-        result.Add(infoChart.Sort());
+        result.Add(infoChart.Sort(0));
 
         return result;
     }
@@ -471,7 +471,7 @@ public class InfoService(
                 GetPercent(objectioned, total)));
         }
 
-        result.Add(infoChart.Sort());
+        result.Add(infoChart.Sort(0));
 
         return result;
     }
@@ -832,7 +832,7 @@ public class InfoService(
                 category.Categories.Any() ? category.Id.ToString() : null));
         }
 
-        result.Add(infoChart.Sort());
+        result.Add(infoChart.Sort(0));
         return result;
     }
 
@@ -919,7 +919,7 @@ public class InfoService(
                 GetPercent(item.Count, total))); ;
         }
 
-        result.Add(infoChart.Sort());
+        result.Add(infoChart.Sort(0));
         return result;
     }
 
@@ -950,7 +950,7 @@ public class InfoService(
             citizenCount.ToString(),
             GetPercent(citizenCount, total)));
 
-        result.Add(infoChart.Sort());
+        result.Add(infoChart.Sort(0));
         return result;
     }
 
@@ -1251,7 +1251,7 @@ public class InfoService(
                 responseDurationTimeSpan.ToPersianString()));
         }
 
-        result.Add(infoChart.Sort());
+        result.Add(infoChart.Sort(0));
         return result;
     }
 
