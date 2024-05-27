@@ -476,7 +476,7 @@ public class Report : Entity
             Id,
             comment,
             attachments,
-            TransitionMessages.Refered,
+            TransitionMessages.Objectioned,
             CitizenId);
 
         TransitionLogs.Add(log);
