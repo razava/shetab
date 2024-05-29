@@ -68,6 +68,12 @@ internal class GetInfoQueryHandler(
             case 141:
                 result = await infoService.GetLocations(queryParameters);
                 break;
+            case 142:
+                result = await infoService.GetSatisrfactionsPerOperator(queryParameters);
+                break;
+            case 143:
+                result = await infoService.GetSatisrfactionsAveragePerOperator(queryParameters);
+                break;
             default:
                 break;
         }

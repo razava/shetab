@@ -769,6 +769,8 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             _context.Set<Chart>().Add(chart);
         }
 
+        
+
         code = 5;
         if (!chartCodes.Contains(code))
         {
@@ -951,6 +953,35 @@ internal sealed class AddInstanceCommandHandler : IRequestHandler<AddInstanceCom
             _context.Set<Chart>().Add(chart);
         }
 
+
+        code = 142;
+        if (!chartCodes.Contains(code))
+        {
+            chart = new Chart()
+            {
+                Code = instanceId * 100000 + code,
+                Order = 5,
+                Title = "تعداد خشنودی سنجی بر اساس هر اپراتور",
+                Roles = new List<ApplicationRole>() { operatorRole, managerRole, mayorRole },
+                ShahrbinInstanceId = instanceId,
+            };
+            _context.Set<Chart>().Add(chart);
+        }
+
+
+        code = 143;
+        if (!chartCodes.Contains(code))
+        {
+            chart = new Chart()
+            {
+                Code = instanceId * 100000 + code,
+                Order = 5,
+                Title = "میانگین خشنودی سنجی بر اساس هر اپراتور",
+                Roles = new List<ApplicationRole>() { operatorRole, managerRole, mayorRole },
+                ShahrbinInstanceId = instanceId,
+            };
+            _context.Set<Chart>().Add(chart);
+        }
 
         await _context.SaveChangesAsync();
 

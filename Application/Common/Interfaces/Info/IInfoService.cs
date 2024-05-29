@@ -26,6 +26,8 @@ public interface IInfoService
 
     Task<InfoModel> GetRequestsPerOperator(GetInfoQueryParameters queryParameters);
     Task<InfoModel> GetRequestsPerRegistrantType(GetInfoQueryParameters queryParameters);
+    Task<InfoModel> GetSatisrfactionsPerOperator(GetInfoQueryParameters queryParameters);
+    Task<InfoModel> GetSatisrfactionsAveragePerOperator(GetInfoQueryParameters queryParameters);
 
     Task<InfoModel> GetLocations(GetInfoQueryParameters queryParameters);
     Task<InfoModel> GetCitizenReportLocations(int instanceId, List<string> roles);

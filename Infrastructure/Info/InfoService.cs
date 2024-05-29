@@ -954,6 +954,79 @@ public class InfoService(
         return result;
     }
 
+
+    public async Task<InfoModel> GetSatisrfactionsPerOperator(GetInfoQueryParameters queryParameters)
+    {
+        var operatorIds = (await userRepository.GetUsersInRole(RoleNames.Operator))
+            .Where(u => u.ShahrbinInstanceId == queryParameters.InstanceId)
+            .Select(u => new {Id = u.Id, Title = u.Title})
+            .ToList();
+
+        var hist = await unitOfWork.DbContext.Set<Satisfaction>()
+            .GroupBy(s => s.ActorId)
+            .Select(g => new { OpId = g.Key, Count = g.LongCount()})
+            .ToListAsync();
+
+        var total = hist.Sum(h => h.Count);
+        
+        var result = new InfoModel();
+        var infoChart = new InfoChart("تعداد خشنودی سنجی بر اساس هر اپراتور", "", false, false);
+        var CountSerie = new InfoSerie("تعداد", "");
+
+        foreach (var item in operatorIds)
+        {
+            var relatedHist = hist.Where(e => e.OpId == item.Id).SingleOrDefault();
+            if (relatedHist == null)
+                relatedHist = new { OpId = item.Id, Count = (long)0 };
+
+            CountSerie.Add(new DataItem(
+                item.Title,
+                relatedHist.Count.ToString(),
+                GetPercent(relatedHist.Count, total)));
+        }
+
+        infoChart.Add(CountSerie);
+        result.Add(infoChart.Sort(0));
+        return result;
+    }
+
+
+    public async Task<InfoModel> GetSatisrfactionsAveragePerOperator(GetInfoQueryParameters queryParameters)
+    {
+        var operatorIds = (await userRepository.GetUsersInRole(RoleNames.Operator))
+            .Where(u => u.ShahrbinInstanceId == queryParameters.InstanceId)
+            .Select(u => new { Id = u.Id, Title = u.Title })
+            .ToList();
+
+        var hist = await unitOfWork.DbContext.Set<Satisfaction>()
+            .GroupBy(s => s.ActorId)
+            .Select(g => new { OpId = g.Key, Average = g.Average(e => e.Rating) })
+            .ToListAsync();
+
+
+        var result = new InfoModel();
+        var infoChart = new InfoChart("میانگین خشنودی سنجی بر اساس هر اپراتور", "", false, false);
+        var averageSerie = new InfoSerie("میانگین", "");
+
+        foreach (var item in operatorIds)
+        {
+            var relatedHist = hist.Where(e => e.OpId == item.Id).SingleOrDefault();
+            if (relatedHist == null)
+                relatedHist = new { OpId = item.Id, Average = (double)0 };
+
+            averageSerie.Add(new DataItem(
+                item.Title,
+                relatedHist.Average.ToString("0.00"),
+                relatedHist.Average.ToString("0.00")));
+        }
+
+        infoChart.Add(averageSerie);
+        result.Add(infoChart.Sort(0));
+        return result;
+    }
+
+
+
     //Locations
     public async Task<InfoModel> GetLocations(GetInfoQueryParameters queryParameters)
     {
