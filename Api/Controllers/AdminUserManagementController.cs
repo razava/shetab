@@ -38,7 +38,7 @@ public class AdminUserManagementController : ApiController
     //todo : define roles for Authorize
 
 
-    [Authorize(Roles = RoleNames.Admin)]
+    [Authorize(Roles = $"{RoleNames.Admin}, {RoleNames.ComplaintAdmin}")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(string id, UpdateUserDto updateUserDto)
     {
