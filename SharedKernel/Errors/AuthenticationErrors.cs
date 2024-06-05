@@ -8,6 +8,7 @@ public static class AuthenticationErrors
     public static readonly Error InvalidCredentials = new Error("اطلاعات ورودی اشتباه است.");
     public static readonly Error InvalidOtp = new Error("کد یکبار مصرف اشتباه است.");
     public static readonly Error InvalidUsername = new Error("نام کاربری نامعتبر است.");
+    public static readonly Error DuplicateUsername = new Error("نام کاربری تکراری است.");
     public static readonly Error InvalidPhoneNumber = new Error("شماره همراه نامعتبر است.");
     public static readonly Error InvalidRefereshToken = new Error("توکن نوسازی نامعتبر است.");
     public static readonly Error InvalidAccessToken = new Error("توکن دسترسی نامعتبر است.");

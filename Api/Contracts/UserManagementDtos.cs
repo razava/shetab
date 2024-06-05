@@ -78,7 +78,11 @@ public record CreateComplaintInspectorUserDto(
         string Password,
         List<string>? Roles,
         [MaxLength(256)]
-        string Title = "");
+        string Title = "",
+        [MaxLength(512)]
+        string Firstname = "",
+        [MaxLength(512)]
+        string Lastname = "");
 
 
 public record CreateContractorDto(

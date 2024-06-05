@@ -273,8 +273,8 @@ public class AdminUserManagementController : ApiController
             model.Password,
             model.Roles,
             null,
-            "",
-            "",
+            model.Firstname,
+            model.Lastname,
             model.Title);
         var user = await Sender.Send(command);
 
