@@ -27,7 +27,7 @@ internal class CreateUserCommandHandler(IUserRepository userRepository, IUnitOfW
             PhoneNumberConfirmed = true
         };
 
-        if (userRepository.FindByNameAsync(request.Username) != null)
+        if (await (userRepository.FindByNameAsync(request.Username)) != null)
         {
             return AuthenticationErrors.DuplicateUsername;
         }
