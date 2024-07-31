@@ -17,6 +17,7 @@ internal class AddDefaultFormToAllCatCommandHandler(IUnitOfWork unitOfWork) : IR
         if (defaultFormId == default(Guid))
         {
             //throw new Exception("Dafault form not found");
+            //temp
             List<FormElementModel> elements = new List<FormElementModel>()
             {
                 new FormElementModel(
