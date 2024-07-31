@@ -10,7 +10,7 @@ public record CitizenCreateReportDto(
     int instanceId,
     [Required]
     int CategoryId,
-    [MaxLength(1024)]
+    [MaxLength(16384)]
     string Comments,
     AddressDto Address,
     List<Guid>? Attachments,
@@ -28,7 +28,7 @@ public class OperatorCreateReportDto
 {
     [Required]
     public int CategoryId { get; set; }
-    [MaxLength(1024)]
+    [MaxLength(16384)]
     public string Comments { get; set; } = null!;
     [Required] [MaxLength(16)]
     public string PhoneNumber { get; set; } = null!;

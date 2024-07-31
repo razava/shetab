@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces.Persistence;
+using Application.Forms.Common;
 using Domain.Models.Relational;
 using Domain.Models.Relational.ReportAggregate;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,28 @@ internal class AddDefaultFormToAllCatCommandHandler(IUnitOfWork unitOfWork) : IR
             .AsNoTracking().Where(f => f.Title == "default" && f.ShahrbinInstanceId == request.instanceId)
             .Select(f => f.Id).FirstOrDefaultAsync();
 
-        if (defaultFormId == default(Guid)) throw new Exception("Dafault form not found");
+        if (defaultFormId == default(Guid))
+        {
+            //throw new Exception("Dafault form not found");
+            List<FormElementModel> elements = new List<FormElementModel>()
+            {
+                new FormElementModel(
+                    "text",
+                    "توضیحات",
+                    "توضیحات",
+                    1,
+                    "{\"id\":\"ffa754e5-cf02-41af-a044-7d9a9cb457cd\",\"elementType\":\"text\",\"elementCategory\":\"input\",\"props\":{\"label\":\"توضیحات\",\"placeholder\":\"\",\"type\":\"text\",\"editable\":true,\"disabled\":false,\"englishOnly\":false,\"style\":{}},\"items\":[]}")
+            };
+
+            var form = Form.Create(request.instanceId, "default", elements.Select(e => e.GetFormElement()).ToList());
+            unitOfWork.DbContext.Set<Form>().Add(form);
+            await unitOfWork.SaveAsync();
+            if(form.Id == default(Guid))
+            {
+                throw new Exception("Dafault form failure");
+            }
+            defaultFormId = form.Id;
+        }
 
         var categories = await unitOfWork.DbContext.Set<Category>()
             .Where(c => c.ShahrbinInstanceId == request.instanceId)
