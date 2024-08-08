@@ -962,7 +962,19 @@ public class InfoService(
             .Select(u => new {Id = u.Id, Title = u.Title})
             .ToList();
 
-        var hist = await unitOfWork.DbContext.Set<Satisfaction>()
+        var query = unitOfWork.DbContext.Set<Satisfaction>().AsNoTracking();
+
+        if (queryParameters.ReportFilters.FromDate != null)
+        {
+            query = query.Where(s => s.DateTime >= queryParameters.ReportFilters.FromDate);
+        }
+
+        if (queryParameters.ReportFilters.ToDate != null)
+        {
+            query = query.Where(s => s.DateTime < queryParameters.ReportFilters.ToDate.Value.AddDays(1));
+        }
+
+        var hist = await query
             .GroupBy(s => s.ActorId)
             .Select(g => new { OpId = g.Key, Count = g.LongCount()})
             .ToListAsync();
@@ -998,7 +1010,19 @@ public class InfoService(
             .Select(u => new { Id = u.Id, Title = u.Title })
             .ToList();
 
-        var hist = await unitOfWork.DbContext.Set<Satisfaction>()
+        var query = unitOfWork.DbContext.Set<Satisfaction>().AsNoTracking();
+
+        if (queryParameters.ReportFilters.FromDate != null)
+        {
+            query = query.Where(s => s.DateTime >= queryParameters.ReportFilters.FromDate);
+        }
+
+        if (queryParameters.ReportFilters.ToDate != null)
+        {
+            query = query.Where(s => s.DateTime < queryParameters.ReportFilters.ToDate.Value.AddDays(1));
+        }
+
+        var hist = await query
             .GroupBy(s => s.ActorId)
             .Select(g => new { OpId = g.Key, Average = g.Average(e => e.Rating) })
             .ToListAsync();
