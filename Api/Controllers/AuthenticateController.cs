@@ -107,8 +107,35 @@ public class AuthenticateController : ApiController
     [HttpPost("LoginMyYazd")]
     public async Task<ActionResult> LoginMyYazd([FromBody] MyYazdSsoDto myYazdSso)
     {
+
         var command = new LoginMyYazdCommand(myYazdSso.Code);
         var result = await Sender.Send(command);
+        /*
+         {
+            "access_token": "uivT1teYN100I8Di4YbpUGIHSoO1uQ",
+            "expires_in": 3600,
+            "token_type": "Bearer",
+            "scope": "read write",
+            "refresh_token": "eBqHPRbfY3YxwxBr0JdZaYyWcwByLm",
+            "user": {
+            "username": "09375998745",
+            "address": null,
+            "postal_code": null,
+             "national_id": null,
+             "first_name": null,
+             "last_name": null,
+            "birthdate": null,
+             "gender": 0,
+             "avatar": null,
+             "mobile_no": "09375998745",
+             "level": 1,
+             "point": 0,
+             "balance": 0,
+             "tel": ""
+  }
+}
+ 
+         */
         return result.Match(
             s => Ok(s),
             f => Problem(f));

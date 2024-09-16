@@ -26,7 +26,7 @@ public class MyYazdService(
                 new KeyValuePair<string, string>("code", code),
                 new KeyValuePair<string, string>("grant_type", "authorization_code")
             };
-            var url = @"/api/oauth/token/";
+            var url = @"/api/sso/token/";
             using var req = new HttpRequestMessage(HttpMethod.Post, url) 
             { 
                 Content = new FormUrlEncodedContent(nvc),

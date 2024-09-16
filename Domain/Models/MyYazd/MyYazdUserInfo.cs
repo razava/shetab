@@ -48,7 +48,7 @@ public class MyYazdUser
     [JsonPropertyName("username")]
     public string? Username { get; set; }
 
-    [JsonPropertyName("birthday")]
+    [JsonPropertyName("birthdate")]
     public string? Birthday { get; set; }
 
     [JsonPropertyName("address")]
@@ -62,5 +62,8 @@ public class MyYazdUser
 
     [JsonPropertyName("tel")]
     public string? Tel { get; set; }
+
+    //[JsonPropertyName("level")]
+    //public string? Level { get; set; }
 }
 
