@@ -11,10 +11,12 @@ using Domain.Models.Relational.ProcessAggregate;
 using FluentResults;
 using Infrastructure.Persistence;
 using MassTransit.Initializers;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using Quartz.Util;
 using SharedKernel.ExtensionMethods;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Info;
@@ -1020,28 +1022,40 @@ public class InfoService(
     //Histograms
     public async Task<InfoModel> GetRequestsPerOperator(GetInfoQueryParameters queryParameters)
     {
-        var operatorIds = (await userRepository.GetUsersInRole(RoleNames.Operator))
-            .Where(u => u.ShahrbinInstanceId == queryParameters.InstanceId)
-            .Select(u => u.Id)
-            .ToList();
+        var query = unitOfWork.DbContext.Set<Report>()
+            .AsNoTracking();
 
-        var hist = await unitOfWork.DbContext.Set<ApplicationUser>()
-            .Where(u => operatorIds.Contains(u.Id))
-            .Select(u => new { u.Title, Count = u.RegisteredReports.Count() })
-            .ToListAsync();
-        var total = hist.Sum(h => h.Count);
+        query = await addRestrictions(query, queryParameters);
+        var operatorReports = await query
+    .Where(r => r.ShahrbinInstanceId == queryParameters.InstanceId)
+    .Join(
+        unitOfWork.DbContext.Set<ApplicationUser>(),
+        report => report.RegistrantId,  // فرض شده که Report یک فیلد OperatorId دارد
+        user => user.Id,
+        (report, user) => new { report.RegistrantId, user.Title , user.FirstName, user.LastName, report.Id }
+    )
+    .GroupBy(x => x.RegistrantId)
+    .Select(g => new
+    {
+        Title = g.FirstOrDefault().Title + " - " + g.FirstOrDefault().FirstName + "  " + g.FirstOrDefault().LastName,  // Title از اولین رکورد در گروه گرفته می‌شود
+        Count = g.Count()
+    })
+    .ToListAsync();
+
+        var total = operatorReports.Sum(r => r.Count);
 
         var result = new InfoModel();
         var infoChart = new InfoChart("تعداد درخواست ثبت شده توسط هر اپراتور", "", false, false);
         var reportCountSerie = new InfoSerie("تعداد", "");
         infoChart.Add(reportCountSerie);
 
-        foreach (var item in hist)
+        foreach (var item in operatorReports)
         {
             reportCountSerie.Add(new DataItem(
-                item.Title,
+                item.Title ?? "بدون عنوان",  // اگر Title خالی بود، "بدون عنوان" نمایش داده می‌شود
                 item.Count.ToString(),
-                GetPercent(item.Count, total))); ;
+                GetPercent(item.Count, total)
+            ));
         }
 
         result.Add(infoChart.Sort(0));
