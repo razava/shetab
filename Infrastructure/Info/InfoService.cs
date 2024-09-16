@@ -1064,12 +1064,17 @@ public class InfoService(
 
     public async Task<InfoModel> GetRequestsPerRegistrantType(GetInfoQueryParameters queryParameters)
     {
+        var query = unitOfWork.DbContext.Set<Report>()
+            .AsNoTracking();
+
+        query = await addRestrictions(query, queryParameters);
+
         var operatorIds = (await userRepository.GetUsersInRole(RoleNames.Operator))
             .Where(u => u.ShahrbinInstanceId == queryParameters.InstanceId)
             .Select(u => u.Id)
             .ToList();
 
-        var hist = await unitOfWork.DbContext.Set<Report>()
+        var hist = await query
             .GroupBy(r => r.RegistrantId)
             .Select(r => new { r.Key, Count = r.Count() })
             .ToListAsync();
